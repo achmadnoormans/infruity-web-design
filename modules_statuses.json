@@ -1,0 +1,13 @@
+{
+    "Master": true,
+    "Operational": true,
+    "Request": true,
+    "DMProyeksiRequest": true,
+    "Model": true,
+    "Grouplayanan": true,
+    "Controller": true,
+    "VendorBusdevController": true,
+    "Permohonan": true,
+    "Chat": true,
+    "Arsip": true
+}
