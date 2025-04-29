@@ -17,6 +17,7 @@ class MasterServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(module_path('Master', 'Database/Migrations'));
+        $this->loadViewsFrom(module_path('Master', 'Resources/views'), 'Master');
     }
 
     /**

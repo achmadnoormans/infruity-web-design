@@ -9,7 +9,7 @@ Route::put('/forgot-password', 'DashboardController@forgot_password_save')->name
 Route::get('/register', 'Auth\RegisterController@showRegister')->name('register');
 Route::post('/register', 'Auth\RegisterController@create');
 Route::get('/qrcode', 'DashboardController@generateQrCode');
-Route::get('/produk', 'DashboardController@produk')->name('produk');
+// Route::get('/produk', 'DashboardController@produk')->name('produk');
 Route::group(['prefix' => '/auth'], function () {
     Route::get('/', 'Auth\LoginController@showLogin')->name('login');
     Route::get('/login', 'Auth\LoginController@showLogin');

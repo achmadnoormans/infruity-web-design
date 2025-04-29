@@ -27,6 +27,7 @@
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.bundle.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @livewireStyles
 
     <!--end::Global Stylesheets Bundle-->
@@ -97,8 +98,7 @@
                             <!--begin::Menu-->
                             <ul class="menu menu-gray-600 menu-hover-primary fw-semibold order-1">
                                 <li class="menu-item">
-                                    <a href="https://keenthemes.com" target="_blank"
-                                        class="menu-link px-2">About</a>
+                                    <a href="https://keenthemes.com" target="_blank" class="menu-link px-2">About</a>
                                 </li>
                                 <li class="menu-item">
                                     <a href="https://devs.keenthemes.com" target="_blank"

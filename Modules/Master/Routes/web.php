@@ -1,5 +1,6 @@
 <?php
 
+use Modules\Master\Http\Controllers\ProductController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +12,10 @@
 |
 */
 
-Route::prefix('master')->group(function() {
-    Route::get('/', 'MasterController@index');
+Route::prefix('/')->group(function () {
+    // Route::get('/products', function () {
+    //     return view('Master::products.index'); // di view ini kamu panggil @livewire('product-table')
+    // });
+    Route::resource('products', ProductController::class)->names('products')->except('show');
+    Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');
 });
