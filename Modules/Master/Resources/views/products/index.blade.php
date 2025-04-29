@@ -32,7 +32,7 @@
                         <!--end::Select2-->
                     </div>
                     <!--begin::Add product-->
-                    <a href="apps/ecommerce/catalog/add-product.html" class="btn btn-primary">Add Product</a>
+                    <a href="{{url('products/create')}}" class="btn btn-primary">Add Product</a>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->

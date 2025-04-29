@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use DB;
+use Auth;
 
 class ProductController extends Controller
 {
@@ -25,7 +29,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('master::create');
+        $data['page_plugin_js'] = [
+            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
+        ];
+        return view('master::products.create', $data);
     }
 
     /**
@@ -35,7 +42,43 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all(), $request->file('avatar'));
+        $validator = Validator::make($request->all(), [
+            'product_name' => 'required',
+            'price' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $product = new Product();
+            $product->name = $request->product_name;
+            $product->description = $request->description ?? '';
+            $product->price = $request->price ?? '';
+            $product->product_unit = $request->product_unit ?? '';
+            // $product->created_by = Auth::user()->id_user;
+
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('products', 'public');
+                $product->image = $path;
+                $product->save();
+            }
+
+            $product->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Product gagal' . $e->getMessage());
+        }
+
+        return redirect('products')->with('success', 'Pembuatan Product berhasil');
     }
 
     /**
@@ -85,15 +128,17 @@ class ProductController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
-                return '
-                    <div class="d-flex align-items-center">
-                        <!-- Thumbnail -->
-                        <a href="javascript:void(0)" class="symbol symbol-50px">
+                $html = '
+                    <div class="d-flex align-items-center">';
+                if (isset($product->image)) {
+                    $url = asset('storage/' . $product->image);
+                    $html .= '<img src="'. $url .'" alt="Product Image" width="50">';
+                } else {
+                    $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
                             <span class="symbol-label" style="background-image:url(assets/media/stock/ecommerce/1.png);"></span>
-                        </a>
-            
-                        <!-- Title -->
-                        <div class="ms-5">
+                        </a>';
+                }
+                $html .= '<div class="ms-5">
                             <a href="apps/ecommerce/catalog/edit-product.html" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
@@ -101,6 +146,7 @@ class ProductController extends Controller
                         </div>
                     </div>
                 ';
+                return $html;
             })
             ->addColumn('action', function ($product) {
                 return '
