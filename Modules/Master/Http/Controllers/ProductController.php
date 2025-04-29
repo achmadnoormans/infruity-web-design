@@ -98,7 +98,8 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        return view('master::edit');
+        $data['data'] = Product::findOrFail($id);
+        return view('master::products.edit', $data);
     }
 
     /**

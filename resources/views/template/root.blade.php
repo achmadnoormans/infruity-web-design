@@ -16,6 +16,7 @@
     <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
     <meta property="og:url" content="https://keenthemes.com/metronic" />
     <meta property="og:site_name" content="Infruity" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
     <!--begin::Fonts(mandatory for all pages)-->

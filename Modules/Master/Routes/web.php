@@ -1,6 +1,7 @@
 <?php
 
 use Modules\Master\Http\Controllers\ProductController;
+use Modules\Master\Http\Controllers\ProductCategoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,4 +19,7 @@ Route::prefix('/')->group(function () {
     // });
     Route::resource('products', ProductController::class)->names('products')->except('show');
     Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');
+
+    Route::resource('category', ProductCategoryController::class)->names('category')->except('show');
+    Route::get('category/data', [ProductCategoryController::class, 'get_data'])->name('category-data');
 });

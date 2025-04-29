@@ -30,7 +30,7 @@
             <div class="d-flex flex-stack flex-wrap flex-lg-nowrap gap-4 gap-lg-10 pt-6 pb-18 py-lg-13">
                 <!--begin::Page title-->
                 <div class="page-title d-flex align-items-center me-3">
-                    <img alt="Logo" src="assets/media/svg/misc/layer.svg" class="h-60px me-5" />
+                    <img alt="Logo" src="{{ asset('assets/media/svg/misc/layer.svg') }}" class="h-60px me-5" />
                     <!--begin::Title-->
                     <h1 class="page-heading d-flex text-white fw-bolder fs-2 flex-column justify-content-center my-0">
                         Sitemap
