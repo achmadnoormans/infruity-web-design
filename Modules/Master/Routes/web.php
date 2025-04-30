@@ -3,6 +3,7 @@
 use Modules\Master\Http\Controllers\ProductController;
 use Modules\Master\Http\Controllers\ProductCategoryController;
 use Modules\Master\Http\Controllers\ProductUnitController;
+use Modules\Master\Http\Controllers\LocationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,4 +27,7 @@ Route::prefix('/')->group(function () {
 
     Route::resource('unit', ProductUnitController::class)->names('unit')->except('show');
     Route::get('unit/data', [ProductUnitController::class, 'get_data'])->name('unit-data');
+
+    Route::resource('location', LocationController::class)->names('location')->except('show');
+    Route::get('location/data', [LocationController::class, 'get_data'])->name('location-data');
 });
