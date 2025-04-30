@@ -4,6 +4,8 @@ use Modules\Master\Http\Controllers\ProductController;
 use Modules\Master\Http\Controllers\ProductCategoryController;
 use Modules\Master\Http\Controllers\ProductUnitController;
 use Modules\Master\Http\Controllers\LocationController;
+use Modules\Master\Http\Controllers\HandlingController;
+use Modules\Master\Http\Controllers\DepartmentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,4 +33,11 @@ Route::prefix('/')->group(function () {
 
     Route::resource('location', LocationController::class)->names('location')->except('show');
     Route::get('location/data', [LocationController::class, 'get_data'])->name('location-data');
+
+    Route::resource('handling', HandlingController::class)->names('handling')->except('show');
+    Route::get('handling/data', [HandlingController::class, 'get_data'])->name('handling-data');
+
+    Route::resource('department', DepartmentController::class)->names('department')->except('show');
+    Route::get('department/data', [DepartmentController::class, 'get_data'])->name('department-data');
+    Route::get('department/export', [DepartmentController::class, 'excel'])->name('export-department-data');
 });
