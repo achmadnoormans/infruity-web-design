@@ -5,14 +5,14 @@ namespace Modules\Master\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Master\Entities\ProductCategory;
+use Modules\Master\Entities\ProductUnit;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use DB;
 use Auth;
 
-class ProductCategoryController extends Controller
+class ProductUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +20,7 @@ class ProductCategoryController extends Controller
      */
     public function index()
     {
-        return view('master::category.index');
+        return view('master::unit.index');
     }
 
     /**
@@ -42,29 +42,31 @@ class ProductCategoryController extends Controller
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'abbreviation' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
         ]);
 
         // Simpan data ke database
         try {
             DB::beginTransaction();
-            $category = new ProductCategory();
-            $category->name = $validated['name'];
-            $category->description = $validated['description'] ?? null;
-            $category->save();
+            $unit = new ProductUnit();
+            $unit->name = $validated['name'];
+            $unit->abbreviation = $validated['abbreviation'];
+            $unit->description = $validated['description'] ?? null;
+            $unit->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Kategori gagal disimpan.',
-                'data' => $category
+                'message' => 'Satuan gagal disimpan.',
+                'data' => $unit
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
-            'message' => 'Kategori berhasil disimpan.',
-            'data' => $category
+            'message' => 'Satuan berhasil disimpan.',
+            'data' => $unit
         ], 201);
     }
 
@@ -85,8 +87,8 @@ class ProductCategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = ProductCategory::findOrFail($id);
-        return response()->json($category);
+        $unit = ProductUnit::findOrFail($id);
+        return response()->json($unit);
     }
 
     /**
@@ -97,19 +99,26 @@ class ProductCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'abbreviation' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
         try {
             DB::beginTransaction();
-            $category = ProductCategory::findOrFail($id);
-            $category->name = $request->name;
-            $category->description = $request->description;
-            $category->save();
+            $unit = ProductUnit::findOrFail($id);
+            $unit->name = $validated['name'];
+            $unit->abbreviation = $validated['abbreviation'];
+            $unit->description = $validated['description'] ?? null;
+            $unit->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Category updated failed']);
+            return response()->json(['message' => 'Unit updated failed']);
         }
 
-        return response()->json(['message' => 'Category updated successfully']);
+        return response()->json(['message' => 'Unit updated successfully']);
     }
 
     /**
@@ -121,8 +130,8 @@ class ProductCategoryController extends Controller
     {
         try {
             DB::beginTransaction();
-            $category = ProductCategory::findOrFail($id);
-            $category->delete();
+            $unit = ProductUnit::findOrFail($id);
+            $unit->delete();
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -139,29 +148,29 @@ class ProductCategoryController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = ProductCategory::all();
+        $data = ProductUnit::all();
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('action', function ($category) {
+            ->addColumn('action', function ($unit) {
                 return '
                     <div class="dropdown text-end">
                         <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
                             type="button" 
-                            id="dropdownMenuButton' . $category->id . '" 
+                            id="dropdownMenuButton' . $unit->id . '" 
                             data-bs-toggle="dropdown" 
                             aria-expanded="false">
                             Actions
                             <i class="ki-outline ki-down fs-5 ms-1"></i>
                         </button>
             
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $category->id . '">
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $unit->id . '">
                             <li>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $category->id . ')">
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $unit->id . ')">
                                     Edit
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $category->id . ')">
+                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $unit->id . ')">
                                     Delete
                                 </a>
                             </li>

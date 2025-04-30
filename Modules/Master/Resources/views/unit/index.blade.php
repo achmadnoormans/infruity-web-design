@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Category" />
+                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Unit" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -21,7 +21,7 @@
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer"><i class="fa fa-plus"></i>Add Category</button>
+                        data-bs-target="#kt_modal_add_customer"><i class="fa fa-plus"></i>Add Unit</button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -30,7 +30,7 @@
             <!--begin::Card body-->
             <div class="card-body pt-0">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="category-table">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="unit-table">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             {{-- <th class="w-10px pe-2">
@@ -42,6 +42,7 @@
                             </th> --}}
                             <th>No</th>
                             <th>Name</th>
+                            <th>Abbreviation</th>
                             <th>Description</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -65,7 +66,7 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Add a Category</h2>
+                        <h2 class="fw-bold">Add a Unit</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -88,6 +89,17 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder="" name="name"
+                                    value="" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
+                                <label class="required fs-6 fw-semibold mb-2">Abbreviation</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" class="form-control form-control-solid" placeholder="" name="abbreviation"
                                     value="" />
                                 <!--end::Input-->
                             </div>
@@ -138,12 +150,12 @@
         const segment1 = "{{ Request::segment(1) }}";
 
         $(document).ready(function() {
-            dataTable = $('#category-table').DataTable({
+            dataTable = $('#unit-table').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
                 ajax: {
-                    url: "{{ route('category-data') }}",
+                    url: "{{ route('unit-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                     }
@@ -155,6 +167,10 @@
                     {
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        data: 'abbreviation',
+                        name: 'abbreviation'
                     },
                     {
                         data: 'description',
@@ -226,11 +242,11 @@
 
                             // 3. Kembalikan action form ke default (untuk create)
                             form.attr('action',
-                                `/${segment1}`); // Misal segment1 = 'category'
+                                `/${segment1}`); // Misal segment1 = 'unit'
 
                             // 4. Kembalikan judul modal (opsional)
                             $('#kt_modal_add_customer_header h2').text(
-                                'Tambah Category');
+                                'Tambah Unit');
 
                             // 5. Tutup modal
                             const modal = bootstrap.Modal.getInstance(document
@@ -289,7 +305,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/category/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/unit/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -319,16 +335,17 @@
 
         function editProduct(id) {
             $.ajax({
-                url: `/category/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
+                url: `/unit/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
                 type: 'GET',
                 success: function(response) {
                     // Isi form dengan data produk yang ada
                     $('input[name="name"]').val(response.name);
+                    $('input[name="abbreviation"]').val(response.abbreviation);
                     $('input[name="description"]').val(response.description);
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', `/category/${id}`); // URL untuk update produk
+                    form.attr('action', `/unit/${id}`); // URL untuk update produk
                     form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
                     form.append(
                         '<input type="hidden" name="_method" value="PUT">'
