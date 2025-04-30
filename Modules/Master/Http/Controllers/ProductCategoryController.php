@@ -6,11 +6,17 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\ProductCategory;
+use PhpOffice\PhpSpreadsheet\Calculation\Category;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use DB;
 use Auth;
+use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductCategoryController extends Controller
 {
@@ -97,11 +103,17 @@ class ProductCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Validasi input
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
         try {
             DB::beginTransaction();
             $category = ProductCategory::findOrFail($id);
-            $category->name = $request->name;
-            $category->description = $request->description;
+            $category->name = $validated['name'];
+            $category->description = $validated['description'] ?? null;
             $category->save();
             DB::commit();
         } catch (Exception $e) {
@@ -171,5 +183,74 @@ class ProductCategoryController extends Controller
             })
             ->rawColumns(['name', 'action'])
             ->make(true);
+    }
+
+    public function excel()
+    {
+        $category = ProductCategory::all();
+
+        $dataExport = [];
+
+        // Konversi data menjadi array
+        foreach ($category as $key => $value) {
+            $dataExport[] = [
+                'no' => $key + 1,
+                'name' => $value->name,
+                'description' => $value->description
+            ];
+        }
+
+        // Header untuk data
+        $headings = [
+            'No',
+            'Name',
+            'Description'
+        ];
+
+        // Gunakan anonymous class untuk ekspor Excel
+        return Excel::download(new class ($dataExport, $headings) implements FromArray, WithHeadings, WithEvents {
+            private $data;
+            private $headings;
+
+            public function __construct(array $data, array $headings)
+            {
+                $this->data = $data;
+                $this->headings = $headings;
+            }
+
+            public function array(): array
+            {
+                return $this->data;
+            }
+
+            public function headings(): array
+            {
+                return $this->headings;
+            }
+
+            public function registerEvents(): array
+            {
+                return [
+                    AfterSheet::class => function (AfterSheet $event) {
+                        $sheet = $event->sheet->getDelegate();
+
+                        // Styling header
+                        $sheet->getStyle('A1:C1')->applyFromArray([
+                            'font' => [
+                                'bold' => true,
+                            ],
+                        ]);
+
+                        // Tambahkan filter untuk seluruh kolom
+                        $highestColumn = $sheet->getHighestColumn();
+                        $sheet->setAutoFilter("A1:{$highestColumn}1");
+
+                        foreach (range('A', $highestColumn) as $column) {
+                            $sheet->getColumnDimension($column)->setAutoSize(true);
+                        }
+                    },
+                ];
+            }
+        }, 'category.xlsx');
     }
 }

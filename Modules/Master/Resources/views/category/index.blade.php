@@ -19,9 +19,13 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <!--begin::Export-->
+                    <a href="{{ url(Request::segment(1) . '/export') }}" class="btn btn-light-primary"> <i
+                            class="ki-outline ki-exit-up fs-2"></i>Export</a>
+                    <!--end::Export-->
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer"><i class="fa fa-plus"></i>Add Category</button>
+                        data-bs-target="#kt_modal_add_customer">Add Category</button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
