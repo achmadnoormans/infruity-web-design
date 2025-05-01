@@ -1,74 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--begin::Head-->
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
-    <meta name="keywords"
-        content="admin template, Cuba admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
-    <link rel="icon" href="{{ asset('cuba/images/logo/logo.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('cuba/images/logo/logo.png') }}" type="image/x-icon">
-    <title>Aplikasi Surat Keterangan | BPKAD - Pemerintah Kota Surabaya</title>
+    <base href="/" />
+    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
+    <meta name="keywords" content="buah, umkm, pasar" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
+    <meta property="og:url" content="https://keenthemes.com/metronic" />
+    <meta property="og:site_name" content="Infruity" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
+    <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
+    <!--begin::Fonts(mandatory for all pages)-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <!--end::Fonts-->
+    <!--begin::Vendor Stylesheets(used for this page only)-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}">
+    <!--end::Vendor Stylesheets-->
+    <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.bundle.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- @livewireStyles --}}
 
-    <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/fontawesome.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/icofont.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/themify.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/flag-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/feather-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/slick.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/slick-theme.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/scrollbar.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/vendors/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('cuba/css/color-1.css') }}" media="screen">
-    <link rel="stylesheet" type="text/css" href="{{ asset('cuba/css/responsive.css') }}">
+    <!--end::Global Stylesheets Bundle-->
+    <script>
+        // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
+    </script>
 </head>
+<!--end::Head-->
+<!--begin::Body-->
 
-<body>
-    <!-- tap on top starts-->
-    <div class="tap-top"><i data-feather="chevrons-up"></i></div>
-    <!-- tap on tap ends-->
-    <!-- page-wrapper Start-->
-    <div class="page-wrapper compact-wrapper" id="pageWrapper">
-        <!-- error-404 start-->
-        <div class="error-wrapper">
-            <div class="container"><img class="img-100" src="../assets/images/other-images/sad.png" alt="">
-                <div class="error-heading">
-                    <h2 class="headline font-danger">404</h2>
+<body id="kt_body" class="app-blank bgi-size-cover bgi-position-center bgi-no-repeat">
+    <!--begin::Theme mode setup on page load-->
+    <script>
+        var defaultThemeMode = "light";
+        var themeMode;
+        if (document.documentElement) {
+            if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
+                themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
+            } else {
+                if (localStorage.getItem("data-bs-theme") !== null) {
+                    themeMode = localStorage.getItem("data-bs-theme");
+                } else {
+                    themeMode = defaultThemeMode;
+                }
+            }
+            if (themeMode === "system") {
+                themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            }
+            document.documentElement.setAttribute("data-bs-theme", themeMode);
+        }
+    </script>
+    <!--end::Theme mode setup on page load-->
+    <!--begin::Root-->
+    <div class="d-flex flex-column flex-root" id="kt_app_root">
+        <!--begin::Page bg image-->
+        <style>
+            body {
+                background-image: url('assets/media/auth/bg1.jpg');
+            }
+
+            [data-bs-theme="dark"] body {
+                background-image: url('assets/media/auth/bg1-dark.jpg');
+            }
+        </style>
+        <!--end::Page bg image-->
+        <!--begin::Authentication - Signup Welcome Message -->
+        <div class="d-flex flex-column flex-center flex-column-fluid">
+            <!--begin::Content-->
+            <div class="d-flex flex-column flex-center text-center p-10">
+                <!--begin::Wrapper-->
+                <div class="card card-flush w-lg-650px py-5">
+                    <div class="card-body py-15 py-lg-20">
+                        <!--begin::Title-->
+                        <h1 class="fw-bolder fs-2hx text-gray-900 mb-4">Oops!</h1>
+                        <!--end::Title-->
+                        <!--begin::Text-->
+                        <div class="fw-semibold fs-6 text-gray-500 mb-7">We can't find that page.</div>
+                        <!--end::Text-->
+                        <!--begin::Illustration-->
+                        <div class="mb-3">
+                            <img src="assets/media/auth/404-error.png" class="mw-100 mh-300px theme-light-show"
+                                alt="" />
+                            <img src="assets/media/auth/404-error-dark.png" class="mw-100 mh-300px theme-dark-show"
+                                alt="" />
+                        </div>
+                        <!--end::Illustration-->
+                        <!--begin::Link-->
+                        <div class="mb-0">
+                            <a href="{{ url('/') }}" class="btn btn-sm btn-primary">Return Home</a>
+                        </div>
+                        <!--end::Link-->
+                    </div>
                 </div>
-                <div class="col-md-8 offset-md-2">
-                    <p class="sub-content">Halaman yang kamu cari tidak ada, Hubungi Administrator.</p>
-                </div>
-                <div><a class="btn btn-danger-gradien btn-lg" href="{{ url('/') }}">BACK TO HOME PAGE</a></div>
+                <!--end::Wrapper-->
             </div>
+            <!--end::Content-->
         </div>
-        <!-- error-404 end      -->
+        <!--end::Authentication - Signup Welcome Message-->
     </div>
-    <!-- latest jquery-->
-    <script src="{{ asset('cuba/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('cuba/js/icons/feather-icon/feather.min.js') }}"></script>
-    <script src="{{ asset('cuba/js/icons/feather-icon/feather-icon.js') }}"></script>
-    <script src="{{ asset('cuba/js/scrollbar/simplebar.min.js') }}"></script>
-    <script src="{{ asset('cuba/js/scrollbar/custom.js') }}"></script>
-    <script src="{{ asset('cuba/js/config.js') }}"></script>
-    <script src="{{ asset('cuba/js/sidebar-menu.js') }}"></script>
-    <script src="{{ asset('cuba/js/sidebar-pin.js') }}"></script>
-    <script src="{{ asset('cuba/js/slick/slick.min.js') }}"></script>
-    <script src="{{ asset('cuba/js/slick/slick.js') }}"></script>
-    <script src="{{ asset('cuba/js/header-slick.js') }}"></script>
-    <script src="{{ asset('cuba/js/script.js') }}"></script>
-    <script src="{{ asset('cuba/js/script1.js') }}"></script>
-    <script src="{{ asset('cuba/js/custom.js') }}"></script>
-    <script src="{{ asset('cuba/js/sweet-alert/sweetalert.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <!--end::Root-->
+    <!--begin::Javascript-->
+    <script>
+        var hostUrl = "assets/";
+    </script>
+    <!--begin::Global Javascript Bundle(mandatory for all pages)-->
+    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+    <!--end::Global Javascript Bundle-->
+    <!--end::Javascript-->
 </body>
+<!--end::Body-->
 
 </html>
