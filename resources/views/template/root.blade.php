@@ -6,10 +6,8 @@
     <base href="/" />
     <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
     <meta charset="utf-8" />
-    <meta name="description"
-        content="UMKM jual buah dengan harga terjangkau" />
-    <meta name="keywords"
-        content="buah, umkm, pasar" />
+    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
+    <meta name="keywords" content="buah, umkm, pasar" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
@@ -154,6 +152,12 @@
     <!--begin::Javascript-->
     <script>
         var hostUrl = "assets/";
+        $("form").submit(function() {
+            $(this).find(":submit").attr('disabled', 'disabled');
+            $(this).find(":submit").html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+            );
+        });
     </script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
@@ -168,7 +172,7 @@
     <script src="{{ asset('assets/js/custom/apps/chat/chat.js') }}"></script>
     <script src="{{ asset('assets/js/custom/utilities/modals/upgrade-plan.js') }}"></script>
     <script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script> --}}
-    
+
     @if (isset($page_plugin_js))
         @foreach ($page_plugin_js as $item)
             <script type="text/javascript" src="{{ asset($item) }}"></script>

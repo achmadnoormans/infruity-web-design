@@ -90,10 +90,8 @@
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
                         <option></option>
-                        <option value="published" selected="selected">Published</option>
-                        <option value="draft">Draft</option>
-                        <option value="scheduled">Scheduled</option>
-                        <option value="inactive">Inactive</option>
+                        <option value="no-receipt" selected="selected">Tanpa Resep</option>
+                        <option value="receipt">Dengan Resep</option>
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
@@ -126,15 +124,15 @@
                 <div class="card-body pt-0">
                     <!--begin::Input group-->
                     <!--begin::Label-->
-                    <label class="form-label">Categories</label>
+                    <label class="form-label">Product Unit</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
-                        data-allow-clear="true" multiple="multiple">
+                        data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id">
                         <option></option>
-                        <option value="1">Kategori 1</option>
-                        <option value="2">Kategori 2</option>
-                        <option value="3">Kategori 3</option>
+                        @foreach ($product_units as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
@@ -142,7 +140,7 @@
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Button-->
-                    <a href="#" class="btn btn-light-primary btn-sm mb-10">
+                    <a href="{{ url('category') }}" class="btn btn-light-primary btn-sm mb-10">
                         <i class="ki-outline ki-plus fs-2"></i>Create new category</a>
                     <!--end::Button-->
                 </div>
@@ -246,7 +244,7 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
-                                <!--begin::Input group-->
+                                {{-- <!--begin::Input group-->
                                 <div class="fv-row mb-10">
                                     <!--begin::Label-->
                                     <label class="fs-6 fw-semibold mb-2">Product Unit
@@ -326,7 +324,7 @@
                                     </div>
                                     <!--end::Row-->
                                 </div>
-                                <!--end::Input group-->
+                                <!--end::Input group--> --}}
                             </div>
                             <!--end::Card header-->
                         </div>
@@ -351,7 +349,7 @@
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="required form-label">SKU</label>
+                                    <label class="form-label">SKU</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="sku" class="form-control mb-2"
@@ -365,7 +363,7 @@
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="required form-label">Barcode</label>
+                                    <label class="form-label">Barcode</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="barcode" class="form-control mb-2"
@@ -376,8 +374,34 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
-
-
+                                <!--begin::Input group-->
+                                <div class="mb-10 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">Limit</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" name="limit" class="form-control mb-2"
+                                        placeholder="Limit Stock" value="" />
+                                    <!--end::Input-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="mb-10 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="form-label">Handling Condition</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="text" name="handling" class="form-control mb-2"
+                                        placeholder="Limit Stock" value="" />
+                                    <!--end::Input-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Input group-->
                             </div>
                             <!--end::Card header-->
                         </div>

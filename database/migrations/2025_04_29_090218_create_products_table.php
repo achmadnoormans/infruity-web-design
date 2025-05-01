@@ -20,6 +20,9 @@ return new class extends Migration {
             $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0);
             $table->integer('product_unit')->default(0);
+            $table->integer('limit')->default(0);
+            $table->text('handling')->nullable();
+            $table->text('status')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

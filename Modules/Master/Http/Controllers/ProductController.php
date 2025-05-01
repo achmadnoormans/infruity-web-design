@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductUnit;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +33,7 @@ class ProductController extends Controller
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
+        $data['product_units'] = ProductUnit::all();
         return view('master::products.create', $data);
     }
 
@@ -46,6 +48,10 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'product_name' => 'required',
             'price' => 'required',
+            'product_unit_id' => 'required|exists:product_units,id',
+            'status' => 'required',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -58,10 +64,16 @@ class ProductController extends Controller
             DB::beginTransaction();
             $product = new Product();
             $product->name = $request->product_name;
-            $product->description = $request->description ?? '';
+            $product->description = strip_tags($request->description ?? '');
             $product->price = $request->price ?? '';
-            $product->product_unit = $request->product_unit ?? '';
-            // $product->created_by = Auth::user()->id_user;
+            $product->product_unit = $request->product_unit_id ?? '';
+            $product->stock = $request->stock ?? 0;
+            $product->limit = $request->limit ?? 0;
+            $product->handling = $request->handling ?? '';
+            $product->sku = $request->sku ?? '';
+            $product->barcode = $request->barcode ?? '';
+            $product->status = $request->status ?? '';
+            $product->created_by = Auth::user()->id_user;
 
             if ($request->hasFile('avatar')) {
                 $path = $request->file('avatar')->store('products', 'public');
@@ -98,7 +110,11 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $data['page_plugin_js'] = [
+            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
+        ];
         $data['data'] = Product::findOrFail($id);
+        $data['product_units'] = ProductUnit::all();
         return view('master::products.edit', $data);
     }
 
@@ -110,7 +126,60 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'product_name' => 'required',
+            'price' => 'required',
+            'product_unit_id' => 'required|exists:product_units,id',
+            'status' => 'required',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $product = Product::findOrFail($id);
+            if ($request->hasFile('avatar')) {
+                // Hapus gambar lama jika ada
+                if ($product->image) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                $path = $request->file('avatar')->store('products', 'public');
+                $product->image = $path;
+            }
+            $product->name = $request->product_name;
+            $product->description = strip_tags($request->description ?? '');
+            $product->price = $request->price ?? '';
+            $product->product_unit = $request->product_unit_id ?? '';
+            $product->stock = $request->stock ?? 0;
+            $product->limit = $request->limit ?? 0;
+            $product->handling = $request->handling ?? '';
+            $product->sku = $request->sku ?? '';
+            $product->barcode = $request->barcode ?? '';
+            $product->status = $request->status ?? '';
+            $product->created_by = Auth::user()->id_user;
+
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('products', 'public');
+                $product->image = $path;
+                $product->save();
+            }
+
+            $product->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Update Product gagal' . $e->getMessage());
+        }
+
+        return redirect('products')->with('success', 'Update Product berhasil');
     }
 
     /**
@@ -120,7 +189,22 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $product = Product::findOrFail($id);
+            $product->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function get_data(Request $request)
@@ -168,7 +252,7 @@ class ProductController extends Controller
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="#" onclick="deleteProduct(' . $product->id . ')">
+                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
                                     Delete
                                 </a>
                             </li>

@@ -32,7 +32,7 @@
                         <!--end::Select2-->
                     </div>
                     <!--begin::Add product-->
-                    <a href="{{url('products/create')}}" class="btn btn-primary">Add Product</a>
+                    <a href="{{ url('products/create') }}" class="btn btn-primary">Add Product</a>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -53,9 +53,9 @@
                             </th> --}}
                             <th class="min-w-200px">Product</th>
                             <th class="text-start min-w-100px">Description</th>
-                            <th class="text-end min-w-70px">Qty</th>
                             <th class="text-end min-w-100px">Price</th>
-                            <th class="text-end min-w-100px">Rating</th>
+                            <th class="text-end min-w-70px">Stock</th>
+                            <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
                     </thead>
@@ -144,8 +144,9 @@
         </div>
     </div>
     <script type="text/javascript">
+        var dataTable;
         $(document).ready(function() {
-            var dataTable = $('#products-table').DataTable({
+            dataTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
                 responsive: true,
@@ -195,5 +196,58 @@
                 dataTable.search(this.value).draw();
             });
         });
+
+        function reloadDataTable() {
+            // Pastikan dataTable sudah terinisialisasi sebelumnya
+            if (typeof dataTable !== 'undefined') {
+                dataTable.ajax.reload(null, false); // 'false' untuk tidak mereset ke halaman pertama
+            } else {
+                console.error('DataTable tidak terinisialisasi.');
+            }
+        }
+
+        function deleteProduct(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Data yang dihapus tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/products/${id}`, // Ganti dengan URL yang sesuai
+                        type: 'DELETE',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil dihapus.'
+                            });
+
+                            // Reload DataTable setelah berhasil menghapus data
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat menghapus data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endsection
