@@ -6,6 +6,7 @@ use Modules\Master\Http\Controllers\ProductUnitController;
 use Modules\Master\Http\Controllers\LocationController;
 use Modules\Master\Http\Controllers\HandlingController;
 use Modules\Master\Http\Controllers\DepartmentController;
+use Modules\Master\Http\Controllers\PositionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,4 +41,8 @@ Route::prefix('/')->group(function () {
     Route::resource('department', DepartmentController::class)->names('department')->except('show');
     Route::get('department/data', [DepartmentController::class, 'get_data'])->name('department-data');
     Route::get('department/export', [DepartmentController::class, 'excel'])->name('export-department-data');
+
+    Route::resource('position', PositionController::class)->names('position')->except('show');
+    Route::get('position/data', [PositionController::class, 'get_data'])->name('position-data');
+    Route::get('position/export', [PositionController::class, 'excel'])->name('export-position-data');
 });

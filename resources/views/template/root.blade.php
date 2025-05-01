@@ -29,7 +29,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.bundle.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @livewireStyles
+    {{-- @livewireStyles --}}
 
     <!--end::Global Stylesheets Bundle-->
     <script>
@@ -177,7 +177,7 @@
     @yield('script')
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
-    @livewireScripts
+    {{-- @livewireScripts --}}
 </body>
 <!--end::Body-->
 
