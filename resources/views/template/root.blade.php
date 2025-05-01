@@ -4,7 +4,7 @@
 
 <head>
     <base href="../" />
-    <title>Infruity</title>
+    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
     <meta charset="utf-8" />
     <meta name="description"
         content="UMKM jual buah dengan harga terjangkau" />

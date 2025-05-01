@@ -20,7 +20,7 @@
                     </li>
                     <!--end::Item-->
                     <!--begin::Item-->
-                    <li class="breadcrumb-item text-white fw-bold lh-1">Corporate</li>
+                    <li class="breadcrumb-item text-white fw-bold lh-1">{{ Request::segment(1) }}</li>
                     <!--end::Item-->
                 </ul>
                 <!--end::Breadcrumb-->
@@ -33,10 +33,19 @@
                     <img alt="Logo" src="{{ asset('assets/media/svg/misc/layer.svg') }}" class="h-60px me-5" />
                     <!--begin::Title-->
                     <h1 class="page-heading d-flex text-white fw-bolder fs-2 flex-column justify-content-center my-0">
-                        Sitemap
+                        @if (View::hasSection('Page Title'))
+                            @yield('Page Title')
+                        @else
+                            {{ ucwords(Request::segment(1)) }}
+                        @endif
                         <!--begin::Description-->
-                        <span class="page-desc text-white opacity-50 fs-6 fw-bold pt-4">Page
-                            Description</span>
+                        <span class="page-desc text-white opacity-50 fs-6 fw-bold pt-4">
+                            @if (View::hasSection('Page Description'))
+                                @yield('Page Description')
+                            @else
+                                Manajemen {{ ucwords(Request::segment(1)) }}
+                            @endif
+                        </span>
                         <!--end::Description-->
                     </h1>
                     <!--end::Title-->
