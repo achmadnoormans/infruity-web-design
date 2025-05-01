@@ -20,6 +20,37 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('stock_location')->insert([
+            [
+                'name' => 'Gudang Utama',
+                'address' => 'Jl. Raya No. 1, Gresik',
+                'description' => 'Hanya untuk barang berat.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Gudang Cabang',
+                'address' => 'Jl. Raya No. 2, Surabaya',
+                'description' => 'Untuk barang ringan dan cepat habis.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Toko Utama',
+                'address' => 'Jl. Raya No. 3, Malang',
+                'description' => 'Untuk barang yang sudah siap jual.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Toko Cabang',
+                'address' => 'Jl. Raya No. 4, Sidoarjo',
+                'description' => 'Untuk barang yang sudah siap jual.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 
     /**
