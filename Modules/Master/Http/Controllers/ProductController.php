@@ -207,6 +207,44 @@ class ProductController extends Controller
         }
     }
 
+    public function updatePrice(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'price' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+            $product = Product::findOrFail($id);
+            $product->price = $request->price;
+            $product->save();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Harga berhasil diperbarui.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui harga: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get data for DataTables
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
     public function get_data(Request $request)
     {
         $data = Product::all();
@@ -220,7 +258,7 @@ class ProductController extends Controller
                     $html .= '<img src="'. $url .'" alt="Product Image" width="50">';
                 } else {
                     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
-                            <span class="symbol-label" style="background-image:url(assets/media/stock/ecommerce/1.png);"></span>
+                            <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
                         </a>';
                 }
                 $html .= '<div class="ms-5">
@@ -232,6 +270,9 @@ class ProductController extends Controller
                     </div>
                 ';
                 return $html;
+            })
+            ->addColumn('price', function($product) {
+                return '<span class="badge badge-light-success editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
             })
             ->addColumn('action', function ($product) {
                 return '
@@ -260,7 +301,7 @@ class ProductController extends Controller
                     </div>
                 ';
             })
-            ->rawColumns(['name', 'action'])
+            ->rawColumns(['name', 'action', 'price'])
             ->make(true);
     }
 }

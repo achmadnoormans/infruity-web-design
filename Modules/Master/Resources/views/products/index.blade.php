@@ -41,7 +41,7 @@
             <!--begin::Card body-->
             <div class="card-body pt-0">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="products-table">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="products-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             {{-- <th class="w-10px pe-2">
@@ -52,7 +52,7 @@
                                 </div>
                             </th> --}}
                             <th class="min-w-200px">Product</th>
-                            <th class="text-start min-w-100px">Description</th>
+                            <th class="text-start min-w-350px">Description</th>
                             <th class="text-end min-w-100px">Price</th>
                             <th class="text-end min-w-70px">Stock</th>
                             <th class="text-end min-w-100px">Stock</th>
@@ -149,7 +149,7 @@
             dataTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
-                responsive: true,
+                // responsive: true,
                 ajax: {
                     url: "{{ route('products-data') }}",
                     data: function(d) {
@@ -246,6 +246,51 @@
                             });
                         }
                     });
+                }
+            });
+        }
+
+        // Handle click untuk ubah span jadi input
+        $('#products-table').on('click', '.editable-price', function() {
+            var $span = $(this);
+            var currentValue = $span.data('value');
+            var id = $span.data('id');
+
+            var input = $('<input type="number" class="form-control form-control-sm text-end">')
+                .val(currentValue)
+                .blur(function() {
+                    var newValue = $(this).val();
+                    if (newValue != currentValue) {
+                        updatePrice(id, newValue);
+                    } else {
+                        $span.text(currentValue).show();
+                        $(this).remove();
+                    }
+                })
+                .keypress(function(e) {
+                    if (e.which === 13) { // Enter key
+                        $(this).blur();
+                    }
+                });
+
+            $span.hide().after(input);
+            input.focus().select();
+        });
+
+        function updatePrice(id, price) {
+            $.ajax({
+                url: `/products/${id}/update-price`, // sesuaikan route
+                type: 'PUT',
+                data: {
+                    price: price,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function() {
+                    dataTable.ajax.reload(null, false); // reload tanpa reset halaman
+                },
+                error: function() {
+                    Swal.fire('Gagal', 'Tidak bisa memperbarui harga', 'error');
+                    dataTable.ajax.reload(null, false);
                 }
             });
         }

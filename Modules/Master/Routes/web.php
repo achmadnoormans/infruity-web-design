@@ -24,6 +24,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     // });
     Route::resource('products', ProductController::class)->names('products')->except('show');
     Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');
+    Route::put('products/{id}/update-price', [ProductController::class, 'updatePrice']);
 
     Route::resource('category', ProductCategoryController::class)->names('category')->except('show');
     Route::get('category/data', [ProductCategoryController::class, 'get_data'])->name('category-data');
