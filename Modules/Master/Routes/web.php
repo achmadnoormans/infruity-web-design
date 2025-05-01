@@ -18,7 +18,7 @@ use Modules\Master\Http\Controllers\PositionController;
 |
 */
 
-Route::prefix('/')->group(function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     // Route::get('/products', function () {
     //     return view('Master::products.index'); // di view ini kamu panggil @livewire('product-table')
     // });

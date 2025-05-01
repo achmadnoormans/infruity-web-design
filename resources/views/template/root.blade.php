@@ -3,7 +3,7 @@
 <!--begin::Head-->
 
 <head>
-    <base href="../" />
+    <base href="/" />
     <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
     <meta charset="utf-8" />
     <meta name="description"

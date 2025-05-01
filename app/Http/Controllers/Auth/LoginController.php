@@ -35,13 +35,14 @@ class LoginController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required',
-            'captcha' => 'required|captcha',
+            // 'captcha' => 'required|captcha',
         ]);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
         }
+        // dd($request->all());
         if (Auth::attempt(array(
             'username' => $request->email,
             'password' => $request->password,
@@ -53,16 +54,7 @@ class LoginController extends Controller
             }
             $role["role"] = Role::find($role_user->id_role)->toArray();
             Session($role);
-            if (Session('role')['id_role'] == 99) {
-                $permohonan = Permohonan::where('id_user', Auth::user()->id_user)->get();
-                if (isset($permohonan) && count($permohonan) > 0) {
-                    return redirect('list-permohonan')->with('success', 'Selamat Datang ' . Auth::user()->nm_user);
-                } else {
-                    return redirect('dashboard')->with('success', 'Selamat Datang ' . Auth::user()->nm_user);
-                }
-            } else {
-                return redirect('dashboard')->with('success', 'Selamat Datang ' . Auth::user()->nm_user);
-            }
+            return redirect('products')->with('success', 'Welcome Bro ' . Auth::user()->nm_user);
         } else {
             return redirect()->back()->with('error', 'Username atau Password tidak terdaftar');
         }
