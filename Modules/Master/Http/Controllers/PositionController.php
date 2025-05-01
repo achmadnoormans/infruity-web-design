@@ -222,6 +222,21 @@ class PositionController extends Controller
             ->addColumn('department_name', function ($position) {
                 return $position->department->name;
             })
+            ->addColumn('name', function ($position) {
+                $colors = ['warning', 'success', 'info', 'primary'];
+                $color = $colors[$position->id % count($colors)];
+                
+                return '<div class="d-flex align-items-center">
+                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                <a href="javascript:void(0)">
+                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($position->name, 0, 1)) . '</div>
+                                </a>
+                            </div>
+                            <div class="ms-5">
+                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $position->name . '</a>
+                            </div>
+                        </div>';
+            })
             ->addColumn('code', function ($position) {
                 return 'J-' . $position->code;
             })

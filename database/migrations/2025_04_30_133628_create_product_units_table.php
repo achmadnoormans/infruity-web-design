@@ -21,6 +21,51 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('product_units')->insert([
+            [
+                'name' => 'Kilogram',
+                'abbreviation' => 'Kg',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Gram',
+                'abbreviation' => 'g',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Pcs',
+                'abbreviation' => 'Pcs',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Box',
+                'abbreviation' => 'Box',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Lusin',
+                'abbreviation' => 'Lus',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Liter',
+                'abbreviation' => 'Ltr',
+                'description' => 'Satuan Umum.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],            
+        ]);
     }
 
     /**

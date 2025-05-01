@@ -44,7 +44,7 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th>No</th>
+                            {{-- <th>No</th> --}}
                             <th>Name</th>
                             <th>Code</th>
                             <th>Departmen</th>
@@ -170,10 +170,11 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
-                    },
+                columns: [
+                    // {
+                    //     data: 'DT_RowIndex',
+                    //     name: 'DT_RowIndex'
+                    // },
                     {
                         data: 'name',
                         name: 'name'
