@@ -143,7 +143,7 @@
                             <!--begin:Menu item-->
                             <div class="menu-item p-0 m-0">
                                 <!--begin:Menu link-->
-                                <a href="{{ url('departmen') }}" class="menu-link">
+                                <a href="{{ url('department') }}" class="menu-link">
                                     <span
                                         class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
                                         <i class="ki-outline ki-abstract-42 text-danger fs-1"></i>
@@ -181,7 +181,7 @@
                     </div>
                     <!--end:Row-->
                     <div class="separator separator-dashed mx-5 my-5"></div>
-                    <!--begin:Landing-->
+                    {{-- <!--begin:Landing-->
                     <div class="d-flex flex-stack flex-wrap flex-lg-nowrap gap-2 mx-5">
                         <div class="d-flex flex-column me-5">
                             <div class="fs-6 fw-bold text-gray-800">Landing Page
@@ -191,96 +191,24 @@
                         </div>
                         <a href="landing.html" class="btn btn-sm btn-primary fw-bold">Explore</a>
                     </div>
-                    <!--end:Landing-->
+                    <!--end:Landing--> --}}
                 </div>
                 <!--end:Col-->
                 <!--begin:Col-->
                 <div class="menu-more bg-light col-lg-4 py-3 px-3 py-lg-6 px-lg-6 rounded-end">
                     <!--begin:Heading-->
                     <h4 class="fs-6 fs-lg-4 text-gray-800 fw-bold mt-3 mb-3 ms-4">More
-                        Dashboards</h4>
+                        Menus</h4>
                     <!--end:Heading-->
-                    {{-- <!--begin:Menu item-->
+                    <!--begin:Menu item-->
                     <div class="menu-item p-0 m-0">
                         <!--begin:Menu link-->
-                        <a href="dashboards/logistics.html" class="menu-link py-2">
-                            <span class="menu-title">Logistics</span>
+                        <a href="{{ url('supplier') }}" class="menu-link py-2">
+                            <span class="menu-title">Supplier</span>
                         </a>
                         <!--end:Menu link-->
                     </div>
                     <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/website-analytics.html" class="menu-link py-2">
-                            <span class="menu-title">Website Analytics</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/finance-performance.html" class="menu-link py-2">
-                            <span class="menu-title">Finance Performance</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/store-analytics.html" class="menu-link py-2">
-                            <span class="menu-title">Store Analytics</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/social.html" class="menu-link py-2">
-                            <span class="menu-title">Social</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/delivery.html" class="menu-link py-2">
-                            <span class="menu-title">Delivery</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/crypto.html" class="menu-link py-2">
-                            <span class="menu-title">Crypto</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/school.html" class="menu-link py-2">
-                            <span class="menu-title">School</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item-->
-                    <!--begin:Menu item-->
-                    <div class="menu-item p-0 m-0">
-                        <!--begin:Menu link-->
-                        <a href="dashboards/podcast.html" class="menu-link py-2">
-                            <span class="menu-title">Podcast</span>
-                        </a>
-                        <!--end:Menu link-->
-                    </div>
-                    <!--end:Menu item--> --}}
                 </div>
                 <!--end:Col-->
             </div>

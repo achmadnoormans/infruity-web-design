@@ -44,7 +44,7 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th>No</th>
+                            <th></th>
                             <th>Name</th>
                             <th>Description</th>
                             <th class="text-end">Actions</th>
@@ -153,8 +153,12 @@
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        data: null,
+                        name: 'placeholder',
+                        orderable: false,
+                        searchable: false,
+                        defaultContent: '',
+                        className: 'text-center'
                     },
                     {
                         data: 'name',

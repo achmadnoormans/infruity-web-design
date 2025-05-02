@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('pic_name');
             $table->string('pic_whatsapp');
             $table->text('address')->nullable();
-            $table->string('email')->nullable()->unique();
+            $table->string('email')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

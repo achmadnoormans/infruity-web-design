@@ -151,6 +151,21 @@ class ProductUnitController extends Controller
         $data = ProductUnit::all();
         return DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $colors = ['warning', 'success', 'info', 'primary'];
+                $color = $colors[$item->id % count($colors)];
+
+                return '<div class="d-flex align-items-center">
+                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                <a href="javascript:void(0)">
+                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . $item->abbreviation . '</div>
+                                </a>
+                            </div>
+                            <div class="ms-5">
+                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->name . '</a>
+                            </div>
+                        </div>';
+            })
             ->addColumn('action', function ($unit) {
                 return '
                     <div class="dropdown text-end">

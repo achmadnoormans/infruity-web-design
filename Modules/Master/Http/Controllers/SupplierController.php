@@ -44,7 +44,42 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'pic_name' => 'required|string|max:255',
+            'pic_whatsapp' => [
+                'required',
+                'numeric',
+                'digits_between:10,15',
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/'
+            ],
+            'address' => 'nullable|string|max:1000',
+            'email' => 'required|email|unique:supplier,email',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $supplier = new Supplier();
+            $supplier->name = $validated['name'];
+            $supplier->pic_name = $validated['pic_name'];
+            $supplier->pic_whatsapp = $validated['pic_whatsapp'];
+            $supplier->address = $validated['address'];
+            $supplier->email = $validated['email'];
+            $supplier->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Supplier gagal disimpan.',
+                'data' => $supplier
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Supplier berhasil disimpan.',
+            'data' => $supplier
+        ], 201);
     }
 
     /**
@@ -64,7 +99,8 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-        return view('master::edit');
+        $supplier = Supplier::findOrFail($id);
+        return response()->json($supplier);
     }
 
     /**
@@ -75,7 +111,42 @@ class SupplierController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'pic_name' => 'required|string|max:255',
+            'pic_whatsapp' => [
+                'required',
+                'numeric',
+                'digits_between:10,15',
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/'
+            ],
+            'address' => 'nullable|string|max:1000',
+            'email' => 'required|email|unique:supplier,email,' . $id,
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $supplier = Supplier::findOrFail($id);
+            $supplier->name = $validated['name'];
+            $supplier->pic_name = $validated['pic_name'];
+            $supplier->pic_whatsapp = $validated['pic_whatsapp'];
+            $supplier->address = $validated['address'];
+            $supplier->email = $validated['email'];
+            $supplier->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Supplier gagal disimpan.',
+                'data' => $supplier
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Supplier berhasil disimpan.',
+            'data' => $supplier
+        ], 201);
     }
 
     /**
@@ -85,7 +156,22 @@ class SupplierController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $supplier = Supplier::findOrFail($id);
+            $supplier->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function get_data(Request $request)

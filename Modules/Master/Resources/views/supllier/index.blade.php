@@ -111,22 +111,33 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">PIC Name</label>
+                                <label class="required fs-6 fw-semibold mb-2">PIC Whatsapp</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" placeholder="" name="pic_name"
-                                    value="" />
+                                <input type="number" class="form-control form-control-solid" placeholder=""
+                                    name="pic_whatsapp" value="" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Description</label>
+                                <label class="fs-6 fw-semibold mb-2">Address</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder=""
-                                    name="description" />
+                                    name="address" />
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-15">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Email</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="email" class="form-control form-control-solid" placeholder=""
+                                    name="email" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -288,6 +299,11 @@
                             title: 'Error',
                             text: msg
                         });
+
+                        // Kembalikan tombol submit (jaga-jaga jika complete tidak dipanggil)
+                        submitBtn.prop('disabled', false);
+                        submitBtn.find('.indicator-label').show();
+                        submitBtn.find('.indicator-progress').hide();
                     },
                     complete: function() {
                         // Reset loading state
@@ -359,7 +375,10 @@
                 success: function(response) {
                     // Isi form dengan data produk yang ada
                     $('input[name="name"]').val(response.name);
-                    $('input[name="description"]').val(response.description);
+                    $('input[name="pic_name"]').val(response.pic_name);
+                    $('input[name="pic_whatsapp"]').val(response.pic_whatsapp);
+                    $('input[name="address"]').val(response.address);
+                    $('input[name="email"]').val(response.email);
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');

@@ -40,7 +40,7 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th>No</th>
+                            <th></th>
                             <th>Name</th>
                             <th>Abbreviation</th>
                             <th>Description</th>
@@ -99,8 +99,8 @@
                                 <label class="required fs-6 fw-semibold mb-2">Abbreviation</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" placeholder="" name="abbreviation"
-                                    value="" />
+                                <input type="text" class="form-control form-control-solid" placeholder=""
+                                    name="abbreviation" value="" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -161,8 +161,12 @@
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        data: null,
+                        name: 'placeholder',
+                        orderable: false,
+                        searchable: false,
+                        defaultContent: '',
+                        className: 'text-center'
                     },
                     {
                         data: 'name',

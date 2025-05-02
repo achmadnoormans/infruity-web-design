@@ -33,7 +33,7 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="location-table">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th>No</th>
+                            <th></th>
                             <th>Name</th>
                             <th>Address</th>
                             <th>Description</th>
@@ -154,8 +154,12 @@
                     }
                 },
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        data: null,
+                        name: 'placeholder',
+                        orderable: false,
+                        searchable: false,
+                        defaultContent: '',
+                        className: 'text-center'
                     },
                     {
                         data: 'name',
