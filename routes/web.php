@@ -3,8 +3,9 @@
 use Modules\Master\Http\Controllers\ProductController;
 include 'admin.php';
 
-Route::get('/', 'DashboardController@landing')->name('landing');
-Route::get('/', [ProductController::class, 'index'])->name('products-data');
+// Route::get('/', 'DashboardController@landing')->name('landing');
+// Route::get('/', [ProductController::class, 'index'])->name('products-data');
+Route::get('/', 'Auth\LoginController@showLogin')->name('login');
 Route::get('/forgot-password', 'DashboardController@forgot_password')->name('forgot-password');
 Route::post('/forgot-password', 'DashboardController@forgot_password_check')->name('forgot-password');
 Route::put('/forgot-password', 'DashboardController@forgot_password_save')->name('forgot-password');

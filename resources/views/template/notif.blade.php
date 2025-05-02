@@ -1,6 +1,6 @@
 @if(Session::has('success'))
 <div class="alert alert-success">
-	<strong>PERHATIAN !</strong> 
+	<strong>Attention !!!</strong> 
 	<br>
 	<h6> <b>{{ Session::get('success') }}</b> </h6>
 </div>
@@ -8,7 +8,7 @@
 
 @if(Session::has('error'))
 <div class="alert alert-danger">
-	<strong>PERHATIAN !</strong> 
+	<strong>Attention !!!</strong> 
 	<br>
 	<b>{{  Session::get('error') }}</b>
 </div>
@@ -17,7 +17,7 @@
 @if (count($errors) > 0)
 <div class="alert alert-danger" style="margin-top: 10px">
 	<ul>
-		<strong>PERHATIAN !</strong> 
+		<strong>Attention !!!</strong> 
 		
 		@foreach ($errors->all() as $error)
 		<li>{{ $error }}</li>

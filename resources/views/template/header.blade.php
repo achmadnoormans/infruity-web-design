@@ -15,11 +15,11 @@ data-kt-sticky-offset="{default: false, lg: '300px'}">
     <!--end::Header mobile toggle-->
     <!--begin::Logo-->
     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15">
-        <a href="index.html">
-            <img alt="Logo" src="assets/media/logos/demo30-small.svg" class="h-25px d-lg-none" />
-            <img alt="Logo" src="assets/media/logos/demo30.svg"
+        <a href="{{url('/')}}">
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-infruity.png') }}" class="h-25px d-lg-none" />
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-infruity.png') }}"
                 class="h-25px d-none d-lg-inline app-sidebar-logo-default theme-light-show" />
-            <img alt="Logo" src="assets/media/logos/demo30-dark.png"
+            <img alt="Logo" src="{{ asset('assets/media/logos/logo-infruity.png') }}"
                 class="h-25px d-none d-lg-inline app-sidebar-logo-default theme-dark-show" />
         </a>
     </div>

@@ -7,6 +7,7 @@ use Modules\Master\Http\Controllers\LocationController;
 use Modules\Master\Http\Controllers\HandlingController;
 use Modules\Master\Http\Controllers\DepartmentController;
 use Modules\Master\Http\Controllers\PositionController;
+use Modules\Master\Http\Controllers\SupplierController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,4 +47,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('position', PositionController::class)->names('position')->except('show');
     Route::get('position/data', [PositionController::class, 'get_data'])->name('position-data');
     Route::get('position/export', [PositionController::class, 'excel'])->name('export-position-data');
+
+    Route::resource('supplier', SupplierController::class)->names('supplier')->except('show');
+    Route::get('supplier/data', [SupplierController::class, 'get_data'])->name('supplier-data');
+    // Route::get('supplier/export', [SupplierController::class, 'excel'])->name('supplier-data');
 });
