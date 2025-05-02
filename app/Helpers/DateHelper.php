@@ -28,6 +28,20 @@ if (!function_exists('dateindo')) {
     }
 }
 
+if (!function_exists('dateEnglish')) {
+    function dateEnglish($date, $shortMonth = false)
+    {
+        // Pastikan tanggal valid
+        if (!$date || !strtotime($date))
+            return null;
+
+        // Format bulan pendek atau panjang
+        $format = $shortMonth ? 'M d, Y' : 'F d, Y';
+
+        return date($format, strtotime($date));
+    }
+}
+
 if (!function_exists('getParamsUrl')) {
     function getParamsUrl($params)
     {

@@ -8,6 +8,7 @@ use Modules\Master\Http\Controllers\HandlingController;
 use Modules\Master\Http\Controllers\DepartmentController;
 use Modules\Master\Http\Controllers\PositionController;
 use Modules\Master\Http\Controllers\SupplierController;
+use Modules\Master\Http\Controllers\CustomerController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -51,4 +52,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('supplier', SupplierController::class)->names('supplier')->except('show');
     Route::get('supplier/data', [SupplierController::class, 'get_data'])->name('supplier-data');
     // Route::get('supplier/export', [SupplierController::class, 'excel'])->name('supplier-data');
+
+    Route::resource('customers', CustomerController::class)->names('customers')->except('show');
+    Route::get('customers/data', [CustomerController::class, 'get_data'])->name('customers-data');
 });
