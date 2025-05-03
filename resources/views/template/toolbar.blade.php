@@ -6,9 +6,9 @@
         <!--begin::Page title-->
         <div class="page-title d-flex justify-content-center flex-column me-5">
             <!--begin::Title-->
-            <h1 class="d-flex flex-column text-gray-900 fw-bold fs-3 mb-0">Products</h1>
+            <h1 class="d-flex flex-column text-gray-900 fw-bold fs-3 mb-0">{{ ucwords(Request::segment(1)) }}</h1>
             <!--end::Title-->
-            <!--begin::Breadcrumb-->
+            {{-- <!--begin::Breadcrumb-->
             <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 pt-1">
                 <!--begin::Item-->
                 <li class="breadcrumb-item text-muted">
@@ -40,12 +40,12 @@
                 <li class="breadcrumb-item text-gray-900">Products</li>
                 <!--end::Item-->
             </ul>
-            <!--end::Breadcrumb-->
+            <!--end::Breadcrumb--> --}}
         </div>
         <!--end::Page title-->
         <!--begin::Action group-->
         <div class="d-flex align-items-stretch overflow-auto pt-3 pt-lg-0">
-            <!--begin::Action wrapper-->
+            {{-- <!--begin::Action wrapper-->
             <div class="d-flex align-items-center">
                 <!--begin::Label-->
                 <span class="fs-7 fw-bold text-gray-700 pe-4 text-nowrap d-none d-xxl-block">Sort
@@ -132,7 +132,7 @@
                 </div>
                 <!--end::Actions-->
             </div>
-            <!--end::Action wrapper-->
+            <!--end::Action wrapper--> --}}
             <!--begin::Theme mode-->
             <div class="d-flex align-items-center">
                 <!--begin::Menu toggle-->

@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->integer('id_user', true);
+            $table->string('nickname', 10)->nullable();
             $table->string('nm_user', 100)->nullable();
             $table->string('username', 100)->nullable();
             $table->string('telp', 16)->nullable();
@@ -31,6 +32,7 @@ class CreateUsersTable extends Migration
         \DB::table('users')->insert(array(
             array(
                 'nm_user' => 'MOCH IRSYADUL ANAM',
+                'nickname' => 'irsyad',
                 'username' => 'irsyad7798@gmail.com',
                 'email' => 'irsyad7798@gmail.com',
                 'password' => '$2y$10$wzqj/2.YIrD7bBbCb.ndhuoDktih2.bulhQQmpi6j5mXxQHdeFf.q',
@@ -38,6 +40,7 @@ class CreateUsersTable extends Migration
             ),
             array(
                 'nm_user' => 'Achmad Noorman Setiawan',
+                'nickname' => 'noorman',
                 'username' => 'noorman@infruity.com',
                 'email' => 'noorman@infruity.com',
                 'password' => Hash::make('noormangans'),

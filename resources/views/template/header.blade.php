@@ -3,7 +3,7 @@
      <!--begin::Brand-->
      <div class="header-brand">
          <!--begin::Logo-->
-         <a href="index.html">
+         <a href="{{ url('/') }}">
              <img alt="Logo" src="assets/media/logos/default-dark.svg" class="h-25px h-lg-25px" />
          </a>
          <!--end::Logo-->
