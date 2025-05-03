@@ -16,7 +16,7 @@
     <meta property="og:site_name" content="Infruity" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
-    <link rel="shortcut icon" href="{{ asset('assets/media/logos/logo-infruity.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
@@ -28,7 +28,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.bundle.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {{-- @livewireStyles --}}
-
     <!--end::Global Stylesheets Bundle-->
     <script>
         // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
@@ -37,7 +36,7 @@
 <!--end::Head-->
 <!--begin::Body-->
 
-<body id="kt_app_body" data-kt-app-header-fixed-mobile="true" data-kt-app-toolbar-enabled="true" class="app-default">
+<body id="kt_body" class="aside-enabled">
     <!--begin::Theme mode setup on page load-->
     <script>
         var defaultThemeMode = "light";
@@ -59,70 +58,46 @@
         }
     </script>
     <!--end::Theme mode setup on page load-->
-    <!--begin::App-->
-    <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+    <!--begin::Main-->
+    <!--begin::Root-->
+    <div class="d-flex flex-column flex-root">
         <!--begin::Page-->
-        <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
-            @include('template.header')
+        <div class="page d-flex flex-row flex-column-fluid">
+            @include('template.aside')
             <!--begin::Wrapper-->
-            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
-                <!--begin::Toolbar-->
-                @include('template.toolbar')
-                <!--end::Toolbar-->
-                <!--begin::Wrapper container-->
-                <div class="app-container container-xxl">
-                    <!--begin::Main-->
-                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
-                        <!--begin::Content wrapper-->
-                        <div class="d-flex flex-column flex-column-fluid">
-                            <!--begin::Content-->
-                            <div id="kt_app_content" class="app-content">
-                                <!--begin::Sitemap-->
-                                @include('template.notif')
-                                @yield('content')
-                                <!--end::Sitemap-->
-                            </div>
-                            <!--end::Content-->
+            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                @include('template.header')
+                <!--begin::Content-->
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <!--begin::Post-->
+                    <div class="post d-flex flex-column-fluid" id="kt_post">
+                        <!--begin::Container-->
+                        <div id="kt_content_container" class="container-xxl">
+                            @yield('content')
                         </div>
-                        <!--end::Content wrapper-->
-                        @include('template.footer')
+                        <!--end::Container-->
                     </div>
-                    <!--end:::Main-->
+                    <!--end::Post-->
                 </div>
-                <!--end::Wrapper container-->
+                <!--end::Content-->
+                @include('template.footer')
             </div>
             <!--end::Wrapper-->
         </div>
         <!--end::Page-->
     </div>
-    <!--end::App-->
-    <!--begin::Drawers-->
-    <!--begin::Activities drawer-->
+    <!--end::Root-->
     {{-- @include('template.drawer') --}}
-    <!--end::Activities drawer-->
-    <!--begin::Chat drawer-->
-    {{-- @include('template.drawer-chat') --}}
-    <!--end::Chat drawer-->
-    <!--begin::Chat drawer-->
-    {{-- @include('template.drawer-shopping-cart') --}}
-    <!--end::Chat drawer-->
-    <!--end::Drawers-->
+    <!--end::Main-->
     <!--begin::Scrolltop-->
     <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
-        <i class="ki-outline ki-arrow-up"></i>
+        <i class="ki-duotone ki-arrow-up">
+            <span class="path1"></span>
+            <span class="path2"></span>
+        </i>
     </div>
     <!--end::Scrolltop-->
-    <!--begin::Modals-->
-    <!--begin::Modal - Upgrade plan-->
-    {{-- @include('template.upgrade-plan') --}}
-    <!--end::Modal - Upgrade plan-->
-    <!--begin::Modal - Users Search-->
-    {{-- @include('template.modal-user') --}}
-    <!--end::Modal - Users Search-->
-    <!--begin::Modal - Invite Friends-->
-    {{-- @include('template.modal-invite-user') --}}
-    <!--end::Modal - Invite Friend-->
-    <!--end::Modals-->
+    {{-- @include('template.modals') --}}
     <!--begin::Javascript-->
     <script>
         var hostUrl = "assets/";
@@ -135,12 +110,11 @@
     <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
     <!--end::Vendors Javascript-->
     <!--begin::Custom Javascript(used for this page only)-->
-    {{-- <script src="{{ asset('assets/js/widgets.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/widgets.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/apps/chat/chat.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/utilities/modals/upgrade-plan.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script> --}}
-
+    {{-- <script src="assets/js/custom/apps/ecommerce/catalog/products.js"></script>
+    <script src="assets/js/widgets.bundle.js"></script>
+    <script src="assets/js/custom/widgets.js"></script>
+    <script src="assets/js/custom/apps/chat/chat.js"></script>
+    <script src="assets/js/custom/utilities/modals/users-search.js"></script> --}}
     @if (isset($page_plugin_js))
         @foreach ($page_plugin_js as $item)
             <script type="text/javascript" src="{{ asset($item) }}"></script>
@@ -149,7 +123,6 @@
     @yield('script')
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
-    {{-- @livewireScripts --}}
 </body>
 <!--end::Body-->
 
