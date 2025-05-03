@@ -32,7 +32,7 @@
                 </div>
                 <!--end:Menu item--> --}}
                 {{-- @include('template.aside.menu.pages') --}}
-                <!--begin:Menu item-->
+                {{-- <!--begin:Menu item-->
                 <div class="menu-item pt-5">
                     <!--begin:Menu content-->
                     <div class="menu-content">
@@ -41,8 +41,11 @@
                     <!--end:Menu content-->
                 </div>
                 <!--end:Menu item-->
-                @include('template.aside.menu.apps')
+                @include('template.aside.menu.apps') --}}
                 <!--begin:Menu item-->
+                <!--end:Menu item-->
+                @include('template.aside.menu.menus')
+                {{-- <!--begin:Menu item-->
                 <div class="menu-item pt-5">
                     <!--begin:Menu content-->
                     <div class="menu-content">
@@ -51,7 +54,7 @@
                     <!--end:Menu content-->
                 </div>
                 <!--end:Menu item-->
-                @include('template.aside.menu.helps')
+                @include('template.aside.menu.helps') --}}
             </div>
             <!--end::Menu-->
         </div>

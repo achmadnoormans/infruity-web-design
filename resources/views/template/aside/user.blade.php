@@ -16,7 +16,7 @@
                     class="text-white text-hover-primary fs-6 fw-bold">{{ Auth::user()->nickname }}</a>
                 <!--end::Username-->
                 <!--begin::Description-->
-                <span class="text-gray-600 fw-semibold d-block fs-8 mb-1">Python Dev</span>
+                <span class="text-gray-600 fw-semibold d-block fs-8 mb-1">{{ Session('role')['nm_role'] }}</span>
                 <!--end::Description-->
                 <!--begin::Label-->
                 <div class="d-flex align-items-center text-success fs-9">
@@ -75,9 +75,9 @@
                             </span>
                         </a>
                     </div>
-                    <!--end::Menu item-->
+                    {{-- <!--end::Menu item-->
                     @include('template.aside.user.subscribetion')
-                    <!--begin::Menu item-->
+                    <!--begin::Menu item--> --}}
                     <div class="menu-item px-5">
                         <a href="account/statements.html" class="menu-link px-5">My Statements</a>
                     </div>
@@ -93,7 +93,7 @@
                     <!--end::Menu item-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
-                        <a href="authentication/layouts/corporate/sign-in.html" class="menu-link px-5">Sign Out</a>
+                        <a href="{{ url('auth/logout') }}" class="menu-link px-5">Sign Out</a>
                     </div>
                     <!--end::Menu item-->
                 </div>
