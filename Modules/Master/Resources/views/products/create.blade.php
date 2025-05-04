@@ -1,8 +1,12 @@
 @extends('template.root')
 
 @section('content')
-    <form id="add_product_form" class="form d-flex flex-column flex-lg-row" action="{{ Request::segment(1) }}" method="POST"
-        data-kt-redirect="" enctype="multipart/form-data">
+    <form id="add_product_form" class="form d-flex flex-column flex-lg-row"
+        action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
+        enctype="multipart/form-data" data-kt-redirect="">
+        @if (isset($data))
+            @method('PUT')
+        @endif
         @csrf
         <!--begin::Aside column-->
         <div class="d-flex flex-column gap-7 gap-lg-10 w-100 w-lg-300px mb-7 me-lg-10">
@@ -23,11 +27,11 @@
                     <!--begin::Image input placeholder-->
                     <style>
                         .image-input-placeholder {
-                            background-image: url('assets/media/svg/files/blank-image.svg');
+                            background-image: url({{ isset($data) && isset($data->image) ? asset('storage/' . $data->image) : asset('assets/media/svg/files/blank-image.svg') }});
                         }
 
                         [data-bs-theme="dark"] .image-input-placeholder {
-                            background-image: url('assets/media/svg/files/blank-image-dark.svg');
+                            background-image: url({{ isset($data) && isset($data->image) ? asset('storage/' . $data->image) : asset('assets/media/svg/files/blank-image-dark.svg') }});
                         }
                     </style>
                     <!--end::Image input placeholder-->
@@ -90,8 +94,12 @@
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
                         <option></option>
-                        <option value="no-receipt" selected="selected">Tanpa Resep</option>
-                        <option value="receipt">Dengan Resep</option>
+                        <option value="no-receipt"
+                            selected="{{ isset($data) && $data->status == 'no-receipt' ? 'selected' : '' }}">Tanpa
+                            Resep</option>
+                        <option value="receipt"
+                            selected="{{ isset($data) && $data->status == 'receipt' ? 'selected' : '' }}">Dengan
+                            Resep</option>
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
@@ -131,7 +139,9 @@
                         data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id">
                         <option></option>
                         @foreach ($product_units as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}"
+                                {{ isset($data) && $data->product_unit == $item->id ? 'selected' : '' }}>
+                                {{ $item->name }}</option>
                         @endforeach
                     </select>
                     <!--end::Select2-->
@@ -191,7 +201,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="product_name" class="form-control mb-2"
-                                        placeholder="Product name" value="" />
+                                        placeholder="Product name" value="{{ $data->name ?? old('name') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">A product name is required and recommended to be unique.
@@ -237,7 +247,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="price" class="form-control mb-2"
-                                        placeholder="Product price" value="" />
+                                        placeholder="Product price" value="{{ $data->price ?? old('price') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Set the product price.</div>
@@ -353,7 +363,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="sku" class="form-control mb-2"
-                                        placeholder="SKU Number" value="" />
+                                        placeholder="SKU Number" value="{{ $data->sku ?? old('sku') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Enter the product SKU.</div>
@@ -367,7 +377,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="barcode" class="form-control mb-2"
-                                        placeholder="Barcode Number" value="" />
+                                        placeholder="Barcode Number" value="{{ $data->barcode ?? old('barcode') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Enter the product barcode number.</div>
@@ -381,7 +391,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="number" name="limit" class="form-control mb-2"
-                                        placeholder="Limit Stock" value="" />
+                                        placeholder="Limit Stock" value="{{ $data->limit ?? old('limit') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Enter limit stock of product.</div>
@@ -395,7 +405,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="handling" class="form-control mb-2"
-                                        placeholder="Limit Stock" value="" />
+                                        placeholder="Handling" value="{{ $data->handling ?? old('handling') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Enter limit stock of product.</div>
@@ -449,6 +459,8 @@
                     theme: "snow"
                 });
             }
+
+            quill.root.innerHTML = '{{ $data->description ?? old('description') }}'; // Set konten awal
 
             document.getElementById('add_product_form').addEventListener('submit', function() {
                 const description = document.getElementById('description_input');

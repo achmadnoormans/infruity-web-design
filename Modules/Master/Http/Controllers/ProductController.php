@@ -34,6 +34,7 @@ class ProductController extends Controller
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
         $data['product_units'] = ProductUnit::all();
+        $data['data'] = null;
         return view('master::products.create', $data);
     }
 
@@ -115,7 +116,8 @@ class ProductController extends Controller
         ];
         $data['data'] = Product::findOrFail($id);
         $data['product_units'] = ProductUnit::all();
-        return view('master::products.edit', $data);
+        // dd($data);
+        return view('master::products.create', $data);
     }
 
     /**

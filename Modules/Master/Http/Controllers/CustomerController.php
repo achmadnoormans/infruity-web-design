@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Customer;
+use Modules\Master\Entities\Region;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +35,13 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('master::create');
+        $data['page_plugin_js'] = [
+            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
+        ];
+        $data['product_units'] = ProductUnit::all();
+        $data['data'] = null;
+        $data['customerNumber'] = Customer::getCustomerNumber(); // ['code', 'number']
+        return view('master::customer.create', $data);
     }
 
     /**
@@ -44,7 +51,51 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'customer_name' => 'required',
+            'birth_of_date' =>'nullable|date|date_format:Y-m-d',
+            'gender' =>'nullable|in:male,female',
+            'province' => 'nullable|exists:reg_provinces,id',
+            'city' => 'nullable|exists:reg_regencies,id',
+            'district' => 'nullable|exists:reg_districts,id',
+            'village' => 'nullable|exists:reg_villages,id',
+            'address' => 'nullable',
+            'phone' => 'nullable',
+            'email' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $customer = new Customer();
+            $customer->name = $request->customer_name;
+            $customer->code = Customer::getCustomerNumber();
+            $customer->birth_of_date = $request->birth_of_date;
+            $customer->gender = $request->gender;
+            $customer->province = $request->province;
+            $customer->city = $request->city;
+            $customer->district = $request->district;
+            $customer->village = $request->village;
+            $customer->address = $request->address;
+            $customer->whatsapp = $request->phone;
+            $customer->email = $request->email;
+            $customer->created_by = Auth::user()->id_user;
+            $customer->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Customer gagal' . $e->getMessage());
+        }
+
+        return redirect('customers')->with('success', 'Pembuatan Customer berhasil');
     }
 
     /**
@@ -64,7 +115,20 @@ class CustomerController extends Controller
      */
     public function edit($id)
     {
-        return view('master::edit');
+        
+        $customer = Customer::findOrFail($id);
+        $data = [
+            'data' => $customer,
+            'province' => Region::getProvince($customer->province),
+            'city' => Region::getCity($customer->city),
+            'district' => Region::getDistrict($customer->district),
+            'village' => Region::getVillage($customer->village),
+        ];
+        $data['page_plugin_js'] = [
+            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
+        ];
+        // dd($data);
+        return view('master::customer.create', $data);
     }
 
     /**
@@ -75,7 +139,49 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'customer_name' => 'required',
+            'birth_of_date' =>'nullable|date|date_format:Y-m-d',
+            'gender' =>'nullable|in:male,female',
+            'province' => 'nullable|exists:reg_provinces,id',
+            'city' => 'nullable|exists:reg_regencies,id',
+            'district' => 'nullable|exists:reg_districts,id',
+            'village' => 'nullable|exists:reg_villages,id',
+            'address' => 'nullable',
+            'phone' => 'nullable',
+            'email' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $customer = Customer::findOrFail($id);
+            $customer->name = $request->customer_name;
+            $customer->birth_of_date = $request->birth_of_date;
+            $customer->gender = $request->gender;
+            $customer->province = $request->province;
+            $customer->city = $request->city;
+            $customer->district = $request->district;
+            $customer->village = $request->village;
+            $customer->address = $request->address;
+            $customer->whatsapp = $request->phone;
+            $customer->email = $request->email;
+            $customer->updated_by = Auth::user()->id_user;
+            $customer->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Update Customer gagal' . $e->getMessage());
+        }
+
+        return redirect('customers')->with('success', 'Update Customer berhasil');
     }
 
     /**
@@ -85,7 +191,22 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $customer = Customer::findOrFail($id);
+            $customer->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function get_data(Request $request)
@@ -125,7 +246,7 @@ class CustomerController extends Controller
             
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
                             <li>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')">
+                                <a class="dropdown-item" href="' . route('customers.edit', $item->id) . '">
                                     Edit
                                 </a>
                             </li>

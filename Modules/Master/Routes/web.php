@@ -9,6 +9,7 @@ use Modules\Master\Http\Controllers\DepartmentController;
 use Modules\Master\Http\Controllers\PositionController;
 use Modules\Master\Http\Controllers\SupplierController;
 use Modules\Master\Http\Controllers\CustomerController;
+use Modules\Master\Http\Controllers\RegionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -55,4 +56,11 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('customers', CustomerController::class)->names('customers')->except('show');
     Route::get('customers/data', [CustomerController::class, 'get_data'])->name('customers-data');
+});
+
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
+    Route::get('/ajax/province', [RegionController::class, 'getProvince'])->name('ajax.province');
+    Route::get('/ajax/city', [RegionController::class, 'getCity'])->name('ajax.city');
+    Route::get('/ajax/district', [RegionController::class, 'getDistrict'])->name('ajax.district');
+    Route::get('/ajax/village', [RegionController::class, 'getVillage'])->name('ajax.village');
 });

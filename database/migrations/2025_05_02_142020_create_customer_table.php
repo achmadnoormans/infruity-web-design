@@ -16,12 +16,13 @@ return new class extends Migration {
             $table->text('code')->nullable();
             $table->text('whatsapp')->nullable();
             $table->date('birth_of_date')->nullable();
-            $table->integer('province');
-            $table->integer('city');
-            $table->integer('district');
-            $table->integer('village');
-            $table->text('gender');
+            $table->integer('province')->nullable();;
+            $table->integer('city')->nullable();;
+            $table->integer('district')->nullable();;
+            $table->integer('village')->nullable();;
+            $table->text('gender')->nullable();
             $table->text('address')->nullable();
+            $table->text('email')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -30,7 +31,7 @@ return new class extends Migration {
         DB::table('customer')->insert([
             [
                 'name' => 'Andi Setiawan',
-                'code' => 'PLG25050100001',
+                'code' => 'PLG250500001',
                 'whatsapp' => '081234567890',
                 'birth_of_date' => '1990-05-20',
                 'province' => 31,
@@ -46,7 +47,7 @@ return new class extends Migration {
             ],
             [
                 'name' => 'Siti Nurhaliza',
-                'code' => 'PLG25050100002',
+                'code' => 'PLG250500002',
                 'whatsapp' => '081298765432',
                 'birth_of_date' => '1985-12-11',
                 'province' => 32,
@@ -62,7 +63,7 @@ return new class extends Migration {
             ],
             [
                 'name' => 'Budi Santoso',
-                'code' => 'PLG25050100003',
+                'code' => 'PLG250500003',
                 'whatsapp' => '081356789012',
                 'birth_of_date' => '1988-03-14',
                 'province' => 35,
@@ -71,70 +72,6 @@ return new class extends Migration {
                 'village' => 3578020003,
                 'gender' => 'male',
                 'address' => 'Jl. Pahlawan No. 5, Surabaya',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Rina Marlina',
-                'code' => 'PLG25050100004',
-                'whatsapp' => '081367890123',
-                'birth_of_date' => '1992-07-09',
-                'province' => 12,
-                'city' => 1275,
-                'district' => 1275030,
-                'village' => 1275030001,
-                'gender' => 'female',
-                'address' => 'Jl. Ahmad Yani No. 30, Medan',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Dedi Gunawan',
-                'code' => 'PLG25050100005',
-                'whatsapp' => '081378901234',
-                'birth_of_date' => '1983-10-22',
-                'province' => 34,
-                'city' => 3401,
-                'district' => 3401040,
-                'village' => 3401040004,
-                'gender' => 'male',
-                'address' => 'Jl. Gajah Mada No. 15, Yogyakarta',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Lisa Anggraini',
-                'code' => 'PLG25050100006',
-                'whatsapp' => '081389012345',
-                'birth_of_date' => '1995-01-30',
-                'province' => 36,
-                'city' => 3603,
-                'district' => 3603070,
-                'village' => 3603070002,
-                'gender' => 'female',
-                'address' => 'Jl. Mawar No. 8, Serang',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Rizky Ramadhan',
-                'code' => 'PLG25050100007',
-                'whatsapp' => '081390123456',
-                'birth_of_date' => '1991-08-05',
-                'province' => 33,
-                'city' => 3374,
-                'district' => 3374020,
-                'village' => 3374020003,
-                'gender' => 'male',
-                'address' => 'Jl. Slamet Riyadi No. 12, Solo',
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
