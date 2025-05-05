@@ -140,7 +140,7 @@ class PositionController extends Controller
         ]);
 
         // Simpan data ke database
-        
+
         // Step 1: Buat akronim dari nama
         $name = Department::find($validated['department_id'])->name;
         $words = preg_split('/\s+/', trim($name));
@@ -225,7 +225,7 @@ class PositionController extends Controller
             ->addColumn('name', function ($position) {
                 $colors = ['warning', 'success', 'info', 'primary'];
                 $color = $colors[$position->id % count($colors)];
-                
+
                 return '<div class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                 <a href="javascript:void(0)">
@@ -269,5 +269,16 @@ class PositionController extends Controller
             })
             ->rawColumns(['name', 'action'])
             ->make(true);
+    }
+
+    public function getPosition(Request $request)
+    {
+        $departmentId = $request->get('department_id');
+
+        $positions = Position::where('department_id', $departmentId)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($positions);
     }
 }

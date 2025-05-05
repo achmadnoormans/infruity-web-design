@@ -253,4 +253,12 @@ class DepartmentController extends Controller
             ->rawColumns(['name', 'action'])
             ->make(true);
     }
+
+    public function getDepartment(Request $request)
+    {
+        $departments = Department::select('id', 'name')
+            ->get();
+
+        return response()->json($departments);
+    }
 }

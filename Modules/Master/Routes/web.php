@@ -10,6 +10,7 @@ use Modules\Master\Http\Controllers\PositionController;
 use Modules\Master\Http\Controllers\SupplierController;
 use Modules\Master\Http\Controllers\CustomerController;
 use Modules\Master\Http\Controllers\RegionController;
+use Modules\Master\Http\Controllers\StaffController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,11 +57,16 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('customers', CustomerController::class)->names('customers')->except('show');
     Route::get('customers/data', [CustomerController::class, 'get_data'])->name('customers-data');
-});
+
+    Route::resource('staff', StaffController::class)->names('staff')->except('show');
+    Route::get('staff/data', [StaffController::class, 'get_data'])->name('staff-data');
+}); 
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/province', [RegionController::class, 'getProvince'])->name('ajax.province');
     Route::get('/ajax/city', [RegionController::class, 'getCity'])->name('ajax.city');
     Route::get('/ajax/district', [RegionController::class, 'getDistrict'])->name('ajax.district');
     Route::get('/ajax/village', [RegionController::class, 'getVillage'])->name('ajax.village');
+    Route::get('/ajax/department', [DepartmentController::class, 'getDepartment'])->name('ajax.department');
+    Route::get('/ajax/position', [PositionController::class, 'getPosition'])->name('ajax.position');
 });
