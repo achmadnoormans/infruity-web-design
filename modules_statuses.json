@@ -9,5 +9,6 @@
     "VendorBusdevController": true,
     "Permohonan": true,
     "Chat": true,
-    "Arsip": true
+    "Arsip": true,
+    "Transaction": true
 }

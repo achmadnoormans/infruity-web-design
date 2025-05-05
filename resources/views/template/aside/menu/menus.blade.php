@@ -194,3 +194,16 @@
     </div>
     <!--end:Menu content-->
 </div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'wholesale' ? 'active' : '' }}" href="{{ url('wholesale') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Wholesale</span>
+    </a>
+    <!--end:Menu link-->
+</div>
