@@ -165,7 +165,7 @@
                                         <td>
                                             <div class="d-flex align-items-center"
                                                 data-kt-ecommerce-edit-order-filter="product"
-                                                data-kt-ecommerce-edit-order-id="product_{{ $product->id }}">
+                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}">
                                                 <!--begin::Thumbnail-->
                                                 <a href="apps/ecommerce/catalog/edit-product.html"
                                                     class="symbol symbol-50px">
