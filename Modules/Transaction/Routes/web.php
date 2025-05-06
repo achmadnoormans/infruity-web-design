@@ -1,5 +1,5 @@
 <?php
-
+use Modules\Transaction\Http\Controllers\WholesaleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +11,7 @@
 |
 */
 
-Route::prefix('transaction')->group(function() {
-    Route::get('/', 'TransactionController@index');
+Route::prefix('/')->group(function() {
+    Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    
+    Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
 });
