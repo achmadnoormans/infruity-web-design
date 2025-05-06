@@ -2,7 +2,12 @@
 
 @section('content')
     <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-        data-kt-redirect="apps/ecommerce/sales/listing.html">
+        action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
+        enctype="multipart/form-data" data-kt-redirect="">
+        @if (isset($data))
+            @method('PUT')
+        @endif
+        @csrf
         <!--begin::Aside column-->
         <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
             <!--begin::Order details-->
@@ -117,6 +122,7 @@
                                     the checkbox.</span>
                                 <!--end::Empty message-->
                             </div>
+                            <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
                             <!--begin::Total price-->
                             <div class="fw-bold fs-4">Total Cost: $
@@ -149,41 +155,6 @@
                                 </tr>
                             </thead>
                             <tbody class="fw-semibold text-gray-600">
-                                <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="1" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center" data-kt-ecommerce-edit-order-filter="product"
-                                            data-kt-ecommerce-edit-order-id="product_1">
-                                            <!--begin::Thumbnail-->
-                                            <a href="apps/ecommerce/catalog/edit-product.html" class="symbol symbol-50px">
-                                                <span class="symbol-label"
-                                                    style="background-image:url(assets/media//stock/ecommerce/1.png);"></span>
-                                            </a>
-                                            <!--end::Thumbnail-->
-                                            <div class="ms-5">
-                                                <!--begin::Title-->
-                                                <a href="apps/ecommerce/catalog/edit-product.html"
-                                                    class="text-gray-800 text-hover-primary fs-5 fw-bold">Product 1</a>
-                                                <!--end::Title-->
-                                                <!--begin::Price-->
-                                                <div class="fw-semibold fs-7">Price: $
-                                                    <span data-kt-ecommerce-edit-order-filter="price">27.00</span>
-                                                </div>
-                                                <!--end::Price-->
-                                                <!--begin::SKU-->
-                                                <div class="text-muted fs-7">SKU: 02141002</div>
-                                                <!--end::SKU-->
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-5" data-order="42">
-                                        <span class="fw-bold ms-3">42</span>
-                                    </td>
-                                </tr>
                                 @foreach ($products as $product)
                                     <tr>
                                         <td>
@@ -374,6 +345,32 @@
                 <!--end::Card body-->
             </div>
             <!--end::Order details-->
+            <!-- Modal for Quantity Input -->
+            <div class="modal fade" id="modalInputQty" tabindex="-1" aria-labelledby="modalInputQtyLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalInputQtyLabel">Input Quantity</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="inputProductId">
+                            <div class="mb-3">
+                                <label for="inputQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="inputQuantity"
+                                    placeholder="Enter quantity" min="1">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="submitQty">Add Product</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
@@ -392,8 +389,9 @@
     </form>
 @section('script')
     <script>
+        let selectedProduct = {}; // Global, satu kali saja
+
         $(document).ready(function() {
-            // Inisialisasi DataTable dan simpan ke variabel
             const table = $('#kt_ecommerce_edit_order_product_table').DataTable({
                 order: [],
                 scrollY: "400px",
@@ -406,11 +404,94 @@
                 }]
             });
 
-            // Tambahkan event listener untuk filter pencarian
             document.querySelector('[data-kt-ecommerce-edit-order-filter="search"]').addEventListener("keyup",
                 function(e) {
                     table.search(e.target.value).draw();
                 });
+
+            // Checkbox change event
+            $('#kt_ecommerce_edit_order_product_table').on('change', '.form-check-input', function() {
+                const row = $(this).closest('tr');
+                const checked = $(this).is(':checked');
+                const productId = row.find('[data-kt-ecommerce-edit-order-id]').data(
+                    'kt-ecommerce-edit-order-id');
+
+                if (checked) {
+                    const productName = row.find('a.text-gray-800').text().trim();
+                    const productImage = row.find('.symbol-label').css('background-image').replace(
+                        /^url\(["']?/, '').replace(/["']?\)$/, '');
+                    const price = row.find('[data-kt-ecommerce-edit-order-filter="price"]').text().trim();
+
+                    selectedProduct = {
+                        id: productId,
+                        name: productName,
+                        image: productImage,
+                        price: price
+                    };
+
+                    $('#inputProductId').val(productId);
+                    $('#inputQuantity').val('');
+                    $('#modalInputQty').modal('show');
+                } else {
+                    $(`#kt_ecommerce_edit_order_selected_products [data-product-id="${productId}"]`)
+                        .remove();
+                    $(`#selected-products-hidden input[name="products[${productId}][id]"]`).remove();
+                    $(`#selected-products-hidden input[name="products[${productId}][qty]"]`).remove();
+
+                    if ($('#kt_ecommerce_edit_order_selected_products .col').length === 0) {
+                        $('#kt_ecommerce_edit_order_selected_products').html(
+                            `<span class="w-100 text-muted">Select one or more products from the list below by ticking the checkbox.</span>`
+                        );
+                    }
+                }
+            });
+
+            // Tombol Add Product dari modal
+            $('#submitQty').on('click', function() {
+                const qty = $('#inputQuantity').val();
+                const id = $('#inputProductId').val();
+
+                if (!qty || qty <= 0) {
+                    alert("Quantity harus diisi dan lebih dari 0.");
+                    return;
+                }
+
+                // Remove placeholder
+                $('#kt_ecommerce_edit_order_selected_products span.text-muted').remove();
+
+                // Cek dan hapus dulu jika sudah ada produk ini sebelumnya (prevent duplikat)
+                $(`#kt_ecommerce_edit_order_selected_products [data-product-id="${id}"]`).remove();
+                $(`#selected-products-hidden input[name="products[${id}][id]"]`).remove();
+                $(`#selected-products-hidden input[name="products[${id}][qty]"]`).remove();
+
+                // Tambah ke list
+                const html = `
+                <div class="col mb-4" data-product-id="${selectedProduct.id}">
+                    <div class="border p-3 rounded bg-light">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-50px me-3">
+                                <span class="symbol-label" style="background-image:url('${selectedProduct.image}');"></span>
+                            </div>
+                            <div>
+                                <div class="fw-bold">${selectedProduct.name}</div>
+                                <div class="text-muted">Qty: ${qty}</div>
+                                <div class="text-muted">Price: Rp. ${selectedProduct.price}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                $('#kt_ecommerce_edit_order_selected_products').append(html);
+
+                // Tambah hidden input
+                const hiddenInput = `
+                <input type="hidden" name="products[${selectedProduct.id}][id]" value="${selectedProduct.id}">
+                <input type="hidden" name="products[${selectedProduct.id}][qty]" value="${qty}">
+            `;
+                $('#selected-products-hidden').append(hiddenInput);
+
+                $('#modalInputQty').modal('hide');
+            });
         });
     </script>
 @endsection
