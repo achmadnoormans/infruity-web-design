@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\Supplier;
 use Modules\Transaction\Entities\Wholesale;
+use Modules\Transaction\Entities\WholesaleProduct;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -49,7 +50,45 @@ class WholesaleController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'supplier_id' => 'required|exists:supplier,id',
+            'order_date' => 'required',
+            'description' => 'nullable|string|max:255',
+            'products' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $wholesale = new Wholesale();
+            $wholesale->supplier_id = $request->supplier_id;
+            $wholesale->order_date = $request->order_date;
+            $wholesale->created_by = Auth::user()->id_user;
+            $wholesale->save();
+
+            $wholesaleId = $wholesale->id;
+            foreach ($request->products as $product) {
+                $wholesaleDetail = new WholesaleProduct();
+                $wholesaleDetail->wholesale_id = $wholesaleId;
+                $wholesaleDetail->product_id = $product['id'];
+                $wholesaleDetail->quantity = $product['qty'];
+                $wholesaleDetail->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Data Kulak gagal' . $e->getMessage());
+        }
+
+        return redirect('wholesale')->with('success', 'Pembuatan Data Kulak berhasil');
     }
 
     /**
@@ -69,7 +108,23 @@ class WholesaleController extends Controller
      */
     public function edit($id)
     {
-        return view('transaction::edit');
+        $data['products'] = Product::all();
+        $data['suppliers'] = Supplier::all();
+        $data['data'] = Wholesale::findOrFail($id);
+        $data['selectedProducts'] = WholesaleProduct::with('product')
+            ->where('wholesale_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->product_id,
+                    'name' => $item->product->name,
+                    'price' => number_format($item->product->price, 0, ',', '.'),
+                    // 'image' => asset('storage/' . $item->product->image),
+                    'image' => null,
+                    'qty' => $item->quantity,
+                ];
+            });
+        return view('transaction::wholesale.edit', $data);
     }
 
     /**
@@ -80,7 +135,48 @@ class WholesaleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        // Validasi input
+        $request->validate([
+            'supplier_id' => 'required',
+            'order_date' => 'required|date',
+            'products' => 'required|array',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $wholesale = Wholesale::find($id);
+            $wholesale->supplier_id = $request->supplier_id;
+            $wholesale->order_date = $request->order_date;
+            $wholesale->save();
+
+            // Update atau hapus produk wholesale
+            foreach ($request->products as $productId => $productData) {
+                // Cek apakah produk sudah ada di table wholesale_product
+                $wholesaleProduct = WholesaleProduct::where('wholesale_id', $wholesale->id)
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($wholesaleProduct) {
+                    // Update quantity produk yang sudah ada
+                    $wholesaleProduct->quantity = $productData['quantity'];
+                    $wholesaleProduct->save();
+                } else {
+                    // Jika produk baru, tambahkan ke table wholesale_product
+                    WholesaleProduct::create([
+                        'wholesale_id' => $wholesale->id,
+                        'product_id' => $productId,
+                        'quantity' => $productData['quantity'],
+                    ]);
+                }
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Data Kulak gagal' . $e->getMessage());
+        }
+        return redirect('wholesale')->with('success', 'Update Data Kulak berhasil');
     }
 
     /**
@@ -139,7 +235,7 @@ class WholesaleController extends Controller
             
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
                             <li>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')">
+                                <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
                                     Edit
                                 </a>
                             </li>

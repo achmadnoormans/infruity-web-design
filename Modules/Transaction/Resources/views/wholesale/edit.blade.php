@@ -43,7 +43,9 @@
                                 id="kt_ecommerce_edit_order_supplier">
                                 <option></option>
                                 @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    <option value="{{ $supplier->id }}"
+                                        {{ $data->supplier_id == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->name }}</option>
                                 @endforeach
                             </select>
                             <!--end::Select2-->
@@ -59,7 +61,7 @@
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
-                                class="form-control mb-2" value="" />
+                                class="form-control mb-2" value="{{ $data->order_date }}">
                             <!--end::Editor-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Set the date of the order to process.</div>
@@ -96,8 +98,7 @@
                             <div class="row row-cols-1 row-cols-xl-3 row-cols-md-2 border border-dashed rounded pt-3 pb-1 px-2 mb-5 mh-300px overflow-scroll"
                                 id="kt_ecommerce_edit_order_selected_products">
                                 <!--begin::Empty message-->
-                                <span class="w-100 text-muted">Select one or more products from the list below by ticking
-                                    the checkbox.</span>
+
                                 <!--end::Empty message-->
                             </div>
                             <div id="selected-products-hidden"></div>
@@ -137,7 +138,8 @@
                                     <tr>
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="1" />
+                                                <input class="form-check-input" type="checkbox" value="1"
+                                                    data-product-id={{ $product->id }} />
                                             </div>
                                         </td>
                                         <td>
@@ -145,15 +147,14 @@
                                                 data-kt-ecommerce-edit-order-filter="product"
                                                 data-kt-ecommerce-edit-order-id="{{ $product->id }}">
                                                 <!--begin::Thumbnail-->
-                                                <a href="apps/ecommerce/catalog/edit-product.html"
-                                                    class="symbol symbol-50px">
+                                                <a href="{{ url('products/' . $product->id) }}" class="symbol symbol-50px">
                                                     <span class="symbol-label"
                                                         style="background-image:url({{ asset('storage/' . $product->image) }});"></span>
                                                 </a>
                                                 <!--end::Thumbnail-->
                                                 <div class="ms-5">
                                                     <!--begin::Title-->
-                                                    <a href="apps/ecommerce/catalog/edit-product.html"
+                                                    <a href="{{ url('products/' . $product->id) }}"
                                                         class="text-gray-800 text-hover-primary fs-5 fw-bold">{{ $product->name }}</a>
                                                     <!--end::Title-->
                                                     <!--begin::Price-->
@@ -209,8 +210,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalInputQtyLabel">Input Quantity</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="inputProductId">
@@ -247,6 +247,7 @@
 @section('script')
     <script>
         let selectedProduct = {}; // Global, satu kali saja
+        const previouslySelected = @json($selectedProducts);
 
         $(document).ready(function() {
             const table = $('#kt_ecommerce_edit_order_product_table').DataTable({
@@ -354,6 +355,53 @@
                 altInput: !0,
                 altFormat: "d F, Y",
                 dateFormat: "Y-m-d"
+            });
+
+            if (previouslySelected.length > 0) {
+                $('#kt_ecommerce_edit_order_selected_products span.text-muted').remove(); // hapus placeholder
+
+                previouslySelected.forEach(item => {
+                    const html = `
+                        <div class="col mb-4" data-product-id="${item.id}">
+                            <div class="border p-3 rounded bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="symbol symbol-50px me-3">
+                                        <span class="symbol-label" style="background-image:url('${item.image}');"></span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">${item.name}</div>
+                                        <div class="text-muted">Qty: ${item.qty}</div>
+                                        <div class="text-muted">Price: Rp. ${item.price}</div>
+                                    </div>
+                                </div>
+                                <!-- hidden inputs -->
+                                <input type="hidden" name="products[${item.id}][id]" value="${item.id}">
+                                <input type="hidden" name="products[${item.id}][quantity]" value="${item.qty}">
+                            </div>
+                        </div>
+                    `;
+                    $('#kt_ecommerce_edit_order_selected_products').append(html);
+
+                    // Optional: centang juga checkbox-nya
+                    $(`input.form-check-input[data-product-id="${item.id}"]`).prop('checked', true);
+                });
+            }
+        });
+
+        $(document).on('click', '.remove-product', function() {
+            const productId = $(this).data('product-id');
+
+            // Hapus produk dari tampilan
+            $(`.product-item[data-product-id="${productId}"]`).remove();
+
+            // Bisa juga kirim request untuk menghapus produk dari database
+            // Misalnya, menggunakan Ajax untuk menghapus dari database
+            $.ajax({
+                url: '/wholesale-product/' + productId, // Endpoint untuk hapus
+                method: 'DELETE',
+                success: function(response) {
+                    console.log('Product removed successfully');
+                }
             });
         });
     </script>
