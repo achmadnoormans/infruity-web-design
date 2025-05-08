@@ -14,4 +14,6 @@ use Modules\Transaction\Http\Controllers\WholesaleController;
 Route::prefix('/')->group(function() {
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
+    Route::get('wholesale/receive-product/{id}', [WholesaleController::class, 'receive_product'])->name('wholesale.receive_product');    
+    Route::post('wholesale/save-receive', [WholesaleController::class, 'save_receive'])->name('wholesale-save-receive');
 });

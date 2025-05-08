@@ -69,6 +69,8 @@ class WholesaleController extends Controller
             $wholesale = new Wholesale();
             $wholesale->supplier_id = $request->supplier_id;
             $wholesale->order_date = $request->order_date;
+            $wholesale->description = $request->description;
+            $wholesale->status = 'processing';
             $wholesale->created_by = Auth::user()->id_user;
             $wholesale->save();
 
@@ -148,27 +150,18 @@ class WholesaleController extends Controller
             $wholesale = Wholesale::find($id);
             $wholesale->supplier_id = $request->supplier_id;
             $wholesale->order_date = $request->order_date;
+            $wholesale->description = $request->description;
             $wholesale->save();
 
             // Update atau hapus produk wholesale
-            foreach ($request->products as $productId => $productData) {
-                // Cek apakah produk sudah ada di table wholesale_product
-                $wholesaleProduct = WholesaleProduct::where('wholesale_id', $wholesale->id)
-                    ->where('product_id', $productId)
-                    ->first();
-
-                if ($wholesaleProduct) {
-                    // Update quantity produk yang sudah ada
-                    $wholesaleProduct->quantity = $productData['quantity'];
-                    $wholesaleProduct->save();
-                } else {
-                    // Jika produk baru, tambahkan ke table wholesale_product
-                    WholesaleProduct::create([
-                        'wholesale_id' => $wholesale->id,
-                        'product_id' => $productId,
-                        'quantity' => $productData['quantity'],
-                    ]);
-                }
+            $wholesaleId = $wholesale->id;
+            WholesaleProduct::where('wholesale_id', $wholesaleId)->delete();
+            foreach ($request->products as $product) {
+                $wholesaleDetail = new WholesaleProduct();
+                $wholesaleDetail->wholesale_id = $wholesaleId;
+                $wholesaleDetail->product_id = $product['id'];
+                $wholesaleDetail->quantity = $product['quantity'];
+                $wholesaleDetail->save();
             }
             DB::commit();
         } catch (Exception $e) {
@@ -186,7 +179,80 @@ class WholesaleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $wholesale = Wholesale::findOrFail($id);
+            $wholesale->delete();
+            WholesaleProduct::where('wholesale_id', $id)->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function receive_product($id)
+    {
+        $data['data'] = Wholesale::findOrFail($id);
+        $data['selectedProducts'] = WholesaleProduct::with('product')
+            ->where('wholesale_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->product->name,
+                    'sku' => $item->product->sku,
+                    'unit' => $item->product->unit->abbreviation,
+                    'price' => number_format($item->product->price, 0, ',', '.'),
+                    'image' => asset('storage/' . $item->product->image),
+                    'qty' => $item->quantity,
+                ];
+            });
+        // dd($data);
+        return view('transaction::wholesale.receive_product', $data);
+    }
+
+    public function save_receive(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'wholesale_id' => 'required|exists:wholesale,id',
+            'products' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $wholesale = Wholesale::findOrFail($request->wholesale_id);
+            $wholesale->status = 'complete';
+            $wholesale->save();
+
+            foreach ($request->products as $key => $product) {
+                $wholesaleDetail = WholesaleProduct::findOrFail($key);
+                $wholesaleDetail->quantity = $product['quantity'];
+                $wholesaleDetail->hpp = $product['price'];
+                $wholesaleDetail->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Data Kulak gagal' . $e->getMessage());
+        }
+
+        return redirect('wholesale')->with('success', 'Pembuatan Data Kulak berhasil');
     }
 
     public function get_data(Request $request)
@@ -222,7 +288,9 @@ class WholesaleController extends Controller
                 }
             })
             ->addColumn('action', function ($item) {
-                return '
+                $html = '';
+                if ($item->status != 'complete') {
+                    $html .= '
                     <div class="dropdown text-end">
                         <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
                             type="button" 
@@ -240,13 +308,20 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="' . route('wholesale.receive_product', $item->id) . '">
+                                    Receive Product
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     Delete
                                 </a>
                             </li>
                         </ul>
                     </div>
-                ';
+                    ';
+                }
+                return $html;
             })
             ->rawColumns(['name', 'action', 'status', 'address'])
             ->make(true);

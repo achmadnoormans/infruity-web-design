@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('wholesale_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
+            $table->integer('hpp')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('supplier_id');
             $table->date('order_date');
             $table->enum('status', ['processing', 'complete'])->default('processing');
+            $table->text('description')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
