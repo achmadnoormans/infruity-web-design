@@ -2,7 +2,7 @@
 
 @section('content')
     <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-        action="{{ route('wholesale-save-receive') }}" method="POST" enctype="multipart/form-data" data-kt-redirect="">
+        action="{{ route('sortir.save-stock') }}" method="POST" enctype="multipart/form-data" data-kt-redirect="">
         @csrf
         <!--begin::Main column-->
         <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
@@ -31,21 +31,23 @@
                                                 <span class="symbol-label" style="background-image:url('');"></span>
                                             </div>
                                             <div>
-                                                <div class="fw-bold">{{ $product->name }}</div>
-                                                <div class="text-muted">SKU: {{ $product->sku }} </div>
+                                                <div class="fw-bold">{{ $product->product->name }}</div>
+                                                <div class="text-muted">SKU: {{ $product->product->sku }} </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col mb-4" data-product-id="1">
+                                <div class="col mb-4">
                                     <div class="border p-3 rounded bg-light">
                                         <div class="d-flex align-items-center">
                                             <div class="symbol symbol-50px me-3">
                                                 <span class="symbol-label"
-                                                    style="background-image:url({{ asset('storage/' . $product->image) }});"></span>
+                                                    style="background-image:url({{ asset('storage/' . $product->product->image) }});"></span>
                                             </div>
                                             <div>
-                                                <div class="fw-bold stock">{{ $product->stock_available }}</div>
+                                                <div class="fw-bold stock">{{ $product->quantity }}</div>
+                                                <input type="hidden" name="wholesale_product_id"
+                                                    value="{{ $product->id }}">
                                             </div>
                                         </div>
                                     </div>
@@ -103,9 +105,9 @@
                                             </div>
                                         </td>
                                         <td class="text-end pe-5" data-order="42">
-                                            <input type="number" class="form-control form-control-solid text-end"
-                                                name="products[{{ $product->id }}][quantity]" value=""
-                                                placeholder="0" />
+                                            <input type="number"
+                                                class="form-control form-control-solid text-end quantity-input"
+                                                name="quantity[{{ $product->id }}]" value="" placeholder="0" />
                                         </td>
                                     </tr>
                                 @endforeach
@@ -134,4 +136,41 @@
         </div>
         <!--end::Main column-->
     </form>
+@section('script')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.quantity-input');
+            const stockEl = document.querySelector('.stock');
+
+            const initialStock = parseInt(stockEl.textContent.trim()) || 0;
+
+            function updateStock() {
+                let totalQty = 0;
+                inputs.forEach(input => {
+                    totalQty += parseInt(input.value) || 0;
+                });
+
+                // Jika melebihi stok
+                if (totalQty > initialStock) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Stok tidak cukup',
+                        text: `Total yang diminta (${totalQty}) melebihi stok tersedia (${initialStock})`,
+                    });
+
+                    // Reset input yang menyebabkan kelebihan
+                    this.value = '';
+                    return;
+                }
+
+                const remainingStock = Math.max(0, initialStock - totalQty);
+                stockEl.textContent = remainingStock;
+            }
+
+            inputs.forEach(input => {
+                input.addEventListener('input', updateStock);
+            });
+        });
+    </script>
+@endsection
 @endsection

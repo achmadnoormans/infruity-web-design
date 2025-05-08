@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
+use Modules\Transaction\Entities\WholesaleProduct;
+use Modules\Transaction\Entities\StockIn;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -55,8 +57,8 @@ class SortirController extends Controller
     public function show($id)
     {
         // dd($id);
-        $data['product'] = DB::table('sortir_view')->where('sortir_view.id', $id)->join('products', 'sortir_view.product_id', '=', 'products.id')->first();
-        $data['productChild'] = Product::where('parent_id', $id)->get();
+        $data['product'] = WholesaleProduct::findOrFail($id);
+        $data['productChild'] = Product::where('parent_id', $data['product']->product_id)->get();
         // dd($data);
         return view('transaction::sortir.show', $data);
     }
@@ -92,16 +94,56 @@ class SortirController extends Controller
         //
     }
 
+    public function save_stock(Request $request)
+    {
+        // dd($request->all());
+        Validator::make($request->all(), [
+            'wholesale_product_id' => 'required|exists:products,id',
+            'quantity' => 'required|array',
+        ])->validate();
+
+        try {
+            DB::beginTransaction();
+            $wholesaleProduct = WholesaleProduct::findOrFail($request->wholesale_product_id);
+            $quantity = $wholesaleProduct->quantity;
+            $hpp = $wholesaleProduct->hpp;
+            $avgPrice = $hpp / $quantity;
+
+            foreach ($request->quantity as $key => $value) {
+                $stockIn = new StockIn();
+                $stockIn->code = 'wholesale_product';
+                $stockIn->reference_id = $request->wholesale_product_id;
+                $stockIn->date = date('Y-m-d');
+                $stockIn->product_id = $key;
+                $stockIn->quantity = $value;
+                $stockIn->avg_price = $avgPrice;
+                $stockIn->created_by = Auth::user()->id;
+                $stockIn->save();
+            }
+
+            $wholesaleProduct->quantity = $quantity - array_sum($request->quantity);
+            $wholesaleProduct->updated_by = Auth::user()->id;
+            $wholesaleProduct->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Sortir gagal' . $e->getMessage());
+        }
+
+        return redirect('sortir')->with('success', 'Sortir berhasil');
+    }
+
     public function get_data(Request $request)
     {
-        $data = DB::table('sortir_view')->get();
+        $data = WholesaleProduct::whereNotNull('quantity')->whereNotNull('hpp')->get();
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('name', function ($product) {
+            ->addColumn('name', function ($item) {
                 $html = '
                     <div class="d-flex align-items-center">';
-                if (isset($product->image)) {
-                    $url = asset('storage/' . $product->image);
+                if (isset($item->product->image)) {
+                    $url = asset('storage/' . $item->product->image);
                     $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
                 } else {
                     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
@@ -111,12 +153,15 @@ class SortirController extends Controller
                 $html .= '<div class="ms-5">
                             <a href="' . url('/products') . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
-                                ' . e($product->name) . '
+                                ' . e($item->product->name) . '
                             </a>
                         </div>
                     </div>
                 ';
                 return $html;
+            })
+            ->addColumn('order_number', function ($item) {
+                return '<a href="' . route('wholesale.show', $item->wholesale_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" data-bs-toggle="tooltip" title="Show Wholesale">'. '#' . $item->wholesale->order_number .'</a>';
             })
             ->addColumn('action', function ($item) {
                 return '
@@ -124,8 +169,8 @@ class SortirController extends Controller
                         <i class="fa fa-eye"></i>
                     </a>
                 ';
-            })
-            ->rawColumns(['name', 'action'])
+            })            
+            ->rawColumns(['name', 'action', 'order_number'])
             ->make(true);
     }
 }

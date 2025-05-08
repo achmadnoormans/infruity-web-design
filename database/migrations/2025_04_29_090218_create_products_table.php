@@ -77,7 +77,16 @@ return new class extends Migration {
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Apel Fuji',
+                'name' => 'Apel Fuji Bs 1',
+                'description' => 'Apel manis dan renyah asal Jepang.',
+                'price' => 50000,
+                'stock' => 100,
+                'parent_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Apel Fuji Bs 2',
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
                 'stock' => 100,

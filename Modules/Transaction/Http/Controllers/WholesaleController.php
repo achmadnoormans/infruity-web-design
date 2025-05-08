@@ -67,6 +67,7 @@ class WholesaleController extends Controller
         try {
             DB::beginTransaction();
             $wholesale = new Wholesale();
+            $wholesale->order_number = Wholesale::getOrderNumber();
             $wholesale->supplier_id = $request->supplier_id;
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;

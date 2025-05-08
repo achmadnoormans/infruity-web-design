@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('wholesale', function (Blueprint $table) {
             $table->id();
+            $table->string('order_number', 20); // Kolom untuk nomor pesanan
             $table->unsignedBigInteger('supplier_id');
             $table->date('order_date');
             $table->enum('status', ['processing', 'complete'])->default('processing');
@@ -24,6 +25,7 @@ return new class extends Migration {
         DB::table('wholesale')->insert([
             [
                 'supplier_id' => 1,
+                'order_number' => 'PO' . date('Ym') . '001',
                 'order_date' => date('2025-05-01'),
                 'status' => 'complete',
                 'created_by' => 1,
@@ -33,6 +35,7 @@ return new class extends Migration {
             ],
             [
                 'supplier_id' => 2,
+                'order_number' => 'PO' . date('Ym') . '002',
                 'order_date' => date('2025-05-02'),
                 'status' => 'processing',
                 'created_by' => 1,
@@ -42,6 +45,7 @@ return new class extends Migration {
             ],
             [
                 'supplier_id' => 3,
+                'order_number' => 'PO' . date('Ym') . '003',
                 'order_date' => date('2025-05-03'),
                 'status' => 'complete',
                 'created_by' => 2,

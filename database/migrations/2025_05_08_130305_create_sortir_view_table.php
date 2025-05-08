@@ -22,11 +22,14 @@ return new class extends Migration
                 B.image,
                 C.abbreviation,
                 A.product_id,
+                D.id AS wholesale_id,
+                D.order_number,
                 SUM( A.quantity ) AS stock_available 
             FROM
                 `wholesale_product` AS A
                 JOIN products AS B ON A.product_id = B.id 
                 JOIN product_units C ON B.product_unit = C.id
+                JOIN wholesale AS D ON A.wholesale_id = D.id
             WHERE
                 A.hpp IS NOT NULL 
             GROUP BY

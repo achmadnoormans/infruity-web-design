@@ -34,6 +34,7 @@
                             </th> --}}
                             <th class="text-center min-w-100px">No</th>
                             <th class="text-start min-w-100px">Name</th>
+                            <th class="text-start min-w-100px">Transaction Code</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
@@ -70,8 +71,12 @@
                         name: 'name'
                     },
                     {
-                        data: 'stock_available',
-                        name: 'stock_available',
+                        data: 'order_number',
+                        name: 'order_number'
+                    },
+                    {
+                        data: 'quantity',
+                        name: 'quantity',
                         className: 'text-end'
                     },
                     {
