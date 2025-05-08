@@ -25,7 +25,7 @@ return new class extends Migration {
             [
                 'supplier_id' => 1,
                 'order_date' => date('2025-05-01'),
-                'status' => 'processing',
+                'status' => 'complete',
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -43,7 +43,7 @@ return new class extends Migration {
             [
                 'supplier_id' => 3,
                 'order_date' => date('2025-05-03'),
-                'status' => 'processing',
+                'status' => 'complete',
                 'created_by' => 2,
                 'updated_by' => 2,
                 'created_at' => now(),
