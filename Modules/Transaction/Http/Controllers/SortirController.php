@@ -5,6 +5,7 @@ namespace Modules\Transaction\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -53,7 +54,11 @@ class SortirController extends Controller
      */
     public function show($id)
     {
-        return view('transaction::show');
+        // dd($id);
+        $data['product'] = DB::table('sortir_view')->where('sortir_view.id', $id)->join('products', 'sortir_view.product_id', '=', 'products.id')->first();
+        $data['productChild'] = Product::where('parent_id', $id)->get();
+        // dd($data);
+        return view('transaction::sortir.show', $data);
     }
 
     /**

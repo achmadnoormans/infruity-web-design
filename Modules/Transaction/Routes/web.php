@@ -20,5 +20,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::get('sortir', [SortirController::class, 'index'])->name('sortir');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');
-    Route::get('sortir/show', [SortirController::class, 'show'])->name('sortir.show');
+    Route::get('sortir/show/{id}', [SortirController::class, 'show'])->name('sortir.show');
 });
