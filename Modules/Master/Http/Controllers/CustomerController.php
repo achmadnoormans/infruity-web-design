@@ -38,7 +38,6 @@ class CustomerController extends Controller
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
-        $data['product_units'] = ProductUnit::all();
         $data['data'] = null;
         $data['customerNumber'] = Customer::getCustomerNumber(); // ['code', 'number']
         return view('master::customer.create', $data);
