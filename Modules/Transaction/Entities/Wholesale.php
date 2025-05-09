@@ -75,7 +75,7 @@ class Wholesale extends Model
         $orderData = self::select(DB::raw('CAST(RIGHT(order_number, 3) AS UNSIGNED) + 1 AS order_number'))
             ->whereRaw('MONTH(created_at) = MONTH(NOW())')
             ->whereRaw('YEAR(created_at) = YEAR(NOW())')
-            ->whereRaw('SUBSTRING(code, 1, 2) = ?', ['PO'])
+            ->whereRaw('SUBSTRING(order_number, 1, 2) = ?', ['PO'])
             ->orderByRaw('CAST(RIGHT(order_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
