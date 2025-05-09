@@ -4,7 +4,8 @@
      <div class="header-brand">
          <!--begin::Logo-->
          <a href="{{ url('/') }}">
-             <img alt="Logo" src="{{ asset('images/logo-infruity.png') }}" class="h-25px h-lg-25px" />
+             {{-- <img alt="Logo" src="{{ asset('images/logo-infruity.png') }}" class="h-25px h-lg-25px" /> --}}
+             <h1 class="text-white fw-bold fs-1">in!fruity</h1>
          </a>
          <!--end::Logo-->
          <!--begin::Aside minimize-->
