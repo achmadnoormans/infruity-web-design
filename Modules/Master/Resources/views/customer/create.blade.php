@@ -116,7 +116,7 @@
                             <div class="overflow-hidden flex-grow-1">
                                 <select class="form-select rounded-start-0 border-start" name="province" id="province"
                                     data-placeholder="Select an province">
-                                    @if ($data->province)
+                                    @if (isset($data->province))
                                         <option value="{{ $province->id }}" selected>{{ $province->name }}</option>
                                     @endif
                                 </select>
@@ -132,7 +132,7 @@
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="city" id="city"
                                     data-placeholder="Select a city">
-                                    @if ($data->city)
+                                    @if (isset($data->city))
                                         <option value="{{ $city->id }}" selected>{{ $city->name }}</option>
                                     @endif
                                 </select>
@@ -145,7 +145,7 @@
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="district" id="district"
                                     data-placeholder="Select a district">
-                                    @if ($data->district)
+                                    @if (isset($data->district))
                                         <option value="{{ $district->id }}" selected>{{ $district->name }}</option>
                                     @endif
                                 </select>
