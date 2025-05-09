@@ -52,9 +52,8 @@
                                 </div>
                             </th> --}}
                             <th class="min-w-200px">Product</th>
-                            <th class="text-start min-w-350px">Description</th>
                             <th class="text-end min-w-100px">Price</th>
-                            <th class="text-end min-w-70px">Stock</th>
+                            <th class="text-end min-w-70px">Limit</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
@@ -166,22 +165,18 @@
                         name: 'name'
                     },
                     {
-                        data: 'description',
-                        name: 'description',
-                    },
-                    {
                         data: 'price',
                         name: 'price',
                         className: 'text-end'
                     },
                     {
-                        data: 'stock',
-                        name: 'stock',
+                        data: 'limit',
+                        name: 'limit',
                         className: 'text-end'
                     },
                     {
-                        data: 'stock',
-                        name: 'stock',
+                        data: 'stock_available',
+                        name: 'stock_available',
                         className: 'text-end'
                     },
                     {

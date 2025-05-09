@@ -206,4 +206,15 @@
         <span class="menu-title">Wholesale</span>
     </a>
     <!--end:Menu link-->
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'sortir' ? 'active' : '' }}" href="{{ url('sortir') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Sortir</span>
+    </a>
+    <!--end:Menu link-->
 </div>

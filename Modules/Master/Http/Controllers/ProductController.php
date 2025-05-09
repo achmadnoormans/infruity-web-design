@@ -249,7 +249,7 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Product::all();
+        $data = DB::table('product_stock')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
@@ -274,7 +274,10 @@ class ProductController extends Controller
                 return $html;
             })
             ->addColumn('price', function($product) {
-                return '<span class="badge badge-light-success editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
+            })
+            ->addColumn('stock_available', function($product) {
+                return '<span class="badge badge-light-'.$product->stock_status.'">' . $product->stock_available . ' ' . $product->unit . '</span>';
             })
             ->addColumn('action', function ($product) {
                 return '
@@ -303,7 +306,7 @@ class ProductController extends Controller
                     </div>
                 ';
             })
-            ->rawColumns(['name', 'action', 'price'])
+            ->rawColumns(['name', 'action', 'price', 'stock_available'])
             ->make(true);
     }
 }

@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->decimal('price', 10, 2);
             $table->integer('stock')->default(0);
             $table->integer('product_unit')->default(1);
-            $table->integer('limit')->default(0);
+            $table->integer('limit')->default(1);
             $table->text('handling')->nullable();
             $table->text('status')->nullable();
             $table->integer('level')->default(1);
