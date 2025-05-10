@@ -5,7 +5,7 @@ namespace Modules\Transaction\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\Supplier;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
@@ -37,7 +37,7 @@ class WholesaleController extends Controller
      */
     public function create()
     {
-        $data['products'] = Product::all();
+        $data['products'] = ProductCategory::all();
         $data['suppliers'] = Supplier::all();
         $data['data'] = null;
         return view('transaction::wholesale.create', $data);
@@ -50,9 +50,8 @@ class WholesaleController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $validator = Validator::make($request->all(), [
-            'supplier_id' => 'required|exists:supplier,id',
             'order_date' => 'required',
             'description' => 'nullable|string|max:255',
             'products' => 'required|array',

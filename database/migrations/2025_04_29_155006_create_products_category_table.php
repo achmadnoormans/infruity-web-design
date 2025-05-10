@@ -20,6 +20,39 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('products_category')->insert([
+            [
+                'name' => 'Apel Fuji',
+                'description' => 'Apel manis dan renyah asal Jepang.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Mangga',
+                'description' => 'Mangga lokal dengan aroma harum dan rasa legit.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Anggur',
+                'description' => 'Anggur besar dan manis cocok untuk konsumsi langsung.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Pisang',
+                'description' => 'Pisang kuning segar siap makan.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Jeruk',
+                'description' => 'Jeruk nipis dengan rasa manis dan segar.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
     }
 
     /**

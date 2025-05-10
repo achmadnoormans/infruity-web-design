@@ -11,8 +11,50 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::statement("DROP VIEW IF EXISTS view_wholesale");
+        DB::statement("
+            CREATE VIEW view_wholesale AS
+            SELECT 
+                wholesale.id AS id,
+                wholesale.status AS status,
+                supplier.name AS supplier_name,
+                supplier.pic_name AS pic_name,
+                supplier.pic_whatsapp AS whatsapp,
+                wholesale.order_date,
+                COUNT(wholesale_product.id) AS total_product
+            FROM wholesale
+            JOIN supplier ON supplier.id = wholesale.supplier_id
+            JOIN wholesale_product ON wholesale_product.wholesale_id = wholesale.id
+            GROUP BY 
+                wholesale.id, 
+                wholesale.status, 
+                supplier.name,
+                supplier.pic_name,
+                supplier.pic_whatsapp,
+                wholesale.order_date
+        ");
+
+        DB::statement("DROP VIEW IF EXISTS sortir_view");
+        DB::statement("
+            CREATE VIEW sortir_view AS
+            SELECT
+                B.id,
+                B.`name`,
+                A.category_id,
+                D.id AS wholesale_id,
+                D.order_number,
+                SUM( A.quantity ) AS stock_available 
+            FROM
+                `wholesale_product` AS A
+                JOIN products_category AS B ON A.category_id = B.id 
+                JOIN wholesale AS D ON A.wholesale_id = D.id
+            WHERE
+                D.status = 'complete'  
+            GROUP BY
+                category_id
+        ");
+
         DB::statement("DROP VIEW IF EXISTS product_stock");
-        
         DB::statement("
             CREATE VIEW product_stock AS
             SELECT
@@ -40,5 +82,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement("DROP VIEW IF EXISTS product_stock");
+        DB::statement("DROP VIEW IF EXISTS sortir_view");
+        DB::statement("DROP VIEW IF EXISTS view_wholesale");
     }
 };

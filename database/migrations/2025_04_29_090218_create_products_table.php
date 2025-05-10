@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->text('status')->nullable();
             $table->integer('level')->default(1);
             $table->integer('parent_id')->nullable();
+            $table->integer('category_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -35,8 +36,7 @@ return new class extends Migration {
                 'name' => 'Apel Fuji',
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
-                'stock' => 100,
-                'parent_id' => null,
+                'category_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -44,8 +44,7 @@ return new class extends Migration {
                 'name' => 'Pisang Cavendish',
                 'description' => 'Pisang kuning segar siap makan.',
                 'price' => 30000,
-                'stock' => 200,
-                'parent_id' => null,
+                'category_id' => 4,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -53,8 +52,7 @@ return new class extends Migration {
                 'name' => 'Jeruk Sunkist',
                 'description' => 'Jeruk impor dengan rasa manis dan asam seimbang.',
                 'price' => 45000,
-                'stock' => 150,
-                'parent_id' => null,
+                'category_id' => 5,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -62,8 +60,7 @@ return new class extends Migration {
                 'name' => 'Mangga Harum Manis',
                 'description' => 'Mangga lokal dengan aroma harum dan rasa legit.',
                 'price' => 40000,
-                'stock' => 120,
-                'parent_id' => null,
+                'category_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -71,8 +68,7 @@ return new class extends Migration {
                 'name' => 'Anggur Red Globe',
                 'description' => 'Anggur besar dan manis cocok untuk konsumsi langsung.',
                 'price' => 60000,
-                'stock' => 80,
-                'parent_id' => null,
+                'category_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -80,8 +76,7 @@ return new class extends Migration {
                 'name' => 'Apel Fuji Bs 1',
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
-                'stock' => 100,
-                'parent_id' => 1,
+                'category_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -89,8 +84,7 @@ return new class extends Migration {
                 'name' => 'Apel Fuji Bs 2',
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
-                'stock' => 100,
-                'parent_id' => 1,
+                'category_id' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

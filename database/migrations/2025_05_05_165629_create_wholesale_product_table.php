@@ -13,9 +13,11 @@ return new class extends Migration {
         Schema::create('wholesale_product', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('wholesale_id');
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('category_id');
             $table->integer('quantity');
-            $table->integer('hpp')->nullable();
+            $table->integer('price')->nullable();
+            $table->integer('total_price')->nullable();
+            $table->integer('supplier_id');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -24,9 +26,11 @@ return new class extends Migration {
         DB::table('wholesale_product')->insert([
             [
                 'wholesale_id' => 1,
-                'product_id' => 1,
+                'category_id' => 1,
                 'quantity' => 10,
-                'hpp' => 10000,
+                'price' => 1000,
+                'total_price' => 10000,
+                'supplier_id' => 1,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -34,9 +38,11 @@ return new class extends Migration {
             ],
             [
                 'wholesale_id' => 1,
-                'product_id' => 2,
+                'category_id' => 2,
                 'quantity' => 5,
-                'hpp' => 10000,
+                'price' => 1000,
+                'total_price' => 5000,
+                'supplier_id' => 1,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -44,9 +50,11 @@ return new class extends Migration {
             ],
             [
                 'wholesale_id' => 2,
-                'product_id' => 3,
+                'category_id' => 3,
                 'quantity' => 20,
-                'hpp' => null,
+                'price' => 1000,
+                'total_price' => 20000,
+                'supplier_id' => 1,
                 'created_by' => 2,
                 'updated_by' => 2,
                 'created_at' => now(),
@@ -54,9 +62,11 @@ return new class extends Migration {
             ],
             [
                 'wholesale_id' => 3,
-                'product_id' => 1,
+                'category_id' => 1,
                 'quantity' => 15,
-                'hpp' => 10000,
+                'price' => 1000,
+                'total_price' => 15000,
+                'supplier_id' => 1,
                 'created_by' => 2,
                 'updated_by' => 2,
                 'created_at' => now(),
@@ -64,9 +74,11 @@ return new class extends Migration {
             ],
             [
                 'wholesale_id' => 3,
-                'product_id' => 4,
+                'category_id' => 4,
                 'quantity' => 8,
-                'hpp' => 10000,
+                'price' => 1000,
+                'total_price' => 8000,
+                'supplier_id' => 1,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
