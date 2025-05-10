@@ -136,7 +136,8 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = WholesaleProduct::whereNotNull('quantity')->whereNotNull('hpp')->get();
+        $data = WholesaleProduct::join('wholesale', 'wholesale.id', '=', 'wholesale_product.wholesale_id')
+        ->where('wholesale.status', 'complete')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
