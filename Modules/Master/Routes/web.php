@@ -69,4 +69,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/village', [RegionController::class, 'getVillage'])->name('ajax.village');
     Route::get('/ajax/department', [DepartmentController::class, 'getDepartment'])->name('ajax.department');
     Route::get('/ajax/position', [PositionController::class, 'getPosition'])->name('ajax.position');
+    Route::get('/ajax/category', [ProductCategoryController::class, 'getCategory'])->name('ajax.category');
 });

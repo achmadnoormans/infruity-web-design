@@ -146,7 +146,23 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7 mb-7">Add product to a category.</div>
+                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
+                    <!--end::Description-->
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <!--begin::Label-->
+                    <label class="form-label">Product Category</label>
+                    <!--end::Label-->
+                    <!--begin::Select2-->
+                    <select class="form-select mb-2" data-placeholder="Select an option" data-allow-clear="true"
+                        {{-- multiple="multiple" --}} name="category_id" id="category_id">
+                        @if (isset($data->category_id))
+                            <option value="{{ $category->id }}" selected>{{ $category->name }}</option>
+                        @endif
+                    </select>
+                    <!--end::Select2-->
+                    <!--begin::Description-->
+                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Button-->
@@ -466,6 +482,24 @@
                 const description = document.getElementById('description_input');
                 description.value = quill.root.innerHTML; // Ambil konten HTML
             });
+        });
+
+        $('#category_id').select2({
+            placeholder: 'Select a Category',
+            ajax: {
+                url: '{{ route('ajax.category') }}',
+                dataType: 'json',
+                delay: 250,
+                data: params => ({
+                    search: params.term
+                }),
+                processResults: data => ({
+                    results: data.map(item => ({
+                        id: item.id,
+                        text: item.name
+                    }))
+                })
+            }
         });
 
         $("form").submit(function() {

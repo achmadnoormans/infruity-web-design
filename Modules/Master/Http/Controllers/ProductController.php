@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -51,6 +52,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
+            'category_id' =>'required|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
@@ -65,6 +67,7 @@ class ProductController extends Controller
             DB::beginTransaction();
             $product = new Product();
             $product->name = $request->product_name;
+            $product->category_id = $request->category_id;
             $product->description = strip_tags($request->description ?? '');
             $product->price = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';
@@ -111,11 +114,15 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        $product = Product::findOrFail($id);
+        $data = [
+            'data' => $product,
+            'product_units' => ProductUnit::all(),
+            'category' => ProductCategory::findOrFail($product->category_id),
+        ];
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
-        $data['data'] = Product::findOrFail($id);
-        $data['product_units'] = ProductUnit::all();
         // dd($data);
         return view('master::products.create', $data);
     }
@@ -133,6 +140,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
+            'category_id' =>'required|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
@@ -155,6 +163,7 @@ class ProductController extends Controller
                 $product->image = $path;
             }
             $product->name = $request->product_name;
+            $product->category_id = $request->category_id;
             $product->description = strip_tags($request->description ?? '');
             $product->price = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';

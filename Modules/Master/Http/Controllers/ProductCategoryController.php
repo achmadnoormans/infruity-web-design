@@ -149,6 +149,17 @@ class ProductCategoryController extends Controller
         }
     }
 
+    public function getCategory(Request $request)
+    {
+        $search = $request->get('search');
+        $data = ProductCategory::where('name', 'like', '%' . $search . '%')
+            ->select('id', 'name')
+            ->limit(10)
+            ->get();
+    
+        return response()->json($data);
+    }
+
     public function get_data(Request $request)
     {
         $data = ProductCategory::all();

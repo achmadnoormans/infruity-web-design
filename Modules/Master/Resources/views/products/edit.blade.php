@@ -1,8 +1,8 @@
 @extends('template.root')
 
 @section('content')
-    <form id="add_product_form" class="form d-flex flex-column flex-lg-row" action="{{ url(Request::segment(1), $data->id) }}" method="POST"
-        data-kt-redirect="" enctype="multipart/form-data">
+    <form id="add_product_form" class="form d-flex flex-column flex-lg-row" action="{{ url(Request::segment(1), $data->id) }}"
+        method="POST" data-kt-redirect="" enctype="multipart/form-data">
         {{ method_field('PUT') }}
         @csrf
         <!--begin::Aside column-->
@@ -139,6 +139,22 @@
                     <!--end::Select2-->
                     <!--begin::Description-->
                     <div class="text-muted fs-7 mb-7">Add product to a category.</div>
+                    <!--end::Description-->
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <!--begin::Label-->
+                    <label class="form-label">Product Category</label>
+                    <!--end::Label-->
+                    <!--begin::Select2-->
+                    <select class="form-select mb-2" data-placeholder="Select an option" data-allow-clear="true"
+                        {{-- multiple="multiple" --}} name="category_id" id="category_id">
+                        @if (isset($data->category_id))
+                            <option value="{{ $city->id }}" selected>{{ $city->name }}</option>
+                        @endif
+                    </select>
+                    <!--end::Select2-->
+                    <!--begin::Description-->
+                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Button-->
@@ -459,7 +475,25 @@
                 description.value = quill.root.innerHTML; // Ambil konten HTML
             });
         });
-        
+
+        $('#category_id').select2({
+            placeholder: 'Select a Category',
+            ajax: {
+                url: '{{ route('ajax.category') }}',
+                dataType: 'json',
+                delay: 250,
+                data: params => ({
+                    search: params.term
+                }),
+                processResults: data => ({
+                    results: data.map(item => ({
+                        id: item.id,
+                        text: item.name
+                    }))
+                })
+            }
+        });
+
         $("form").submit(function() {
             $(this).find(":submit").attr('disabled', 'disabled');
             $(this).find(":submit").html(
