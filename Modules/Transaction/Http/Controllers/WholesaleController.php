@@ -113,22 +113,24 @@ class WholesaleController extends Controller
      */
     public function edit($id)
     {
-        $data['products'] = Product::all();
+        $data['products'] = ProductCategory::all();
         $data['suppliers'] = Supplier::all();
         $data['data'] = Wholesale::findOrFail($id);
-        $data['selectedProducts'] = WholesaleProduct::with('product')
+        $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier')
             ->where('wholesale_id', $id)
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->product_id,
-                    'name' => $item->product->name,
-                    'price' => number_format($item->product->price, 0, ',', '.'),
-                    // 'image' => asset('storage/' . $item->product->image),
-                    'image' => null,
+                    'id' => $item->category_id,
+                    'name' => $item->category->name,
+                    'price' => number_format($item->price, 0, ',', '.'),
+                    'total_price' => number_format($item->total_price, 0, ',', '.'),
                     'qty' => $item->quantity,
+                    'supplier_id' => $item->supplier_id,
+                    'supplier_name' => $item->supplier->name,
                 ];
             });
+            // dd($data);
         return view('transaction::wholesale.edit', $data);
     }
 
@@ -143,7 +145,6 @@ class WholesaleController extends Controller
         // dd($request->all());
         // Validasi input
         $request->validate([
-            'supplier_id' => 'required',
             'order_date' => 'required|date',
             'products' => 'required|array',
         ]);
@@ -162,8 +163,10 @@ class WholesaleController extends Controller
             foreach ($request->products as $product) {
                 $wholesaleDetail = new WholesaleProduct();
                 $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->product_id = $product['id'];
-                $wholesaleDetail->quantity = $product['quantity'];
+                $wholesaleDetail->category_id = $product['id'];
+                $wholesaleDetail->quantity = $product['qty'];
+                $wholesaleDetail->price = $product['price'];
+                $wholesaleDetail->supplier_id = $product['supplier_id'];
                 $wholesaleDetail->save();
             }
             DB::commit();

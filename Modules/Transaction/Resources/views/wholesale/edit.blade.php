@@ -28,30 +28,8 @@
                             <label class="form-label">Order ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
-                            <div class="fw-bold fs-3">#14364</div>
+                            <div class="fw-bold fs-3">#{{ $data->order_number }}</div>
                             <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Supplier</label>
-                            <!--end::Label-->
-                            <!--begin::Select2-->
-                            <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                                data-placeholder="Select an option" name="supplier_id"
-                                id="kt_ecommerce_edit_order_supplier">
-                                <option></option>
-                                @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}"
-                                        {{ $data->supplier_id == $supplier->id ? 'selected' : '' }}>
-                                        {{ $supplier->name }}</option>
-                                @endforeach
-                            </select>
-                            <!--end::Select2-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the date of the order to process.</div>
-                            <!--end::Description-->
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
@@ -61,7 +39,7 @@
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
-                                class="form-control mb-2" value="{{ $data->order_date }}">
+                                class="form-control mb-2" value="{{ $data->order_date ?? old(order_date) }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Set the date of the order to process.</div>
@@ -95,12 +73,28 @@
                             <label class="form-label">Add products to this order</label>
                             <!--end::Label-->
                             <!--begin::Selected products-->
-                            <div class="row row-cols-1 row-cols-xl-3 row-cols-md-2 border border-dashed rounded pt-3 pb-1 px-2 mb-5 mh-300px overflow-scroll"
-                                id="kt_ecommerce_edit_order_selected_products">
-                                <!--begin::Empty message-->
-
-                                <!--end::Empty message-->
+                            <div class="table table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
+                                    id="kt_ecommerce_edit_order_selected_products_table">
+                                    <thead>
+                                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                            <th class="min-w-200px">Product</th>
+                                            <th class="min-w-100px">Qty</th>
+                                            <th class="min-w-100px">Price</th>
+                                            <th class="min-w-200px">Total</th>
+                                            <th class="min-w-200px">Supplier</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kt_ecommerce_edit_order_selected_products_body">
+                                        <tr class="text-muted text-center">
+                                            <td colspan="6"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
+
+                            <!-- Tempat hidden input -->
                             <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
                             {{-- <!--begin::Total price-->
@@ -139,38 +133,23 @@
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
                                                 <input class="form-check-input" type="checkbox" value="1"
-                                                    data-product-id={{ $product->id }} />
+                                                    id="check_id_{{ $product->id }}" />
                                             </div>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center"
                                                 data-kt-ecommerce-edit-order-filter="product"
                                                 data-kt-ecommerce-edit-order-id="{{ $product->id }}">
-                                                <!--begin::Thumbnail-->
-                                                <a href="{{ url('products/' . $product->id) }}" class="symbol symbol-50px">
-                                                    <span class="symbol-label"
-                                                        style="background-image:url({{ asset('storage/' . $product->image) }});"></span>
-                                                </a>
-                                                <!--end::Thumbnail-->
                                                 <div class="ms-5">
                                                     <!--begin::Title-->
-                                                    <a href="{{ url('products/' . $product->id) }}"
+                                                    <a href="#"
                                                         class="text-gray-800 text-hover-primary fs-5 fw-bold">{{ $product->name }}</a>
                                                     <!--end::Title-->
-                                                    <!--begin::Price-->
-                                                    <div class="fw-semibold fs-7">Price: Rp.
-                                                        <span
-                                                            data-kt-ecommerce-edit-order-filter="price">{{ toNumber($product->price) }}</span>
-                                                    </div>
-                                                    <!--end::Price-->
-                                                    <!--begin::SKU-->
-                                                    <div class="text-muted fs-7">SKU: {{ $product->sku }}</div>
-                                                    <!--end::SKU-->
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-end pe-5" data-order="42">
-                                            <span class="fw-bold ms-3">42</span>
+                                            <span class="fw-bold ms-3">0</span>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -209,15 +188,32 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalInputQtyLabel">Input Quantity</h5>
+                            <h5 class="modal-title" id="modalInputQtyLabel">Input Product Details</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="inputProductId">
+
+                            <div class="mb-3">
+                                <label for="inputSupplier" class="form-label">Supplier</label>
+                                <select id="inputSupplier" class="form-select" data-control="select2">
+                                    <option selected disabled>Choose supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="inputQuantity" class="form-label">Quantity</label>
                                 <input type="number" class="form-control" id="inputQuantity"
                                     placeholder="Enter quantity" min="1">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="inputPrice" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="inputPrice" placeholder="Enter price"
+                                    min="0" step="0.01">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -244,5 +240,5 @@
         </div>
         <!--end::Main column-->
     </form>
-@include('transaction::wholesale.js-edit')
+    @include('transaction::wholesale.js-edit')
 @endsection
