@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\Supplier;
+use Modules\Master\Entities\Product;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Yajra\DataTables\Facades\DataTables;
@@ -37,7 +38,26 @@ class WholesaleController extends Controller
      */
     public function create()
     {
-        $data['products'] = ProductCategory::all();
+        $data['products'] = collect()
+        ->merge(
+            ProductCategory::all()->map(function ($item) {
+                return (object) [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'type' => 'category',
+                ];
+            })
+        )
+        ->merge(
+            Product::where('direct_stock', 1)->get()->map(function ($item) {
+                return (object) [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'type' => 'product',
+                ];
+            })
+        )
+        ->values(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
         $data['data'] = null;
         return view('transaction::wholesale.create', $data);
@@ -77,10 +97,16 @@ class WholesaleController extends Controller
             foreach ($request->products as $product) {
                 $wholesaleDetail = new WholesaleProduct();
                 $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->category_id = $product['id'];
                 $wholesaleDetail->quantity = $product['qty'];
                 $wholesaleDetail->price = $product['price'];
+                $wholesaleDetail->total_price = $product['price'] * $product['qty'];
+                if ($product['type'] == 'product') {    
+                    $wholesaleDetail->product_id = $product['id'];
+                } else {
+                    $wholesaleDetail->category_id = $product['id'];
+                }
                 $wholesaleDetail->supplier_id = $product['supplier_id'];
+                // dd($wholesaleDetail);
                 $wholesaleDetail->save();
             }
 
@@ -113,21 +139,41 @@ class WholesaleController extends Controller
      */
     public function edit($id)
     {
-        $data['products'] = ProductCategory::all();
+        $data['products'] = collect()
+        ->merge(
+            ProductCategory::all()->map(function ($item) {
+                return (object) [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'type' => 'category',
+                ];
+            })
+        )
+        ->merge(
+            Product::where('direct_stock', 1)->get()->map(function ($item) {
+                return (object) [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'type' => 'product',
+                ];
+            })
+        )
+        ->values(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
         $data['data'] = Wholesale::findOrFail($id);
-        $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier')
+        $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier', 'product')
             ->where('wholesale_id', $id)
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->category_id,
-                    'name' => $item->category->name,
+                    'id' => $item->category_id != 0? $item->category_id : $item->product_id,
+                    'name' => $item->category_id != 0 ? $item->category->name : $item->product->name,
                     'price' => number_format($item->price, 0, ',', '.'),
                     'total_price' => number_format($item->total_price, 0, ',', '.'),
                     'qty' => $item->quantity,
                     'supplier_id' => $item->supplier_id,
                     'supplier_name' => $item->supplier->name,
+                    'type' => $item->product_id != null ? 'product' : 'category',
                 ];
             });
             // dd($data);
@@ -163,10 +209,16 @@ class WholesaleController extends Controller
             foreach ($request->products as $product) {
                 $wholesaleDetail = new WholesaleProduct();
                 $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->category_id = $product['id'];
                 $wholesaleDetail->quantity = $product['qty'];
                 $wholesaleDetail->price = $product['price'];
+                $wholesaleDetail->total_price = $product['price'] * $product['qty'];
+                if ($product['type'] == 'product') {    
+                    $wholesaleDetail->product_id = $product['id'];
+                } else {
+                    $wholesaleDetail->category_id = $product['id'];
+                }
                 $wholesaleDetail->supplier_id = $product['supplier_id'];
+                // dd($wholesaleDetail);
                 $wholesaleDetail->save();
             }
             DB::commit();
@@ -312,6 +364,9 @@ class WholesaleController extends Controller
                 } else {
                     return '<span class="badge badge-light-danger">Unknown</span>';
                 }
+            })
+            ->addColumn('status_raw', function ($item) {
+                return $item->status;
             })
             ->addColumn('action', function ($item) {
                 $html = '';

@@ -140,7 +140,8 @@
                                         <td>
                                             <div class="d-flex align-items-center"
                                                 data-kt-ecommerce-edit-order-filter="product"
-                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}">
+                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}"
+                                                data-kt-ecommerce-edit-order-type="{{ $product->type }}">
                                                 <div class="ms-5">
                                                     <!--begin::Title-->
                                                     <a href="#"
@@ -190,11 +191,11 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalInputQtyLabel">Input Product Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="inputProductId">
+                            <input type="hidden" id="typeList">
 
                             <div class="mb-3">
                                 <label for="inputSupplier" class="form-label">Supplier</label>

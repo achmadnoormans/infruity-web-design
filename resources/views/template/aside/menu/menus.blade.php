@@ -131,36 +131,91 @@
     </a>
     <!--end:Menu link-->
 </div>
-<div class="menu-item">
+<div data-kt-menu-trigger="click"
+    class="menu-item {{ in_array(Request::segment(1), ['customers']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
-    <a class="menu-link {{ $link == 'staff' ? 'active' : '' }}" href="{{ url('staff') }}">
+    <span class="menu-link">
         <span class="menu-icon">
             <i class="ki-duotone ki-profile-user">
                 <span class="path1"></span>
                 <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
             </i>
         </span>
         <span class="menu-title">Staff</span>
-    </a>
+        <span class="menu-arrow"></span>
+    </span>
     <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'staff' ? 'active' : '' }}" href="{{ url('staff') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Staff List</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'staff/create' ? 'active' : '' }}" href="{{ url('staff/create') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Create Staff</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+    </div>
+    <!--end:Menu sub-->
 </div>
-<div class="menu-item">
+<div data-kt-menu-trigger="click"
+    class="menu-item {{ in_array(Request::segment(1), ['customers']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
-    <a class="menu-link {{ $link == 'customers' ? 'active' : '' }}" href="{{ url('customers') }}">
+    <span class="menu-link">
         <span class="menu-icon">
             <i class="ki-duotone ki-people">
                 <span class="path1"></span>
                 <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
             </i>
         </span>
-        <span class="menu-title">Customers</span>
-    </a>
+        <span class="menu-title">Customer</span>
+        <span class="menu-arrow"></span>
+    </span>
     <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'customers' ? 'active' : '' }}" href="{{ url('customers') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Customer List</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'customers/create' ? 'active' : '' }}" href="{{ url('customers/create') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Create Customer</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+    </div>
+    <!--end:Menu sub-->
 </div>
 <div class="menu-item">
     <!--begin:Menu link-->

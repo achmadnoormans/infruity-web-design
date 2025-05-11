@@ -63,7 +63,24 @@ return new class extends Migration
                 END AS stock_status
             FROM
                 products AS A
-                LEFT JOIN stock_in AS B ON A.id = B.product_id
+                LEFT JOIN (
+                    SELECT
+                        product_id,
+                        quantity,
+                        avg_price 
+                    FROM
+                        stock_in UNION
+                    SELECT
+                        product_id,
+                        quantity,
+                        price 
+                    FROM
+                        wholesale_product
+                        JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+                    WHERE
+                        wholesale.`status` = 'complete' 
+                        AND product_id != 0
+                ) AS B ON A.id = B.product_id
                     LEFT JOIN product_units AS C ON C.id = A.product_unit
             GROUP BY
                 A.id, C.abbreviation

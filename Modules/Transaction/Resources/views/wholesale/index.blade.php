@@ -25,8 +25,8 @@
                             data-placeholder="Status" data-kt-ecommerce-product-filter="status">
                             <option></option>
                             <option value="all">All</option>
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
+                            <option value='processing'>Processing</option>
+                            <option value='complete'>Complete</option>
                         </select>
                         <!--end::Select2-->
                     </div>
@@ -79,8 +79,7 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         className: 'text-center'
@@ -93,6 +92,12 @@
                         data: 'status',
                         name: 'status',
                         className: 'text-center',
+                        render: function(data, type, row) {
+                            if (type === 'filter' || type === 'sort') {
+                                return row.status_raw; // pakai nilai mentah untuk filter/sort
+                            }
+                            return data; // tampilkan badge HTML
+                        }
                     },
                     {
                         data: 'order_date',
@@ -114,6 +119,13 @@
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+
+            $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
+                let val = $(this).val();
+
+                if (val === 'all') val = ''; // kosongkan filter jika all
+                dataTable.column(2).search(val).draw();
             });
         });
 
@@ -190,7 +202,7 @@
                         type: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
-                            id:id
+                            id: id
                         },
                         success: function(response) {
                             Swal.fire({

@@ -28,10 +28,11 @@
                 });
 
             const previouslySelected = @json($selectedProducts);
-
+            console.log(previouslySelected);
             if (previouslySelected && previouslySelected.length > 0) {
                 previouslySelected.forEach(product => {
                     const id = product.id;
+                    const type = product.type;
                     const qty = product.qty;
                     const price = product.price;
                     const total = qty * price;
@@ -53,6 +54,7 @@
                     $(`#selected-products-hidden input[name="products[${id}][qty]"]`).remove();
                     $(`#selected-products-hidden input[name="products[${id}][price]"]`).remove();
                     $(`#selected-products-hidden input[name="products[${id}][supplier_id]"]`).remove();
+                    $(`#selected-products-hidden input[name="products[${id}][type]"]`).remove();
 
                     // Tampilkan di tabel
                     const $tbody = $('#kt_ecommerce_edit_order_selected_products_body');
@@ -78,6 +80,7 @@
                         <input type="hidden" name="products[${id}][qty]" value="${qty}">
                         <input type="hidden" name="products[${id}][price]" value="${price}">
                         <input type="hidden" name="products[${id}][supplier_id]" value="${supplierId}">
+                        <input type="hidden" name="products[${id}][type]" value="${type}">
                     `;
                     $('#selected-products-hidden').append(hiddenInputs);
                     const checkbox = document.getElementById(`check_id_${id}`);
@@ -93,6 +96,8 @@
                 const checked = $(this).is(':checked');
                 const productId = row.find('[data-kt-ecommerce-edit-order-id]').data(
                     'kt-ecommerce-edit-order-id');
+                const type = row.find('[data-kt-ecommerce-edit-order-id]').data(
+                    'kt-ecommerce-edit-order-type');
 
                 if (checked) {
                     const productName = row.find('a.text-gray-800').text().trim();
@@ -104,10 +109,12 @@
                         id: productId,
                         name: productName,
                         // image: productImage,
-                        price: price
+                        price: price,
+                        type: type
                     };
 
                     $('#inputProductId').val(productId);
+                    $('#typeList').val(type);
                     $('#inputQuantity').val('');
                     $('#modalInputQty').modal('show');
                 } else {
@@ -131,6 +138,7 @@
                 const supplierId = $('#inputSupplier').val();
                 const supplierText = $('#inputSupplier option:selected').text();
                 const id = $('#inputProductId').val();
+                const type = $('#typeList').val();
 
                 if (!qty || qty <= 0) {
                     Swal.fire("Error", "Quantity harus diisi dan lebih dari 0.", "error");
@@ -158,6 +166,7 @@
                 $(`#selected-products-hidden input[name="products[${id}][qty]"]`).remove();
                 $(`#selected-products-hidden input[name="products[${id}][price]"]`).remove();
                 $(`#selected-products-hidden input[name="products[${id}][supplier_id]"]`).remove();
+                $(`#selected-products-hidden input[name="products[${id}][type]"]`).remove();
 
                 // Tambah tampilan produk terpilih
                 // Cek apakah ini produk pertama, jika iya hapus placeholder
@@ -187,6 +196,7 @@
                     <input type="hidden" name="products[${id}][qty]" value="${qty}">
                     <input type="hidden" name="products[${id}][price]" value="${price}">
                     <input type="hidden" name="products[${id}][supplier_id]" value="${supplierId}">
+                    <input type="hidden" name="products[${id}][type]" value="${type}">
                 `;
                 $('#selected-products-hidden').append(hiddenInputs);
 
@@ -216,6 +226,7 @@
             $(`#selected-products-hidden input[name="products[${id}][qty]"]`).remove();
             $(`#selected-products-hidden input[name="products[${id}][price]"]`).remove();
             $(`#selected-products-hidden input[name="products[${id}][supplier_id]"]`).remove();
+            $(`#selected-products-hidden input[name="products[${id}][type]"]`).remove();
 
             // Jika sudah tidak ada produk, tampilkan placeholder
             if ($('#kt_ecommerce_edit_order_selected_products_body tr').length === 0) {

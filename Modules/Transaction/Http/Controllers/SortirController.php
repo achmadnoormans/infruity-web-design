@@ -139,6 +139,7 @@ class SortirController extends Controller
         $data = WholesaleProduct::with('category')->join('wholesale', 'wholesale.id', '=', 'wholesale_product.wholesale_id')
         ->where('wholesale.status', 'complete')
         ->select('wholesale_product.*')
+        ->orderBy('wholesale.order_date', 'asc')
         ->get();
         return DataTables::of($data)
             ->addIndexColumn()

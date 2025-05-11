@@ -28,7 +28,7 @@
                             <label class="form-label">Order ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
-                            <div class="fw-bold fs-3">#{{ $data->order_number }}</div>
+                            <div class="fw-bold fs-3">#14364</div>
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -39,7 +39,7 @@
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
-                                class="form-control mb-2" value="{{ $data->order_date ?? old(order_date) }}" />
+                                class="form-control mb-2" value="{{ $data->order_date ?? '' }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Set the date of the order to process.</div>
@@ -88,7 +88,9 @@
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
                                         <tr class="text-muted text-center">
-                                            <td colspan="6"></td>
+                                            <td colspan="6">Select one or more products from the list below by ticking
+                                                the
+                                                checkbox.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -132,14 +134,14 @@
                                     <tr>
                                         <td>
                                             <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                    id="check_id_{{ $product->id }}" />
+                                                <input class="form-check-input" type="checkbox" value="1" />
                                             </div>
                                         </td>
                                         <td>
                                             <div class="d-flex align-items-center"
                                                 data-kt-ecommerce-edit-order-filter="product"
-                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}">
+                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}"
+                                                data-kt-ecommerce-edit-order-type="{{ $product->type }}">
                                                 <div class="ms-5">
                                                     <!--begin::Title-->
                                                     <a href="#"
@@ -193,6 +195,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="inputProductId">
+                            <input type="hidden" id="typeList">
 
                             <div class="mb-3">
                                 <label for="inputSupplier" class="form-label">Supplier</label>
