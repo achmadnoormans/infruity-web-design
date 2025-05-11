@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductUnit;
+use Modules\Master\Entities\ProductCategory;
 
 class WholesaleProduct extends Model
 {
@@ -27,6 +28,10 @@ class WholesaleProduct extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
     }
     public function productUnit()
     {

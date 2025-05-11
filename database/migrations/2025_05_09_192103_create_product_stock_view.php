@@ -16,21 +16,15 @@ return new class extends Migration
             CREATE VIEW view_wholesale AS
             SELECT 
                 wholesale.id AS id,
+                wholesale.order_number AS order_number,
                 wholesale.status AS status,
-                supplier.name AS supplier_name,
-                supplier.pic_name AS pic_name,
-                supplier.pic_whatsapp AS whatsapp,
                 wholesale.order_date,
                 COUNT(wholesale_product.id) AS total_product
             FROM wholesale
-            JOIN supplier ON supplier.id = wholesale.supplier_id
             JOIN wholesale_product ON wholesale_product.wholesale_id = wholesale.id
             GROUP BY 
                 wholesale.id, 
-                wholesale.status, 
-                supplier.name,
-                supplier.pic_name,
-                supplier.pic_whatsapp,
+                wholesale.status,
                 wholesale.order_date
         ");
 

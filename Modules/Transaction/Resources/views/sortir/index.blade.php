@@ -35,6 +35,7 @@
                             <th class="text-center min-w-100px">No</th>
                             <th class="text-start min-w-100px">Name</th>
                             <th class="text-start min-w-100px">Transaction Code</th>
+                            <th class="text-start min-w-100px">Tanggal Order</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
@@ -73,6 +74,11 @@
                     {
                         data: 'order_number',
                         name: 'order_number'
+                    },
+                    {
+                        data: 'order_data',
+                        name: 'order_data',
+                        className: 'text-end'
                     },
                     {
                         data: 'quantity',

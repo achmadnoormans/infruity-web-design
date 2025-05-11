@@ -50,7 +50,7 @@ class WholesaleController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'order_date' => 'required',
             'description' => 'nullable|string|max:255',
@@ -67,7 +67,6 @@ class WholesaleController extends Controller
             DB::beginTransaction();
             $wholesale = new Wholesale();
             $wholesale->order_number = Wholesale::getOrderNumber();
-            $wholesale->supplier_id = $request->supplier_id;
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;
             $wholesale->status = 'processing';
@@ -78,8 +77,10 @@ class WholesaleController extends Controller
             foreach ($request->products as $product) {
                 $wholesaleDetail = new WholesaleProduct();
                 $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->product_id = $product['id'];
+                $wholesaleDetail->category_id = $product['id'];
                 $wholesaleDetail->quantity = $product['qty'];
+                $wholesaleDetail->price = $product['price'];
+                $wholesaleDetail->supplier_id = $product['supplier_id'];
                 $wholesaleDetail->save();
             }
 
@@ -100,7 +101,9 @@ class WholesaleController extends Controller
      */
     public function show($id)
     {
-        return view('transaction::show');
+        return redirect()->back()->withInput()
+                ->with('error', 'Halaman Belum dibuat');
+        // return view('transaction::show');
     }
 
     /**
@@ -198,7 +201,7 @@ class WholesaleController extends Controller
         }
     }
 
-    public function receive_product($id)
+    public function receive_productOld($id)
     {
         $data['data'] = Wholesale::findOrFail($id);
         $data['selectedProducts'] = WholesaleProduct::with('product')
@@ -217,6 +220,27 @@ class WholesaleController extends Controller
             });
         // dd($data);
         return view('transaction::wholesale.receive_product', $data);
+    }
+
+    public function receive_product(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $wholesale = Wholesale::findOrFail($id);
+            $wholesale->status = 'complete';
+            $wholesale->save();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diproses.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memproses data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function save_receive(Request $request)
@@ -266,12 +290,11 @@ class WholesaleController extends Controller
                 return '<div class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                 <a href="javascript:void(0)">
-                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->supplier_name, 0, 1)) . '</div>
+                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->order_number, 0, 1)) . '</div>
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->supplier_name . '</a><br>
-                                <span class="fs-7">' . $item->whatsapp . '</span>
+                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
                             </div>
                         </div>';
             })
@@ -308,8 +331,8 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="' . route('wholesale.receive_product', $item->id) . '">
-                                    Receive Product
+                                <a class="dropdown-item text-success" href="javascript:void(0)" onclick="receiveProduct(' . $item->id . ')">
+                                    Terima Barang
                                 </a>
                             </li>
                             <li>

@@ -18,6 +18,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('wholesale/receive-product/{id}', [WholesaleController::class, 'receive_product'])->name('wholesale.receive_product');    
     Route::post('wholesale/save-receive', [WholesaleController::class, 'save_receive'])->name('wholesale-save-receive');
     Route::get('wholesale/show/{id}', [WholesaleController::class,'show'])->name('wholesale.show');
+    Route::post('wholesale/receive/{id}', [WholesaleController::class,'receive_product'])->name('wholesale.receive_product');
 
     Route::get('sortir', [SortirController::class, 'index'])->name('sortir');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');

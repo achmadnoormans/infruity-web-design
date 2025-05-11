@@ -58,7 +58,7 @@ class SortirController extends Controller
     {
         // dd($id);
         $data['product'] = WholesaleProduct::findOrFail($id);
-        $data['productChild'] = Product::where('parent_id', $data['product']->product_id)->get();
+        $data['productChild'] = Product::where('category_id', $data['product']->category_id)->get();
         // dd($data);
         return view('transaction::sortir.show', $data);
     }
@@ -136,25 +136,19 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = WholesaleProduct::join('wholesale', 'wholesale.id', '=', 'wholesale_product.wholesale_id')
-        ->where('wholesale.status', 'complete')->get();
+        $data = WholesaleProduct::with('category')->join('wholesale', 'wholesale.id', '=', 'wholesale_product.wholesale_id')
+        ->where('wholesale.status', 'complete')
+        ->select('wholesale_product.*')
+        ->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $html = '
                     <div class="d-flex align-items-center">';
-                if (isset($item->product->image)) {
-                    $url = asset('storage/' . $item->product->image);
-                    $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
-                } else {
-                    $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
-                            <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
-                        </a>';
-                }
                 $html .= '<div class="ms-5">
-                            <a href="' . url('/products') . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('/category') . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
-                                ' . e($item->product->name) . '
+                                ' . e($item->category->name) . '
                             </a>
                         </div>
                     </div>
@@ -163,6 +157,9 @@ class SortirController extends Controller
             })
             ->addColumn('order_number', function ($item) {
                 return '<a href="' . route('wholesale.show', $item->wholesale_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" data-bs-toggle="tooltip" title="Show Wholesale">'. '#' . $item->wholesale->order_number .'</a>';
+            })
+            ->addColumn('order_data', function ($item) {
+                return dateindo($item->wholesale->order_date);
             })
             ->addColumn('action', function ($item) {
                 return '

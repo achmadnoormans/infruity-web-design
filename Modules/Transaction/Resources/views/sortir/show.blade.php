@@ -27,12 +27,8 @@
                                 <div class="col mb-4" data-product-id="1">
                                     <div class="border p-3 rounded bg-light">
                                         <div class="d-flex align-items-center">
-                                            <div class="symbol symbol-50px me-3">
-                                                <span class="symbol-label" style="background-image:url('');"></span>
-                                            </div>
                                             <div>
-                                                <div class="fw-bold">{{ $product->product->name }}</div>
-                                                <div class="text-muted">SKU: {{ $product->product->sku }} </div>
+                                                <div class="fw-bold fs-1">{{ $product->category->name }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -41,11 +37,11 @@
                                     <div class="border p-3 rounded bg-light">
                                         <div class="d-flex align-items-center">
                                             <div class="symbol symbol-50px me-3">
-                                                <span class="symbol-label"
-                                                    style="background-image:url({{ asset('storage/' . $product->product->image) }});"></span>
+                                                {{-- <span class="symbol-label"
+                                                    style="background-image:url({{ asset('storage/' . $product->product->image) }});"></span> --}}
                                             </div>
                                             <div>
-                                                <div class="fw-bold stock">{{ $product->quantity }}</div>
+                                                <div class="fw-bold fs-1 stock">{{ $product->quantity }}</div>
                                                 <input type="hidden" name="wholesale_product_id"
                                                     value="{{ $product->id }}">
                                             </div>

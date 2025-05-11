@@ -84,7 +84,7 @@ class Wholesale extends Model
             $orderPad = str_pad($orderData->order_number, 3, '0', STR_PAD_LEFT);
         }
 
-        $prefix = 'PO' . now()->format('ym');
+        $prefix = 'PO' . now()->format('Ym');
         $newCode = $prefix . $orderPad;
 
         return $newCode;
