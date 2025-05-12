@@ -38,29 +38,37 @@ class WholesaleController extends Controller
      */
     public function create()
     {
-        $data['products'] = collect()
-        ->merge(
-            ProductCategory::all()->map(function ($item) {
-                return (object) [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'type' => 'category',
-                ];
-            })
-        )
-        ->merge(
-            Product::where('direct_stock', 1)->get()->map(function ($item) {
-                return (object) [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'type' => 'product',
-                ];
-            })
-        )
-        ->values(); // optional: reset index numerik
+        // $data['products'] = collect()
+        // ->merge(
+        //     ProductCategory::all()->map(function ($item) {
+        //         return (object) [
+        //             'id' => $item->id,
+        //             'name' => $item->name,
+        //             'type' => 'category',
+        //         ];
+        //     })
+        // )
+        // ->merge(
+        //     Product::where('direct_stock', 1)->get()->map(function ($item) {
+        //         return (object) [
+        //             'id' => $item->id,
+        //             'name' => $item->name,
+        //             'type' => 'product',
+        //         ];
+        //     })
+        // )
+        // ->values(); // optional: reset index numerik
+
+        $wholsale = new Wholesale();
+        $wholsale->order_date = date('Y-m-d');
+        $wholsale->status = 'draft';
+        $wholsale->created_by = Auth::user()->id_user;
+        $wholsale->save();
+
+        $data['products'] = Product::whereNull('parent_id')->get(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
-        $data['data'] = null;
-        return view('transaction::wholesale.create', $data);
+        return redirect('wholesale/'. $wholsale->id . '/edit')->with('success', 'Pembuatan Data Kulak berhasil');
+        // return view('transaction::wholesale.create', $data);
     }
 
     /**
@@ -139,45 +147,26 @@ class WholesaleController extends Controller
      */
     public function edit($id)
     {
-        $data['products'] = collect()
-        ->merge(
-            ProductCategory::all()->map(function ($item) {
-                return (object) [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'type' => 'category',
-                ];
-            })
-        )
-        ->merge(
-            Product::where('direct_stock', 1)->get()->map(function ($item) {
-                return (object) [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'type' => 'product',
-                ];
-            })
-        )
-        ->values(); // optional: reset index numerik
+        $data['products'] = Product::whereNull('parent_id')->get(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
         $data['data'] = Wholesale::findOrFail($id);
-        $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier', 'product')
-            ->where('wholesale_id', $id)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->category_id != 0? $item->category_id : $item->product_id,
-                    'name' => $item->category_id != 0 ? $item->category->name : $item->product->name,
-                    'price' => number_format($item->price, 0, ',', '.'),
-                    'total_price' => number_format($item->total_price, 0, ',', '.'),
-                    'qty' => $item->quantity,
-                    'supplier_id' => $item->supplier_id,
-                    'supplier_name' => $item->supplier->name,
-                    'type' => $item->product_id != null ? 'product' : 'category',
-                ];
-            });
+        // $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier', 'product')
+        //     ->where('wholesale_id', $id)
+        //     ->get()
+        //     ->map(function ($item) {
+        //         return [
+        //             'id' => $item->category_id != 0? $item->category_id : $item->product_id,
+        //             'name' => $item->category_id != 0 ? $item->category->name : $item->product->name,
+        //             'price' => number_format($item->price, 0, ',', '.'),
+        //             'total_price' => number_format($item->total_price, 0, ',', '.'),
+        //             'qty' => $item->quantity,
+        //             'supplier_id' => $item->supplier_id,
+        //             'supplier_name' => $item->supplier->name,
+        //             'type' => $item->product_id != null ? 'product' : 'category',
+        //         ];
+        //     });
             // dd($data);
-        return view('transaction::wholesale.edit', $data);
+        return view('transaction::wholesale.create', $data);
     }
 
     /**
@@ -332,6 +321,103 @@ class WholesaleController extends Controller
         }
 
         return redirect('wholesale')->with('success', 'Pembuatan Data Kulak berhasil');
+    }
+
+    public function get_product(Request $request, $id)
+    {
+        $data = WholesaleProduct::where('wholesale_id', $id)->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                return $item->product->name;
+            })
+            ->addColumn('supplier', function ($item) {
+                return $item->supplier->name;
+            })
+            ->addColumn('price', function ($item) {
+                return 'Rp.' . toNumber($item->price);
+            })
+            ->addColumn('total', function ($item) {
+                return 'Rp.' . toNumber($item->total_price);
+            })
+            ->addColumn('action', function ($item) {
+                $html = '';
+                $html .= '
+                <div class="d-flex flex-row gap-1">
+                    <button type="button" class="btn btn-sm btn-warning" onclick="editProduct(' . $item->id . ')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteProduct(' . $item->id . ')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                ';
+                return $html;
+            })
+            ->rawColumns(['name', 'action'])
+            ->make(true);
+    }
+
+    public function save_product(Request $request)
+    {
+        $validated = $request->validate([
+            'wholesale_id' =>'required|exists:wholesale,id',
+            'id' =>'required|exists:products,id',
+            'supplier_id' =>'required|exists:supplier,id',
+            'qty' =>'required',
+            'price' =>'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $wholesaleProduct = new WholesaleProduct();
+            $wholesaleProduct->wholesale_id = $validated['wholesale_id'];
+            $wholesaleProduct->product_id = $validated['id'];
+            $wholesaleProduct->supplier_id = $validated['supplier_id'];
+            $wholesaleProduct->quantity = $validated['qty'];
+            $wholesaleProduct->price = $validated['price'];
+            $wholesaleProduct->total_price = $validated['price'] * $validated['qty'];
+            $wholesaleProduct->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal disimpan.',
+                'data' => $wholesaleProduct
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Product berhasil disimpan.',
+            'data' => $wholesaleProduct
+        ], 201);
+    }
+
+    public function delete_product(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $wholesaleProduct = WholesaleProduct::findOrFail($id);
+            $wholesaleProduct->delete();
+            DB::commit();
+            return response()->json([
+               'message' => 'Product berhasil dihapus.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+               'message' => 'Product gagal dihapus.',
+            ], 404);
+        }
+    }
+
+    public function edit_product(Request $request, $id)
+    {
+        $data = WholesaleProduct::findOrFail($id);
+        return response()->json([
+            'data' => $data
+        ], 201);
     }
 
     public function get_data(Request $request)
