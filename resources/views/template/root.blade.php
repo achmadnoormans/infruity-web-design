@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
     <meta name="keywords" content="buah, umkm, pasar" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />

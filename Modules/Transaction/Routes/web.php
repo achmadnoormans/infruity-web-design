@@ -2,6 +2,7 @@
 use Modules\Transaction\Http\Controllers\WholesaleController;
 use Modules\Transaction\Http\Controllers\SortirController;
 use Modules\Transaction\Http\Controllers\ProductReceiptController;
+use Modules\Master\Http\Controllers\ProductController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +15,9 @@ use Modules\Transaction\Http\Controllers\ProductReceiptController;
 */
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
+    Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
+    Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
+
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
     Route::get('wholesale/receive-product/{id}', [WholesaleController::class, 'receive_product'])->name('wholesale.receive_product');    

@@ -25,6 +25,11 @@ class ProductController extends Controller
         return view('master::products.index');
     }
 
+    public function get_stock()
+    {
+        return view('master::products.stock');
+    }
+
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -258,6 +263,90 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
+        $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
+        if (empty($searchValue)) {
+            return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
+        }
+        $query = Product::query()
+            ->with('category')
+            ->where('name', 'like', '%' . $searchValue . '%');
+
+        $data = $query->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($product) {
+                $html = '
+                    <div class="d-flex align-items-center">';
+                if (isset($product->image)) {
+                    $url = asset('storage/' . $product->image);
+                    $html .= '<img src="'. $url .'" alt="Product Image" width="50">';
+                } else {
+                    $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
+                            <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
+                        </a>';
+                }
+                $html .= '<div class="ms-5">
+                            <a href="apps/ecommerce/catalog/edit-product.html" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                               data-kt-ecommerce-product-filter="product_name">
+                                ' . e($product->name) . '
+                            </a>
+                        </div>
+                    </div>
+                ';
+                return $html;
+            })
+            ->addColumn('price', function($product) {
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
+            })
+            ->addColumn('category', function($product) {
+                return $product->category->name ?? '-';
+            })
+            ->addColumn('unit', function($product) {
+                return $product->unit->name ?? '-';
+            })
+            ->addColumn('status', function($product) {
+                $html = '';
+                if ($product->status == 'receipt') {
+                    $html .= '<span class="badge badge-light-success">Menggunakan Resep</span>';
+                } elseif ($product->status == 'no-receipt') {
+                    $html .= '<span class="badge badge-light-info">Tanpa Resep</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-warning">Unknown</span>';
+                }
+                return $html;
+            })
+            ->addColumn('action', function ($product) {
+                return '
+                    <div class="dropdown text-end">
+                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
+                            type="button" 
+                            id="dropdownMenuButton' . $product->id . '" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                            <i class="ki-outline ki-gear fs-5 ms-1"></i>
+                        </button>
+            
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
+                            <li>
+                                <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
+                                    Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                ';
+            })
+            ->rawColumns(['name', 'action', 'price', 'status'])
+            ->make(true);
+    }
+
+    public function get_data_stock(Request $request)
+    {
         $data = DB::table('product_stock')->get();
         return DataTables::of($data)
             ->addIndexColumn()
@@ -296,8 +385,7 @@ class ProductController extends Controller
                             id="dropdownMenuButton' . $product->id . '" 
                             data-bs-toggle="dropdown" 
                             aria-expanded="false">
-                            Actions
-                            <i class="ki-outline ki-down fs-5 ms-1"></i>
+                            <i class="ki-outline ki-gear fs-5 ms-1"></i>
                         </button>
             
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
