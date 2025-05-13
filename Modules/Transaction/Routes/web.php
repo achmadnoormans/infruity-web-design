@@ -22,7 +22,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('wholesale/receive/{id}', [WholesaleController::class,'receive_product'])->name('wholesale.receive_product');
     Route::get('wholesale/get-product/{id}', [WholesaleController::class,'get_product'])->name('wholesale.get-product');
     Route::get('wholesale/edit-product/{id}', [WholesaleController::class,'edit_product'])->name('wholesale.edit-product');
-    Route::put('wholesale/update-product/{id}', [WholesaleController::class,'edit_product'])->name('wholesale.edit-product');
+    Route::put('wholesale/update-product/{id}', [WholesaleController::class,'update_product'])->name('wholesale.update-product');
     Route::post('wholesale/save-product', [WholesaleController::class,'save_product'])->name('wholesale.save-product');
     Route::delete('wholesale/delete-product/{id}', [WholesaleController::class,'delete_product'])->name('wholesale.delete_product');
 

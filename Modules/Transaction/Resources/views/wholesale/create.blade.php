@@ -237,50 +237,6 @@
                 </div>
             </div>
 
-            <!-- Modal for Quantity Input -->
-            <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-labelledby="modalInputQtyLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalInputQtyLabel">Edit Detail</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="" id="kt_modal_add_customer_form" data-kt-redirect="#">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="inputSupplier" class="form-label">Supplier</label>
-                                    <select id="inputSupplierEdit" class="form-select" data-control="select2">
-                                        <option selected disabled>Choose supplier</option>
-                                        @foreach ($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="inputQuantity" class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
-                                        placeholder="Enter quantity" min="1" name="qty">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="inputPrice" class="form-label">Price</label>
-                                    <input type="text" class="form-control" id="inputPriceEdit" name="price" placeholder="Enter price"
-                                        min="0" step="0.01">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="submitQty">Add Product</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
@@ -297,5 +253,61 @@
         </div>
         <!--end::Main column-->
     </form>
+    <!-- Modal for Quantity Input -->
+    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-labelledby="modalEditQtyLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="{{ url(Request::segment(1)) }}" id="kt_modal_add_customer_form"
+                    data-kt-redirect="#">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditQtyLabel">Edit Detail</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="_method" id="methodField" value="">
+                        <div class="mb-3">
+                            <label for="inputSupplier" class="form-label">Supplier</label>
+                            <select id="inputSupplierEdit" class="form-select" data-control="select2" name="supplier_id">
+                                <option selected disabled>Choose supplier</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
+                                placeholder="Enter quantity" min="1" name="qty">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputPrice" class="form-label">Price</label>
+                            <input type="text" class="form-control" id="inputPriceEdit" name="price"
+                                placeholder="Enter price" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
+                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+
+                </form>
+            </div>
+        </div>
+    </div>
     @include('transaction::wholesale.js-create')
 @endsection

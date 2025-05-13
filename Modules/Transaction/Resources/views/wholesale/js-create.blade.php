@@ -181,7 +181,7 @@
             });
         });
 
-        $("form").submit(function() {
+        $("#kt_ecommerce_edit_order_form").submit(function() {
             $(this).find(":submit").attr('disabled', 'disabled');
             $(this).find(":submit").html(
                 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
@@ -237,25 +237,24 @@
         function editProduct(id) {
             var url = `{{ url('wholesale/edit-product/${id}') }}`;
             var urlUpdate = `{{ url('wholesale/update-product/${id}') }}`;
+
             $.ajax({
-                url: url, // URL untuk mengambil data produk yang akan diedit
+                url: url,
                 type: 'GET',
                 success: function(response) {
-                    // Isi form dengan data produk yang ada
                     console.log(response);
-                    $('input[name="price"]').val(response.price);
-                    $('input[name="qty"]').val(response.quantity);
-                    
 
-                    // Ubah action form untuk update
+                    // Set nilai input
+                    $('#inputPriceEdit').val(response.data.price);
+                    $('#inputQuantityEdit').val(response.data.quantity);
+                    $('#inputSupplierEdit').val(response.data.supplier_id).trigger('change');
+
+                    // Set action dan method form
                     var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', urlUpdate); // URL untuk update produk
-                    form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
-                    form.append(
-                        '<input type="hidden" name="_method" value="PUT">'
-                    ); // Menambahkan input _method untuk PUT
+                    form.attr('action', urlUpdate);
+                    $('#methodField').val('PUT');
 
-                    // Tampilkan modal untuk edit produk
+                    // Tampilkan modal
                     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
                     modal.show();
                 },
@@ -268,5 +267,61 @@
                 }
             });
         }
+
+
+        $('#kt_modal_add_customer_form').on('submit', function(e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+            var submitBtn = $('#kt_modal_add_customer_submit');
+
+            // Show loading
+            submitBtn.prop('disabled', true);
+            submitBtn.find('.indicator-label').hide();
+            submitBtn.find('.indicator-progress').show();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data berhasil disimpan.'
+                    }).then(() => {
+                        // 1. Reset form
+                        form.trigger('reset');
+
+                        // 5. Tutup modal
+                        const modalEl = document.getElementById('kt_modal_add_customer');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        modalInstance.hide();
+
+                        if (typeof tableSelectedProduct !== 'undefined') {
+                            tableSelectedProduct.ajax.reload(null, false);
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    var msg = 'Terjadi kesalahan saat menyimpan data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                },
+                complete: function() {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitBtn.find('.indicator-label').show();
+                    submitBtn.find('.indicator-progress').hide();
+                }
+            });
+        });
     </script>
 @endsection

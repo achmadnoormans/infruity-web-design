@@ -170,6 +170,37 @@ class WholesaleController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     * @param int $id
+     * @return Renderable
+     */
+    public function update_product(Request $request, $id)
+    {
+        // Validasi input
+        // dd($request->all());
+        $validated = $request->validate([
+            'supplier_id' => 'required|exists:supplier,id',
+            'price' => 'required|numeric',
+            'qty' => 'required|numeric',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $wholesaleProduct = WholesaleProduct::findOrFail($id);
+            $wholesaleProduct->supplier_id = $validated['supplier_id'];
+            $wholesaleProduct->price = $validated['price'];
+            $wholesaleProduct->quantity = $validated['qty'];
+            $wholesaleProduct->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Product updated failed']);
+        }
+
+        return response()->json(['message' => 'Product updated successfully']);
+    }
+
+    /**
      * Update the specified resource in storage.
      * @param Request $request
      * @param int $id
@@ -181,35 +212,19 @@ class WholesaleController extends Controller
         // Validasi input
         $request->validate([
             'order_date' => 'required|date',
-            'products' => 'required|array',
         ]);
 
         try {
             DB::beginTransaction();
             $wholesale = Wholesale::find($id);
-            $wholesale->supplier_id = $request->supplier_id;
+            if (!isset($wholesale->order_number)) {
+                $wholesale->order_number = Wholesale::getOrderNumber();
+            }
+            $wholesale->status = 'processing';
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;
             $wholesale->save();
 
-            // Update atau hapus produk wholesale
-            $wholesaleId = $wholesale->id;
-            WholesaleProduct::where('wholesale_id', $wholesaleId)->delete();
-            foreach ($request->products as $product) {
-                $wholesaleDetail = new WholesaleProduct();
-                $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->quantity = $product['qty'];
-                $wholesaleDetail->price = $product['price'];
-                $wholesaleDetail->total_price = $product['price'] * $product['qty'];
-                if ($product['type'] == 'product') {    
-                    $wholesaleDetail->product_id = $product['id'];
-                } else {
-                    $wholesaleDetail->category_id = $product['id'];
-                }
-                $wholesaleDetail->supplier_id = $product['supplier_id'];
-                // dd($wholesaleDetail);
-                $wholesaleDetail->save();
-            }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -368,6 +383,21 @@ class WholesaleController extends Controller
             'price' =>'required',
         ]);
 
+        $cek = WholesaleProduct::where('wholesale_id', $validated['wholesale_id'])
+            ->where('product_id', $validated['id'])
+            ->first();
+        if ($cek) {
+            return response()->json([
+                'message' => 'Product sudah ada',
+            ], 404);
+        }
+
+        if ($validated['qty'] <= 0) {
+            return response()->json([
+                'message' => 'Qty tidak boleh 0',
+            ], 404);
+        }
+
         try {
             DB::beginTransaction();
             $wholesaleProduct = new WholesaleProduct();
@@ -447,6 +477,8 @@ class WholesaleController extends Controller
                     return '<span class="badge badge-light-primary">Processing</span>';
                 } elseif ($item->status == 'complete') {
                     return '<span class="badge badge-light-success">Complete</span>';
+                } elseif ($item->status == 'draft') {
+                    return '<span class="badge badge-light-warning">Draft</span>';
                 } else {
                     return '<span class="badge badge-light-danger">Unknown</span>';
                 }
