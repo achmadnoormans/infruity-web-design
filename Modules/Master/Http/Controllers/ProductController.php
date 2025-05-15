@@ -57,7 +57,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
-            'category_id' =>'required|exists:products_category,id',
+            'category_id' => 'required|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
@@ -145,7 +145,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
-            'category_id' =>'required|exists:products_category,id',
+            'category_id' => 'required|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
@@ -263,15 +263,16 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
-        $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
-        if (empty($searchValue)) {
-            return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
-        }
-        $query = Product::query()
-            ->with('category')
-            ->where('name', 'like', '%' . $searchValue . '%');
+        // $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
+        // if (empty($searchValue)) {
+        //     return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
+        // }
+        // $query = Product::query()
+        //     ->with('category')
+        //     ->where('name', 'like', '%' . $searchValue . '%');
 
-        $data = $query->get();
+        // $data = $query->get();
+        $data = Product::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
@@ -279,7 +280,7 @@ class ProductController extends Controller
                     <div class="d-flex align-items-center">';
                 if (isset($product->image)) {
                     $url = asset('storage/' . $product->image);
-                    $html .= '<img src="'. $url .'" alt="Product Image" width="50">';
+                    $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
                 } else {
                     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
                             <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
@@ -295,16 +296,16 @@ class ProductController extends Controller
                 ';
                 return $html;
             })
-            ->addColumn('price', function($product) {
+            ->addColumn('price', function ($product) {
                 return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
             })
-            ->addColumn('category', function($product) {
+            ->addColumn('category', function ($product) {
                 return $product->category->name ?? '-';
             })
-            ->addColumn('unit', function($product) {
+            ->addColumn('unit', function ($product) {
                 return $product->unit->name ?? '-';
             })
-            ->addColumn('status', function($product) {
+            ->addColumn('status', function ($product) {
                 $html = '';
                 if ($product->status == 'receipt') {
                     $html .= '<span class="badge badge-light-success">Menggunakan Resep</span>';
@@ -315,31 +316,58 @@ class ProductController extends Controller
                 }
                 return $html;
             })
-            ->addColumn('action', function ($product) {
+            // ->addColumn('action', function ($product) {
+            //     return '
+            //         <div class="dropdown text-end">
+            //             <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
+            //                 type="button" 
+            //                 id="dropdownMenuButton' . $product->id . '" 
+            //                 data-bs-toggle="dropdown" 
+            //                 aria-expanded="false">
+            //                 <i class="ki-outline ki-gear fs-5 ms-1"></i>
+            //             </button>
+
+            //             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
+            //                 <li>
+            //                     <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
+            //                         Edit
+            //                     </a>
+            //                 </li>
+            //                 <li>
+            //                     <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
+            //                         Delete
+            //                     </a>
+            //                 </li>
+            //             </ul>
+            //         </div>
+            //     ';
+            // })
+            ->addColumn('action', function ($row) {
+                $editUrl = route('products.edit', $row->id);
+                $deleteUrl = route('products.destroy', $row->id);
+                $name = e($row->name);
+
                 return '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $product->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            <i class="ki-outline ki-gear fs-5 ms-1"></i>
-                        </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
-                            <li>
-                                <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
-                                    Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
-                                    Delete
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                ';
+                <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="' . $editUrl . '" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Yakin ingin hapus?\')" class="m-0 d-flex justify-content-center">
+                                ' . csrf_field() . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-link p-0 text-danger" title="Hapus" style="border:none; background:none;">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>';
             })
             ->rawColumns(['name', 'action', 'price', 'status'])
             ->make(true);
@@ -355,7 +383,7 @@ class ProductController extends Controller
                     <div class="d-flex align-items-center">';
                 if (isset($product->image)) {
                     $url = asset('storage/' . $product->image);
-                    $html .= '<img src="'. $url .'" alt="Product Image" width="50">';
+                    $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
                 } else {
                     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
                             <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
@@ -371,11 +399,11 @@ class ProductController extends Controller
                 ';
                 return $html;
             })
-            ->addColumn('price', function($product) {
+            ->addColumn('price', function ($product) {
                 return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
             })
-            ->addColumn('stock_available', function($product) {
-                return '<span class="badge badge-light-'.$product->stock_status.'">' . $product->stock_available . ' ' . $product->unit . '</span>';
+            ->addColumn('stock_available', function ($product) {
+                return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
             })
             ->addColumn('action', function ($product) {
                 return '

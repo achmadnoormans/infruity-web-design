@@ -44,29 +44,43 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="products-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            {{-- <th class="w-10px pe-2">
-                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                    <input class="form-check-input" type="checkbox" data-kt-check="true"
-                                        data-kt-check-target="#kt_ecommerce_products_table .form-check-input"
-                                        value="1" />
-                                </div>
-                            </th> --}}
+
                             <th class="min-w-200px">Product</th>
                             <th class="text-end min-w-70px">Category</th>
                             <th class="text-end min-w-100px">Price</th>
                             <th class="text-end min-w-70px">Satuan</th>
-                            <th class="text-end min-w-70px">Status</th>
                             <th class="text-end min-w-70px"></th>
                         </tr>
                     </thead>
-                    <tbody class="fw-semibold text-gray-600">
-                    </tbody>
+                    <tbody class="fw-semibold text-gray-600"></tbody>
                 </table>
                 <!--end::Table-->
             </div>
             <!--end::Card body-->
         </div>
     </div>
+    <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="actionModalLabel">Pilih Aksi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p id="modal-product-name" class="fw-bold mb-3"></p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="#" id="btn-edit" class="btn btn-sm btn-primary">Edit</a>
+                        <form id="form-delete" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript">
         var dataTable;
         $(document).ready(function() {
@@ -111,11 +125,6 @@
                     {
                         data: 'unit',
                         name: 'unit',
-                        className: 'text-end'
-                    },
-                    {
-                        data: 'status',
-                        name: 'status',
                         className: 'text-end'
                     },
                     {
