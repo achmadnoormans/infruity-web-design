@@ -47,7 +47,7 @@ return new class extends Migration {
                 'supplier_id' => 3,
                 'order_number' => 'PO' . date('Ym') . '003',
                 'order_date' => date('2025-05-03'),
-                'status' => 'processing',
+                'status' => 'complete',
                 'created_by' => 2,
                 'updated_by' => 2,
                 'created_at' => now(),

@@ -57,8 +57,8 @@ class SortirController extends Controller
     public function show($id)
     {
         // dd($id);
-        $data['product'] = WholesaleProduct::findOrFail($id);
-        $data['productChild'] = Product::where('category_id', $data['product']->category_id)->get();
+        $data['product'] = DB::table('sortir_view')->where('id', $id)->first();
+        $data['productChild'] = Product::where('parent_id', $data['product']->id)->get();
         // dd($data);
         return view('transaction::sortir.show', $data);
     }
@@ -136,31 +136,24 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = WholesaleProduct::with('category')->join('wholesale', 'wholesale.id', '=', 'wholesale_product.wholesale_id')
-        ->where('wholesale.status', 'complete')
-        ->select('wholesale_product.*')
-        ->orderBy('wholesale.order_date', 'asc')
-        ->get();
+        $data = DB::table('sortir_view')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $html = '
                     <div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">
-                            <a href="' . url('/category') . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('/products', $item->product_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
-                                ' . e($item->category->name) . '
+                                ' . e($item->name) . '
                             </a>
                         </div>
                     </div>
                 ';
                 return $html;
             })
-            ->addColumn('order_number', function ($item) {
-                return '<a href="' . route('wholesale.show', $item->wholesale_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" data-bs-toggle="tooltip" title="Show Wholesale">'. '#' . $item->wholesale->order_number .'</a>';
-            })
-            ->addColumn('order_data', function ($item) {
-                return dateindo($item->wholesale->order_date);
+            ->addColumn('quantity', function ($item) {
+                return '<span class="badge badge-light-primary">' . toNumber($item->stock_available) . ' ' . $item->satuan . '</span>';
             })
             ->addColumn('action', function ($item) {
                 return '
@@ -168,8 +161,8 @@ class SortirController extends Controller
                         <i class="fa fa-eye"></i>
                     </a>
                 ';
-            })            
-            ->rawColumns(['name', 'action', 'order_number'])
+            })
+            ->rawColumns(['name', 'action', 'quantity'])
             ->make(true);
     }
 }

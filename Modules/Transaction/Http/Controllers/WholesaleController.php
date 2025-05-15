@@ -67,7 +67,7 @@ class WholesaleController extends Controller
 
         $data['products'] = Product::whereNull('parent_id')->get(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
-        return redirect('wholesale/'. $wholsale->id . '/edit')->with('success', 'Pembuatan Data Kulak berhasil');
+        return redirect('wholesale/' . $wholsale->id . '/edit')->with('success', 'Pembuatan Data Kulak berhasil');
         // return view('transaction::wholesale.create', $data);
     }
 
@@ -108,7 +108,7 @@ class WholesaleController extends Controller
                 $wholesaleDetail->quantity = $product['qty'];
                 $wholesaleDetail->price = $product['price'];
                 $wholesaleDetail->total_price = $product['price'] * $product['qty'];
-                if ($product['type'] == 'product') {    
+                if ($product['type'] == 'product') {
                     $wholesaleDetail->product_id = $product['id'];
                 } else {
                     $wholesaleDetail->category_id = $product['id'];
@@ -136,7 +136,7 @@ class WholesaleController extends Controller
     public function show($id)
     {
         return redirect()->back()->withInput()
-                ->with('error', 'Halaman Belum dibuat');
+            ->with('error', 'Halaman Belum dibuat');
         // return view('transaction::show');
     }
 
@@ -165,7 +165,7 @@ class WholesaleController extends Controller
         //             'type' => $item->product_id != null ? 'product' : 'category',
         //         ];
         //     });
-            // dd($data);
+        // dd($data);
         return view('transaction::wholesale.create', $data);
     }
 
@@ -355,18 +355,29 @@ class WholesaleController extends Controller
             ->addColumn('total', function ($item) {
                 return 'Rp.' . toNumber($item->total_price);
             })
-            ->addColumn('action', function ($item) {
+            ->addColumn('action', function ($item) use ($request) {
                 $html = '';
-                $html .= '
-                <div class="d-flex flex-row gap-1">
-                    <button type="button" class="btn btn-sm btn-warning" onclick="editProduct(' . $item->id . ')">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteProduct(' . $item->id . ')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-                ';
+                if ($request->url == 'wholesale/process') {
+                    if ($item->status == 'processing') {
+                        $html .= '
+                        <div class="d-flex flex-row">
+                            <a href="javascript:void(0)" class="btn-active-light-primary" onclick="deleteProduct(' . $item->id . ')">
+                                <i class="bi bi-check2-square"></i>
+                        </div>
+                        ';
+                    }
+                } else {
+                    $html .= '
+                    <div class="d-flex flex-row gap-1">
+                        <button type="button" class="btn btn-sm btn-warning" onclick="editProduct(' . $item->id . ')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteProduct(' . $item->id . ')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    ';
+                }
                 return $html;
             })
             ->rawColumns(['name', 'action'])
@@ -376,11 +387,11 @@ class WholesaleController extends Controller
     public function save_product(Request $request)
     {
         $validated = $request->validate([
-            'wholesale_id' =>'required|exists:wholesale,id',
-            'id' =>'required|exists:products,id',
-            'supplier_id' =>'required|exists:supplier,id',
-            'qty' =>'required',
-            'price' =>'required',
+            'wholesale_id' => 'required|exists:wholesale,id',
+            'id' => 'required|exists:products,id',
+            'supplier_id' => 'required|exists:supplier,id',
+            'qty' => 'required',
+            'price' => 'required',
         ]);
 
         $cek = WholesaleProduct::where('wholesale_id', $validated['wholesale_id'])
@@ -432,12 +443,12 @@ class WholesaleController extends Controller
             $wholesaleProduct->delete();
             DB::commit();
             return response()->json([
-               'message' => 'Product berhasil dihapus.',
+                'message' => 'Product berhasil dihapus.',
             ], 201);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
-               'message' => 'Product gagal dihapus.',
+                'message' => 'Product gagal dihapus.',
             ], 404);
         }
     }
@@ -448,6 +459,54 @@ class WholesaleController extends Controller
         return response()->json([
             'data' => $data
         ], 201);
+    }
+
+    public function receive_process($id)
+    {
+        $wholesale = Wholesale::findOrFail($id);
+        $wholsaleProduct = WholesaleProduct::with('product', 'supplier')->where('wholesale_id', $id)->get();
+        $data['data'] = $wholesale;
+        $data['products'] = $wholsaleProduct;
+
+        return view('transaction::wholesale.process', $data);
+    }
+
+    public function update_receive_product(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $wholesaleProduct = WholesaleProduct::findOrFail($id);
+            $wholesaleProduct->status = 'complete';
+            $wholesaleProduct->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product berhasil diterima.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal diterima.',
+            ], 404);
+        }
+    }
+
+    public function set_selesai(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $wholesale = Wholesale::findOrFail($id);
+            $wholesale->status = 'complete';
+            $wholesale->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product berhasil diterima.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal diterima.',
+            ], 404);
+        }
     }
 
     public function get_data(Request $request)
@@ -507,7 +566,7 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-success" href="javascript:void(0)" onclick="receiveProduct(' . $item->id . ')">
+                                <a class="dropdown-item text-success" href="' . route('wholesale.receive_process', $item->id) . '">
                                     Terima Barang
                                 </a>
                             </li>

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -34,18 +33,20 @@ return new class extends Migration
             SELECT
                 B.id,
                 B.`name`,
-                A.category_id,
-                D.id AS wholesale_id,
-                D.order_number,
+                A.product_id,
+                C.abbreviation AS satuan,
+                COUNT(D.id) AS wholesale_id,
+                GROUP_CONCAT(D.order_number) AS order_number,
                 SUM( A.quantity ) AS stock_available 
             FROM
                 `wholesale_product` AS A
-                JOIN products_category AS B ON A.category_id = B.id 
-                JOIN wholesale AS D ON A.wholesale_id = D.id
+                JOIN products AS B ON A.product_id = B.id
+                JOIN product_units AS C ON B.product_unit = C.id
+                JOIN wholesale AS D ON A.wholesale_id = D.id 
             WHERE
-                D.status = 'complete'  
+                D.STATUS = 'complete' 
             GROUP BY
-                category_id
+                B.id, A.product_id, C.abbreviation
         ");
 
         DB::statement("DROP VIEW IF EXISTS product_stock");
