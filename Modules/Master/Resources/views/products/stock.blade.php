@@ -52,89 +52,12 @@
                                 </div>
                             </th> --}}
                             <th class="min-w-200px">Product</th>
-                            <th class="text-end min-w-100px">Price</th>
                             <th class="text-end min-w-70px">Limit</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px"></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600">
-                        {{-- <tr>
-                            <td>
-                                <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                    <input class="form-check-input" type="checkbox" value="1" />
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <!--begin::Thumbnail-->
-                                    <a href="apps/ecommerce/catalog/edit-product.html" class="symbol symbol-50px">
-                                        <span class="symbol-label"
-                                            style="background-image:url(assets/media//stock/ecommerce/1.png);"></span>
-                                    </a>
-                                    <!--end::Thumbnail-->
-                                    <div class="ms-5">
-                                        <!--begin::Title-->
-                                        <a href="apps/ecommerce/catalog/edit-product.html"
-                                            class="text-gray-800 text-hover-primary fs-5 fw-bold"
-                                            data-kt-ecommerce-product-filter="product_name">Product 1</a>
-                                        <!--end::Title-->
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end pe-0">
-                                <span class="fw-bold">02925004</span>
-                            </td>
-                            <td class="text-end pe-0" data-order="40">
-                                <span class="fw-bold ms-3">40</span>
-                            </td>
-                            <td class="text-end pe-0">258</td>
-                            <td class="text-end pe-0" data-order="rating-3">
-                                <div class="rating justify-content-end">
-                                    <div class="rating-label checked">
-                                        <i class="ki-outline ki-star fs-6"></i>
-                                    </div>
-                                    <div class="rating-label checked">
-                                        <i class="ki-outline ki-star fs-6"></i>
-                                    </div>
-                                    <div class="rating-label checked">
-                                        <i class="ki-outline ki-star fs-6"></i>
-                                    </div>
-                                    <div class="rating-label">
-                                        <i class="ki-outline ki-star fs-6"></i>
-                                    </div>
-                                    <div class="rating-label">
-                                        <i class="ki-outline ki-star fs-6"></i>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-end pe-0" data-order="Scheduled">
-                                <!--begin::Badges-->
-                                <div class="badge badge-light-primary">Scheduled</div>
-                                <!--end::Badges-->
-                            </td>
-                            <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary"
-                                    data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">Actions
-                                    <i class="ki-outline ki-down fs-5 ms-1"></i></a>
-                                <!--begin::Menu-->
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4"
-                                    data-kt-menu="true">
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="apps/ecommerce/catalog/edit-product.html" class="menu-link px-3">Edit</a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="#" class="menu-link px-3"
-                                            data-kt-ecommerce-product-filter="delete_row">Delete</a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                </div>
-                                <!--end::Menu-->
-                            </td>
-                        </tr> --}}
                     </tbody>
                 </table>
                 <!--end::Table-->
@@ -172,11 +95,6 @@
                     {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'price',
-                        name: 'price',
-                        className: 'text-end'
                     },
                     {
                         data: 'limit',

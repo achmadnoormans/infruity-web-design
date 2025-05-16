@@ -107,6 +107,30 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center" data-kt-ecommerce-edit-order-filter="product"
+                                            data-kt-ecommerce-edit-order-id="{{ $product->id }}">
+                                            <!--begin::Thumbnail-->
+                                            <a href="#" class="symbol symbol-50px">
+                                                <span class="symbol-label"
+                                                    style="background-image:url('');"></span>
+                                            </a>
+                                            <!--end::Thumbnail-->
+                                            <div class="ms-5">
+                                                <!--begin::Title-->
+                                                <a href="#"
+                                                    class="text-danger text-hover-primary fs-5 fw-bold">Produk Buang</a>
+                                                <!--end::Title-->
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-5" data-order="42">
+                                        <input type="number"
+                                            class="form-control form-control-solid text-end quantity-input"
+                                            name="buang" value="" placeholder="0" />
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <!--end::Table-->

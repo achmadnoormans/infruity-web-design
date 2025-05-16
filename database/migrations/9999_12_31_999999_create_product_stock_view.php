@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -62,9 +63,7 @@ return new class extends Migration {
                 GROUP BY
                     product_id 
                 ) AS B ON A.id = B.product_id
-                LEFT JOIN product_units AS C ON A.product_unit = C.id 
-            WHERE
-                A.parent_id IS NULL
+                LEFT JOIN product_units AS C ON A.product_unit = C.id
             GROUP BY
                 A.id, B.product_id, C.abbreviation
         ");

@@ -12,13 +12,14 @@ use Modules\Transaction\Entities\StockOut;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class SortirController extends Controller
 {
@@ -100,7 +101,7 @@ class SortirController extends Controller
         // dd($request->all());
         Validator::make($request->all(), [
             'wholesale_product_id' => 'required|exists:products,id',
-            'quantity' => 'required|array',
+            'quantity' => 'nullable|array',
         ])->validate();
 
         try {
@@ -110,27 +111,41 @@ class SortirController extends Controller
             $hpp = $wholesaleProduct->hpp;
             $avgPrice = $hpp / $quantity;
 
-            foreach ($request->quantity as $key => $value) {
-                $stockIn = new StockIn();
-                $stockIn->code = 'wholesale_product';
-                $stockIn->reference_id = $request->wholesale_product_id;
-                $stockIn->date = date('Y-m-d');
-                $stockIn->product_id = $key;
-                $stockIn->quantity = $value;
-                $stockIn->avg_price = $avgPrice;
-                $stockIn->created_by = Auth::user()->id;
-                $stockIn->save();
+            if (isset($request->quantity)) {
+                foreach ($request->quantity as $key => $value) {
+                    $stockIn = new StockIn();
+                    $stockIn->code = 'wholesale_product';
+                    $stockIn->reference_id = $request->wholesale_product_id;
+                    $stockIn->date = date('Y-m-d');
+                    $stockIn->product_id = $key;
+                    $stockIn->quantity = $value;
+                    $stockIn->avg_price = $avgPrice;
+                    $stockIn->created_by = Auth::user()->id;
+                    $stockIn->save();
+                }
+
+                $stockOut = new StockOut();
+                $stockOut->code = 'sortir';
+                $stockOut->reference_id = $request->wholesale_product_id;
+                $stockOut->date = date('Y-m-d');
+                $stockOut->product_id = $request->wholesale_product_id;
+                $stockOut->quantity = array_sum($request->quantity);
+                $stockOut->avg_price = $avgPrice;
+                $stockOut->created_by = Auth::user()->id;
+                $stockOut->save();
             }
 
-            $stockOut = new StockOut();
-            $stockOut->code = 'sortir';
-            $stockOut->reference_id = $request->wholesale_product_id;
-            $stockOut->date = date('Y-m-d');
-            $stockOut->product_id = $request->wholesale_product_id;
-            $stockOut->quantity = array_sum($request->quantity);
-            $stockOut->avg_price = $avgPrice;
-            $stockOut->created_by = Auth::user()->id;
-            $stockOut->save();
+            if (isset($request->buang) && $request->buang > 0) {
+                $stockOut = new StockOut();
+                $stockOut->code = 'buang';
+                $stockOut->reference_id = $request->wholesale_product_id;
+                $stockOut->date = date('Y-m-d');
+                $stockOut->product_id = $request->wholesale_product_id;
+                $stockOut->quantity = $request->buang;
+                $stockOut->created_by = Auth::user()->id;
+                $stockOut->save();
+            }
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
