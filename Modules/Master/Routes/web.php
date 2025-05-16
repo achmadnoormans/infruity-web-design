@@ -29,6 +29,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('products', ProductController::class)->names('products')->except('show');
     Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');
     Route::put('products/{id}/update-price', [ProductController::class, 'updatePrice']);
+    Route::get('products/{id}/show', [ProductController::class, 'show'])->name('products.show');
 
     Route::resource('category', ProductCategoryController::class)->names('category')->except('show');
     Route::get('category/data', [ProductCategoryController::class, 'get_data'])->name('category-data');
@@ -60,7 +61,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('staff', StaffController::class)->names('staff')->except('show');
     Route::get('staff/data', [StaffController::class, 'get_data'])->name('staff-data');
-}); 
+});
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/province', [RegionController::class, 'getProvince'])->name('ajax.province');
@@ -70,4 +71,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/department', [DepartmentController::class, 'getDepartment'])->name('ajax.department');
     Route::get('/ajax/position', [PositionController::class, 'getPosition'])->name('ajax.position');
     Route::get('/ajax/category', [ProductCategoryController::class, 'getCategory'])->name('ajax.category');
+    Route::get('/ajax/getVariant', [ProductController::class, 'getVariant'])->name('ajax.getVariant');
+    Route::post('products/variant/store', [ProductController::class, 'storeVariant'])->name('products.store-variant');
+    Route::get('products/variants/get', [ProductController::class, 'getVariant'])->name('variants.get');
+    Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
+    Route::delete('products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.destroy-variant');
 });

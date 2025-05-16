@@ -109,7 +109,17 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        return view('master::show');
+        $product = Product::findOrFail($id);
+        $data = [
+            'data' => $product,
+            'product_units' => ProductUnit::all(),
+            'category' => ProductCategory::findOrFail($product->category_id),
+        ];
+        $data['page_plugin_js'] = [
+            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
+        ];
+        // dd($data);
+        return view('master::products.create', $data);
     }
 
     /**
@@ -255,6 +265,118 @@ class ProductController extends Controller
         }
     }
 
+    public function getVariant(Request $request)
+    {
+        $productId = $request->product_id;
+
+        $variants = Product::where('parent_id', $productId);
+
+        return DataTables::of($variants)
+            ->addColumn('action', function ($row) {
+                return '
+                <button class="btn btn-sm btn-light-primary edit-variant variant" type="button" 
+                        data-id="' . $row->id . '" 
+                        data-name="' . $row->name . '" 
+                        data-price="' . $row->price . '">
+                    Edit
+                </button>
+                <button class="btn btn-sm btn-light-danger delete-variant variant" type="button"
+                        data-id="' . $row->id . '">
+                    Hapus
+                </button>
+            ';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
+    }
+
+    public function storeVariant(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'parent_id' => 'required|exists:products,id',
+            'product_name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            $parentProduct = Product::findOrFail($request->parent_id);
+            DB::beginTransaction();
+            $product = new Product();
+            $product->parent_id = $request->parent_id;
+            $product->name = $request->product_name;
+            $product->price = $request->price;
+            $product->category_id = $parentProduct->category_id;
+            $product->product_unit = $parentProduct->product_unit;
+            $product->stock = $parentProduct->stock;
+            $product->limit = $parentProduct->limit;
+            $product->handling = $parentProduct->handling;
+            $product->created_by = Auth::user()->id_user;
+            $product->description = $parentProduct->description;
+            $product->save();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Variant berhasil disimpan.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan variant: ' . $e->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function updateVariant(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_name' => 'required|string|max:255',
+                'price' => 'required|numeric',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+            DB::beginTransaction();
+            $variant = Product::findOrFail($id);
+            $variant->name = $request->product_name;
+            $variant->price = $request->price;
+            $variant->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Gagal memperbarui variant: ' . $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Updated']);
+    }
+
+    public function destroyVariant($id)
+    {
+        try {
+            DB::beginTransaction();
+            $variant = Product::findOrFail($id);
+            $variant->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal menghapus variant: ' . $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Deleted']);
+    }
+
     /**
      * Get data for DataTables
      * @param Request $request
@@ -287,7 +409,7 @@ class ProductController extends Controller
                         </a>';
                 }
                 $html .= '<div class="ms-5">
-                            <a href="apps/ecommerce/catalog/edit-product.html" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>
@@ -359,12 +481,9 @@ class ProductController extends Controller
                             </a>
                         </li>
                         <li>
-                            <form action="' . $deleteUrl . '" method="POST" onsubmit="return confirm(\'Yakin ingin hapus?\')" class="m-0 d-flex justify-content-center">
-                                ' . csrf_field() . method_field('DELETE') . '
-                                <button type="submit" class="btn btn-link p-0 text-danger" title="Hapus" style="border:none; background:none;">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
                         </li>
                     </ul>
                 </div>';
