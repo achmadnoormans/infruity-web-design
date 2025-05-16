@@ -87,7 +87,7 @@ class ProductController extends Controller
             if ($request->hasFile('avatar')) {
                 $path = $request->file('avatar')->store('products', 'public');
                 $product->image = $path;
-                $product->save();
+                // $product->save();
             }
 
             $product->save();
@@ -99,7 +99,7 @@ class ProductController extends Controller
                 ->with('error', 'Pembuatan Product gagal' . $e->getMessage());
         }
 
-        return redirect('products')->with('success', 'Pembuatan Product berhasil');
+        return redirect('products/' . $product->id . '/show')->with('success', 'Pembuatan Product berhasil');
     }
 
     /**
@@ -385,16 +385,16 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
-        // $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
-        // if (empty($searchValue)) {
-        //     return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
-        // }
-        // $query = Product::query()
-        //     ->with('category')
-        //     ->where('name', 'like', '%' . $searchValue . '%');
+        $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
+        if (empty($searchValue)) {
+            return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
+        }
+        $query = Product::query()
+            ->with('category')
+            ->where('name', 'like', '%' . $searchValue . '%');
 
-        // $data = $query->get();
-        $data = Product::all();
+        $data = $query->get();
+        // $data = Product::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
