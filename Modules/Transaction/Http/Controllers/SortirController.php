@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Modules\Transaction\Entities\StockIn;
+use Modules\Transaction\Entities\StockOut;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -121,9 +122,15 @@ class SortirController extends Controller
                 $stockIn->save();
             }
 
-            $wholesaleProduct->quantity = $quantity - array_sum($request->quantity);
-            $wholesaleProduct->updated_by = Auth::user()->id;
-            $wholesaleProduct->save();
+            $stockOut = new StockOut();
+            $stockOut->code = 'sortir';
+            $stockOut->reference_id = $request->wholesale_product_id;
+            $stockOut->date = date('Y-m-d');
+            $stockOut->product_id = $request->wholesale_product_id;
+            $stockOut->quantity = array_sum($request->quantity);
+            $stockOut->avg_price = $avgPrice;
+            $stockOut->created_by = Auth::user()->id;
+            $stockOut->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();

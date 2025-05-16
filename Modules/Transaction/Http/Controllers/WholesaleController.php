@@ -217,7 +217,8 @@ class WholesaleController extends Controller
         try {
             DB::beginTransaction();
             $wholesale = Wholesale::find($id);
-            if (!isset($wholesale->order_number)) {
+            if ($wholesale->order_number == null) {
+                // Generate order number if not already set
                 $wholesale->order_number = Wholesale::getOrderNumber();
             }
             $wholesale->status = 'processing';

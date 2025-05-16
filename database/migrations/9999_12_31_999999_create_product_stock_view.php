@@ -31,22 +31,42 @@ return new class extends Migration {
         DB::statement("
             CREATE VIEW sortir_view AS
             SELECT
-                B.id,
-                B.`name`,
-                A.product_id,
-                C.abbreviation AS satuan,
-                COUNT(D.id) AS wholesale_id,
-                GROUP_CONCAT(D.order_number) AS order_number,
-                SUM( A.quantity ) AS stock_available 
+                A.*,
+                B.product_id,
+                SUM( B.quantity ) AS stock_available,
+                C.abbreviation AS satuan
             FROM
-                `wholesale_product` AS A
-                JOIN products AS B ON A.product_id = B.id
-                JOIN product_units AS C ON B.product_unit = C.id
-                JOIN wholesale AS D ON A.wholesale_id = D.id 
+                products AS A
+                LEFT JOIN (
+                SELECT
+                    product_id,
+                    SUM( quantity ) AS quantity 
+                FROM
+                    wholesale_product 
+                WHERE
+                    `status` = 'complete' 
+                GROUP BY
+                    product_id UNION
+                SELECT
+                    product_id,
+                    SUM( quantity ) AS quantity 
+                FROM
+                    stock_in 
+                GROUP BY
+                    product_id UNION
+                SELECT
+                    product_id,
+                    -SUM( quantity ) AS quantity 
+                FROM
+                    stock_out 
+                GROUP BY
+                    product_id 
+                ) AS B ON A.id = B.product_id
+                LEFT JOIN product_units AS C ON A.product_unit = C.id 
             WHERE
-                D.STATUS = 'complete' 
+                A.parent_id IS NULL
             GROUP BY
-                B.id, A.product_id, C.abbreviation
+                A.id, B.product_id, C.abbreviation
         ");
 
         DB::statement("DROP VIEW IF EXISTS product_stock");
@@ -70,7 +90,15 @@ return new class extends Migration {
                         quantity,
                         avg_price 
                     FROM
-                        stock_in UNION
+                        stock_in 
+                    UNION                    
+                    SELECT
+                        product_id,
+                        -quantity,
+                        avg_price 
+                    FROM
+                        stock_out 
+                    UNION
                     SELECT
                         product_id,
                         quantity,
@@ -79,7 +107,7 @@ return new class extends Migration {
                         wholesale_product
                         JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
                     WHERE
-                        wholesale.`status` = 'complete' 
+                        wholesale_product.`status` = 'complete' 
                         AND product_id != 0
                 ) AS B ON A.id = B.product_id
                     LEFT JOIN product_units AS C ON C.id = A.product_unit
