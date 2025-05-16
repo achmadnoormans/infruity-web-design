@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Route;
 use Modules\Transaction\Http\Controllers\WholesaleController;
 use Modules\Transaction\Http\Controllers\SortirController;
 use Modules\Transaction\Http\Controllers\ProductReceiptController;
@@ -20,6 +21,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
+    Route::get('wholesale/{id}/show', [WholesaleController::class, 'show'])->name('wholesale-show');
     Route::get('wholesale/receive-product/{id}', [WholesaleController::class, 'receive_product'])->name('wholesale.receive_product');    
     Route::post('wholesale/save-receive', [WholesaleController::class, 'save_receive'])->name('wholesale-save-receive');
     Route::get('wholesale/show/{id}', [WholesaleController::class,'show'])->name('wholesale.show');
@@ -32,6 +34,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::delete('wholesale/delete-product/{id}', [WholesaleController::class,'delete_product'])->name('wholesale.delete_product');
     Route::post('wholesale/update-receive-product/{id}', [WholesaleController::class,'update_receive_product'])->name('wholesale.update_receive_product');
     Route::post('wholesale/set-selesai/{id}', [WholesaleController::class,'set_selesai'])->name('wholesale.set_selesai');
+    Route::get('wholesale/table-product-data', [WholesaleController::class, 'getProductTableData'])->name('wholsale.product-table-data');
 
     Route::get('sortir', [SortirController::class, 'index'])->name('sortir');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');

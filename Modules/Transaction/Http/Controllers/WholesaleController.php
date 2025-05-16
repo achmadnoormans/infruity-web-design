@@ -13,13 +13,14 @@ use Modules\Transaction\Entities\WholesaleProduct;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class WholesaleController extends Controller
 {
@@ -38,27 +39,6 @@ class WholesaleController extends Controller
      */
     public function create()
     {
-        // $data['products'] = collect()
-        // ->merge(
-        //     ProductCategory::all()->map(function ($item) {
-        //         return (object) [
-        //             'id' => $item->id,
-        //             'name' => $item->name,
-        //             'type' => 'category',
-        //         ];
-        //     })
-        // )
-        // ->merge(
-        //     Product::where('direct_stock', 1)->get()->map(function ($item) {
-        //         return (object) [
-        //             'id' => $item->id,
-        //             'name' => $item->name,
-        //             'type' => 'product',
-        //         ];
-        //     })
-        // )
-        // ->values(); // optional: reset index numerik
-
         $wholsale = new Wholesale();
         $wholsale->order_date = date('Y-m-d');
         $wholsale->status = 'draft';
@@ -135,9 +115,9 @@ class WholesaleController extends Controller
      */
     public function show($id)
     {
-        return redirect()->back()->withInput()
-            ->with('error', 'Halaman Belum dibuat');
-        // return view('transaction::show');
+        $data['suppliers'] = Supplier::all();
+        $data['data'] = Wholesale::findOrFail($id);
+        return view('transaction::wholesale.show', $data);
     }
 
     /**
@@ -147,25 +127,8 @@ class WholesaleController extends Controller
      */
     public function edit($id)
     {
-        $data['products'] = Product::whereNull('parent_id')->get(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
         $data['data'] = Wholesale::findOrFail($id);
-        // $data['selectedProducts'] = WholesaleProduct::with('category', 'supplier', 'product')
-        //     ->where('wholesale_id', $id)
-        //     ->get()
-        //     ->map(function ($item) {
-        //         return [
-        //             'id' => $item->category_id != 0? $item->category_id : $item->product_id,
-        //             'name' => $item->category_id != 0 ? $item->category->name : $item->product->name,
-        //             'price' => number_format($item->price, 0, ',', '.'),
-        //             'total_price' => number_format($item->total_price, 0, ',', '.'),
-        //             'qty' => $item->quantity,
-        //             'supplier_id' => $item->supplier_id,
-        //             'supplier_name' => $item->supplier->name,
-        //             'type' => $item->product_id != null ? 'product' : 'category',
-        //         ];
-        //     });
-        // dd($data);
         return view('transaction::wholesale.create', $data);
     }
 
@@ -393,6 +356,7 @@ class WholesaleController extends Controller
             'supplier_id' => 'required|exists:supplier,id',
             'qty' => 'required',
             'price' => 'required',
+            'sell_price' => 'nullable',
         ]);
 
         $cek = WholesaleProduct::where('wholesale_id', $validated['wholesale_id'])
@@ -420,6 +384,12 @@ class WholesaleController extends Controller
             $wholesaleProduct->price = $validated['price'];
             $wholesaleProduct->total_price = $validated['price'] * $validated['qty'];
             $wholesaleProduct->save();
+            
+            if ($validated['sell_price'] != null) {
+                $product = Product::findOrFail($validated['id']);
+                $product->price = $validated['sell_price'];
+                $product->save();
+            }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -510,6 +480,37 @@ class WholesaleController extends Controller
         }
     }
 
+    public function getProductTableData(Request $request)
+    {
+        $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
+        if (empty($searchValue)) {
+            return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
+        }
+        $query = Product::query()
+            ->with('category')
+            ->where('name', 'like', '%' . $searchValue . '%')
+            ->whereNull('parent_id');
+            
+        // $data = Product::whereNull('parent_id')->get();
+        $data = $query->get();
+        return DataTables::of($data)
+            ->addColumn('checkbox', function ($row) {
+                return '<div class="form-check form-check-sm form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
+                    </div>';
+            })
+            ->addColumn('name', function ($row) {
+                return '<a href="#" class="text-gray-800 text-hover-primary fs-5 fw-bold">'
+                    . e($row->name) .
+                    '</a>';
+            })
+            ->addColumn('qty_remaining', function ($row) {
+                return '<span class="fw-bold ms-3">' . ($row->qty_remaining ?? 0) . '</span>';
+            })
+            ->rawColumns(['checkbox', 'name', 'qty_remaining'])
+            ->make(true);
+    }
+
     public function get_data(Request $request)
     {
         $data = Wholesale::getData();
@@ -520,12 +521,12 @@ class WholesaleController extends Controller
                 $color = $colors[$item->id % count($colors)];
                 return '<div class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="javascript:void(0)">
+                                <a href="'. url('wholesale') . '/' . $item->id . '/show' .'">
                                     <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->order_number, 0, 1)) . '</div>
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
+                                <a href="'. url('wholesale') . '/' . $item->id . '/show' .'" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
                             </div>
                         </div>';
             })

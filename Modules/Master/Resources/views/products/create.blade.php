@@ -270,23 +270,6 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="fv-row">
-                                    <!--begin::Label-->
-                                    <label class="form-label">Bolehkan Produk Tanpa Sortir ?</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <div class="form-check form-check-custom form-check-solid mb-2">
-                                        <input class="form-check-input" name="direct_stock" type="checkbox"
-                                            value="1" />
-                                        <label class="form-check-label">Ya</label>
-                                    </div>
-                                    <!--end::Input-->
-                                    <!--begin::Description-->
-                                    <div class="text-muted fs-7">Produk akan langsung masuk stok tanpa disortir.</div>
-                                    <!--end::Description-->
-                                </div>
-                                <!--end::Input group-->
                             </div>
                             <!--end::Card header-->
                         </div>
@@ -368,41 +351,36 @@
                             <!--end::Card header-->
                         </div>
                         <!--end::Inventory-->
-                        @if (Request::segment(3) == 'show')
-                            <!--begin::Pricing-->
-                            <div class="card card-flush py-4">
-                                <!--begin::Card header-->
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <h2>Variant</h2>
-                                    </div>
+                        <div class="card card-flush py-4">
+                            <!--begin::Card header-->
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h2>Variant</h2>
                                 </div>
-                                <!--end::Card header-->
-                                <!--begin::Card body-->
-                                <div class="card-body pt-0">
-                                    <div class="table table-responsive">
-                                        <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
-                                            id="variant_table">
-                                            <thead>
-                                                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                                    <th class="min-w-200px">Product</th>
-                                                    <th class="min-w-100px">Price</th>
-                                                    <th class="min-w-100px text-end">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="kt_ecommerce_edit_order_selected_products_body"></tbody>
-                                        </table>
-                                    </div>
-                                    <!--end::Input group-->
-                                    <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
-                                        onclick="addVariant()">
-                                        <i class="ki-outline ki-plus fs-2"></i>Buat variant baru
-                                    </button>
-                                </div>
-                                <!--end::Card header-->
                             </div>
-                            <!--end::Pricing-->
-                        @endif
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <div class="table table-responsive">
+                                    <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="variant_table">
+                                        <thead>
+                                            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                                <th class="min-w-200px">Product</th>
+                                                <th class="min-w-100px">Price</th>
+                                                <th class="min-w-100px text-end">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="kt_ecommerce_edit_order_selected_products_body"></tbody>
+                                    </table>
+                                </div>
+                                <!--end::Input group-->
+                                <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
+                                    onclick="addVariant()">
+                                    <i class="ki-outline ki-plus fs-2"></i>Buat variant baru
+                                </button>
+                            </div>
+                            <!--end::Card header-->
+                        </div>
                     </div>
                 </div>
                 <!--end::Tab pane-->
@@ -522,6 +500,31 @@
                     submitBtn.style.display = 'none';
                 }
             }
+        });
+
+        function addVariant() {
+            let html = `
+                <tr>
+                    <td>
+                        <input type="text" name="variant_name[]" class="form-control mb-2" placeholder="Product name" />
+                    </td>
+                    <td>
+                        <input type="text" name="variant_price[]" class="form-control mb-2" placeholder="Product price" />
+                    </td>                    
+                    <td class="text-end">
+                        <button type="button" class="btn btn-icon btn-danger remove_variant">
+                            <i class="ki-outline ki-cross fs-2"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+            $('#variant_table').on('click', '.remove_variant', function() {
+                $(this).closest('tr').remove();
+            });
+        }
+        $('#variant_table').on('click', '.remove_variant', function() {
+            $(this).closest('tr').remove();
         });
     </script>
     @if (request()->segment(3) === 'show')

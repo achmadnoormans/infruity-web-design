@@ -1,12 +1,8 @@
 @extends('template.root')
 
 @section('content')
-    <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-        action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
+    <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row" action="#" method="POST"
         enctype="multipart/form-data" data-kt-redirect="">
-        @if (isset($data))
-            @method('PUT')
-        @endif
         @csrf
         <!--begin::Aside column-->
         <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
@@ -39,7 +35,7 @@
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
-                                class="form-control mb-2" value="{{ old('order_date') ?? date('Y-m-d') }}" />
+                                class="form-control mb-2" value="{{ old('order_date') ?? date('Y-m-d') }}" disabled/>
                             <!--end::Editor-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Set the date of the order to process.</div>
@@ -164,7 +160,7 @@
                     <!--begin::Billing address-->
                     <div class="d-flex flex-column gap-5 gap-md-7">
                         <textarea name="description" id="description" class="form-control form-control-solid" rows="5"
-                            placeholder="Enter your notes here...">{{ isset($data) ? $data->description : '' }}</textarea>
+                            placeholder="Enter your notes here..." disabled>{{ isset($data) ? $data->description : '' }}</textarea>
                     </div>
                     <!--end::Billing address-->
                 </div>
@@ -293,5 +289,5 @@
             </div>
         </div>
     </div>
-    @include('transaction::wholesale.js-create')
+    @include('transaction::wholesale.js-show')
 @endsection

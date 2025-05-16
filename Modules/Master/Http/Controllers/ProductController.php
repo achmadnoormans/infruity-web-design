@@ -11,8 +11,9 @@ use Modules\Master\Entities\ProductUnit;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class ProductController extends Controller
 {
@@ -92,6 +93,23 @@ class ProductController extends Controller
 
             $product->save();
 
+            $productId = $product->id;
+            if (isset($request->variant_name)) {
+                foreach ($request->variant_name as $key => $value) {
+                    $variant = new Product();
+                    $variant->parent_id = $productId;
+                    $variant->name = $value;
+                    $variant->price = $request->variant_price[$key];
+                    $variant->category_id = $product->category_id;
+                    $variant->product_unit = $product->product_unit;
+                    $variant->stock = $product->stock;
+                    $variant->limit = $product->limit;
+                    $variant->handling = $product->handling;
+                    $variant->created_by = Auth::user()->id_user;
+                    $variant->description = strip_tags($request->description ?? '');
+                    $variant->save();
+                }
+            }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -333,7 +351,6 @@ class ProductController extends Controller
                 'message' => 'Gagal menyimpan variant: ' . $e->getMessage()
             ], 500);
         }
-
     }
 
     public function updateVariant(Request $request, $id)
