@@ -368,38 +368,41 @@
                             <!--end::Card header-->
                         </div>
                         <!--end::Inventory-->
-                        <!--begin::Pricing-->
-                        <div class="card card-flush py-4">
-                            <!--begin::Card header-->
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <h2>Variant</h2>
+                        @if (Request::segment(3) == 'show')
+                            <!--begin::Pricing-->
+                            <div class="card card-flush py-4">
+                                <!--begin::Card header-->
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <h2>Variant</h2>
+                                    </div>
                                 </div>
-                            </div>
-                            <!--end::Card header-->
-                            <!--begin::Card body-->
-                            <div class="card-body pt-0">
-                                <div class="table table-responsive">
-                                    <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="variant_table">
-                                        <thead>
-                                            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                                <th class="min-w-200px">Product</th>
-                                                <th class="min-w-100px">Price</th>
-                                                <th class="min-w-100px text-end">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="kt_ecommerce_edit_order_selected_products_body"></tbody>
-                                    </table>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body pt-0">
+                                    <div class="table table-responsive">
+                                        <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
+                                            id="variant_table">
+                                            <thead>
+                                                <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                                    <th class="min-w-200px">Product</th>
+                                                    <th class="min-w-100px">Price</th>
+                                                    <th class="min-w-100px text-end">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="kt_ecommerce_edit_order_selected_products_body"></tbody>
+                                        </table>
+                                    </div>
+                                    <!--end::Input group-->
+                                    <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
+                                        onclick="addVariant()">
+                                        <i class="ki-outline ki-plus fs-2"></i>Buat variant baru
+                                    </button>
                                 </div>
-                                <!--end::Input group-->
-                                <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
-                                    onclick="addVariant()">
-                                    <i class="ki-outline ki-plus fs-2"></i>Buat variant baru
-                                </button>
+                                <!--end::Card header-->
                             </div>
-                            <!--end::Card header-->
-                        </div>
-                        <!--end::Pricing-->
+                            <!--end::Pricing-->
+                        @endif
                     </div>
                 </div>
                 <!--end::Tab pane-->
@@ -520,107 +523,109 @@
                 }
             }
         });
+    </script>
+    @if (request()->segment(3) === 'show')
+        <script>
+            $(document).ready(function() {
+                const productId = "{{ $data->id }}"; // dari Blade
 
-        $(document).ready(function() {
-            const productId = "{{ $data->id }}"; // dari Blade
-
-            $('#variant_table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('variants.get') }}',
-                    data: function(d) {
-                        d.product_id = productId;
-                    }
-                },
-                columns: [{
-                        data: 'name',
-                        name: 'name'
+                $('#variant_table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '{{ route('variants.get') }}',
+                        data: function(d) {
+                            d.product_id = productId;
+                        }
                     },
-                    {
-                        data: 'price',
-                        name: 'price'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-end'
-                    }
-                ]
-            });
+                    columns: [{
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'price',
+                            name: 'price'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false,
+                            className: 'text-end'
+                        }
+                    ]
+                });
 
-            let table = $('#variant_table').DataTable();
+                let table = $('#variant_table').DataTable();
 
-            // Edit: buka modal dan isi data
-            $('#variant_table').on('click', '.edit-variant', function() {
-                $('#variant_id').val($(this).data('id'));
-                $('#variant_name').val($(this).data('name'));
-                $('#variant_price').val($(this).data('price'));
-                $('#editVariantModal').modal('show');
-            });
+                // Edit: buka modal dan isi data
+                $('#variant_table').on('click', '.edit-variant', function() {
+                    $('#variant_id').val($(this).data('id'));
+                    $('#variant_name').val($(this).data('name'));
+                    $('#variant_price').val($(this).data('price'));
+                    $('#editVariantModal').modal('show');
+                });
 
-            // Submit Edit
-            $('#editVariantForm').submit(function(e) {
-                e.preventDefault();
-                let id = $('#variant_id').val();
+                // Submit Edit
+                $('#editVariantForm').submit(function(e) {
+                    e.preventDefault();
+                    let id = $('#variant_id').val();
 
-                $.ajax({
-                    url: '/products/variants/' + id,
-                    type: 'PUT',
-                    data: {
-                        product_name: $('#variant_name').val(),
-                        price: $('#variant_price').val(),
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function() {
-                        Swal.fire('Berhasil', 'Varian berhasil diperbarui.', 'success');
-                        $('#editVariantModal').modal('hide');
-                        table.ajax.reload();
-                    },
-                    error: function() {
-                        Swal.fire('Gagal', 'Terjadi kesalahan saat memperbarui.', 'error');
-                    }
+                    $.ajax({
+                        url: '/products/variants/' + id,
+                        type: 'PUT',
+                        data: {
+                            product_name: $('#variant_name').val(),
+                            price: $('#variant_price').val(),
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function() {
+                            Swal.fire('Berhasil', 'Varian berhasil diperbarui.', 'success');
+                            $('#editVariantModal').modal('hide');
+                            table.ajax.reload();
+                        },
+                        error: function() {
+                            Swal.fire('Gagal', 'Terjadi kesalahan saat memperbarui.', 'error');
+                        }
+                    });
+                });
+
+                // Hapus Variant
+                $('#variant_table').on('click', '.delete-variant', function() {
+                    let id = $(this).data('id');
+
+                    Swal.fire({
+                        title: 'Yakin?',
+                        text: "Data akan dihapus!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/products/variants/' + id,
+                                type: 'DELETE',
+                                data: {
+                                    _token: $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function() {
+                                    Swal.fire('Dihapus!', 'Varian telah dihapus.',
+                                        'success');
+                                    table.ajax.reload();
+                                },
+                                error: function() {
+                                    Swal.fire('Gagal', 'Tidak dapat menghapus data.',
+                                        'error');
+                                }
+                            });
+                        }
+                    });
                 });
             });
 
-            // Hapus Variant
-            $('#variant_table').on('click', '.delete-variant', function() {
-                let id = $(this).data('id');
-
-                Swal.fire({
-                    title: 'Yakin?',
-                    text: "Data akan dihapus!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '/products/variants/' + id,
-                            type: 'DELETE',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function() {
-                                Swal.fire('Dihapus!', 'Varian telah dihapus.',
-                                    'success');
-                                table.ajax.reload();
-                            },
-                            error: function() {
-                                Swal.fire('Gagal', 'Tidak dapat menghapus data.',
-                                    'error');
-                            }
-                        });
-                    }
-                });
-            });
-        });
-
-        function addVariant() {
-            let html = `
+            function addVariant() {
+                let html = `
                 <tr>
                     <td>
                         <input type="text" name="product_name[]" class="form-control mb-2" placeholder="Product name" />
@@ -638,55 +643,56 @@
                     </td>
                 </tr>
             `;
-            $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+                $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+                $('#variant_table').on('click', '.remove_variant', function() {
+                    $(this).closest('tr').remove();
+                });
+            }
             $('#variant_table').on('click', '.remove_variant', function() {
                 $(this).closest('tr').remove();
             });
-        }
-        $('#variant_table').on('click', '.remove_variant', function() {
-            $(this).closest('tr').remove();
-        });
 
-        $('#variant_table').on('click', '.save_variant', function() {
-            let $row = $(this).closest('tr');
-            let productName = $row.find('input[name="product_name[]"]').val();
-            let price = $row.find('input[name="price[]"]').val();
-            let productId = {{ $data->id }}; // jika kamu butuh ID produk utama
+            $('#variant_table').on('click', '.save_variant', function() {
+                let $row = $(this).closest('tr');
+                let productName = $row.find('input[name="product_name[]"]').val();
+                let price = $row.find('input[name="price[]"]').val();
+                let productId = {{ $data->id }}; // jika kamu butuh ID produk utama
 
-            if (productName === '' || price === '') {
-                alert('Product name and price are required.');
-                return;
-            }
-
-            $.ajax({
-                url: '/products/variant/store',
-                method: 'POST',
-                data: {
-                    product_name: productName,
-                    price: price,
-                    parent_id: productId,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Varian produk berhasil disimpan.',
-                        showConfirmButton: false
-                    });
-                    $('#variant_table').DataTable().ajax.reload(null,
-                    false); // false = tetap di halaman sekarang
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Gagal menyimpan varian produk. Cek console untuk detail.',
-                    });
-                    console.error(xhr.responseText);
+                if (productName === '' || price === '') {
+                    alert('Product name and price are required.');
+                    return;
                 }
+
+                $.ajax({
+                    url: '/products/variant/store',
+                    method: 'POST',
+                    data: {
+                        product_name: productName,
+                        price: price,
+                        parent_id: productId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Varian produk berhasil disimpan.',
+                            showConfirmButton: false
+                        });
+                        $('#variant_table').DataTable().ajax.reload(null,
+                            false); // false = tetap di halaman sekarang
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'Gagal menyimpan varian produk. Cek console untuk detail.',
+                        });
+                        console.error(xhr.responseText);
+                    }
+                });
             });
-        });
-    </script>
+        </script>
+    @endif
 @endsection
 @endsection
