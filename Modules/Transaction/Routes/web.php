@@ -5,6 +5,7 @@ use Modules\Transaction\Http\Controllers\SortirController;
 use Modules\Transaction\Http\Controllers\ProductReceiptController;
 use Modules\Master\Http\Controllers\ProductController;
 use Modules\Transaction\Http\Controllers\StockOutController;
+use Modules\Transaction\Http\Controllers\StockOpnameController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -47,5 +48,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');
     
     Route::resource('stock-out', StockOutController::class)->names('stock-out')->except('show');
-    Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data'); 
+    Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data');
+    
+    Route::resource('stock-opname', StockOpnameController::class)->names('stock-opname')->except('show');
+    Route::get('stock-opname/data', [StockOpnameController::class, 'get_data'])->name('stock-opname.data');
 });

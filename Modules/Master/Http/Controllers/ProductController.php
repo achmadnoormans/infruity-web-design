@@ -560,7 +560,7 @@ class ProductController extends Controller
         return DB::table('product_stock')
             ->where('stock_available', '>', 0)
             ->where('name', 'like', '%' . $request->search . '%')
-            ->select('id', 'name')
+            ->select('id', 'name', 'stock_available')
             ->limit(20)
             ->get();
     }

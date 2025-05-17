@@ -298,4 +298,15 @@
         <span class="menu-title">Stock Out</span>
     </a>
     <!--end:Menu link-->
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'stock-opname' ? 'active' : '' }}" href="{{ url('stock-opname') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Stock Opname</span>
+    </a>
+    <!--end:Menu link-->
 </div>
