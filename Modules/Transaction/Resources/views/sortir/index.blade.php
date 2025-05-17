@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Staff" />
+                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Product" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -32,7 +32,6 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-center min-w-100px">No</th>
                             <th class="text-start min-w-100px">Name</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px">Actions</th>
@@ -59,13 +58,7 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [
-                    {
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        className: 'text-center'
-                    },
-                    {
+                columns: [{
                         data: 'name',
                         name: 'name'
                     },
@@ -81,7 +74,10 @@
                         className: 'text-end',
                     },
 
-                ]
+                ],
+                order: [
+                    [1, 'desc']
+                ] // Order by quantity column (index 1) in descending order
             });
             // Search manual lewat input
             $('#search').on('keyup', function() {

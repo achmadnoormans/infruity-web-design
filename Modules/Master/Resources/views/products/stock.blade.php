@@ -18,23 +18,7 @@
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="w-100 mw-150px">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
-                            <option></option>
-                            <option value="all">All</option>
-                            <option value="published">Published</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                        <!--end::Select2-->
-                    </div>
-                    <!--begin::Add product-->
-                    <a href="{{ url('products/create') }}" class="btn btn-primary">Add Product</a>
-                    <!--end::Add product-->
-                </div>
+                
                 <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
@@ -52,6 +36,7 @@
                                 </div>
                             </th> --}}
                             <th class="min-w-200px">Product</th>
+                            <th class="text-end min-w-70px">Hpp</th>
                             <th class="text-end min-w-70px">Limit</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="text-end min-w-70px"></th>
@@ -95,6 +80,11 @@
                     {
                         data: 'name',
                         name: 'name'
+                    },
+                    {
+                        data: 'hpp',
+                        name: 'hpp',
+                        className: 'text-end'
                     },
                     {
                         data: 'limit',

@@ -58,7 +58,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
-            'category_id' => 'required|exists:products_category,id',
+            // 'category_id' => 'required|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
@@ -117,7 +117,7 @@ class ProductController extends Controller
                 ->with('error', 'Pembuatan Product gagal' . $e->getMessage());
         }
 
-        return redirect('products/' . $product->id . '/show')->with('success', 'Pembuatan Product berhasil');
+        return redirect('products')->with('success', 'Pembuatan Product berhasil');
     }
 
     /**
@@ -436,13 +436,13 @@ class ProductController extends Controller
                 return $html;
             })
             ->addColumn('price', function ($product) {
-                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . toNumber($product->price) . '</span>';
             })
             ->addColumn('category', function ($product) {
                 return $product->category->name ?? '-';
             })
             ->addColumn('unit', function ($product) {
-                return $product->unit->name ?? '-';
+                return $product->unit->abbreviation ?? '-';
             })
             ->addColumn('status', function ($product) {
                 $html = '';
@@ -536,38 +536,22 @@ class ProductController extends Controller
                 return $html;
             })
             ->addColumn('price', function ($product) {
-                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . $product->price . '</span>';
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . toNumber($product->price) . '">Rp.' . $product->price . '</span>';
+            })
+            ->addColumn('hpp', function ($product) {
+                return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp.' . toNumber($product->hpp) . '</span>';
             })
             ->addColumn('stock_available', function ($product) {
                 return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
             })
-            ->addColumn('action', function ($product) {
+            ->addColumn('action', function ($item) {
                 return '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $product->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            <i class="ki-outline ki-gear fs-5 ms-1"></i>
-                        </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
-                            <li>
-                                <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
-                                    Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
-                                    Delete
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <a href="' . route('product-stock.show', $item->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                        <i class="fa fa-eye"></i>
+                    </a>
                 ';
             })
-            ->rawColumns(['name', 'action', 'price', 'stock_available'])
+            ->rawColumns(['name', 'action', 'price', 'stock_available', 'hpp'])
             ->make(true);
     }
 }

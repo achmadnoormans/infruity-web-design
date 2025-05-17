@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -17,7 +18,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->text('sku')->nullable();
             $table->text('barcode')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 2)->nullable()->default(0);
             $table->integer('stock')->default(0);
             $table->integer('product_unit')->default(1);
             $table->integer('limit')->default(1);

@@ -233,7 +233,7 @@
             );
         });
 
-        function deleteProduct(id) {
+        function deleteProductOld(id) {
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: 'Barang Sudah diterima!',
@@ -274,6 +274,30 @@
                                     'Terjadi kesalahan saat menghapus data.'
                             });
                         }
+                    });
+                }
+            });
+        }
+
+        function deleteProduct(id) {
+            $.ajax({
+                url: `/wholesale/update-receive-product/${id}`, // Ganti dengan URL yang sesuai
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {                    
+                    // Reload DataTable setelah berhasil menghapus data
+                    if (typeof tableSelectedProduct !== 'undefined') {
+                        tableSelectedProduct.ajax.reload(null, false);
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: xhr.responseJSON?.message ||
+                            'Terjadi kesalahan saat menghapus data.'
                     });
                 }
             });

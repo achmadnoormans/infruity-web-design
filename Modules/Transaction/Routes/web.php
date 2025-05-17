@@ -17,6 +17,7 @@ use Modules\Master\Http\Controllers\ProductController;
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
+    Route::get('product-stock/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
     Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
 
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    

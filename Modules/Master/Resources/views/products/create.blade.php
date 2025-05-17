@@ -93,12 +93,10 @@
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
-                        <option></option>
-                        <option value="no-receipt"
-                            selected="{{ isset($data) && $data->status == 'no-receipt' ? 'selected' : '' }}">Tanpa
+                        <option value="no-receipt" {{ isset($data) && $data->status == 'no-receipt' ? 'selected' : '' }}>
+                            Tanpa
                             Resep</option>
-                        <option value="receipt"
-                            selected="{{ isset($data) && $data->status == 'receipt' ? 'selected' : '' }}">Dengan
+                        <option value="receipt" {{ isset($data) && $data->status == 'receipt' ? 'selected' : '' }}>Dengan
                             Resep</option>
                     </select>
                     <!--end::Select2-->
@@ -217,7 +215,7 @@
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="product_name" class="form-control mb-2"
-                                        placeholder="Product name" value="{{ $data->name ?? old('name') }}" />
+                                        placeholder="Product name" value="{{ $data->name ?? old('product_name') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">A product name is required and recommended to be unique.
@@ -270,6 +268,20 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
+                                <!--begin::Input group-->
+                                <div class="mb-10 fv-row">
+                                    <!--begin::Label-->
+                                    <label class="required form-label">Limit</label>
+                                    <!--end::Label-->
+                                    <!--begin::Input-->
+                                    <input type="number" name="limit" class="form-control mb-2"
+                                        placeholder="Limit Stock" value="{{ $data->limit ?? old('limit') }}" />
+                                    <!--end::Input-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Input group-->
                             </div>
                             <!--end::Card header-->
                         </div>
@@ -316,20 +328,6 @@
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Enter the product barcode number.</div>
-                                    <!--end::Description-->
-                                </div>
-                                <!--end::Input group-->
-                                <!--begin::Input group-->
-                                <div class="mb-10 fv-row">
-                                    <!--begin::Label-->
-                                    <label class="required form-label">Limit</label>
-                                    <!--end::Label-->
-                                    <!--begin::Input-->
-                                    <input type="number" name="limit" class="form-control mb-2"
-                                        placeholder="Limit Stock" value="{{ $data->limit ?? old('limit') }}" />
-                                    <!--end::Input-->
-                                    <!--begin::Description-->
-                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->

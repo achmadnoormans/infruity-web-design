@@ -66,6 +66,8 @@ return new class extends Migration {
                 LEFT JOIN product_units AS C ON A.product_unit = C.id
             GROUP BY
                 A.id, B.product_id, C.abbreviation
+            ORDER BY 
+                stock_available DESC
         ");
 
         DB::statement("DROP VIEW IF EXISTS product_stock");
