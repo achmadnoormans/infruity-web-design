@@ -287,4 +287,15 @@
         <span class="menu-title">Sortir</span>
     </a>
     <!--end:Menu link-->
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Stock Out</span>
+    </a>
+    <!--end:Menu link-->
 </div>

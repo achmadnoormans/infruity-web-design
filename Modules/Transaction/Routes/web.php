@@ -4,6 +4,7 @@ use Modules\Transaction\Http\Controllers\WholesaleController;
 use Modules\Transaction\Http\Controllers\SortirController;
 use Modules\Transaction\Http\Controllers\ProductReceiptController;
 use Modules\Master\Http\Controllers\ProductController;
+use Modules\Transaction\Http\Controllers\StockOutController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +20,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
     Route::get('product-stock/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
     Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
+    Route::get('product-stock/available-stock', [ProductController::class, 'get_data_available'])->name('ajax.stock-available');
 
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');    
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
@@ -42,5 +44,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('sortir/show/{id}', [SortirController::class, 'show'])->name('sortir.show');
     Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
 
-    Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');  
+    Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');
+    
+    Route::resource('stock-out', StockOutController::class)->names('stock-out')->except('show');
+    Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data'); 
 });

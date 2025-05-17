@@ -554,4 +554,14 @@ class ProductController extends Controller
             ->rawColumns(['name', 'action', 'price', 'stock_available', 'hpp'])
             ->make(true);
     }
+
+    public function get_data_available(Request $request)
+    {
+        return DB::table('product_stock')
+            ->where('stock_available', '>', 0)
+            ->where('name', 'like', '%' . $request->search . '%')
+            ->select('id', 'name')
+            ->limit(20)
+            ->get();
+    }
 }

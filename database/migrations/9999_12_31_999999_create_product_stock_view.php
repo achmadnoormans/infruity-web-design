@@ -28,6 +28,45 @@ return new class extends Migration {
                 wholesale.order_date
         ");
 
+        DB::statement("DROP VIEW IF EXISTS transaction_stock");
+        DB::statement("
+            CREATE VIEW transaction_stock AS
+            SELECT * FROM (
+                SELECT
+                    product_id,
+                    quantity,
+                    avg_price,
+                    date
+                FROM
+                    stock_in UNION
+                SELECT
+                    product_id,
+                    - quantity,
+                    avg_price,
+                    date
+                FROM
+                    stock_out UNION
+                SELECT
+                    product_id,
+                    quantity,
+                    price,
+                    wholesale.order_date
+                FROM
+                    wholesale_product
+                    JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+                WHERE
+                    wholesale_product.`status` = 'complete' 
+                    AND product_id != 0 UNION
+                SELECT
+                    product_id,
+                    - quantity,
+                    avg_price,
+                    date
+                FROM
+                    stock_out_transaction
+            ) AS Q
+        ");
+
         DB::statement("DROP VIEW IF EXISTS sortir_view");
         DB::statement("
             CREATE VIEW sortir_view AS
@@ -38,31 +77,7 @@ return new class extends Migration {
                 C.abbreviation AS satuan
             FROM
                 products AS A
-                LEFT JOIN (
-                SELECT
-                    product_id,
-                    SUM( quantity ) AS quantity 
-                FROM
-                    wholesale_product 
-                WHERE
-                    `status` = 'complete' 
-                GROUP BY
-                    product_id UNION
-                SELECT
-                    product_id,
-                    SUM( quantity ) AS quantity 
-                FROM
-                    stock_in 
-                GROUP BY
-                    product_id UNION
-                SELECT
-                    product_id,
-                    -SUM( quantity ) AS quantity 
-                FROM
-                    stock_out 
-                GROUP BY
-                    product_id 
-                ) AS B ON A.id = B.product_id
+                LEFT JOIN transaction_stock AS B ON A.id = B.product_id
                 LEFT JOIN product_units AS C ON A.product_unit = C.id
             GROUP BY
                 A.id, B.product_id, C.abbreviation
@@ -85,32 +100,7 @@ return new class extends Migration {
                 END AS stock_status
             FROM
                 products AS A
-                LEFT JOIN (
-                    SELECT
-                        product_id,
-                        quantity,
-                        avg_price 
-                    FROM
-                        stock_in 
-                    UNION                    
-                    SELECT
-                        product_id,
-                        -quantity,
-                        avg_price 
-                    FROM
-                        stock_out 
-                    UNION
-                    SELECT
-                        product_id,
-                        quantity,
-                        price 
-                    FROM
-                        wholesale_product
-                        JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
-                    WHERE
-                        wholesale_product.`status` = 'complete' 
-                        AND product_id != 0
-                ) AS B ON A.id = B.product_id
+                LEFT JOIN transaction_stock AS B ON A.id = B.product_id
                     LEFT JOIN product_units AS C ON C.id = A.product_unit
             GROUP BY
                 A.id, C.abbreviation
@@ -123,6 +113,7 @@ return new class extends Migration {
     public function down(): void
     {
         DB::statement("DROP VIEW IF EXISTS product_stock");
+        DB::statement("DROP VIEW IF EXISTS transaction_stock");
         DB::statement("DROP VIEW IF EXISTS sortir_view");
         DB::statement("DROP VIEW IF EXISTS view_wholesale");
     }
