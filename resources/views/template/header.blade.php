@@ -1,5 +1,15 @@
  <!--begin::Header-->
- <div id="kt_header" style="" class="header align-items-stretch">
+ <style>
+     @media (max-width: 500px) {
+         #kt_header {
+             position: sticky;
+             top: 0;
+             z-index: 105;
+             background-color: #fff;
+         }
+     }
+ </style>
+ <div id="kt_header" class="header align-items-stretch">
      <!--begin::Brand-->
      <div class="header-brand">
          <!--begin::Logo-->
