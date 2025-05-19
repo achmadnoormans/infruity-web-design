@@ -115,10 +115,8 @@
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                                             <th class="min-w-200px">Product</th>
-                                            <th class="min-w-100px">Qty</th>
                                             <th class="min-w-100px">Price</th>
                                             <th class="min-w-100px">Total</th>
-                                            <th class="min-w-150px">Supplier</th>
                                             <th class="min-w-100px text-end">Actions</th>
                                         </tr>
                                     </thead>

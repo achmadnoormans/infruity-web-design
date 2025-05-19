@@ -28,7 +28,8 @@ class ProductController extends Controller
 
     public function get_stock()
     {
-        return view('master::products.stock');
+        $data['category'] = ProductCategory::all();
+        return view('master::products.stock', $data);
     }
 
     /**
@@ -436,7 +437,7 @@ class ProductController extends Controller
                 return $html;
             })
             ->addColumn('price', function ($product) {
-                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp.' . toNumber($product->price) . '</span>';
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp' . toNumber($product->price) . '</span>';
             })
             ->addColumn('category', function ($product) {
                 return $product->category->name ?? '-';
@@ -511,7 +512,7 @@ class ProductController extends Controller
 
     public function get_data_stock(Request $request)
     {
-        $data = DB::table('product_stock')->get();
+        $data = DB::table('product_stock')->orderBy('stock_available', 'desc')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
@@ -544,6 +545,9 @@ class ProductController extends Controller
             ->addColumn('stock_available', function ($product) {
                 return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
             })
+            ->addColumn('category', function ($item) {
+                return $item->category_id;
+            })
             ->addColumn('action', function ($item) {
                 return '
                     <a href="' . route('product-stock.show', $item->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
@@ -551,7 +555,7 @@ class ProductController extends Controller
                     </a>
                 ';
             })
-            ->rawColumns(['name', 'action', 'price', 'stock_available', 'hpp'])
+            ->rawColumns(['name', 'action', 'price', 'stock_available', 'hpp', 'category'])
             ->make(true);
     }
 

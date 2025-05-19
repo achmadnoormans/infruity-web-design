@@ -130,7 +130,7 @@
                 <div class="card-body pt-0">
                     <!--begin::Input group-->
                     <!--begin::Label-->
-                    <label class="form-label">Product Unit</label>
+                    <label class="form-label required">Product Unit</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
@@ -271,7 +271,7 @@
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="required form-label">Limit</label>
+                                    <label class="form-label">Limit</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="number" name="limit" class="form-control mb-2"

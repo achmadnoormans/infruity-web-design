@@ -308,16 +308,16 @@ class WholesaleController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                return $item->product->name;
+                return $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
             })
             ->addColumn('supplier', function ($item) {
                 return $item->supplier->name;
             })
             ->addColumn('price', function ($item) {
-                return 'Rp.' . toNumber($item->price);
+                return 'Rp' . toNumber($item->price);
             })
             ->addColumn('total', function ($item) {
-                return 'Rp.' . toNumber($item->total_price);
+                return 'Rp' . toNumber($item->total_price);
             })
             ->addColumn('action', function ($item) use ($request) {
                 $html = '';
@@ -332,14 +332,23 @@ class WholesaleController extends Controller
                     }
                 } else {
                     $html .= '
-                    <div class="d-flex flex-row gap-1">
-                        <button type="button" class="btn btn-sm btn-warning" onclick="editProduct(' . $item->id . ')">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteProduct(' . $item->id . ')">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+                    <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                     ';
                 }
                 return $html;
@@ -384,7 +393,7 @@ class WholesaleController extends Controller
             $wholesaleProduct->price = $validated['price'];
             $wholesaleProduct->total_price = $validated['price'] * $validated['qty'];
             $wholesaleProduct->save();
-            
+
             if ($validated['sell_price'] != null) {
                 $product = Product::findOrFail($validated['id']);
                 $product->price = $validated['sell_price'];
@@ -490,7 +499,7 @@ class WholesaleController extends Controller
             ->with('category')
             ->where('name', 'like', '%' . $searchValue . '%')
             ->whereNull('parent_id');
-            
+
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();
         return DataTables::of($data)
@@ -521,12 +530,12 @@ class WholesaleController extends Controller
                 $color = $colors[$item->id % count($colors)];
                 return '<div class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="'. url('wholesale') . '/' . $item->id . '/show' .'">
+                                <a href="' . url('wholesale') . '/' . $item->id . '/show' . '">
                                     <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->order_number, 0, 1)) . '</div>
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="'. url('wholesale') . '/' . $item->id . '/show' .'" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
+                                <a href="' . url('wholesale') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
                             </div>
                         </div>';
             })

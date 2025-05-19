@@ -18,7 +18,19 @@
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                
+                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <div class="w-100 mw-150px">
+                        <!--begin::Select2-->
+                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
+                            <option value="all">Semua</option>
+                            @foreach ($category as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        <!--end::Select2-->
+                    </div>
+                </div>
                 <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
@@ -39,6 +51,7 @@
                             <th class="text-end min-w-70px">Hpp</th>
                             <th class="text-end min-w-70px">Limit</th>
                             <th class="text-end min-w-100px">Stock</th>
+                            <th class="d-none">Category</th>
                             <th class="text-end min-w-70px"></th>
                         </tr>
                     </thead>
@@ -97,15 +110,30 @@
                         className: 'text-end'
                     },
                     {
+                        data: 'category',
+                        name: 'category',
+                        visible: false
+                    },
+                    {
                         data: 'action',
                         name: 'action'
                     },
 
-                ]
+                ],
+                order: [
+                    [3, 'desc']
+                ] // Order by quantity column (index 1) in descending order
             });
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+
+            $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
+                let val = $(this).val();
+
+                if (val === 'all') val = ''; // kosongkan filter jika all
+                dataTable.column(4).search(val).draw();
             });
         });
 

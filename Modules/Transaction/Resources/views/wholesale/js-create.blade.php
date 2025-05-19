@@ -71,14 +71,18 @@
                 serverSide: false,
                 info: false,
                 paging: false,
-                ajax: url, // Ganti dengan route untuk ambil data
+                ajax: url,
+                fixedColumns: {
+                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
+                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
+                },
+                columnDefs: [{
+                    orderable: false,
+                    targets: -1 // Nonaktifkan sorting untuk kolom action
+                }], // Ganti dengan route untuk ambil data
                 columns: [{
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'quantity',
-                        name: 'quantity'
                     },
                     {
                         data: 'price',
@@ -89,12 +93,9 @@
                         name: 'total'
                     },
                     {
-                        data: 'supplier',
-                        name: 'supplier'
-                    },
-                    {
                         data: 'action',
                         name: 'action',
+                        className: 'text-end',
                         orderable: false,
                         searchable: false
                     }
@@ -197,17 +198,11 @@
                         wholesale_id: wholsaleId
                     },
                     success: function(response) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
-                        }).then(() => {
-                            $('#modalInputQty').modal('hide');
-                            // 6. Refresh DataTable
-                            if (typeof tableSelectedProduct !== 'undefined') {
-                                tableSelectedProduct.ajax.reload(null, false);
-                            }
-                        });
+                        $('#modalInputQty').modal('hide');
+                        // 6. Refresh DataTable
+                        if (typeof tableSelectedProduct !== 'undefined') {
+                            tableSelectedProduct.ajax.reload(null, false);
+                        }
                     },
                     error: function(xhr) {
                         var msg = 'Terjadi kesalahan saat menyimpan data.';
