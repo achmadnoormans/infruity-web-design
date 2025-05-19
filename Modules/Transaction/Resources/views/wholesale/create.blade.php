@@ -199,7 +199,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="inputPrice" class="form-label">Harga Kulak</label>
+                                <label for="inputPrice" class="form-label">Harga Beli</label>
                                 <input type="number" class="form-control" id="inputPrice" placeholder="Enter price"
                                     min="0" step="0.01">
                             </div>
