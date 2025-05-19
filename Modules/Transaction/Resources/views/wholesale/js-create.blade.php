@@ -276,12 +276,6 @@
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
-                            });
-
                             // Reload DataTable setelah berhasil menghapus data
                             if (typeof tableSelectedProduct !== 'undefined') {
                                 tableSelectedProduct.ajax.reload(null, false);
