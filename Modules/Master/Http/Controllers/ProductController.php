@@ -219,6 +219,23 @@ class ProductController extends Controller
                 $product->save();
             }
 
+            if (isset($request->variant_name)) {
+                foreach ($request->variant_name as $key => $value) {
+                    $variant = new Product();
+                    $variant->parent_id = $id;
+                    $variant->name = $value;
+                    $variant->price = $request->variant_price[$key];
+                    $variant->category_id = $product->category_id;
+                    $variant->product_unit = $product->product_unit;
+                    $variant->stock = $product->stock;
+                    $variant->limit = $product->limit;
+                    $variant->handling = $product->handling;
+                    $variant->created_by = Auth::user()->id_user;
+                    $variant->description = strip_tags($request->description ?? '');
+                    $variant->save();
+                }
+            }
+
             $product->save();
 
             DB::commit();
