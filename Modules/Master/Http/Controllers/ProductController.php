@@ -178,7 +178,7 @@ class ProductController extends Controller
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
-            'category_id' => 'required|exists:products_category,id',
+            'category_id' => 'nullable|exists:products_category,id',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string|max:1000',
         ]);
