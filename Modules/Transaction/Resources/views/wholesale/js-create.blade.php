@@ -225,7 +225,7 @@
             });
 
             tableSelectedProduct.on('draw', function() {
-                let total = tableSelectedProduct.column(3, {
+                let total = tableSelectedProduct.column(2, {
                     page: 'current'
                 }).data().reduce(function(a, b) {
                     let cleanedB = 0;
