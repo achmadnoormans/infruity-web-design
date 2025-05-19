@@ -134,7 +134,7 @@
                             <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
                             <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Total Kulak:
+                            <div class="fw-bold fs-4">Total Belanja:
                                 <span id="totalSemuaProduk">0.00</span>
                             </div>
                             <!--end::Total price-->
