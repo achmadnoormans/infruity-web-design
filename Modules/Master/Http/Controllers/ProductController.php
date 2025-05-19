@@ -152,8 +152,12 @@ class ProductController extends Controller
         $data = [
             'data' => $product,
             'product_units' => ProductUnit::all(),
-            'category' => ProductCategory::findOrFail($product->category_id),
         ];
+        if (isset($product->category_id)) {
+            $data['category'] = ProductCategory::findOrFail($product->category_id);
+        } else {
+            $data['category'] = null;
+        }
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
