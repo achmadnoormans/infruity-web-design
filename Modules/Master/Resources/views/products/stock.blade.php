@@ -23,10 +23,20 @@
                         <!--begin::Select2-->
                         <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
                             data-placeholder="Status" data-kt-ecommerce-product-filter="status">
-                            <option value="all">Semua</option>
+                            <option value="all">Category</option>
                             @foreach ($category as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
+                        </select>
+                        <!--end::Select2-->
+                    </div>
+                    <div class="w-100 mw-150px">
+                        <!--begin::Select2-->
+                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                            data-placeholder="Stock" data-kt-ecommerce-product-filter="stock">
+                            <option value="all">Stock</option>
+                            <option value="ada">Ada</option>
+                            <option value="kosong">Kosong</option>
                         </select>
                         <!--end::Select2-->
                     </div>
@@ -49,7 +59,6 @@
                             </th> --}}
                             <th class="min-w-200px">Product</th>
                             <th class="text-end min-w-70px">Hpp</th>
-                            <th class="text-end min-w-70px">Limit</th>
                             <th class="text-end min-w-100px">Stock</th>
                             <th class="d-none">Category</th>
                             <th class="text-end min-w-70px"></th>
@@ -83,6 +92,7 @@
                     url: "{{ route('product-stock-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
                     }
                 },
                 columns: [
@@ -97,11 +107,6 @@
                     {
                         data: 'hpp',
                         name: 'hpp',
-                        className: 'text-end'
-                    },
-                    {
-                        data: 'limit',
-                        name: 'limit',
                         className: 'text-end'
                     },
                     {
@@ -121,7 +126,7 @@
 
                 ],
                 order: [
-                    [3, 'desc']
+                    [2, 'desc']
                 ] // Order by quantity column (index 1) in descending order
             });
             // Search manual lewat input
@@ -133,7 +138,11 @@
                 let val = $(this).val();
 
                 if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(4).search(val).draw();
+                dataTable.column(3).search(val).draw();
+            });
+
+            $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
             });
         });
 

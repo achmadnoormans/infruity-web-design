@@ -533,22 +533,30 @@ class ProductController extends Controller
 
     public function get_data_stock(Request $request)
     {
-        $data = DB::table('product_stock')->orderBy('stock_available', 'desc')->get();
+        $query = DB::table('product_stock')->orderBy('stock_available', 'desc');
+        if ($request->has('stock_filter')) {
+            if ($request->stock_filter === 'ada') {
+                $query->where('stock_available', '>', 0);
+            } elseif ($request->stock_filter === 'kosong') {
+                $query->where('stock_available', '=', 0);
+            }
+        }
+        $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
                 $html = '
                     <div class="d-flex align-items-center">';
-                if (isset($product->image)) {
-                    $url = asset('storage/' . $product->image);
-                    $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
-                } else {
-                    $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
-                            <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
-                        </a>';
-                }
+                // if (isset($product->image)) {
+                //     $url = asset('storage/' . $product->image);
+                //     $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
+                // } else {
+                //     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
+                //             <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
+                //         </a>';
+                // }
                 $html .= '<div class="ms-5">
-                            <a href="apps/ecommerce/catalog/edit-product.html" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('products/') . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>
@@ -561,7 +569,7 @@ class ProductController extends Controller
                 return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . toNumber($product->price) . '">Rp.' . $product->price . '</span>';
             })
             ->addColumn('hpp', function ($product) {
-                return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp.' . toNumber($product->hpp) . '</span>';
+                return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp' . toNumber($product->hpp) . '</span>';
             })
             ->addColumn('stock_available', function ($product) {
                 return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
