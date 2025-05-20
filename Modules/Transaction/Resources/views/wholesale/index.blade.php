@@ -50,11 +50,9 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-center min-w-100px">No</th>
                             <th class="text-start min-w-100px">Name</th>
                             <th class="text-center min-w-100px">Status</th>
                             <th class="text-center min-w-100px">Order Date</th>
-                            <th class="text-end min-w-100px">Total Item</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
                     </thead>
@@ -72,19 +70,31 @@
             dataTable = $('#wholesale-table').DataTable({
                 processing: true,
                 serverSide: true,
-                // responsive: true,
+                fixedColumns: {
+                    leftColumns: 0,
+                    rightColumns: 1
+                },
+                columnDefs: [{
+                        orderable: false,
+                        targets: -1 // Disable sorting for action column
+                    },
+                    {
+                        targets: [4], // Kolom ke-5 (status_raw)
+                        visible: false,
+                        searchable: false
+                    }
+                ],
                 ajax: {
                     url: "{{ route('wholesale-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
+                order: [
+                    [1, 'asc'], // Sort by status_raw ASC
+                    [2, 'desc'] // Then by order_date ASC (kolom ke-3)
+                ],
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        className: 'text-center'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -94,26 +104,24 @@
                         className: 'text-center',
                         render: function(data, type, row) {
                             if (type === 'filter' || type === 'sort') {
-                                return row.status_raw; // pakai nilai mentah untuk filter/sort
+                                return row.status_raw;
                             }
-                            return data; // tampilkan badge HTML
+                            return data;
                         }
                     },
                     {
                         data: 'order_date',
                         name: 'order_date',
-                        className: 'text-center',
-                    },
-                    {
-                        data: 'total_product',
-                        name: 'total_product',
-                        className: 'text-end'
+                        className: 'text-center'
                     },
                     {
                         data: 'action',
                         name: 'action'
                     },
-
+                    {
+                        data: 'status_raw', // hidden column used only for sorting
+                        name: 'status_raw'
+                    }
                 ]
             });
             // Search manual lewat input
@@ -125,7 +133,7 @@
                 let val = $(this).val();
 
                 if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(2).search(val).draw();
+                dataTable.column(1).search(val).draw();
             });
         });
 

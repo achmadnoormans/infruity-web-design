@@ -76,7 +76,7 @@
                             id="kt_ecommerce_edit_order_product_table">
                             <thead>
                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                    <th class="w-25px pe-2"></th>
+                                    {{-- <th class="w-25px pe-2"></th> --}}
                                     <th class="min-w-200px">Product</th>
                                     <th class="min-w-100px text-end pe-5">Qty Remaining</th>
                                 </tr>

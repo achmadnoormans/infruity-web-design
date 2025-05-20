@@ -503,18 +503,18 @@ class WholesaleController extends Controller
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();
         return DataTables::of($data)
-            ->addColumn('checkbox', function ($row) {
-                return '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
-                    </div>';
-            })
+            // ->addColumn('checkbox', function ($row) {
+            //     return '<div class="form-check form-check-sm form-check-custom form-check-solid">
+            //             <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
+            //         </div>';
+            // })
             ->addColumn('name', function ($row) {
-                return '<a href="#" class="text-gray-800 text-hover-primary fs-5 fw-bold">'
+                return '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold check-product">'
                     . e($row->name) .
                     '</a>';
             })
             ->addColumn('qty_remaining', function ($row) {
-                return '<span class="fw-bold ms-3">' . ($row->qty_remaining ?? 0) . '</span>';
+                return '<span class="fw-bold ms-3 check-product">' . ($row->qty_remaining ?? 0) . '</span>';
             })
             ->rawColumns(['checkbox', 'name', 'qty_remaining'])
             ->make(true);
@@ -536,6 +536,8 @@ class WholesaleController extends Controller
                             </div>
                             <div class="ms-5">
                                 <a href="' . url('wholesale') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
+                                <br>
+                                <span class="text-muted d-block"> Jml Prod : ' . $item->total_product . '</span>
                             </div>
                         </div>';
             })
@@ -560,30 +562,19 @@ class WholesaleController extends Controller
                 $html = '';
                 if ($item->status != 'complete') {
                     $html .= '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $item->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            Actions
-                            <i class="ki-outline ki-down fs-5 ms-1"></i>
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
                         </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
-                                    Edit
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-success" href="' . route('wholesale.receive_process', $item->id) . '">
-                                    Terima Barang
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    Delete
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </li>
                         </ul>

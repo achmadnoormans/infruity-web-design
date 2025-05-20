@@ -1,6 +1,6 @@
  <!--begin::Header-->
  <style>
-     @media (max-width: 500px) {
+     @media (max-width: 768px) {
          #kt_header {
              position: sticky;
              top: 0;

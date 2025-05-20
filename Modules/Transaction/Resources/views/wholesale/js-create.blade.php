@@ -20,11 +20,12 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [{
-                        data: 'checkbox',
-                        orderable: false,
-                        searchable: false
-                    },
+                columns: [
+                    // {
+                    //     data: 'checkbox',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                     {
                         data: 'name',
                         name: 'name',
@@ -113,7 +114,8 @@
             });
 
             // Checkbox change event
-            $('#kt_ecommerce_edit_order_product_table').on('change', '.form-check-input', function() {
+            $('#kt_ecommerce_edit_order_product_table').on('click', '.check-product', function() {
+                console.log('clik');
                 const row = $(this).closest('tr');
                 const checked = $(this).is(':checked');
                 const productId = row.find('[data-kt-ecommerce-edit-order-id]').data(
@@ -123,37 +125,24 @@
                 const price = row.find('[data-kt-ecommerce-edit-order-id]').data(
                     'kt-ecommerce-edit-order-price');
 
-                if (checked) {
-                    const productName = row.find('a.text-gray-800').text().trim();
-                    // const productImage = row.find('.symbol-label').css('background-image').replace(
-                    //     /^url\(["']?/, '').replace(/["']?\)$/, '');
-                    // const price = row.find('[data-kt-ecommerce-edit-order-filter="price"]').text().trim();
+                const productName = row.find('a.text-gray-800').text().trim();
+                // const productImage = row.find('.symbol-label').css('background-image').replace(
+                //     /^url\(["']?/, '').replace(/["']?\)$/, '');
+                // const price = row.find('[data-kt-ecommerce-edit-order-filter="price"]').text().trim();
 
-                    selectedProduct = {
-                        id: productId,
-                        name: productName,
-                        // image: productImage,
-                        price: price,
-                        type: type
-                    };
-                    console.log(selectedProduct);
-                    $('#inputProductId').val(productId);
-                    $('#inputSellPrice').val(price);
-                    $('#typeList').val(type);
-                    $('#inputQuantity').val('');
-                    $('#modalInputQty').modal('show');
-                } else {
-                    $(`#kt_ecommerce_edit_order_selected_products [data-product-id="${productId}"]`)
-                        .remove();
-                    $(`#selected-products-hidden input[name="products[${productId}][id]"]`).remove();
-                    $(`#selected-products-hidden input[name="products[${productId}][qty]"]`).remove();
-
-                    if ($('#kt_ecommerce_edit_order_selected_products .col').length === 0) {
-                        $('#kt_ecommerce_edit_order_selected_products').html(
-                            `<span class="w-100 text-muted">Select one or more products from the list below by ticking the checkbox.</span>`
-                        );
-                    }
-                }
+                selectedProduct = {
+                    id: productId,
+                    name: productName,
+                    // image: productImage,
+                    price: price,
+                    type: type
+                };
+                console.log(selectedProduct);
+                $('#inputProductId').val(productId);
+                $('#inputSellPrice').val(price);
+                $('#typeList').val(type);
+                $('#inputQuantity').val('');
+                $('#modalInputQty').modal('show');
             });
 
             // Tombol Add Product dari modal
