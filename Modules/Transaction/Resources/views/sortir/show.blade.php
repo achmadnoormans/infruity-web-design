@@ -142,7 +142,7 @@
 
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
-                <a href="apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
+                <a href="{{url(Request::segment(1))}}" id="kt_ecommerce_edit_order_cancel"
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
                 <!--begin::Button-->

@@ -566,7 +566,12 @@ class WholesaleController extends Controller
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
+                            <li>
+                                <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>

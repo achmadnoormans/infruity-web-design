@@ -74,6 +74,7 @@ return new class extends Migration {
                 A.*,
                 B.product_id,
                 SUM( B.quantity ) AS stock_available,
+                AVG( B.avg_price ) AS hpp,
                 C.abbreviation AS satuan
             FROM
                 products AS A

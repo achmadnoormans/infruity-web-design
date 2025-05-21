@@ -392,29 +392,30 @@
             dateFormat: "Y-m-d"
         });
 
-        $('#product_id').select2({
-            placeholder: 'Select a product',
-            ajax: {
-                url: '{{ route('ajax.stock-available') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name,
-                        stock_available: item.stock_available
-                    }))
-                })
-            }
-        }).on('select2:select', function(e) {
-            const data = e.params.data;
-            console.log(data);
+        $('#kt_modal_add_customer').on('shown.bs.modal', function() {
+            $('#product_id').select2({
+                placeholder: 'Select a product',
+                dropdownParent: $('#kt_modal_add_customer'),
+                ajax: {
+                    url: '{{ route('ajax.stock-available') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: params => ({
+                        search: params.term
+                    }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name,
+                            stock_available: item.stock_available
+                        }))
+                    })
+                }
+            }).on('select2:select', function(e) {
+                const data = e.params.data;
+                $('input[name="quantity"]').val(data.stock_available || 0);
+            });
 
-            // Tampilkan nilai stok di input bernama "stock"
-            $('input[name="quantity"]').val(data.stock_available || 0);
         });
     </script>
 @endsection

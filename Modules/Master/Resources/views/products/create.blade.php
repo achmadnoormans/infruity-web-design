@@ -368,7 +368,29 @@
                                                 <th class="min-w-100px text-end">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="kt_ecommerce_edit_order_selected_products_body"></tbody>
+                                        <tbody id="kt_ecommerce_edit_order_selected_products_body">
+                                            @if (isset($variant) && $variant->count() > 0)
+                                                @foreach ($variant as $item)
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" name="variant_name[]"
+                                                                class="form-control mb-2" placeholder="Product name"
+                                                                value="{{ $item->name }}" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="variant_price[]"
+                                                                class="form-control mb-2" placeholder="Product price"
+                                                                value="{{ $item->price }}" />
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <button type="button"
+                                                                class="btn btn-icon btn-danger remove_variant">
+                                                                <i class="ki-outline ki-cross fs-2"></i>
+                                                            </button>
+                                                        </td>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
                                     </table>
                                 </div>
                                 <!--end::Input group-->

@@ -158,6 +158,7 @@ class ProductController extends Controller
         } else {
             $data['category'] = null;
         }
+        $data['variant'] = Product::where('parent_id', $id)->get();
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
@@ -219,6 +220,9 @@ class ProductController extends Controller
                 $product->save();
             }
 
+            // Hapus semua varian yang ada
+            Product::where('parent_id', $id)->delete();
+            // Simpan varian baru
             if (isset($request->variant_name)) {
                 foreach ($request->variant_name as $key => $value) {
                     $variant = new Product();

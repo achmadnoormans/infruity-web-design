@@ -106,8 +106,8 @@ class SortirController extends Controller
 
         try {
             DB::beginTransaction();
-            $wholesaleProduct = WholesaleProduct::findOrFail($request->wholesale_product_id);
-            $quantity = $wholesaleProduct->quantity;
+            $wholesaleProduct = DB::table('sortir_view')->where('product_id', $request->wholesale_product_id)->first();
+            $quantity = $wholesaleProduct->hpp;
             $hpp = $wholesaleProduct->hpp;
             $avgPrice = $hpp / $quantity;
 
