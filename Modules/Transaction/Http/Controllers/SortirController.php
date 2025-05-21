@@ -100,37 +100,36 @@ class SortirController extends Controller
     {
         // dd($request->all());
         Validator::make($request->all(), [
-            'wholesale_product_id' => 'required|exists:products,id',
+            'product_id' => 'required|exists:products,id',
             'quantity' => 'nullable|array',
         ])->validate();
 
         try {
             DB::beginTransaction();
-            $wholesaleProduct = DB::table('sortir_view')->where('product_id', $request->wholesale_product_id)->first();
+            $wholesaleProduct = DB::table('sortir_view')->where('product_id', $request->product_id)->first();
             $quantity = $wholesaleProduct->hpp;
             $hpp = $wholesaleProduct->hpp;
-            $avgPrice = $hpp / $quantity;
 
             if (isset($request->quantity)) {
                 foreach ($request->quantity as $key => $value) {
                     $stockIn = new StockIn();
-                    $stockIn->code = 'wholesale_product';
-                    $stockIn->reference_id = $request->wholesale_product_id;
+                    $stockIn->code = 'sortir';
+                    $stockIn->reference_id = $request->product_id;
                     $stockIn->date = date('Y-m-d');
                     $stockIn->product_id = $key;
                     $stockIn->quantity = $value;
-                    $stockIn->avg_price = $avgPrice;
+                    $stockIn->avg_price = $hpp;
                     $stockIn->created_by = Auth::user()->id;
                     $stockIn->save();
                 }
 
                 $stockOut = new StockOut();
                 $stockOut->code = 'sortir';
-                $stockOut->reference_id = $request->wholesale_product_id;
+                $stockOut->reference_id = $request->product_id;
                 $stockOut->date = date('Y-m-d');
-                $stockOut->product_id = $request->wholesale_product_id;
+                $stockOut->product_id = $request->product_id;
                 $stockOut->quantity = array_sum($request->quantity);
-                $stockOut->avg_price = $avgPrice;
+                $stockOut->avg_price = $hpp;
                 $stockOut->created_by = Auth::user()->id;
                 $stockOut->save();
             }
@@ -138,9 +137,9 @@ class SortirController extends Controller
             if (isset($request->buang) && $request->buang > 0) {
                 $stockOut = new StockOut();
                 $stockOut->code = 'buang';
-                $stockOut->reference_id = $request->wholesale_product_id;
+                $stockOut->reference_id = $request->product_id;
                 $stockOut->date = date('Y-m-d');
-                $stockOut->product_id = $request->wholesale_product_id;
+                $stockOut->product_id = $request->product_id;
                 $stockOut->quantity = $request->buang;
                 $stockOut->created_by = Auth::user()->id;
                 $stockOut->save();

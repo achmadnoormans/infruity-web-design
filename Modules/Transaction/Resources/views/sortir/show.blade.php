@@ -42,8 +42,7 @@
                                             </div>
                                             <div>
                                                 <div class="fw-bold fs-1 stock">{{ $product->stock_available }}</div>
-                                                <input type="hidden" name="wholesale_product_id"
-                                                    value="{{ $product->id }}">
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             </div>
                                         </div>
                                     </div>
@@ -113,22 +112,21 @@
                                             data-kt-ecommerce-edit-order-id="{{ $product->id }}">
                                             <!--begin::Thumbnail-->
                                             <a href="#" class="symbol symbol-50px">
-                                                <span class="symbol-label"
-                                                    style="background-image:url('');"></span>
+                                                <span class="symbol-label" style="background-image:url('');"></span>
                                             </a>
                                             <!--end::Thumbnail-->
                                             <div class="ms-5">
                                                 <!--begin::Title-->
-                                                <a href="#"
-                                                    class="text-danger text-hover-primary fs-5 fw-bold">Produk Buang</a>
+                                                <a href="#" class="text-danger text-hover-primary fs-5 fw-bold">Produk
+                                                    Buang</a>
                                                 <!--end::Title-->
                                             </div>
                                         </div>
                                     </td>
                                     <td class="text-end pe-5" data-order="42">
                                         <input type="number"
-                                            class="form-control form-control-solid text-end quantity-input"
-                                            name="buang" value="" placeholder="0" />
+                                            class="form-control form-control-solid text-end quantity-input" name="buang"
+                                            value="" placeholder="0" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -142,7 +140,7 @@
 
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
-                <a href="{{url(Request::segment(1))}}" id="kt_ecommerce_edit_order_cancel"
+                <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
                 <!--begin::Button-->
@@ -190,6 +188,13 @@
             inputs.forEach(input => {
                 input.addEventListener('input', updateStock);
             });
+        });
+
+        $("form").submit(function() {
+            $(this).find(":submit").attr('disabled', 'disabled');
+            $(this).find(":submit").html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+            );
         });
     </script>
 @endsection
