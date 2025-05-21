@@ -36,21 +36,24 @@ return new class extends Migration {
                     product_id,
                     quantity,
                     avg_price,
-                    date
+                    date,
+                    `code` AS reff
                 FROM
                     stock_in UNION
                 SELECT
                     product_id,
                     - quantity,
                     avg_price,
-                    date
+                    date,
+                    `code` 
                 FROM
                     stock_out UNION
                 SELECT
                     product_id,
                     quantity,
                     price,
-                    wholesale.order_date
+                    wholesale.order_date,
+                    'wholelsale' AS reff 
                 FROM
                     wholesale_product
                     JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
@@ -61,7 +64,8 @@ return new class extends Migration {
                     product_id,
                     - quantity,
                     avg_price,
-                    date
+                    date,
+                    'stock-out'
                 FROM
                     stock_out_transaction
             ) AS Q
