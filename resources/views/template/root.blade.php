@@ -34,7 +34,7 @@
     </script>
     <style>
         @media (max-width: 767.98px) {
-            #kt_aside_menu_wrapper {
+            #kt_wrapper {
                 max-height: calc(100vh - 70px);
                 /* 70px adalah tinggi mobile-footer */
                 overflow-y: auto !important;
@@ -173,6 +173,33 @@
                     $(this).val(unformatNumber($(this).val()));
                 });
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Deteksi apakah perangkat adalah mobile
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Tambahkan event listener pada interaksi pertama
+                const enableFullscreen = () => {
+                    const docEl = document.documentElement;
+
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen();
+                    } else if (docEl.webkitRequestFullscreen) { // Safari
+                        docEl.webkitRequestFullscreen();
+                    } else if (docEl.msRequestFullscreen) { // IE/Edge
+                        docEl.msRequestFullscreen();
+                    }
+
+                    // Hapus event listener agar tidak dipanggil berulang
+                    document.removeEventListener('click', enableFullscreen);
+                    document.removeEventListener('touchstart', enableFullscreen);
+                };
+
+                document.addEventListener('click', enableFullscreen);
+                document.addEventListener('touchstart', enableFullscreen);
+            }
         });
     </script>
 </body>
