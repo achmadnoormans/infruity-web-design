@@ -124,6 +124,35 @@
     @yield('script')
     <!--end::Custom Javascript-->
     <!--end::Javascript-->
+    <script>
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Unformat: 1.000 -> 1000
+        function unformatNumber(numStr) {
+            return numStr.replace(/\./g, "");
+        }
+
+        $(document).ready(function() {
+            let input = $('.format-number');
+
+            // Saat user mengetik
+            input.on('input', function() {
+                let raw = unformatNumber($(this).val());
+                if (!isNaN(raw) && raw !== "") {
+                    $(this).val(formatNumber(raw));
+                } else {
+                    $(this).val('');
+                }
+            });
+
+            // Sebelum submit, ubah jadi angka mentah (tanpa titik)
+            input.closest('form').on('submit', function() {
+                input.val(unformatNumber(input.val()));
+            });
+        });
+    </script>
 </body>
 <!--end::Body-->
 
