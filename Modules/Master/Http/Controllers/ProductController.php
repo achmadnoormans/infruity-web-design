@@ -132,7 +132,6 @@ class ProductController extends Controller
         $data = [
             'data' => $product,
             'product_units' => ProductUnit::all(),
-            'category' => ProductCategory::findOrFail($product->category_id),
         ];
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',

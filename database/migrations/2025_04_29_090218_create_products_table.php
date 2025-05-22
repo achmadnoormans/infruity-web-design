@@ -18,8 +18,8 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->text('sku')->nullable();
             $table->text('barcode')->nullable();
-            $table->decimal('price', 10, 2)->nullable()->default(0);
-            $table->integer('stock')->default(0);
+            $table->integer('price')->nullable()->default(0);
+            $table->decimal('stock', 10, 2)->default(0);
             $table->integer('product_unit')->default(1);
             $table->integer('limit')->default(1);
             $table->text('handling')->nullable();

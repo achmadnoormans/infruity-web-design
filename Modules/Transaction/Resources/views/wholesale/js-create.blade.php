@@ -143,13 +143,14 @@
                 $('#typeList').val(type);
                 $('#inputQuantity').val('');
                 $('#modalInputQty').modal('show');
+                bindFormatNumber();
             });
 
             // Tombol Add Product dari modal
             $('#submitQty').on('click', function() {
                 const qty = parseInt($('#inputQuantity').val());
-                const price = parseFloat($('#inputPrice').val());
-                const sellPrice = parseFloat($('#inputSellPrice').val());
+                const price = parseFloat(unformatNumber($('#inputPrice').val()));
+                const sellPrice = parseFloat(unformatNumber($('#inputSellPrice').val()));
                 const supplierId = $('#inputSupplier').val();
                 const supplierText = $('#inputSupplier option:selected').text();
                 const id = $('#inputProductId').val();

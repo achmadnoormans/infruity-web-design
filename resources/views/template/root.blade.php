@@ -131,25 +131,38 @@
 
         // Unformat: 1.000 -> 1000
         function unformatNumber(numStr) {
-            return numStr.replace(/\./g, "");
+            return numStr.replace(/[.,]/g, "");
+        }
+
+        // Bind input format handler (untuk semua elemen format-number)
+        function bindFormatNumber() {
+            $('.format-number').each(function() {
+                // Format isi awal jika belum diformat
+                let raw = unformatNumber($(this).val());
+                if (!isNaN(raw) && raw !== "") {
+                    $(this).val(formatNumber(Number(raw)));
+                }
+
+                // Hapus event sebelumnya lalu bind ulang
+                $(this).off('input').on('input', function() {
+                    let valRaw = unformatNumber($(this).val());
+                    if (!isNaN(valRaw) && valRaw !== "") {
+                        $(this).val(formatNumber(Number(valRaw)));
+                    } else {
+                        $(this).val('');
+                    }
+                });
+            });
         }
 
         $(document).ready(function() {
-            let input = $('.format-number');
+            bindFormatNumber(); // Jalankan saat awal
 
-            // Saat user mengetik
-            input.on('input', function() {
-                let raw = unformatNumber($(this).val());
-                if (!isNaN(raw) && raw !== "") {
-                    $(this).val(formatNumber(raw));
-                } else {
-                    $(this).val('');
-                }
-            });
-
-            // Sebelum submit, ubah jadi angka mentah (tanpa titik)
-            input.closest('form').on('submit', function() {
-                input.val(unformatNumber(input.val()));
+            // Sebelum form disubmit, ubah semua format-number jadi angka murni
+            $('form').on('submit', function() {
+                $('.format-number').each(function() {
+                    $(this).val(unformatNumber($(this).val()));
+                });
             });
         });
     </script>

@@ -194,7 +194,7 @@
             var currentValue = $span.data('value');
             var id = $span.data('id');
 
-            var input = $('<input type="number" class="form-control form-control-sm text-end">')
+            var input = $('<input type="number" class="form-control format-number form-control-sm text-end">')
                 .val(currentValue)
                 .blur(function() {
                     var newValue = $(this).val();

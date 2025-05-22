@@ -200,14 +200,14 @@
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Beli</label>
-                                <input type="number" class="form-control" id="inputPrice" placeholder="Enter price"
-                                    min="0" step="0.01">
+                                <input type="number" class="form-control format-number" id="inputPrice" placeholder="Enter price"
+                                    min="0">
                             </div>
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Jual</label>
-                                <input type="number" class="form-control" id="inputSellPrice" placeholder="Enter price"
-                                    min="0" step="0.01">
+                                <input type="number" class="form-control format-number" id="inputSellPrice" placeholder="Enter price"
+                                    min="0">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -267,8 +267,8 @@
 
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="inputPriceEdit" name="price"
-                                placeholder="Enter price" min="0" step="0.01">
+                            <input type="number" class="form-control format-number" id="inputPriceEdit" name="price"
+                                placeholder="Enter price" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->

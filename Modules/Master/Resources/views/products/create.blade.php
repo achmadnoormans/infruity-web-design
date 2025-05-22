@@ -260,7 +260,7 @@
                                     <label class="required form-label">Base Price</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="price" class="form-control mb-2"
+                                    <input type="text" name="price" class="form-control format-number mb-2"
                                         placeholder="Product price" value="{{ $data->price ?? old('price') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
@@ -379,7 +379,7 @@
                                                         </td>
                                                         <td>
                                                             <input type="text" name="variant_price[]"
-                                                                class="form-control mb-2" placeholder="Product price"
+                                                                class="form-control format-number mb-2" placeholder="Product price"
                                                                 value="{{ $item->price }}" />
                                                         </td>
                                                         <td class="text-end">
@@ -438,7 +438,7 @@
                         </div>
                         <div class="mb-3">
                             <label>Harga</label>
-                            <input type="number" name="price" id="variant_price" class="form-control variant">
+                            <input type="number" name="price" id="variant_price" class="form-control format-number variant">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -529,7 +529,7 @@
                         <input type="text" name="variant_name[]" class="form-control mb-2" placeholder="Product name" />
                     </td>
                     <td>
-                        <input type="text" name="variant_price[]" class="form-control mb-2" placeholder="Product price" />
+                        <input type="text" name="variant_price[]" class="form-control format-number mb-2" placeholder="Product price" />
                     </td>                    
                     <td class="text-end">
                         <button type="button" class="btn btn-icon btn-danger remove_variant">
@@ -542,6 +542,7 @@
             $('#variant_table').on('click', '.remove_variant', function() {
                 $(this).closest('tr').remove();
             });
+            bindFormatNumber(); // Re-bind ke elemen baru setelah append
         }
         $('#variant_table').on('click', '.remove_variant', function() {
             $(this).closest('tr').remove();
@@ -654,7 +655,7 @@
                         <input type="text" name="product_name[]" class="form-control mb-2" placeholder="Product name" />
                     </td>
                     <td>
-                        <input type="text" name="price[]" class="form-control mb-2" placeholder="Product price" />
+                        <input type="text" name="price[]" class="form-control format-number mb-2" placeholder="Product price" />
                     </td>                    
                     <td class="text-end">
                         <button type="button" class="btn btn-icon btn-danger save_variant">
@@ -670,6 +671,7 @@
                 $('#variant_table').on('click', '.remove_variant', function() {
                     $(this).closest('tr').remove();
                 });
+                bindFormatNumber(); // Re-bind ke elemen baru setelah append
             }
             $('#variant_table').on('click', '.remove_variant', function() {
                 $(this).closest('tr').remove();
