@@ -308,10 +308,20 @@ class WholesaleController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                return $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
+                $html = '';
+                if ($item->supplier_id != null) {
+                    $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
+                } else {
+                    $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
+                }
+                return $html;
             })
             ->addColumn('supplier', function ($item) {
-                return $item->supplier->name;
+                if (isset($item->supplier_id) && $item->supplier_id != null) {
+                    return $item->supplier->name;
+                } else {
+                    return '-';
+                }
             })
             ->addColumn('price', function ($item) {
                 return 'Rp' . toNumber($item->price);
@@ -362,7 +372,7 @@ class WholesaleController extends Controller
         $validated = $request->validate([
             'wholesale_id' => 'required|exists:wholesale,id',
             'id' => 'required|exists:products,id',
-            'supplier_id' => 'required|exists:supplier,id',
+            'supplier_id' => 'nullable|exists:supplier,id',
             'qty' => 'required',
             'price' => 'required',
             'sell_price' => 'nullable',
@@ -587,6 +597,8 @@ class WholesaleController extends Controller
                     ';
                 }
                 return $html;
+            })->addColumn('wholesale_id', function ($item) {
+                return $item->id;
             })
             ->rawColumns(['name', 'action', 'status', 'address'])
             ->make(true);

@@ -82,6 +82,11 @@
                         targets: [4], // Kolom ke-5 (status_raw)
                         visible: false,
                         searchable: false
+                    },
+                    {
+                        targets: [5], // Kolom ke-5 (status_raw)
+                        visible: false,
+                        searchable: false
                     }
                 ],
                 ajax: {
@@ -92,7 +97,8 @@
                 },
                 order: [
                     [1, 'asc'], // Sort by status_raw ASC
-                    [2, 'desc'] // Then by order_date ASC (kolom ke-3)
+                    [2, 'desc'], // Then by order_date ASC (kolom ke-3)
+                    [0, 'desc']
                 ],
                 columns: [{
                         data: 'name',
@@ -121,6 +127,10 @@
                     {
                         data: 'status_raw', // hidden column used only for sorting
                         name: 'status_raw'
+                    },
+                    {
+                        data: 'wholesale_id',
+                        name: 'wholesale_id'
                     }
                 ]
             });

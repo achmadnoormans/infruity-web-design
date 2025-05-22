@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->integer('quantity');
             $table->integer('price')->nullable();
             $table->integer('total_price')->nullable();
-            $table->integer('supplier_id');
+            $table->integer('supplier_id')->nullable();
             $table->enum('status', ['draft', 'processing', 'complete'])->default('processing');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

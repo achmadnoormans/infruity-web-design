@@ -165,10 +165,10 @@
                     return;
                 }
 
-                if (!supplierId) {
-                    Swal.fire("Error", "Supplier harus dipilih.", "error");
-                    return;
-                }
+                // if (!supplierId) {
+                //     Swal.fire("Error", "Supplier harus dipilih.", "error");
+                //     return;
+                // }
 
                 const total = qty * price;
 
