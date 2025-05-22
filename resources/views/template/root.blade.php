@@ -35,7 +35,7 @@
     <style>
         @media (max-width: 767.98px) {
             #kt_wrapper {
-                max-height: calc(100vh - 90px);
+                max-height: calc(100vh -100px);
                 /* 70px adalah tinggi mobile-footer */
                 overflow-y: auto !important;
             }
