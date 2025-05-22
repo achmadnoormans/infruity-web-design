@@ -19,7 +19,7 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    {{-- <div class="input-group w-250px">
+                    <div class="input-group w-250px">
                         <input class="form-control form-control-solid rounded rounded-end-0" placeholder="Pick date range"
                             id="kt_ecommerce_sales_flatpickr" />
                         <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
@@ -28,7 +28,7 @@
                                 <span class="path2"></span>
                             </i>
                         </button>
-                    </div> --}}
+                    </div>
                     <div class="w-100 mw-150px">
                         <!--begin::Select2-->
                         <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
@@ -197,7 +197,13 @@
                     url: "{{ route('stock-out.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
-                        d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();;
+                        d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
+                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        if (range) {
+                            var dates = range.split(' to ');
+                            d.start_date = dates[0];
+                            d.end_date = dates[1] ?? dates[0]; // jika hanya pilih 1 tanggal
+                        }
                     }
                 },
                 columns: [{
@@ -419,6 +425,16 @@
             altInput: !0,
             altFormat: "d F, Y",
             dateFormat: "Y-m-d"
+        });
+
+        $("#kt_ecommerce_sales_flatpickr").flatpickr({
+            altInput: !0,
+            altFormat: "d/m/Y",
+            dateFormat: "Y-m-d",
+            mode: "range",
+            onChange: function(e, t, n) {
+                dataTable.draw();
+            }
         });
 
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {

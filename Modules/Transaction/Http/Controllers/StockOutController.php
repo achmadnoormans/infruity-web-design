@@ -199,6 +199,9 @@ class StockOutController extends Controller
             if ($request->stock_filter != 'all') {
                 $query->where('type_id', $request->stock_filter);
             }
+            if ($request->start_date && $request->end_date) {
+                $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            }
         }
         $data = $query->get();
         return DataTables::of($data)
@@ -209,7 +212,8 @@ class StockOutController extends Controller
                                 <a href="'. url('wholesale') . '/' . $item->id . '/show' .'" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
                                 <br>
                                 <span class="text-muted fw-bold d-block fs-7">'. $item->product->name. '</span>
-                                <span class="text-danger fw-bold d-block fs-7">'. $item->type->name. '</span>
+                                <span class="text-danger fw-bold d-block fs-7">'. $item->type->name. '</span>                                
+                                <span class="text-success fw-bold d-block fs-7">'. dateindo($item->date). '</span>
                             </div>
                         </div>';
             })
