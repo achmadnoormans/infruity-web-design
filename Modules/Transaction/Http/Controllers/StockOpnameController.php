@@ -151,10 +151,11 @@ class StockOpnameController extends Controller
             ->addColumn('name', function ($item) {
                 return '<div class="d-flex align-items-center">
                             <div class="ms-5">
-                                <a href="'. url('wholesale') . '/' . $item->id . '/show' .'" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
+                                <a href="' . url('wholesale') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
                                 <br>
-                                <span class="text-muted fw-bold d-block fs-7">'. $item->product->name. '</span>
-                                <span class="text-muted fw-bold d-block fs-7">'. $item->stock . '->' . $item->real_stock . '</span>
+                                <span class="text-muted fw-bold d-block fs-7">' . $item->product->name . '</span>
+                                <span class="text-muted fw-bold d-block fs-7">' . $item->stock . '->' . $item->real_stock . '</span>
+                                <span class="text-success fw-bold d-block fs-7"> Tgl : ' . dateindo($item->date) . '</span>
                             </div>
                         </div>';
             })
@@ -163,7 +164,7 @@ class StockOpnameController extends Controller
                 if ($item->difference < 0) {
                     $class = 'badge badge-light-danger';
                 }
-                return '<span class="'.$class.'" data-id="' . $item->id . '" data-value="' . $item->difference . '">' . toNumber($item->difference) . ' ' . $item->product->unit->abbreviation . '</span>';
+                return '<span class="' . $class . '" data-id="' . $item->id . '" data-value="' . $item->difference . '">' . toNumber($item->difference) . ' ' . $item->product->unit->abbreviation . '</span>';
             })
             ->addColumn('action', function ($row) {
                 $editUrl = route('products.edit', $row->id);
@@ -177,6 +178,11 @@ class StockOpnameController extends Controller
                     </button>
                     <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
                         <li>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="viewProduct(' . $row->id . ')">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id . ')">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
@@ -188,6 +194,7 @@ class StockOpnameController extends Controller
                         </li>
                     </ul>
                 </div>';
+
             })
             ->rawColumns(['name', 'quantity', 'action'])
             ->make(true);

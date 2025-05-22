@@ -163,11 +163,6 @@
             dataTable = $('#transaction-table').DataTable({
                 processing: true,
                 serverSide: true,
-                scrollX: true, // Aktifkan scroll horizontal
-                fixedColumns: {
-                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
-                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
-                },
                 ajax: {
                     url: "{{ route('stock-opname.data') }}",
                     data: function(d) {
@@ -216,6 +211,10 @@
                         // Tutup modal manual
                         const modal = bootstrap.Modal.getInstance(document.getElementById(
                             'kt_modal_add_customer'));
+                        var form = $('#kt_modal_add_customer_form');
+                        // --- DISABLE semua input/select/textarea di form supaya read-only ---
+                        form.find('input, select, textarea, button[type="submit"]').prop('disabled',
+                            false);
                         modal.hide();
                         document.getElementById('kt_modal_add_customer_form').reset();
                     }
@@ -371,6 +370,56 @@
                     form.append(
                         '<input type="hidden" name="_method" value="PUT">'
                     ); // Menambahkan input _method untuk PUT
+
+                    // --- DISABLE semua input/select/textarea di form supaya read-only ---
+                    form.find('input, select, textarea, button[type="submit"]').prop('disabled', false);
+
+                    // Tampilkan modal untuk edit produk
+                    var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
+                    modal.show();
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memuat data produk.'
+                    });
+                }
+            });
+        }
+
+        function viewProduct(id) {
+            $.ajax({
+                url: `/stock-opname/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
+                type: 'GET',
+                success: function(response) {
+                    console.log(response);
+                    // Isi form dengan data produk yang ada
+                    // Set flatpickr date
+                    var fp = $('#date')[0]._flatpickr;
+                    if (fp) {
+                        fp.setDate(response.date);
+                    }
+                    $('input[name="quantity"]').val(response.stock);
+                    $('input[name="real_stock"]').val(response.real_stock);
+                    $('select[name="product_id"]').append(
+                        $('<option>', {
+                            value: response.product_id,
+                            text: response.name
+                        })
+                    ).val(response.product_id).trigger('change');
+                    $('select[name="type"]').val(response.type_id).trigger('change');
+
+                    // Ubah action form untuk update
+                    var form = $('#kt_modal_add_customer_form');
+                    form.attr('action', `#`); // URL untuk update produk
+                    form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
+                    form.append(
+                        ''
+                    ); // Menambahkan input _method untuk PUT
+
+                    // --- DISABLE semua input/select/textarea di form supaya read-only ---
+                    form.find('input, select, textarea, button[type="submit"]').prop('disabled', true);
 
                     // Tampilkan modal untuk edit produk
                     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
