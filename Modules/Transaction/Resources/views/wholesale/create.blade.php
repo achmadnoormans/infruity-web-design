@@ -57,6 +57,11 @@
         <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
             <!--begin::Order details-->
             <div class="card card-flush py-4">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Select Products</h2>
+                    </div>
+                </div>
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <div class="d-flex flex-column gap-10">
@@ -96,7 +101,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Select Products</h2>
+                        <h2>Preview Products</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -200,14 +205,14 @@
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Beli</label>
-                                <input type="number" class="form-control format-number" id="inputPrice" placeholder="Enter price"
-                                    min="0">
+                                <input type="text" class="form-control format-number" id="inputPrice"
+                                    placeholder="Enter price" min="0">
                             </div>
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Jual</label>
-                                <input type="number" class="form-control format-number" id="inputSellPrice" placeholder="Enter price"
-                                    min="0">
+                                <input type="text" class="form-control format-number" id="inputSellPrice"
+                                    placeholder="Enter price" min="0">
                             </div>
                         </div>
                         <div class="modal-footer">

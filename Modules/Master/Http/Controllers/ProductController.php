@@ -38,9 +38,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $data['page_plugin_js'] = [
-            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
-        ];
         $data['product_units'] = ProductUnit::all();
         $data['data'] = null;
         return view('master::products.create', $data);
@@ -133,9 +130,6 @@ class ProductController extends Controller
             'data' => $product,
             'product_units' => ProductUnit::all(),
         ];
-        $data['page_plugin_js'] = [
-            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
-        ];
         // dd($data);
         return view('master::products.create', $data);
     }
@@ -158,9 +152,6 @@ class ProductController extends Controller
             $data['category'] = null;
         }
         $data['variant'] = Product::where('parent_id', $id)->get();
-        $data['page_plugin_js'] = [
-            'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
-        ];
         // dd($data);
         return view('master::products.create', $data);
     }

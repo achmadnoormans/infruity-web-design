@@ -19,7 +19,7 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="input-group w-250px">
+                    <div class="input-group mw-350px">
                         <input class="form-control form-control-solid rounded rounded-end-0" placeholder="Pick date range"
                             id="kt_ecommerce_sales_flatpickr" />
                         <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
@@ -29,6 +29,10 @@
                             </i>
                         </button>
                     </div>
+                </div>
+                <!--end::Card toolbar-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                     <div class="w-100 mw-150px">
                         <!--begin::Select2-->
                         <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"

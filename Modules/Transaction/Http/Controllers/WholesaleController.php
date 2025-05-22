@@ -47,7 +47,7 @@ class WholesaleController extends Controller
 
         $data['products'] = Product::whereNull('parent_id')->get(); // optional: reset index numerik
         $data['suppliers'] = Supplier::all();
-        return redirect('wholesale/' . $wholsale->id . '/edit')->with('success', 'Pembuatan Data Kulak berhasil');
+        return redirect('wholesale/' . $wholsale->id . '/edit');
         // return view('transaction::wholesale.create', $data);
     }
 
@@ -392,7 +392,6 @@ class WholesaleController extends Controller
                 'message' => 'Qty tidak boleh 0',
             ], 404);
         }
-
         try {
             DB::beginTransaction();
             $wholesaleProduct = new WholesaleProduct();
@@ -413,7 +412,7 @@ class WholesaleController extends Controller
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Product gagal disimpan.',
+                'message' => 'Product gagal disimpan.' . $e->getMessage(),
                 'data' => $wholesaleProduct
             ], 404);
         }

@@ -229,9 +229,8 @@
                                     <label class="form-label">Description</label>
                                     <!--end::Label-->
                                     <!--begin::Editor-->
-                                    <div id="kt_ecommerce_add_product_description"
-                                        name="kt_ecommerce_add_product_description" class="min-h-200px mb-2"></div>
-                                    <input type="hidden" name="description" id="description_input">
+                                    <textarea name="description" class="form-control" id="description_input" cols="30" rows="10">{{ $data->description ?? old('description') }}</textarea>
+
                                     <!--end::Editor-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Set a description to the product for better visibility.
@@ -379,7 +378,8 @@
                                                         </td>
                                                         <td>
                                                             <input type="text" name="variant_price[]"
-                                                                class="form-control format-number mb-2" placeholder="Product price"
+                                                                class="form-control format-number mb-2"
+                                                                placeholder="Product price"
                                                                 value="{{ $item->price }}" />
                                                         </td>
                                                         <td class="text-end">
@@ -438,7 +438,8 @@
                         </div>
                         <div class="mb-3">
                             <label>Harga</label>
-                            <input type="number" name="price" id="variant_price" class="form-control format-number variant">
+                            <input type="number" name="price" id="variant_price"
+                                class="form-control format-number variant">
                         </div>
                     </div>
                     <div class="modal-footer">
