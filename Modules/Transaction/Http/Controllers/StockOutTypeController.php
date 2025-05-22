@@ -5,6 +5,12 @@ namespace Modules\Transaction\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Transaction\Entities\StockOutType;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class StockOutTypeController extends Controller
 {
@@ -14,7 +20,7 @@ class StockOutTypeController extends Controller
      */
     public function index()
     {
-        return view('transaction::index');
+        return view('transaction::stock-out-type.index');
     }
 
     /**
@@ -53,7 +59,8 @@ class StockOutTypeController extends Controller
      */
     public function edit($id)
     {
-        return view('transaction::edit');
+        $type = StockOutType::findOrFail($id);
+        return response()->json($type);
     }
 
     /**
@@ -64,7 +71,23 @@ class StockOutTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Validasi input
+        $validated = $request->validate([
+            'type_name' => 'required|string|max:255',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $type = StockOutType::findOrFail($id);
+            $type->name = $validated['type_name'];
+            $type->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Type updated failed']);
+        }
+
+        return response()->json(['message' => 'Type updated successfully']);
     }
 
     /**
@@ -74,6 +97,54 @@ class StockOutTypeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $type = StockOutType::findOrFail($id);
+            $type->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_data(Request $request)
+    {
+        $data = StockOutType::all();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $editUrl = route('products.edit', $row->id);
+                $deleteUrl = route('products.destroy', $row->id);
+                $name = e($row->name);
+
+                return '
+                <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id . ')">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>';
+            })
+            ->rawColumns(['name', 'quantity', 'action'])
+            ->make(true);
     }
 }
