@@ -32,6 +32,15 @@
     <script>
         // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
     </script>
+    <style>
+        @media (max-width: 767.98px) {
+            #kt_aside_menu_wrapper {
+                max-height: calc(100vh - 70px);
+                /* 70px adalah tinggi mobile-footer */
+                overflow-y: auto !important;
+            }
+        }
+    </style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -68,7 +77,7 @@
             <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
                 @include('template.header')
                 <!--begin::Content-->
-                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                <div class="content d-flex flex-column flex-column-fluid main-content pb-5 pb-md-0" id="kt_content">
                     <!--begin::Post-->
                     <div class="post d-flex flex-column-fluid" id="kt_post">
                         <!--begin::Container-->
