@@ -19,6 +19,27 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    {{-- <div class="input-group w-250px">
+                        <input class="form-control form-control-solid rounded rounded-end-0" placeholder="Pick date range"
+                            id="kt_ecommerce_sales_flatpickr" />
+                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                            <i class="ki-duotone ki-cross fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </button>
+                    </div> --}}
+                    <div class="w-100 mw-150px">
+                        <!--begin::Select2-->
+                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                            data-placeholder="Stock" data-kt-ecommerce-product-filter="stock">
+                            <option value="all">Semua</option>
+                            @foreach ($type as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                        <!--end::Select2-->
+                    </div>
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#kt_modal_add_customer">Add Transaction</button>
@@ -176,6 +197,7 @@
                     url: "{{ route('stock-out.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();;
                     }
                 },
                 columns: [{
@@ -200,6 +222,9 @@
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+            $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
             });
 
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {

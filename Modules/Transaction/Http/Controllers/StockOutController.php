@@ -194,7 +194,13 @@ class StockOutController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = StockOutModel::with('product', 'type')->get();
+        $query = StockOutModel::with('product', 'type');
+        if ($request->has('stock_filter')) {
+            if ($request->stock_filter != 'all') {
+                $query->where('type_id', $request->stock_filter);
+            }
+        }
+        $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
