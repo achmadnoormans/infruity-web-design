@@ -35,7 +35,7 @@
     <style>
         @media (max-width: 767.98px) {
             #kt_wrapper {
-                max-height: calc(100vh -100px);
+                max-height: calc(100vh -70px);
                 /* 70px adalah tinggi mobile-footer */
                 overflow-y: auto !important;
             }
@@ -74,7 +74,7 @@
         <div class="page d-flex flex-row flex-column-fluid">
             @include('template.aside')
             <!--begin::Wrapper-->
-            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper" style="padding-bottom: 50px;">
                 @include('template.header')
                 <!--begin::Content-->
                 <div class="content d-flex flex-column flex-column-fluid main-content pb-5 pb-md-0" id="kt_content">
@@ -174,7 +174,6 @@
                 });
             });
         });
-
     </script>
 </body>
 <!--end::Body-->
