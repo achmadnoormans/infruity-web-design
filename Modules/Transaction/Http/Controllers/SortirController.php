@@ -106,9 +106,9 @@ class SortirController extends Controller
 
         try {
             DB::beginTransaction();
-            $wholesaleProduct = DB::table('sortir_view')->where('product_id', $request->product_id)->first();
-            $quantity = $wholesaleProduct->hpp;
-            $hpp = $wholesaleProduct->hpp;
+            $product = DB::table('product_stock')->where('id', $request->product_id)->first();
+            $quantity = $product->stock_available;
+            $hpp = $product->hpp;
 
             if (isset($request->quantity)) {
                 foreach ($request->quantity as $key => $value) {

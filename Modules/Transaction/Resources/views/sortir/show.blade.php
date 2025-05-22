@@ -100,7 +100,7 @@
                                             </div>
                                         </td>
                                         <td class="text-end pe-5" data-order="42">
-                                            <input type="number"
+                                            <input type="number" step="0.01" min="0"
                                                 class="form-control form-control-solid text-end quantity-input"
                                                 name="quantity[{{ $product->id }}]" value="" placeholder="0" />
                                         </td>
@@ -124,7 +124,7 @@
                                         </div>
                                     </td>
                                     <td class="text-end pe-5" data-order="42">
-                                        <input type="number"
+                                        <input type="number" step="0.01" min="0"
                                             class="form-control form-control-solid text-end quantity-input" name="buang"
                                             value="" placeholder="0" />
                                     </td>
@@ -165,7 +165,7 @@
             function updateStock() {
                 let totalQty = 0;
                 inputs.forEach(input => {
-                    totalQty += parseInt(input.value) || 0;
+                    totalQty += parseFloat(input.value) || 0;
                 });
 
                 // Jika melebihi stok

@@ -582,6 +582,14 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
+                                    <i class="ki-duotone ki-purchase">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>

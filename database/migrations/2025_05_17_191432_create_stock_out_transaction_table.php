@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('type_id');
             $table->date('date');
             $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
+            $table->decimal('quantity', 10, 2);
             $table->decimal('avg_price', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

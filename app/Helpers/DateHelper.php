@@ -133,7 +133,7 @@ if (!function_exists('tonumber')) {
     function tonumber($data)
     {
 
-        $data = number_format($data, 0, ',', '.');
+        $data = number_format($data, 2, ',', '.');
         return $data;
 
     }
