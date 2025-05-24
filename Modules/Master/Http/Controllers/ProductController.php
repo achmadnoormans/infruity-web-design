@@ -252,6 +252,12 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $product = Product::findOrFail($id);
+            $child = Product::where('parent_id', $id)->get();
+            if ($child->count() > 0) {
+                foreach ($child as $item) {
+                    $item->delete();
+                }
+            }
             $product->delete();
             DB::commit();
             return response()->json([
