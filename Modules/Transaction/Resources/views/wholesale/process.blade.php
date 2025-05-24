@@ -92,12 +92,10 @@
                                     id="kt_ecommerce_edit_order_selected_products_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th></th>
                                             <th class="min-w-200px">Product</th>
-                                            <th class="min-w-100px">Qty</th>
                                             <th class="min-w-100px">Price</th>
                                             <th class="min-w-100px">Total</th>
-                                            <th class="min-w-150px">Supplier</th>
+                                            <th class="min-w-100px text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
@@ -168,29 +166,23 @@
             });
 
             var url = `{{ url('wholesale/get-product/${wholsaleId}') }}`;
-            console.log(url);
             tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
                 processing: true,
                 serverSide: false,
-                ajax: {
-                    url: url,
-                    data: function(d) {
-                        d.url = "{{ request()->segment(1) }}/{{ request()->segment(2) }}";
-                    }
+                info: false,
+                paging: false,
+                ajax: url,
+                fixedColumns: {
+                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
+                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
                 },
+                columnDefs: [{
+                    orderable: false,
+                    targets: -1 // Nonaktifkan sorting untuk kolom action
+                }], // Ganti dengan route untuk ambil data
                 columns: [{
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'quantity',
-                        name: 'quantity'
                     },
                     {
                         data: 'price',
@@ -201,9 +193,12 @@
                         name: 'total'
                     },
                     {
-                        data: 'supplier',
-                        name: 'supplier'
-                    },
+                        data: 'action',
+                        name: 'action',
+                        className: 'text-end',
+                        orderable: false,
+                        searchable: false
+                    }
                 ],
                 language: {
                     emptyTable: "Tidak ada produk yang dipilih."
@@ -286,7 +281,7 @@
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(response) {                    
+                success: function(response) {
                     // Reload DataTable setelah berhasil menghapus data
                     if (typeof tableSelectedProduct !== 'undefined') {
                         tableSelectedProduct.ajax.reload(null, false);
@@ -332,7 +327,7 @@
                             });
 
                             // Reload DataTable setelah berhasil menghapus data
-                            location.reload(true);
+                            window.location.href = "{{ url('wholesale') }}";
                         },
                         error: function(xhr) {
                             Swal.fire({

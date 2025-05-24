@@ -71,7 +71,13 @@
                 serverSide: false,
                 info: false,
                 paging: false,
-                ajax: url, // Ganti dengan route untuk ambil data
+                ajax: {
+                    url: url,
+                    data: function(d) {
+                        d.searchValue = $('#search').val();
+                        d.url = "{{ request()->segment(1) }}/{{ request()->segment(2) }}";
+                    }
+                },
                 columns: [{
                         data: 'name',
                         name: 'name'

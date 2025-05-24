@@ -120,7 +120,7 @@
                                 <label class="fs-6 fw-semibold mb-2">Real Stock</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="number" class="form-control form-control-solid" placeholder=""
+                                <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
                                     name="real_stock" />
                                 <!--end::Input-->
                             </div>
@@ -241,7 +241,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');
@@ -323,7 +325,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('code');
             $table->date('date');
             $table->unsignedBigInteger('product_id');
-            $table->integer('stock');
-            $table->integer('real_stock');
-            $table->integer('difference');
-            $table->integer('avg_price');
+            $table->decimal('stock', 10, 2);
+            $table->decimal('real_stock', 10, 2);
+            $table->decimal('difference', 10, 2);
+            $table->integer('avg_price')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

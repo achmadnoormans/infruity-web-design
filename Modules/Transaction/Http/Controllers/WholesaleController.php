@@ -304,6 +304,7 @@ class WholesaleController extends Controller
 
     public function get_product(Request $request, $id)
     {
+        // dd($request->all());
         $data = WholesaleProduct::where('wholesale_id', $id)->get();
         return DataTables::of($data)
             ->addIndexColumn()
@@ -331,15 +332,9 @@ class WholesaleController extends Controller
             })
             ->addColumn('action', function ($item) use ($request) {
                 $html = '';
-                if ($request->url == 'wholesale/process') {
-                    if ($item->status == 'processing') {
-                        $html .= '
-                        <div class="d-flex flex-row">
-                            <a href="javascript:void(0)" class="btn-active-light-primary" onclick="deleteProduct(' . $item->id . ')">
-                                <i class="bi bi-check2-square"></i>
-                        </div>
-                        ';
-                    }
+
+                if ($request->url == 'wholesale/show'){
+                    $html .= '';
                 } else {
                     $html .= '
                     <div class="dropstart">
@@ -582,10 +577,12 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
-                                    <i class="ki-duotone ki-purchase">
+                                <a class="dropdown-item" href="' . route('wholesale.receive_process', $item->id) . '">
+                                    <i class="ki-duotone ki-basket">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
                                     </i>
                                 </a>
                             </li>
@@ -597,6 +594,21 @@ class WholesaleController extends Controller
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    ';
+                } else {
+                    $html .= '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                            <li>
+                                <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
                                 </a>
                             </li>
                         </ul>

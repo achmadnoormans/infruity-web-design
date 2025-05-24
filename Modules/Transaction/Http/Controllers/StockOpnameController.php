@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class StockOpnameController extends Controller
 {
@@ -66,7 +67,7 @@ class StockOpnameController extends Controller
             $stock->avg_price = $avg_price;
             $stock->stock = $stockAvailable;
             $stock->real_stock = $validated['real_stock'];
-            $stock->difference =  (int)$validated['real_stock'] - (int)$stockAvailable;
+            $stock->difference =  (Double)$validated['real_stock'] - (Double)$stockAvailable;
             $stock->created_by = Auth::user()->id_user;
             $stock->save();
             DB::commit();

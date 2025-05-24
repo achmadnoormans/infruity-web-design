@@ -15,44 +15,55 @@ GROUP BY
 
 DROP VIEW IF EXISTS transaction_stock;
 CREATE VIEW transaction_stock AS
-SELECT * FROM (
-    SELECT
-        product_id,
-        quantity,
-        avg_price,
-        date,
-        `code` AS reff
-    FROM
-        stock_in UNION
-    SELECT
-        product_id,
-        - quantity,
-        avg_price,
-        date,
-        `code` 
-    FROM
-        stock_out UNION
-    SELECT
-        product_id,
-        quantity,
-        price,
-        wholesale.order_date,
-        'wholelsale' AS reff 
-    FROM
-        wholesale_product
-        JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
-    WHERE
-        wholesale_product.`status` = 'complete' 
-        AND product_id != 0 UNION
-    SELECT
-        product_id,
-        - quantity,
-        avg_price,
-        date,
-        'stock-out'
-    FROM
-        stock_out_transaction
-) AS Q;
+SELECT
+	* 
+FROM
+	(
+	SELECT
+		product_id,
+		quantity,
+		avg_price,
+		date,
+		`code` AS reff 
+	FROM
+		stock_in UNION
+	SELECT
+		product_id,
+		- quantity,
+		avg_price,
+		date,
+		`code` 
+	FROM
+		stock_out UNION
+	SELECT
+		product_id,
+		quantity,
+		price,
+		wholesale.order_date,
+		'wholelsale' AS reff 
+	FROM
+		wholesale_product
+		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+	WHERE
+		wholesale.`status` = 'complete' 
+		AND product_id != 0 UNION
+	SELECT
+		product_id,
+		- quantity,
+		avg_price,
+		date,
+		'stock-out' 
+	FROM
+		stock_out_transaction UNION
+	SELECT
+		product_id,
+		difference,
+		avg_price,
+		date,
+		'stock-opname' 
+	FROM
+		stock_opname 
+	) AS Q;
 
 DROP VIEW IF EXISTS sortir_view;
 CREATE VIEW sortir_view AS
