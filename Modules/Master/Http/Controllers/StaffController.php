@@ -11,8 +11,9 @@ use Modules\Master\Entities\Staff;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -63,8 +64,8 @@ class StaffController extends Controller
                 'regex:/^(?:\+62|62|08)[0-9]{8,13}$/'
             ],
             'email' => 'nullable|email',
-            'department' => 'nullable|exists:department,id',
-            'position' => 'nullable|exists:position,id',
+            'department' => 'required|exists:department,id',
+            'position' => 'required|exists:position,id',
             'description' => 'nullable|string|max:1000',
         ]);
 
@@ -108,7 +109,8 @@ class StaffController extends Controller
      */
     public function show($id)
     {
-        return view('master::show');
+        $data['data'] = Staff::findOrFail($id);
+        return view('master::staff.show', $data);
     }
 
     /**
@@ -227,6 +229,7 @@ class StaffController extends Controller
                             <div class="ms-5">
                                 <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->name . '</a><br>
                                 <span class="fs-7">' . $item->email . '</span>
+                                <span class="fs-7">' . $item->contact . '</span>
                             </div>
                         </div>';
             })
@@ -234,34 +237,46 @@ class StaffController extends Controller
                 return dateEnglish($item->date_in);
             })
             ->addColumn('position', function ($item) {
-                return $item->position->name . '<br><span class="fs-7">' . $item->department->name . '</span>';
+                $html = '';
+                if ($item->position_id == null) {
+                    $html .= '<span class="badge badge-light-danger">Belum ada jabatan</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-primary">' . $item->position->name . '</span>';
+                }
+                if ($item->department_id == null) {
+                    $html .= '<span class="badge badge-light-danger">Belum ada departemen</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-primary">' . $item->department->name . '</span>';
+                }
+                return $html;
             })
             ->addColumn('action', function ($item) {
-                return '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $item->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            Actions
-                            <i class="ki-outline ki-down fs-5 ms-1"></i>
+                $html = '';
+                $html .= '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
                         </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
                             <li>
-                                <a class="dropdown-item" href="' . route('staff.edit', $item->id) . '">
-                                    Edit
+                                <a class="dropdown-item" href="' . route('staff.show', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    Delete
+                                <a class="dropdown-item" href="' . route('staff.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                ';
+                    ';
+                return $html;
             })
             ->rawColumns(['name', 'action', 'position'])
             ->make(true);

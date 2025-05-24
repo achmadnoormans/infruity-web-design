@@ -604,7 +604,8 @@ class WholesaleController extends Controller
                     ';
                 }
                 return $html;
-            })->addColumn('wholesale_id', function ($item) {
+            })
+            ->addColumn('wholesale_id', function ($item) {
                 return $item->id;
             })
             ->rawColumns(['name', 'action', 'status', 'address'])

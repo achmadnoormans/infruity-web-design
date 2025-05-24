@@ -58,8 +58,17 @@
                             <label class="required form-label">Date In</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
+                            @php
+                                $tanggal = date('Y-m-d');
+                                if (isset($data->date_in)) {
+                                    $tanggal = date('Y-m-d', strtotime($data->date_in));
+                                }
+                                if (old('date_in')) {
+                                    $tanggal = old('date_in');
+                                }
+                            @endphp
                             <input id="kt_ecommerce_edit_order_date" name="date_in" placeholder="Select a date"
-                                class="form-control mb-2" value="{{ $data->date_in ?? old('date_in') }}" />
+                                class="form-control mb-2" value="{{ $tanggal }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Set the birth of date of the customer.</div>
@@ -93,10 +102,10 @@
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
                         <option></option>
-                        <option value="aktif" selected="{{ isset($data) && $data->status == 'aktif' ? 'selected' : '' }}">
+                        <option value="aktif" {{ isset($data) && $data->status == 'aktif' ? 'selected' : '' }}>
                             Aktif</option>
-                        <option value="nonaktif"
-                            selected="{{ isset($data) && $data->status == 'nonaktif' ? 'selected' : '' }}">Nonaktif</option>
+                        <option value="nonaktif" {{ isset($data) && $data->status == 'nonaktif' ? 'selected' : '' }}>
+                            Nonaktif</option>
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
@@ -147,7 +156,7 @@
                         </div>
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">NIK</label>
+                            <label class="form-label">NIK</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="nik" class="form-control mb-2" placeholder="357505xxx"
@@ -160,7 +169,7 @@
                         </div>
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Contact</label>
+                            <label class="form-label">Contact</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="contact" class="form-control mb-2" placeholder="085xxxx"
@@ -232,7 +241,7 @@
             <!--end::Order details-->
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
-                <a href="apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
+                <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
                 <!--begin::Button-->

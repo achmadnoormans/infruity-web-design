@@ -51,10 +51,8 @@
                                 </div>
                             </th> --}}
                             <th class="text-center min-w-200px">Name</th>
-                            <th class="text-start min-w-100px">NIK</th>
-                            <th class="min-w-250px">Position</th>
+                            <th class="min-w-150px">Position</th>
                             <th class="min-w-100px">Date In</th>
-                            <th class="min-w-100px">Contact</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
                     </thead>
@@ -73,6 +71,10 @@
                 processing: true,
                 serverSide: true,
                 // responsive: true,
+                fixedColumns: {
+                    leftColumns: 0,
+                    rightColumns: 1
+                },
                 ajax: {
                     url: "{{ route('staff-data') }}",
                     data: function(d) {
@@ -89,20 +91,12 @@
                         name: 'name'
                     },
                     {
-                        data: 'nik',
-                        name: 'nik',
-                    },
-                    {
                         data: 'position',
                         name: 'position',
                     },
                     {
                         data: 'date_in',
                         name: 'date_in',
-                    },
-                    {
-                        data: 'contact',
-                        name: 'contact',
                     },
                     {
                         data: 'action',

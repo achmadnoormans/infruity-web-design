@@ -95,5 +95,20 @@
                 description.value = quill.root.innerHTML; // Ambil konten HTML
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek apakah URL saat ini mengandung '/show'
+            if (window.location.pathname.includes('/show')) {
+                // Disable semua input, select, textarea
+                document.querySelectorAll('input, select, textarea').forEach(function(el) {
+                    el.setAttribute('disabled', 'disabled');
+                });
+
+                // Sembunyikan semua tombol submit
+                document.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function(btn) {
+                    btn.style.display = 'none';
+                });
+            }
+        });
     </script>
 @endsection

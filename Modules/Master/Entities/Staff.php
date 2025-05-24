@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\Position;
 use Modules\Master\Entities\Department;
+use App\Models\User;
 
 class Staff extends Model
 {
@@ -27,5 +28,9 @@ class Staff extends Model
     public function department()
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by', 'id_user');
     }
 }

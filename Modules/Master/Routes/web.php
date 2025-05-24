@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 use Modules\Master\Http\Controllers\ProductController;
 use Modules\Master\Http\Controllers\ProductCategoryController;
 use Modules\Master\Http\Controllers\ProductUnitController;
@@ -61,6 +61,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('staff', StaffController::class)->names('staff')->except('show');
     Route::get('staff/data', [StaffController::class, 'get_data'])->name('staff-data');
+    Route::get('staff/show/{id}', [StaffController::class,'show'])->name('staff.show');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
