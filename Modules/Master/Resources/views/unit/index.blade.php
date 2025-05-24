@@ -40,7 +40,6 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th></th>
                             <th>Name</th>
                             <th>Abbreviation</th>
                             <th>Description</th>
@@ -160,15 +159,10 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
+                order: [
+                    [1, 'asc']
+                ],
                 columns: [{
-                        data: null,
-                        name: 'placeholder',
-                        orderable: false,
-                        searchable: false,
-                        defaultContent: '',
-                        className: 'text-center'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -236,7 +230,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');
@@ -264,14 +260,28 @@
                         });
                     },
                     error: function(xhr) {
-                        var msg = 'Terjadi kesalahan saat menyimpan data.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
+                        let errorText = 'Terjadi kesalahan.';
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            // Menggabungkan semua pesan error dalam <ul>
+                            const errors = xhr.responseJSON.errors;
+                            errorText = '<ul>';
+                            for (const key in errors) {
+                                if (errors.hasOwnProperty(key)) {
+                                    errors[key].forEach(function(msg) {
+                                        errorText += `<li>${msg}</li>`;
+                                    });
+                                }
+                            }
+                            errorText += '</ul>';
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorText = xhr.responseJSON.message;
                         }
+
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error',
-                            text: msg
+                            title: 'Gagal',
+                            html: errorText // gunakan html, bukan text
                         });
                     },
                     complete: function() {
@@ -318,7 +328,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

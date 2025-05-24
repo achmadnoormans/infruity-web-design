@@ -44,7 +44,6 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th></th>
                             <th>Name</th>
                             <th>Description</th>
                             <th class="text-end">Actions</th>
@@ -152,14 +151,7 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [{
-                        data: null,
-                        name: 'placeholder',
-                        orderable: false,
-                        searchable: false,
-                        defaultContent: '',
-                        className: 'text-center'
-                    },
+                columns: [
                     {
                         data: 'name',
                         name: 'name'
@@ -224,7 +216,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');
@@ -306,7 +300,8 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

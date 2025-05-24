@@ -44,10 +44,8 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th></th>
                             <th>Name</th>
                             <th>PIC Name</th>
-                            <th>Address</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -187,20 +185,8 @@
                     }
                 },
                 columns: [{
-                        data: null,
-                        name: 'placeholder',
-                        orderable: false,
-                        searchable: false,
-                        defaultContent: '',
-                        className: 'text-center'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'pic_name',
-                        name: 'pic_name',
                     },
                     {
                         data: 'address',
@@ -262,7 +248,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');
@@ -349,20 +337,39 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data
                             reloadDataTable();
                         },
                         error: function(xhr) {
+                            let errorText = 'Terjadi kesalahan.';
+
+                            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                                // Menggabungkan semua pesan error dalam <ul>
+                                const errors = xhr.responseJSON.errors;
+                                errorText = '<ul>';
+                                for (const key in errors) {
+                                    if (errors.hasOwnProperty(key)) {
+                                        errors[key].forEach(function(msg) {
+                                            errorText += `<li>${msg}</li>`;
+                                        });
+                                    }
+                                }
+                                errorText += '</ul>';
+                            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorText = xhr.responseJSON.message;
+                            }
+
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal',
-                                text: xhr.responseJSON?.message ||
-                                    'Terjadi kesalahan saat menghapus data.'
+                                html: errorText // gunakan html, bukan text
                             });
-                        }
+                        },
                     });
                 }
             });
@@ -393,10 +400,28 @@
                     modal.show();
                 },
                 error: function(xhr) {
+                    let errorText = 'Terjadi kesalahan.';
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        // Menggabungkan semua pesan error dalam <ul>
+                        const errors = xhr.responseJSON.errors;
+                        errorText = '<ul>';
+                        for (const key in errors) {
+                            if (errors.hasOwnProperty(key)) {
+                                errors[key].forEach(function(msg) {
+                                    errorText += `<li>${msg}</li>`;
+                                });
+                            }
+                        }
+                        errorText += '</ul>';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorText = xhr.responseJSON.message;
+                    }
+
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
-                        text: 'Terjadi kesalahan saat memuat data produk.'
+                        html: errorText // gunakan html, bukan text
                     });
                 }
             });

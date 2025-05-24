@@ -48,7 +48,7 @@ class ProductCategoryController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:products_category,name',
             'description' => 'nullable|string|max:1000',
         ]);
 
@@ -106,7 +106,7 @@ class ProductCategoryController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:products_category,name,' . $id,
             'description' => 'nullable|string|max:1000',
         ]);
 

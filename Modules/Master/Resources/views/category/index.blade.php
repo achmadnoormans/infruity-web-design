@@ -250,14 +250,28 @@
                         });
                     },
                     error: function(xhr) {
-                        var msg = 'Terjadi kesalahan saat menyimpan data.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
+                        let errorText = 'Terjadi kesalahan.';
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            // Menggabungkan semua pesan error dalam <ul>
+                            const errors = xhr.responseJSON.errors;
+                            errorText = '<ul>';
+                            for (const key in errors) {
+                                if (errors.hasOwnProperty(key)) {
+                                    errors[key].forEach(function(msg) {
+                                        errorText += `<li>${msg}</li>`;
+                                    });
+                                }
+                            }
+                            errorText += '</ul>';
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorText = xhr.responseJSON.message;
                         }
+
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error',
-                            text: msg
+                            title: 'Gagal',
+                            html: errorText // gunakan html, bukan text
                         });
                     },
                     complete: function() {

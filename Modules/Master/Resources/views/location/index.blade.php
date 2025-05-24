@@ -33,10 +33,8 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="location-table">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th></th>
                             <th>Name</th>
                             <th>Address</th>
-                            <th>Description</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -154,24 +152,12 @@
                     }
                 },
                 columns: [{
-                        data: null,
-                        name: 'placeholder',
-                        orderable: false,
-                        searchable: false,
-                        defaultContent: '',
-                        className: 'text-center'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
                     },
                     {
                         data: 'address',
                         name: 'address'
-                    },
-                    {
-                        data: 'description',
-                        name: 'description',
                     },
                     {
                         data: 'action',
@@ -229,7 +215,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');
@@ -311,7 +299,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

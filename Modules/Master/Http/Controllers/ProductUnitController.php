@@ -9,8 +9,9 @@ use Modules\Master\Entities\ProductUnit;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Auth;
+use Exception;
 
 class ProductUnitController extends Controller
 {
@@ -41,8 +42,8 @@ class ProductUnitController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'abbreviation' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:product_units,name',
+            'abbreviation' => 'required|string|max:255|unique:product_units,abbreviation',
             'description' => 'nullable|string|max:1000',
         ]);
 
@@ -166,32 +167,27 @@ class ProductUnitController extends Controller
                             </div>
                         </div>';
             })
-            ->addColumn('action', function ($unit) {
+            ->addColumn('action', function ($row) {
+                $name = e($row->name);
+
                 return '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $unit->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            Actions
-                            <i class="ki-outline ki-down fs-5 ms-1"></i>
-                        </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $unit->id . '">
-                            <li>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $unit->id . ')">
-                                    Edit
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $unit->id . ')">
-                                    Delete
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                ';
+                <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id . ')">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>';
             })
             ->rawColumns(['name', 'action'])
             ->make(true);

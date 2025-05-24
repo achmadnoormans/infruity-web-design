@@ -52,7 +52,7 @@ class ProductController extends Controller
     {
         // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
-            'product_name' => 'required',
+            'product_name' => 'required|unique:products,name',
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
@@ -165,7 +165,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'product_name' => 'required',
+            'product_name' => 'required|unique:products,name,' . $id,
             'price' => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status' => 'required',
