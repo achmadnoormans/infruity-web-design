@@ -58,6 +58,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('customers', CustomerController::class)->names('customers')->except('show');
     Route::get('customers/data', [CustomerController::class, 'get_data'])->name('customers-data');
+    Route::get('customers/{id}/show', [CustomerController::class, 'show'])->name('customers.show');
 
     Route::resource('staff', StaffController::class)->names('staff')->except('show');
     Route::get('staff/data', [StaffController::class, 'get_data'])->name('staff-data');

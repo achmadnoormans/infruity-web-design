@@ -5,6 +5,7 @@ namespace Modules\Master\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use DB;
+use App\Models\User;
 
 class Customer extends Model
 {
@@ -36,5 +37,9 @@ class Customer extends Model
         $newCode = $prefix . $orderPad;
 
         return $newCode;
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'created_by', 'id_user');
     }
 }

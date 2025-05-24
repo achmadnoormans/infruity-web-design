@@ -52,9 +52,7 @@
                                 </div>
                             </th> --}}
                             <th class="text-center min-w-200px">Name</th>
-                            <th class="text-start min-w-100px">Whatsapp</th>
-                            <th class="min-w-250px">Address</th>
-                            <th class="min-w-100px">Day Of Birth</th>
+                            <th class="min-w-100px">Usia</th>
                             <th class="min-w-100px">Gender</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
@@ -80,21 +78,9 @@
                     }
                 },
                 columns: [
-                    // {
-                    //     data: 'DT_RowIndex',
-                    //     name: 'DT_RowIndex'
-                    // },
                     {
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'whatsapp',
-                        name: 'whatsapp',
-                    },
-                    {
-                        data: 'address',
-                        name: 'address',
                     },
                     {
                         data: 'birth_of_date',
@@ -151,7 +137,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

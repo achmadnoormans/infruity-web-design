@@ -10,13 +10,14 @@ use Modules\Master\Entities\Region;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class CustomerController extends Controller
 {
@@ -53,14 +54,20 @@ class CustomerController extends Controller
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
-            'birth_of_date' =>'nullable|date|date_format:Y-m-d',
-            'gender' =>'nullable|in:male,female',
+            'birth_of_date' => 'nullable|date|date_format:Y-m-d',
+            'gender' => 'nullable|in:male,female',
             'province' => 'nullable|exists:reg_provinces,id',
             'city' => 'nullable|exists:reg_regencies,id',
             'district' => 'nullable|exists:reg_districts,id',
             'village' => 'nullable|exists:reg_villages,id',
             'address' => 'nullable',
-            'phone' => 'nullable',
+            'phone' => [
+                'nullable',
+                'numeric',
+                'digits_between:10,15',
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
+                'unique:customer,whatsapp'
+            ],
             'email' => 'nullable',
         ]);
 
@@ -104,7 +111,16 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        return view('master::show');
+        $customer = Customer::findOrFail($id);
+        $data = [
+            'data' => $customer,
+            'province' => Region::getProvince($customer->province),
+            'city' => Region::getCity($customer->city),
+            'district' => Region::getDistrict($customer->district),
+            'village' => Region::getVillage($customer->village),
+        ];
+        // dd($data);
+        return view('master::customer.show', $data);
     }
 
     /**
@@ -114,7 +130,7 @@ class CustomerController extends Controller
      */
     public function edit($id)
     {
-        
+
         $customer = Customer::findOrFail($id);
         $data = [
             'data' => $customer,
@@ -140,14 +156,20 @@ class CustomerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
-            'birth_of_date' =>'nullable|date|date_format:Y-m-d',
-            'gender' =>'nullable|in:male,female',
+            'birth_of_date' => 'nullable|date|date_format:Y-m-d',
+            'gender' => 'nullable|in:male,female',
             'province' => 'nullable|exists:reg_provinces,id',
             'city' => 'nullable|exists:reg_regencies,id',
             'district' => 'nullable|exists:reg_districts,id',
             'village' => 'nullable|exists:reg_villages,id',
             'address' => 'nullable',
-            'phone' => 'nullable',
+            'phone' => [
+                'nullable',
+                'numeric',
+                'digits_between:10,15',
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
+                'unique:customer,whatsapp,' . $id,
+            ],
             'email' => 'nullable',
         ]);
 
@@ -214,51 +236,48 @@ class CustomerController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $colors = ['warning', 'success', 'info', 'primary'];
-                $color = $colors[$item->id % count($colors)];
                 return '<div class="d-flex align-items-center">
-                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="javascript:void(0)">
-                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->name, 0, 1)) . '</div>
-                                </a>
-                            </div>
                             <div class="ms-5">
                                 <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->name . '</a><br>
-                                <span class="fs-7">' . $item->code . '</span>
+                                <span class="fs-7">' . $item->code . '</span><br>
+                                <span class="badge badge-light-success fs-7">' . $item->whatsapp . '</span>
                             </div>
                         </div>';
             })
             ->addColumn('birth_of_date', function ($item) {
-                return dateEnglish($item->birth_of_date);
+                return '<span class="badge badge-light-danger">' . \Carbon\Carbon::parse($item->birth_of_date)->diffInYears() . '</span> Thn';
             })
             ->addColumn('action', function ($item) {
-                return '
-                    <div class="dropdown text-end">
-                        <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                            type="button" 
-                            id="dropdownMenuButton' . $item->id . '" 
-                            data-bs-toggle="dropdown" 
-                            aria-expanded="false">
-                            Actions
-                            <i class="ki-outline ki-down fs-5 ms-1"></i>
+                $html = '';
+                if ($item->status != 'complete') {
+                    $html .= '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
                         </button>
-            
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
                             <li>
-                                <a class="dropdown-item" href="' . route('customers.edit', $item->id) . '">
-                                    Edit
+                                <a class="dropdown-item" href="' . route('customers.show', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    Delete
+                                <a class="dropdown-item" href="' . route('customers.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                ';
+                    ';
+                }
+                return $html;
             })
-            ->rawColumns(['name', 'action'])
+            ->rawColumns(['name', 'action', 'birth_of_date'])
             ->make(true);
     }
 }

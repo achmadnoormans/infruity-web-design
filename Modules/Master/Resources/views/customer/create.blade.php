@@ -39,7 +39,7 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="customer_name" class="form-control mb-2" placeholder="Customer name"
-                                value="{{ $data->name ?? old('name') }}" />
+                                value="{{ $data->name ?? old('customer_name') }}" />
                             <!--end::Input-->
                             <!--begin::Description-->
                             <div class="text-muted fs-7">Name of Customer.
@@ -50,7 +50,22 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Gender</label>
+                            <label class="required form-label">Whatsapp</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" name="phone" class="form-control mb-2" placeholder="Whatsapp"
+                                value="{{ $data->whatsapp ?? old('phone') }}" />
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Name of Customer.
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Gender</label>
                             <!--end::Label-->
                             <!--begin::Select2-->
                             <select class="form-select mb-2" data-control="select2" data-hide-search="true"
@@ -70,7 +85,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Birth of Date</label>
+                            <label class="form-label">Birth of Date</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="birth_of_date" placeholder="Select a date"
@@ -127,7 +142,7 @@
                         <div class="d-flex flex-column flex-md-row gap-5">
                             <div class="fv-row flex-row-fluid">
                                 <!--begin::Label-->
-                                <label class="required form-label">City</label>
+                                <label class="form-label">City</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="city" id="city"
@@ -145,7 +160,7 @@
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="district" id="district"
                                     data-placeholder="Select a district">
-                                    @if (isset($data->district))
+                                    @if (isset($district))
                                         <option value="{{ $district->id }}" selected>{{ $district->name }}</option>
                                     @endif
                                 </select>
@@ -188,7 +203,7 @@
             <!--end::Order details-->
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
-                <a href="apps/ecommerce/catalog/products.html" id="kt_ecommerce_edit_order_cancel"
+                <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
                 <!--begin::Button-->

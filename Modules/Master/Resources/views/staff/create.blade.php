@@ -48,7 +48,7 @@
                             </select>
                             <!--end::Select2-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set Gender of the customer.</div>
+                            <div class="text-muted fs-7">Set Gender of the staff.</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
@@ -71,7 +71,7 @@
                                 class="form-control mb-2" value="{{ $tanggal }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the birth of date of the customer.</div>
+                            <div class="text-muted fs-7">Set the join date of the staff.</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
@@ -101,7 +101,6 @@
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
-                        <option></option>
                         <option value="aktif" {{ isset($data) && $data->status == 'aktif' ? 'selected' : '' }}>
                             Aktif</option>
                         <option value="nonaktif" {{ isset($data) && $data->status == 'nonaktif' ? 'selected' : '' }}>
@@ -132,7 +131,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Customer Details</h2>
+                        <h2>Staff Details</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -229,7 +228,7 @@
                             <input type="hidden" name="description" id="description_input">
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set a description to the product for better visibility.
+                            <div class="text-muted fs-7">Set a description to the staff.
                             </div>
                             <!--end::Description-->
                         </div>
