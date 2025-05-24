@@ -160,7 +160,7 @@
             const inputs = document.querySelectorAll('.quantity-input');
             const stockEl = document.querySelector('.stock');
 
-            const initialStock = parseInt(stockEl.textContent.trim()) || 0;
+            const initialStock = parseFloat(stockEl.textContent.trim()) || 0;
 
             function updateStock() {
                 let totalQty = 0;

@@ -119,7 +119,7 @@ class SortirController extends Controller
                     $stockIn->product_id = $key;
                     $stockIn->quantity = $value ?? 0;
                     $stockIn->avg_price = $hpp;
-                    $stockIn->created_by = Auth::user()->id;
+                    $stockIn->created_by = Auth::user()->id_user;
                     $stockIn->save();
                 }
 
@@ -130,7 +130,8 @@ class SortirController extends Controller
                 $stockOut->product_id = $request->product_id;
                 $stockOut->quantity = array_sum($request->quantity) ?? 0;
                 $stockOut->avg_price = $hpp;
-                $stockOut->created_by = Auth::user()->id;
+                $stockOut->created_by = Auth::user()->id_user;
+                // dd($stockOut);
                 $stockOut->save();
             }
 
@@ -141,7 +142,7 @@ class SortirController extends Controller
                 $stockOut->date = date('Y-m-d');
                 $stockOut->product_id = $request->product_id;
                 $stockOut->quantity = $request->buang ?? 0;
-                $stockOut->created_by = Auth::user()->id;
+                $stockOut->created_by = Auth::user()->id_user;
                 $stockOut->save();
             }
 
