@@ -19,7 +19,7 @@ class Production extends Model
         $orderData = self::select(DB::raw('CAST(RIGHT(production_number, 3) AS UNSIGNED) + 1 AS production_number'))
             ->whereRaw('MONTH(created_at) = MONTH(NOW())')
             ->whereRaw('YEAR(created_at) = YEAR(NOW())')
-            ->whereRaw('SUBSTRING(production_number, 1, 2) = ?', ['PO'])
+            ->whereRaw('SUBSTRING(production_number, 1, 2) = ?', ['PRO'])
             ->orderByRaw('CAST(RIGHT(production_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
@@ -32,5 +32,10 @@ class Production extends Model
         $newCode = $prefix . $orderPad;
 
         return $newCode;
+    }
+
+    public function products()
+    {
+        return $this->belongsTo('Modules\Master\Entities\Product', 'product_id', 'id');
     }
 }

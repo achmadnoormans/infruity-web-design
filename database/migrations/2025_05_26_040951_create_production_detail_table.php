@@ -12,29 +12,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('production', function (Blueprint $table) {
+        Schema::create('production_detail', function (Blueprint $table) {
             $table->id();
-            $table->string('production_number', 20); // Kolom untuk nomor pesanan
+            $table->unsignedBigInteger('production_id');
             $table->unsignedBigInteger('product_id');
-            $table->decimal('quantity', 10, 2)->default(1);
-            $table->date('production_date');
-            $table->enum('status', ['draft', 'posting', 'complete'])->default('posting');
-            $table->text('description')->nullable();
+            $table->decimal('quantity', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
-        
-        DB::table('production')->insert([
+
+        DB::table('production_detail')->insert([
             [
-                'production_number' => 'PRO' . now()->format('Ym') . '001',
-                'product_id' => 9, // ID produk Apel Frozen
+                'production_id' => 1,
+                'product_id' => 6, // ID produk Apel Fuji BS 1
                 'quantity' => 10,
-                'production_date' => now(),
-                'status' => 'posting',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],   
+            ],
+            [
+                'production_id' => 1,
+                'product_id' => 7, // ID produk Apel Fuji BS 2
+                'quantity' => 10,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
@@ -43,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('production');
+        Schema::dropIfExists('production_detail');
     }
 };

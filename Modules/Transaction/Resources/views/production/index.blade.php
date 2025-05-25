@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Staff" />
+                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Production" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -52,7 +52,7 @@
                             </th> --}}
                             <th class="text-start min-w-100px">Name</th>
                             <th class="text-center min-w-100px">Status</th>
-                            <th class="text-center min-w-100px">Production Date</th>
+                            <th class="text-center min-w-100px">Prod Date</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
                     </thead>
@@ -172,7 +172,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/wholesale/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/production/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -181,7 +181,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

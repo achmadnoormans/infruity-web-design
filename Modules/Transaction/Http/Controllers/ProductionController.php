@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Transaction\Entities\Production;
+use Modules\Transaction\Entities\ProductionDetail;
+use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +47,51 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'submit_type' => 'required|in:draft,posting',
+            'production_date' => 'required|date',
+            'product_receipt_id' => 'required|array',
+            'quantity' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $production = new Production();
+            $production->production_number = Production::getOrderNumber();
+            $production->product_id = $request->product_id;
+            $production->production_date = $request->production_date;
+            $production->status = $request->submit_type;
+            $production->created_by = Auth::user()->id_user;
+            $production->quantity = $request->quantity;
+            $production->save();
+
+            $productionId = $production->id;
+            foreach ($request->product_receipt_id as $key => $product) {
+                $productionDetail = new ProductionDetail();
+                $productionDetail->production_id = $productionId;
+                $productionDetail->product_id = $product;
+                $productionDetail->quantity = $request->ingredients_quantity[$key];
+                // dd($productionDetail);
+                $productionDetail->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Produksi gagal' . $e->getMessage());
+        }
+
+        return redirect('production')->with('success', 'Produksi berhasil');
+
     }
 
     /**
@@ -65,7 +111,11 @@ class ProductionController extends Controller
      */
     public function edit($id)
     {
-        return view('transaction::edit');
+        $data['data'] = Production::find($id);
+        $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
+        $data['selectedProduct'] = Product::find($data['data']->product_id);
+        // dd($data);
+        return view('transaction::production.create', $data);
     }
 
     /**
@@ -76,7 +126,57 @@ class ProductionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id',
+            'submit_type' => 'required|in:draft,posting',
+            'production_date' => 'required|date',
+            'product_receipt_id' => 'required|array',
+            'quantity' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $production = Production::findOrFail($id);
+            $production->product_id = $request->product_id;
+            $production->production_date = $request->production_date;
+            $production->status = $request->submit_type;
+            $production->created_by = Auth::user()->id_user;
+            $production->quantity = $request->quantity;
+            $production->save();
+
+            $productionId = $id;
+            // Hapus detail produksi yang lama
+            ProductionDetail::where('production_id', $productionId)->delete();
+            // Simpan detail produksi yang baru
+            if (empty($request->product_receipt_id)) {
+                return redirect()->back()->withInput($request->all())
+                    ->with('error', 'Detail produksi tidak boleh kosong');
+            }
+
+            // dd($request->product_receipt_id);
+            foreach ($request->product_receipt_id as $key => $product) {
+                $productionDetail = new ProductionDetail();
+                $productionDetail->production_id = $productionId;
+                $productionDetail->product_id = $product;
+                $productionDetail->quantity = $request->ingredients_quantity[$key];
+                // dd($productionDetail);
+                $productionDetail->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Produksi gagal' . $e->getMessage());
+        }
+
+        return redirect('production')->with('success', 'Produksi berhasil');
     }
 
     /**
@@ -86,12 +186,28 @@ class ProductionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $production = Production::findOrFail($id);
+            $production->delete();
+            ProductionDetail::where('production_id', $id)->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function get_data(Request $request)
     {
-        $data = Production::all();
+        $data = Production::with('products')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
@@ -99,7 +215,8 @@ class ProductionController extends Controller
                             <div class="ms-5">
                                 <a href="' . url('production') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->production_number . '</a>
                                 <br>
-                                <span class="text-muted d-block"> Jml Prod : ' . $item->total_product . '</span>
+                                <span class="text-muted d-block">' . $item->products->name . '</span>
+                                <span class="text-muted d-block"> Qty : ' . toNumber($item->quantity) . '</span>
                             </div>
                         </div>';
             })
@@ -129,22 +246,12 @@ class ProductionController extends Controller
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
                             <li>
-                                <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
+                                <a class="dropdown-item" href="' . route('production.edit', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="' . route('wholesale.receive_process', $item->id) . '">
-                                    <i class="ki-duotone ki-basket">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
+                                <a class="dropdown-item" href="' . route('production.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>

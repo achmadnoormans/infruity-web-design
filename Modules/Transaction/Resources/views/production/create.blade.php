@@ -28,7 +28,7 @@
                             <label class="form-label">Production ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
-                            <div class="fw-bold fs-3">#{{ isset($data) ? $data->order_number : '14364' }}</div>
+                            <div class="fw-bold fs-3">#{{ isset($data) ? $data->production_number : '14364' }}</div>
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -39,9 +39,24 @@
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <select name="product_id" id="product_id" class="form-select mb-2">
-                                <option value="">Select Production</option>
+                                @if (isset($selectedProduct) && $selectedProduct != null)
+                                    <option value="{{ $selectedProduct->id }}" selected>{{ $selectedProduct->name }}
+                                    </option>
+                                @endif
                             </select>
                             <input type="hidden" name="submit_type" id="submit_type" value="draft">
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Quantity</label>
+                            <!--end::Label-->
+                            <!--begin::Auto-generated ID-->
+                            <input type="number" name="quantity" id="quantity" class="form-control mb-2"
+                                placeholder="Enter Quantity"
+                                value="{{ isset($data) ? $data->quantity : old('quantity') }}" />
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -89,26 +104,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="kt_ecommerce_edit_order_selected_products_body">
-                                    @if (isset($variant) && $variant->count() > 0)
-                                        @foreach ($variant as $item)
-                                            <tr>
-                                                <td>
-                                                    <input type="text" name="ingredients_name[]"
-                                                        class="form-control mb-2" placeholder="Product name"
-                                                        value="{{ $item->name }}" />
-                                                </td>
-                                                <td>
-                                                    <input type="number" step="0.01" name="ingredients_quantity[]"
-                                                        class="form-control mb-2" placeholder="Product quantity"
-                                                        value="{{ $item->quantity }}" />
-                                                </td>
-                                                <td class="text-end">
-                                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                                        <i class="ki-outline ki-cross fs-2"></i>
-                                                    </button>
-                                                </td>
-                                        @endforeach
-                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -243,7 +238,7 @@
                 success: function(response) {
                     // console.log(response);
                     // Bersihkan isi sebelumnya jika perlu
-                    // $('#kt_ecommerce_edit_order_selected_products_body').empty();
+                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
 
                     // Loop hasil response
                     response.forEach(item => {
@@ -290,6 +285,117 @@
                 }
             });
         });
+
+        function setSubmitType(type) {
+            document.getElementById('submit_type').value = type;
+        }
+
+        $('#quantity').on('change', function() {
+            const quantity = $(this).val();
+            const productId = $('#product_id').val();
+
+            $.ajax({
+                url: "{{ route('products.get-receipt') }}",
+                type: 'GET',
+                data: {
+                    product_id: productId
+                },
+                success: function(response) {
+                    // console.log(response);
+                    // Bersihkan isi sebelumnya jika perlu
+                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
+
+                    // Loop hasil response
+                    response.forEach(item => {
+                        let html = `
+                            <tr>
+                                <td>
+                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
+                                        <option value="${item.id}" selected>${item.ingredients.name}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity * quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
+                                </td>                    
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
+                                        <i class="ki-outline ki-cross fs-2"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+                        $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+                    });
+
+                    $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
+                        placeholder: 'Select product',
+                        ajax: {
+                            url: "{{ route('ajax.getProduct') }}",
+                            dataType: 'json',
+                            delay: 250,
+                            data: params => ({
+                                search: params.term
+                            }),
+                            processResults: data => ({
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name
+                                }))
+                            })
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr.responseText);
+                }
+            });
+        });
+
+        @if (isset($production_detail) && $production_detail->count() > 0)
+            const response = {!! json_encode($production_detail) !!};
+            console.log(response);
+            $('#kt_ecommerce_edit_order_selected_products_body').empty();
+
+            // Loop hasil response
+            response.forEach(item => {
+                let html = `
+                            <tr>
+                                <td>
+                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
+                                        <option value="${item.product_id}" selected>${item.products.name}</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
+                                </td>                    
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
+                                        <i class="ki-outline ki-cross fs-2"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+                $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+            });
+
+            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
+                placeholder: 'Select product',
+                ajax: {
+                    url: "{{ route('ajax.getProduct') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: params => ({
+                        search: params.term
+                    }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name
+                        }))
+                    })
+                }
+            });
+        @endif
     </script>
 @endsection
 
