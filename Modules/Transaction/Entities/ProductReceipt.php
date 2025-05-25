@@ -21,4 +21,9 @@ class ProductReceipt extends Model
     {
         return $this->belongsTo('Modules\Master\Entities\Product', 'product_id', 'id');
     }
+
+    public function ingredients()
+    {
+        return $this->belongsTo('Modules\Master\Entities\Product', 'product_receipt_id', 'id');
+    }
 }

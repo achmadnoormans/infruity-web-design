@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->integer('product_unit')->default(1);
             $table->integer('limit')->default(1);
             $table->text('handling')->nullable();
-            $table->text('status')->nullable();
+            $table->enum('status', ['receipt', 'no-receipt'])->default('no-receipt');
             $table->integer('level')->default(1);
             $table->integer('parent_id')->nullable();
             $table->integer('category_id')->nullable();

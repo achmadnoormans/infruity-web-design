@@ -74,8 +74,10 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/position', [PositionController::class, 'getPosition'])->name('ajax.position');
     Route::get('/ajax/category', [ProductCategoryController::class, 'getCategory'])->name('ajax.category');
     Route::get('/ajax/getVariant', [ProductController::class, 'getVariant'])->name('ajax.getVariant');
+    Route::get('/ajax/getProduct', [ProductController::class, 'getProduct'])->name('ajax.getProduct');
     Route::post('products/variant/store', [ProductController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('products/variants/get', [ProductController::class, 'getVariant'])->name('variants.get');
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
     Route::delete('products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.destroy-variant');
+    Route::get('products/get-product-receipt', [ProductController::class, 'getProductReceipt'])->name('products.get-product-receipt');
 });

@@ -88,9 +88,17 @@ class ProductReceiptController extends Controller
         //
     }
 
+    public function getReceipt(Request $request)
+    {
+        $data = ProductReceipt::with('product')->with('ingredients')->where('product_id', $request->product_id)
+            ->select('*')
+            ->get();
+        return response()->json($data);
+    }
+
     public function get_data(Request $request)
     {
-        $data = Wholesale::getData();
+        $data = ProductReceipt::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {

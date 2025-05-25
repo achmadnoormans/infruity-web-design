@@ -30,9 +30,9 @@
                         </select>
                         <!--end::Select2-->
                     </div>
-                    <!--begin::Add product-receipt-->
-                    <a href="{{ url(path: 'product-receipt/create') }}" class="btn btn-primary">Add Receipt</a>
-                    <!--end::Add product-receipt-->
+                    <!--begin::Add wholesale-->
+                    <a href="{{ url(path: 'production/create') }}" class="btn btn-primary">Add Production</a>
+                    <!--end::Add wholesale-->
                 </div>
                 <!--end::Card toolbar-->
             </div>
@@ -40,14 +40,19 @@
             <!--begin::Card body-->
             <div class="card-body pt-0">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="product-receipt-table" width="100%">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="production-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th class="text-center min-w-100px">No</th>
+                            {{-- <th class="w-10px pe-2">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                    <input class="form-check-input" type="checkbox" data-kt-check="true"
+                                        data-kt-check-target="#kt_ecommerce_production_table .form-check-input"
+                                        value="1" />
+                                </div>
+                            </th> --}}
                             <th class="text-start min-w-100px">Name</th>
                             <th class="text-center min-w-100px">Status</th>
-                            <th class="text-center min-w-100px">Order Date</th>
-                            <th class="text-end min-w-100px">Total Item</th>
+                            <th class="text-center min-w-100px">Production Date</th>
                             <th class="text-end min-w-70px">Actions</th>
                         </tr>
                     </thead>
@@ -62,22 +67,40 @@
     <script type="text/javascript">
         var dataTable;
         $(document).ready(function() {
-            dataTable = $('#product-receipt-table').DataTable({
+            dataTable = $('#production-table').DataTable({
                 processing: true,
                 serverSide: true,
-                // responsive: true,
+                fixedColumns: {
+                    leftColumns: 0,
+                    rightColumns: 1
+                },
+                columnDefs: [{
+                        orderable: false,
+                        targets: -1 // Disable sorting for action column
+                    },
+                    {
+                        targets: [4], // Kolom ke-5 (status_raw)
+                        visible: false,
+                        searchable: false
+                    },
+                    {
+                        targets: [5], // Kolom ke-5 (status_raw)
+                        visible: false,
+                        searchable: false
+                    }
+                ],
                 ajax: {
-                    url: "{{ route('product-receipt-data') }}",
+                    url: "{{ route('production-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
+                order: [
+                    [1, 'asc'], // Sort by status_raw ASC
+                    [2, 'desc'], // Then by order_date ASC (kolom ke-3)
+                    [0, 'desc']
+                ],
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        className: 'text-center'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -87,26 +110,28 @@
                         className: 'text-center',
                         render: function(data, type, row) {
                             if (type === 'filter' || type === 'sort') {
-                                return row.status_raw; // pakai nilai mentah untuk filter/sort
+                                return row.status_raw;
                             }
-                            return data; // tampilkan badge HTML
+                            return data;
                         }
                     },
                     {
-                        data: 'order_date',
-                        name: 'order_date',
-                        className: 'text-center',
-                    },
-                    {
-                        data: 'total_product',
-                        name: 'total_product',
-                        className: 'text-end'
+                        data: 'production_date',
+                        name: 'production_date',
+                        className: 'text-center'
                     },
                     {
                         data: 'action',
                         name: 'action'
                     },
-
+                    {
+                        data: 'status_raw', // hidden column used only for sorting
+                        name: 'status_raw'
+                    },
+                    {
+                        data: 'production_id',
+                        name: 'production_id'
+                    }
                 ]
             });
             // Search manual lewat input
@@ -118,7 +143,7 @@
                 let val = $(this).val();
 
                 if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(2).search(val).draw();
+                dataTable.column(1).search(val).draw();
             });
         });
 
@@ -147,7 +172,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/product-receipt/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/wholesale/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -168,6 +193,51 @@
                                 title: 'Gagal',
                                 text: xhr.responseJSON?.message ||
                                     'Terjadi kesalahan saat menghapus data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function receiveProduct(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Data yang diproses tidak bisa dikembalikan!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Proses!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/wholesale/receive/${id}`, // Ganti dengan URL yang sesuai
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id: id
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil diterima.'
+                            });
+
+                            // Reload DataTable setelah berhasil menghapus data
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat menerima data.'
                             });
                         }
                     });

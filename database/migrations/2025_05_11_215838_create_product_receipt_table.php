@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -21,6 +22,25 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('product_receipt')->insert([
+            [
+                'code' => 'RCPT001',
+                'product_id' => 1,
+                'product_receipt_id' => 1,
+                'quantity' => 10,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'code' => 'RCPT002',
+                'product_id' => 1,
+                'product_receipt_id' => 6,
+                'quantity' => 7,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 
     /**

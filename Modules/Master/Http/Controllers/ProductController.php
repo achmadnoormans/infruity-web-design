@@ -416,6 +416,28 @@ class ProductController extends Controller
         return response()->json(['message' => 'Deleted']);
     }
 
+    public function getProductReceipt(Request $request)
+    {
+        $search = $request->input('search', '');
+        $query = Product::where('status', 'receipt')
+            ->where('name', 'like', '%' . $search . '%')
+            ->where('status', 'receipt')
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($query);
+    }
+
+    public function getProduct(Request $request)
+    {
+        $search = $request->input('search', '');
+        $query = Product::select('id', 'name')
+            ->where('name', 'like', '%' . $search . '%')
+            ->get();
+
+        return response()->json($query);
+    }
+
     /**
      * Get data for DataTables
      * @param Request $request
