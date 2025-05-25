@@ -263,8 +263,65 @@
     </div>
     <!--end:Menu content-->
 </div>
-<div class="menu-item">
+<!--begin:Menu item-->
+<div data-kt-menu-trigger="click"
+    class="menu-item {{ in_array(Request::segment(1), ['product-stock', 'stock-out', 'stock-opname']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
+    <span class="menu-link">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-basket fs-2">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Stock</span>
+        <span class="menu-arrow"></span>
+    </span>
+    <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'product-stock' ? 'active' : '' }}" href="{{ url('product-stock') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Report Stock</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Stock Out</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'stock-opname' ? 'active' : '' }}" href="{{ url('stock-opname') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Stock Opname</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+    </div>
+    <!--end:Menu sub-->
+</div>
+<!--end:Menu item-->
+<div class="menu-item">
+    {{-- <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'product-stock' ? 'active' : '' }}" href="{{ url('product-stock') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-dropbox">
@@ -277,7 +334,7 @@
         </span>
         <span class="menu-title">Stock</span>
     </a>
-    <!--end:Menu link-->
+    <!--end:Menu link--> --}}
     <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'wholesale' ? 'active' : '' }}" href="{{ url('wholesale') }}">
         <span class="menu-icon">
@@ -300,7 +357,7 @@
         <span class="menu-title">Sortir</span>
     </a>
     <!--end:Menu link-->
-    <!--begin:Menu link-->
+    {{-- <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
@@ -321,7 +378,7 @@
         </span>
         <span class="menu-title">Stock Opname</span>
     </a>
-    <!--end:Menu link-->
+    <!--end:Menu link--> --}}
     <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
         <span class="menu-icon">
