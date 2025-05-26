@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('production_date');
             $table->enum('status', ['draft', 'posting', 'complete'])->default('posting');
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('staff_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

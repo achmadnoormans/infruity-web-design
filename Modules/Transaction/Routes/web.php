@@ -61,4 +61,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('production', ProductionController::class)->names('production')->except('show');
     Route::get('production/data', [ProductionController::class, 'get_data'])->name('production-data');
     Route::get('products/get-receipt', [ProductReceiptController::class, 'getReceipt'])->name('products.get-receipt');
+
+    Route::resource('receipt', ProductReceiptController::class)->names('receipt')->except('show');
+    Route::get('receipt/data', [ProductReceiptController::class, 'get_data'])->name('receipt-data');
 });

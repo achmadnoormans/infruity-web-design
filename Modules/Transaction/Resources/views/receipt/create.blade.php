@@ -15,7 +15,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Production Details</h2>
+                        <h2>Receipt Details</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -25,7 +25,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Production ID</label>
+                            <label class="form-label">Receipt ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <div class="fw-bold fs-3">#{{ isset($data) ? $data->code : '14364' }}</div>
@@ -51,38 +51,11 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Quantity</label>
+                            <label class="form-label">Description</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
-                            <input type="number" name="quantity" id="quantity" class="form-control mb-2"
-                                placeholder="Enter Quantity"
-                                value="{{ isset($data) ? $data->quantity : old('quantity') }}" />
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Production Date</label>
-                            <!--end::Label-->
-                            <!--begin::Editor-->
-                            <input id="kt_ecommerce_edit_order_date" name="production_date" placeholder="Select a date"
-                                class="form-control mb-2" value="{{ old('production_date') ?? date('Y-m-d') }}" />
-                            <!--end::Editor-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the date of the production to process.</div>
-                            <!--end::Description-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Pic</label>
-                            <!--end::Label-->
-                            <!--begin::Auto-generated ID-->
-                            <select name="staff_id" id="staff_id" class="form-select mb-2">
-                                
-                            </select>
+                            <textarea name="description" id="description" class="form-control" rows="7">{{ isset($data) ? $data->description : '' }}</textarea>
+                            <input type="hidden" name="submit_type" id="submit_type" value="draft">
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -136,14 +109,8 @@
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
 
-                <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
-                    <span class="indicator-label">Draft</span>
-                    <span class="indicator-progress">Please wait...
-                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                </button>
-
                 <button type="submit" class="btn btn-primary" onclick="setSubmitType('posting')">
-                    <span class="indicator-label">Posting</span>
+                    <span class="indicator-label">Save</span>
                     <span class="indicator-progress">Please wait...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
@@ -155,6 +122,7 @@
     {{-- @include('transaction::wholesale.js-create') --}}
 @section('script')
     <script>
+        console.log('Receipt Create Page');
         let selectedProduct = {}; // Global, satu kali saja
         var tableSelectedProduct;
 
@@ -238,148 +206,12 @@
             }
         });
 
-        $('#staff_id').select2({
-            placeholder: 'Select a staff',
-            ajax: {
-                url: '{{ route('staff.get-staff') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name
-                    }))
-                })
-            }
-        });
 
-        $('#product_id').on('change', function() {
-            const productId = $(this).val();
 
-            $.ajax({
-                url: "{{ route('products.get-receipt') }}",
-                type: 'GET',
-                data: {
-                    product_id: productId
-                },
-                success: function(response) {
-                    // console.log(response);
-                    // Bersihkan isi sebelumnya jika perlu
-                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-                    // Loop hasil response
-                    response.forEach(item => {
-                        let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.id}" selected>${item.ingredients.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                        $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-                    });
-
-                    $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                        placeholder: 'Select product',
-                        ajax: {
-                            url: "{{ route('ajax.getProduct') }}",
-                            dataType: 'json',
-                            delay: 250,
-                            data: params => ({
-                                search: params.term
-                            }),
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name
-                                }))
-                            })
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });
 
         function setSubmitType(type) {
             document.getElementById('submit_type').value = type;
         }
-
-        $('#quantity').on('change', function() {
-            const quantity = $(this).val();
-            const productId = $('#product_id').val();
-
-            $.ajax({
-                url: "{{ route('products.get-receipt') }}",
-                type: 'GET',
-                data: {
-                    product_id: productId
-                },
-                success: function(response) {
-                    // console.log(response);
-                    // Bersihkan isi sebelumnya jika perlu
-                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-                    // Loop hasil response
-                    response.forEach(item => {
-                        let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.id}" selected>${item.ingredients.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity * quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                        $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-                    });
-
-                    $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                        placeholder: 'Select product',
-                        ajax: {
-                            url: "{{ route('ajax.getProduct') }}",
-                            dataType: 'json',
-                            delay: 250,
-                            data: params => ({
-                                search: params.term
-                            }),
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name
-                                }))
-                            })
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });
 
         @if (isset($production_detail) && $production_detail->count() > 0)
             const response = {!! json_encode($production_detail) !!};
@@ -392,7 +224,7 @@
                             <tr>
                                 <td>
                                     <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.product_id}" selected>${item.products.name}</option>
+                                        <option value="${item.product_id}" selected>${item.product.name}</option>
                                     </select>
                                 </td>
                                 <td>

@@ -41,7 +41,7 @@ return new class extends Migration {
                 'category_id' => 1,
                 'parent_id' => null,
                 'direct_stock' => null,
-                'status' => 'no-receipt',
+                'status' => 'receipt',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

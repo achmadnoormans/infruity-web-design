@@ -14,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('product_receipt', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
+            $table->unsignedBigInteger('receipt_id');
             $table->integer('product_id');
             $table->integer('product_receipt_id');
             $table->integer('quantity');
@@ -25,16 +26,16 @@ return new class extends Migration
 
         DB::table('product_receipt')->insert([
             [
-                'code' => 'RCPT001',
-                'product_id' => 1,
+                'receipt_id' => 1,
+                'product_id' => 9,
                 'product_receipt_id' => 1,
                 'quantity' => 10,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'code' => 'RCPT002',
-                'product_id' => 1,
+                'receipt_id' => 1,
+                'product_id' => 9,
                 'product_receipt_id' => 6,
                 'quantity' => 7,
                 'created_at' => now(),

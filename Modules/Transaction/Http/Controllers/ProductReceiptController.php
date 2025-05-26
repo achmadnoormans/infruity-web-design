@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Transaction\Entities\ProductReceipt;
+use Modules\Transaction\Entities\Receipt;
+use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +27,7 @@ class ProductReceiptController extends Controller
      */
     public function index()
     {
-        return view('transaction::wholesale.index');
+        return view('transaction::receipt.index');
     }
 
     /**
@@ -34,7 +36,7 @@ class ProductReceiptController extends Controller
      */
     public function create()
     {
-        return view('transaction::create');
+        return view('transaction::receipt.create');
     }
 
     /**
@@ -44,7 +46,56 @@ class ProductReceiptController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all());
+        $messages = [
+            'product_id.required' => 'ID produk wajib diisi.',
+            'product_id.exists' => 'Produk yang dipilih tidak ditemukan.',
+            'product_id.unique' => 'Produk ini sudah ditambahkan ke dalam resep sebelumnya.',
+            'product_receipt_id.required' => 'ID tanda terima produk wajib diisi.',
+            'product_receipt_id.array' => 'ID tanda terima produk harus berupa array.',
+            'description.string' => 'Deskripsi harus berupa teks.',
+            'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id|unique:receipt,product_id,NULL,id',
+            'product_receipt_id' => 'required|array',
+            'description' => 'nullable|string|max:255',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $receipt = new Receipt();
+            $receipt->code = Receipt::getOrderNumber();
+            $receipt->product_id = $request->product_id;
+            $receipt->description = $request->description;
+            $receipt->created_by = Auth::user()->id_user;
+            $receipt->save();
+
+            $receiptId = $receipt->id;
+            foreach ($request->product_receipt_id as $key => $product) {
+                $productReceipt = new ProductReceipt();
+                $productReceipt->receipt_id = $receiptId;
+                $productReceipt->product_id = $request->product_id;
+                $productReceipt->product_receipt_id = $product;
+                $productReceipt->quantity = $request->ingredients_quantity[$key];
+                $productReceipt->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Produksi gagal' . $e->getMessage());
+        }
+
+        return redirect('receipt')->with('success', 'Produksi berhasil');
     }
 
     /**
@@ -64,7 +115,11 @@ class ProductReceiptController extends Controller
      */
     public function edit($id)
     {
-        return view('transaction::edit');
+        $data['data'] = Receipt::find($id);
+        $data['production_detail'] = ProductReceipt::with('product')->where('receipt_id', $id)->get();
+        $data['selectedProduct'] = Product::find($data['data']->product_id);
+        // dd($data);
+        return view('transaction::receipt.create', $data);
     }
 
     /**
@@ -75,7 +130,57 @@ class ProductReceiptController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Custom validation messages in Bahasa Indonesia
+        $messages = [
+            'product_id.required' => 'ID produk wajib diisi.',
+            'product_id.exists' => 'Produk yang dipilih tidak ditemukan.',
+            'product_id.unique' => 'Produk ini sudah ditambahkan ke dalam tanda terima.',
+            'product_receipt_id.required' => 'ID tanda terima produk wajib diisi.',
+            'product_receipt_id.array' => 'ID tanda terima produk harus berupa array.',
+            'description.string' => 'Deskripsi harus berupa teks.',
+            'description.max' => 'Deskripsi tidak boleh lebih dari 255 karakter.',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:products,id|unique:receipt,product_id,' . $id . ',id',
+            'product_receipt_id' => 'required|array',
+            'description' => 'nullable|string|max:255',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+            $receipt = Receipt::findOrFail($id);
+            $receipt->product_id = $request->product_id;
+            $receipt->description = $request->description;
+            $receipt->updated_by = Auth::user()->id_user;
+            $receipt->save();
+
+            $receiptId = $receipt->id;
+            ProductReceipt::where('receipt_id', $receiptId)->delete();
+
+            foreach ($request->product_receipt_id as $key => $product) {
+                $productReceipt = new ProductReceipt();
+                $productReceipt->receipt_id = $receiptId;
+                $productReceipt->product_id = $request->product_id;
+                $productReceipt->product_receipt_id = $product;
+                $productReceipt->quantity = $request->ingredients_quantity[$key];
+                $productReceipt->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Receipt gagal: ' . $e->getMessage());
+        }
+
+        return redirect('receipt')->with('success', 'Receipt berhasil');
     }
 
     /**
@@ -85,7 +190,23 @@ class ProductReceiptController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $production = Receipt::findOrFail($id);
+            $production->delete();
+            ProductReceipt::where('receipt_id', $id)->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getReceipt(Request $request)
@@ -98,61 +219,50 @@ class ProductReceiptController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = ProductReceipt::all();
+        $data = Receipt::with('products')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $colors = ['warning', 'success', 'info', 'primary'];
-                $color = $colors[$item->id % count($colors)];
                 return '<div class="d-flex align-items-center">
-                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="javascript:void(0)">
-                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->order_number, 0, 1)) . '</div>
-                                </a>
-                            </div>
                             <div class="ms-5">
-                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
+                                <a href="' . url('production') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
+                                <br>
+                                <span class="text-muted fw-bold">' . $item->products->name . '</span>
                             </div>
                         </div>';
-            })
-            ->addColumn('order_date', function ($item) {
-                return dateindo($item->order_date);
             })
             ->addColumn('action', function ($item) {
                 $html = '';
                 $html .= '
-                <div class="dropdown text-end">
-                    <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-                        type="button" 
-                        id="dropdownMenuButton' . $item->id . '" 
-                        data-bs-toggle="dropdown" 
-                        aria-expanded="false">
-                        Actions
-                        <i class="ki-outline ki-down fs-5 ms-1"></i>
-                    </button>
-        
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $item->id . '">
-                        <li>
-                            <a class="dropdown-item" href="' . route('product-receipt.edit', $item->id) . '">
-                                Edit
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-success" href="javascript:void(0)" onclick="receiveProduct(' . $item->id . ')">
-                                Terima Barang
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                Delete
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                ';
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
+                            <li>
+                                <a class="dropdown-item" href="' . route('receipt.edit', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="' . route('receipt.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    ';
                 return $html;
             })
-            ->rawColumns(['name', 'action', 'status', 'address'])
+            ->addColumn('receipt_id', function ($item) {
+                return $item->id;
+            })
+            ->rawColumns(['name', 'action'])
             ->make(true);
     }
 }

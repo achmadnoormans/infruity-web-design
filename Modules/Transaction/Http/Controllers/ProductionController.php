@@ -54,6 +54,7 @@ class ProductionController extends Controller
             'production_date' => 'required|date',
             'product_receipt_id' => 'required|array',
             'quantity' => 'required',
+            'staff_id' => 'nullable|exists:staff,id',
         ]);
 
         if ($validator->fails()) {
@@ -71,6 +72,7 @@ class ProductionController extends Controller
             $production->status = $request->submit_type;
             $production->created_by = Auth::user()->id_user;
             $production->quantity = $request->quantity;
+            $production->staff_id = $request->staff_id;
             $production->save();
 
             $productionId = $production->id;
@@ -115,7 +117,7 @@ class ProductionController extends Controller
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         $data['selectedProduct'] = Product::find($data['data']->product_id);
         // dd($data);
-        return view('transaction::production.create', $data);
+        return view('transaction::receipt.create', $data);
     }
 
     /**
@@ -132,6 +134,7 @@ class ProductionController extends Controller
             'production_date' => 'required|date',
             'product_receipt_id' => 'required|array',
             'quantity' => 'required',
+            'staff_id' => 'nullable|exists:staff,id',
         ]);
 
         if ($validator->fails()) {
@@ -148,6 +151,7 @@ class ProductionController extends Controller
             $production->status = $request->submit_type;
             $production->created_by = Auth::user()->id_user;
             $production->quantity = $request->quantity;
+            $production->staff_id = $request->staff_id;
             $production->save();
 
             $productionId = $id;

@@ -80,4 +80,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
     Route::delete('products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.destroy-variant');
     Route::get('products/get-product-receipt', [ProductController::class, 'getProductReceipt'])->name('products.get-product-receipt');
+    Route::get('staff/get-staff', [StaffController::class, 'getStaff'])->name('staff.get-staff');
 });

@@ -281,4 +281,16 @@ class StaffController extends Controller
             ->rawColumns(['name', 'action', 'position'])
             ->make(true);
     }
+
+    public function getStaff(Request $request)
+    {
+        $search = $request->get('search');
+
+        $data = Staff::where('name', 'like', '%' . $search . '%')
+            ->select('id', 'name')
+            ->limit(10)
+            ->get();
+    
+        return response()->json($data);
+    }
 }
