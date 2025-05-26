@@ -77,7 +77,7 @@ class WholesaleController extends Controller
             $wholesale->order_number = Wholesale::getOrderNumber();
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;
-            $wholesale->status = 'processing';
+            $wholesale->status = $request->submit_type;
             $wholesale->created_by = Auth::user()->id_user;
             $wholesale->save();
 
@@ -175,6 +175,7 @@ class WholesaleController extends Controller
         // Validasi input
         $request->validate([
             'order_date' => 'required|date',
+            'submit_type' => 'required|in:draft,posting',
         ]);
 
         try {
@@ -184,7 +185,8 @@ class WholesaleController extends Controller
                 // Generate order number if not already set
                 $wholesale->order_number = Wholesale::getOrderNumber();
             }
-            $wholesale->status = 'processing';
+            $wholesale->status = $request->submit_type;
+            $wholesale->created_by = Auth::user()->id_user;
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;
             $wholesale->save();
@@ -333,7 +335,7 @@ class WholesaleController extends Controller
             ->addColumn('action', function ($item) use ($request) {
                 $html = '';
 
-                if ($request->url == 'wholesale/show'){
+                if ($request->url == 'wholesale/show') {
                     $html .= '';
                 } else {
                     $html .= '
@@ -549,12 +551,10 @@ class WholesaleController extends Controller
                 return dateindo($item->order_date);
             })
             ->addColumn('status', function ($item) {
-                if ($item->status == 'processing') {
-                    return '<span class="badge badge-light-primary">Processing</span>';
-                } elseif ($item->status == 'complete') {
-                    return '<span class="badge badge-light-success">Complete</span>';
-                } elseif ($item->status == 'draft') {
-                    return '<span class="badge badge-light-warning">Draft</span>';
+                if ($item->status == 'draft') {
+                    return '<span class="badge badge-light-primary">Draft</span>';
+                } elseif ($item->status == 'posting') {
+                    return '<span class="badge badge-light-success">Posting</span>';
                 } else {
                     return '<span class="badge badge-light-danger">Unknown</span>';
                 }
@@ -574,16 +574,6 @@ class WholesaleController extends Controller
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="' . route('wholesale.receive_process', $item->id) . '">
-                                    <i class="ki-duotone ki-basket">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i>
                                 </a>
                             </li>
                             <li>

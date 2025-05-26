@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('order_number', 20); // Kolom untuk nomor pesanan
             $table->unsignedBigInteger('supplier_id');
             $table->date('order_date');
-            $table->enum('status', ['draft', 'processing', 'complete'])->default('processing');
+            $table->enum('status', ['draft', 'posting'])->default('posting');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration {
                 'supplier_id' => 1,
                 'order_number' => 'PO' . date('Ym') . '001',
                 'order_date' => date('2025-05-01'),
-                'status' => 'processing',
+                'status' => 'posting',
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -38,7 +38,7 @@ return new class extends Migration {
                 'supplier_id' => 2,
                 'order_number' => 'PO' . date('Ym') . '002',
                 'order_date' => date('2025-05-02'),
-                'status' => 'processing',
+                'status' => 'posting',
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -48,7 +48,7 @@ return new class extends Migration {
                 'supplier_id' => 3,
                 'order_number' => 'PO' . date('Ym') . '003',
                 'order_date' => date('2025-05-03'),
-                'status' => 'complete',
+                'status' => 'posting',
                 'created_by' => 2,
                 'updated_by' => 2,
                 'created_at' => now(),

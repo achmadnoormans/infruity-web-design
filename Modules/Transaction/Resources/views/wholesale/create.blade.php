@@ -223,14 +223,21 @@
                 </div>
             </div>
 
+            <input type="hidden" name="submit_type" id="submit_type" value="draft">
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
-                <!--begin::Button-->
-                <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                    <span class="indicator-label">Save Changes</span>
+
+                <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
+                    <span class="indicator-label">Draft</span>
+                    <span class="indicator-progress">Please wait...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                </button>
+
+                <button type="submit" class="btn btn-success" onclick="setSubmitType('posting')">
+                    <span class="indicator-label">Posting</span>
                     <span class="indicator-progress">Please wait...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>

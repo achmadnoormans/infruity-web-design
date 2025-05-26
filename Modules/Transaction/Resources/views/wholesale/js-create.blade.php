@@ -373,5 +373,9 @@
                 }
             });
         });
+
+        function setSubmitType(type) {
+            document.getElementById('submit_type').value = type;
+        }
     </script>
 @endsection

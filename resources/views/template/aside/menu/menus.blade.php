@@ -399,7 +399,7 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'receipt' ? 'active' : '' }}" href="{{ url('receipt') }}">
+            <a class="menu-link {{ $link == 'parcel' ? 'active' : '' }}" href="{{ url('parcel') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

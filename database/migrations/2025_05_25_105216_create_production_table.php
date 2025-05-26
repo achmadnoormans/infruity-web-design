@@ -30,7 +30,7 @@ return new class extends Migration
             [
                 'production_number' => 'PRO' . now()->format('Ym') . '001',
                 'product_id' => 9, // ID produk Apel Frozen
-                'quantity' => 10,
+                'quantity' => 1,
                 'production_date' => now(),
                 'status' => 'posting',
                 'created_at' => now(),

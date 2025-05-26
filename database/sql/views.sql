@@ -19,50 +19,67 @@ SELECT
 	* 
 FROM
 	(
-	SELECT
-		product_id,
-		quantity,
-		avg_price,
-		date,
-		`code` AS reff 
-	FROM
-		stock_in UNION
-	SELECT
-		product_id,
-		- quantity,
-		avg_price,
-		date,
-		`code` 
-	FROM
-		stock_out UNION
-	SELECT
-		product_id,
-		quantity,
-		price,
-		wholesale.order_date,
-		'wholelsale' AS reff 
-	FROM
-		wholesale_product
-		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
-	WHERE
-		wholesale.`status` = 'complete' 
-		AND product_id != 0 UNION
-	SELECT
-		product_id,
-		- quantity,
-		avg_price,
-		date,
-		'stock-out' 
-	FROM
-		stock_out_transaction UNION
-	SELECT
-		product_id,
-		difference,
-		avg_price,
-		date,
-		'stock-opname' 
-	FROM
-		stock_opname 
+SELECT
+	product_id,
+	quantity,
+	avg_price,
+	date,
+	`code` AS reff 
+FROM
+	stock_in UNION
+SELECT
+	product_id,
+	- quantity,
+	avg_price,
+	date,
+	`code` 
+FROM
+	stock_out UNION
+SELECT
+	product_id,
+	quantity,
+	price,
+	wholesale.order_date,
+	'wholelsale' AS reff 
+FROM
+	wholesale_product
+	JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+WHERE
+	wholesale.`status` = 'posting' 
+	AND product_id != 0 UNION
+SELECT
+	product_id,
+	- quantity,
+	avg_price,
+	date,
+	'stock-out' 
+FROM
+	stock_out_transaction UNION
+SELECT
+	product_id,
+	difference,
+	avg_price,
+	date,
+	'stock-opname' 
+FROM
+	stock_opname UNION
+SELECT
+	product_id,
+	quantity,
+	NULL,
+	production_date,
+	'production' 
+FROM
+	production UNION
+SELECT
+	production_detail.product_id,
+	- production_detail.quantity,
+	NULL,
+	production.production_date,
+	'production-detail' 
+FROM
+	production_detail
+	JOIN production ON production.id = production_detail.production_id 
 	) AS Q;
 
 DROP VIEW IF EXISTS sortir_view;
