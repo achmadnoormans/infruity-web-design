@@ -22,7 +22,7 @@ use Modules\Transaction\Http\Controllers\ProductionParcelController;
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
-    Route::get('product-stock/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
+    Route::get('product-stock/{id}/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
     Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
     Route::get('product-stock/available-stock', [ProductController::class, 'get_data_available'])->name('ajax.stock-available');
 

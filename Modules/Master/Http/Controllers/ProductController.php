@@ -134,6 +134,15 @@ class ProductController extends Controller
         return view('master::products.create', $data);
     }
 
+    public function show_stock($id)
+    {
+        $data['data'] = DB::table('transaction_stock')
+            ->where('transaction_stock.product_id', $id)
+            ->get();
+        dd($data['data']);
+        return view('master::products.stock', $data);
+    }
+
     /**
      * Show the form for editing the specified resource.
      * @param int $id
@@ -601,7 +610,7 @@ class ProductController extends Controller
             })
             ->addColumn('action', function ($item) {
                 return '
-                    <a href="' . route('product-stock.show', $item->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                    <a href="' . url('product-stock') . '/' . $item->id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
                         <i class="fa fa-eye"></i>
                     </a>
                 ';
