@@ -136,11 +136,8 @@ class ProductController extends Controller
 
     public function show_stock($id)
     {
-        $data['data'] = DB::table('transaction_stock')
-            ->where('transaction_stock.product_id', $id)
-            ->get();
-        dd($data['data']);
-        return view('master::products.stock', $data);
+        $data['data'] = Product::findOrFail($id);
+        return view('master::products.stock-show', $data);
     }
 
     /**
@@ -627,5 +624,43 @@ class ProductController extends Controller
             ->select('id', 'name', 'stock_available')
             ->limit(20)
             ->get();
+    }
+
+    public function get_data_stock_show(Request $request)
+    {
+        $query = DB::table('transaction_stock')
+            ->join('products', 'transaction_stock.product_id', '=', 'products.id')
+            ->join('product_units', 'products.product_unit', '=', 'product_units.id')
+            ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit')
+            ->where('transaction_stock.product_id', $request->product_id)
+            ->orderBy('transaction_stock.date', 'asc');
+        $data = $query->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($product) {
+                $html = '
+                    <div class="d-flex align-items-center">';
+                $html .= '<div class="ms-5">
+                            <a href="' . url('products/') . $product->product_id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                               data-kt-ecommerce-product-filter="product_name">
+                                ' . e($product->name) . '
+                            </a>
+                        </div>
+                    </div>
+                ';
+                return $html;
+            })
+            ->addColumn('quantity', function ($product) {
+                if ($product->quantity > 0) {
+                    return '<span class="badge badge-light-success">' . $product->quantity . ' ' . $product->unit . '</span>';
+                } else {
+                    return '<span class="badge badge-light-danger">' . $product->quantity . ' ' . $product->unit . '</span>';
+                }
+            })
+            ->addColumn('date', function ($item) {
+                return dateindo($item->date);
+            })
+            ->rawColumns(['name', 'quantity'])
+            ->make(true);
     }
 }
