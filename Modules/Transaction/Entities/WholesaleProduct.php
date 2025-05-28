@@ -8,6 +8,7 @@ use Modules\Master\Entities\Product;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\ProductUnit;
 use Modules\Master\Entities\ProductCategory;
+use Modules\Transaction\Entities\ProductStock;
 
 class WholesaleProduct extends Model
 {
@@ -41,5 +42,10 @@ class WholesaleProduct extends Model
     public function productUnit()
     {
         return $this->belongsTo(ProductUnit::class, 'product_unit_id', 'id');
+    }
+
+    public function productStock()
+    {
+        return $this->belongsTo(ProductStock::class, 'product_id', 'id');
     }
 }

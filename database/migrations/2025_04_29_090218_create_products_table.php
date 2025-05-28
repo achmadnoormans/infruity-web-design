@@ -28,6 +28,8 @@ return new class extends Migration {
             $table->integer('parent_id')->nullable();
             $table->integer('category_id')->nullable();
             $table->integer('direct_stock')->nullable();
+            $table->integer('hpp')->nullable();
+            $table->date('hpp_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

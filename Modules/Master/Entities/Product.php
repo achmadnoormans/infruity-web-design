@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
+use Modules\Transaction\Entities\ProductStock;
+use DB;
 
 class Product extends Model
 {
@@ -26,5 +28,10 @@ class Product extends Model
     public function unit()
     {
         return $this->belongsTo(ProductUnit::class, 'product_unit');
+    }
+
+    public function productStock()
+    {
+        return $this->belongsTo(ProductStock::class, 'product_id', 'id');
     }
 }

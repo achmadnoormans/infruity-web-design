@@ -32,15 +32,7 @@
     <script>
         // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
     </script>
-    <style>
-        @media (max-width: 767.98px) {
-            #kt_wrapper {
-                max-height: calc(100vh -70px);
-                /* 70px adalah tinggi mobile-footer */
-                overflow-y: auto !important;
-            }
-        }
-    </style>
+
 </head>
 <!--end::Head-->
 <!--begin::Body-->

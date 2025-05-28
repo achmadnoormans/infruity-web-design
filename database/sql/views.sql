@@ -88,7 +88,7 @@ SELECT
     A.*,
     B.product_id,
     SUM( B.quantity ) AS stock_available,
-    AVG( B.avg_price ) AS hpp,
+    AVG( B.avg_price ) AS avg_hpp,
     C.abbreviation AS satuan
 FROM
     products AS A
@@ -105,7 +105,7 @@ SELECT
     A.*,
     C.abbreviation AS unit,
     COALESCE(SUM(B.quantity), 0) AS stock_available,
-    AVG(B.avg_price) AS hpp,
+    AVG(B.avg_price) AS avg_hpp,
     CASE
         WHEN COALESCE(SUM(B.quantity), 0) = 0 THEN 'danger'
         WHEN COALESCE(SUM(B.quantity), 0) <= A.limit THEN 'warning'

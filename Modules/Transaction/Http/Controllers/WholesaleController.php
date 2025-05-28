@@ -10,6 +10,7 @@ use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\Product;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
+use PhpParser\Node\Expr\Cast\Double;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -189,6 +190,28 @@ class WholesaleController extends Controller
             $wholesale->created_by = Auth::user()->id_user;
             $wholesale->order_date = $request->order_date;
             $wholesale->description = $request->description;
+
+            if ($request->submit_type == 'posting') {
+                $wholesaleProduct = WholesaleProduct::with('product', 'productStock')->where('wholesale_id', $id)->get();
+                foreach ($wholesaleProduct as $key => $value) {
+                    $stock = $value->productStock->stock_available ?? 0;
+                    $hpp = $value->product->hpp ?? 0;
+
+                    if ($stock == 0) {
+                        Product::where("id", $value->product_id)->update([
+                            'hpp' => $value->price,
+                        ]);
+                    } else {
+                        $newHpp = collect([$hpp, $value->price])->avg();
+                        Product::where("id", $value->product_id)->update([
+                            'hpp' => $newHpp,
+                        ]);
+                    }
+                }
+
+            }
+
+            // dd($wholesaleProduct);
             $wholesale->save();
 
             DB::commit();
@@ -313,9 +336,11 @@ class WholesaleController extends Controller
             ->addColumn('name', function ($item) {
                 $html = '';
                 if ($item->supplier_id != null) {
-                    $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
+                    $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
+                    ;
                 } else {
-                    $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
+                    $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
+                    ;
                 }
                 return $html;
             })
