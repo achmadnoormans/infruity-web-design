@@ -12,7 +12,7 @@ class ProductionParcelDetail extends Model
     protected $fillable = [];
     protected $table = 'production_parcel_detail';
 
-    public function products()
+    public function product()
     {
         return $this->belongsTo('Modules\Master\Entities\Product', 'product_id', 'id');
     }

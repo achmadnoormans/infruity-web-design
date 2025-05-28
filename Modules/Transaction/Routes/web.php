@@ -69,5 +69,12 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('parcel', ProductionParcelController::class)->names('parcel')->except('show');
     Route::get('parcel/data', [ProductionParcelController::class, 'get_data'])->name('parcel-data');
+    Route::get('parcel/process/{id}', [ProductionParcelController::class, 'process'])->name('parcel.process');
+    Route::get('parcel/get-product/{id}', [ProductionParcelController::class,'get_product'])->name('parcel.get-product');
+    Route::get('parcel/edit-product/{id}', [ProductionParcelController::class,'edit_product'])->name('parcel.edit-product');
+    Route::put('parcel/update-product/{id}', [ProductionParcelController::class,'update_product'])->name('parcel.update-product');
+    Route::post('parcel/save-product', [ProductionParcelController::class,'save_product'])->name('parcel.save-product');
+    Route::delete('parcel/delete-product/{id}', [ProductionParcelController::class,'delete_product'])->name('parcel.delete_product');
+    Route::post('parcel/set-selesai/{id}', [ProductionParcelController::class,'set_selesai'])->name('parcel.set_selesai');
 
 });

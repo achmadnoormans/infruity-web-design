@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('production_number', 20);
             $table->date('production_date');
-            $table->enum('status', ['draft', 'posting'])->default('posting');
+            $table->enum('status', ['draft', 'posting', 'complete'])->default('posting');
             $table->integer('budget')->default(0);
             $table->integer('quantity')->default(1);
             $table->text('description')->nullable();

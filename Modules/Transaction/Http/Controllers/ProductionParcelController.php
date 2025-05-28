@@ -73,11 +73,17 @@ class ProductionParcelController extends Controller
             $production->save();
 
             DB::commit();
-            return redirect()->route('production.index')->with('success', 'Production parcel created successfully.');
+            return redirect()->route('parcel.index')->with('success', 'Production parcel created successfully.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Failed to create production parcel: ' . $e->getMessage()]);
         }
+    }
+
+    public function process($id)
+    {
+        $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
+        return view('transaction::production.process-parcel', $data);
     }
 
     /**
@@ -216,6 +222,11 @@ class ProductionParcelController extends Controller
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="' . route('parcel.process', $item->id) . '">
+                                    <i class="bi bi-box-seam"></i>
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
                                 </a>
@@ -230,5 +241,176 @@ class ProductionParcelController extends Controller
             })
             ->rawColumns(['name', 'action', 'status', 'address'])
             ->make(true);
+    }
+
+    public function get_product(Request $request, $id)
+    {
+        // dd($request->all());
+        $data = ProductionParcelDetail::where('production_id', $id)->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $html = '';
+                $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation . '<br> Harga : ' . toNumber($item->product->price). '';
+                return $html;
+            })
+            ->addColumn('hpp', function ($item) {
+                return 'Rp' . toNumber($item->product->hpp * $item->quantity);
+            })
+            ->addColumn('harga_jual', function ($item) {
+                return toNumber($item->product->price * $item->quantity);
+            })
+            ->addColumn('action', function ($item) use ($request) {
+                $html = '';
+
+                $html .= '
+                    <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                    ';
+                return $html;
+            })
+            ->rawColumns(['name', 'action', 'harga_jual'])
+            ->make(true);
+    }
+
+    public function save_product(Request $request)
+    {
+        $validated = $request->validate([
+            'production_id' => 'required|exists:production_parcel,id',
+            'id' => 'required|exists:products,id',
+            'qty' => 'required',
+            'sell_price' => 'nullable',
+        ]);
+
+        $cek = ProductionParcelDetail::where('production_id', $validated['production_id'])
+            ->where('product_id', $validated['id'])
+            ->first();
+        if ($cek) {
+            return response()->json([
+                'message' => 'Product sudah ada',
+            ], 404);
+        }
+
+        if ($validated['qty'] <= 0) {
+            return response()->json([
+                'message' => 'Qty tidak boleh 0',
+            ], 404);
+        }
+        try {
+            DB::beginTransaction();
+            $detailProduct = new ProductionParcelDetail();
+            $detailProduct->production_id = $validated['production_id'];
+            $detailProduct->product_id = $validated['id'];
+            $detailProduct->quantity = $validated['qty'];
+            $detailProduct->save();
+
+            if ($validated['sell_price'] != null) {
+                $product = Product::findOrFail($validated['id']);
+                $product->price = $validated['sell_price'];
+                $product->save();
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal disimpan.' . $e->getMessage(),
+                'data' => $detailProduct
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Product berhasil disimpan.',
+            'data' => $detailProduct
+        ], 201);
+    }
+
+    public function edit_product(Request $request, $id)
+    {
+        $data = ProductionParcelDetail::findOrFail($id);
+        $product = Product::findOrFail($data->product_id);
+        $data->price = $product->price;
+        return response()->json([
+            'data' => $data
+        ], 201);
+    }
+
+    public function update_product(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'qty' => 'required|numeric',
+            'price' => 'nullable',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $detailProduct = ProductionParcelDetail::findOrFail($id);
+            $detailProduct->quantity = $validated['qty'];
+            $detailProduct->save();
+
+            if ($validated['price'] != null) {
+                $product = Product::findOrFail($detailProduct->product_id);
+                $product->price = $validated['price'];
+                $product->save();
+            }
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Product updated failed']);
+        }
+
+        return response()->json(['message' => 'Product updated successfully']);
+    }
+
+    public function delete_product(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $deteilProduct = ProductionParcelDetail::findOrFail($id);
+            $deteilProduct->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product berhasil dihapus.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal dihapus.',
+            ], 404);
+        }
+    }
+
+    public function set_selesai(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $parcel = ProductionParcel::findOrFail($id);
+            $parcel->status = 'complete';
+            $parcel->save();
+            DB::commit();
+            return response()->json([
+                'message' => 'Parcel berhasil diterima.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Parcel gagal diterima.',
+            ], 404);
+        }
     }
 }

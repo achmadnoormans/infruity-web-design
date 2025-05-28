@@ -34,4 +34,9 @@ class Product extends Model
     {
         return $this->belongsTo(ProductStock::class, 'product_id', 'id');
     }
+
+    public function get_stock()
+    {
+        return $this->belongsTo('Modules\Transaction\Entities\ProductStock', 'id', 'id');
+    }
 }

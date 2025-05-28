@@ -528,6 +528,7 @@ class WholesaleController extends Controller
         }
         $query = Product::query()
             ->with('category')
+            ->with('get_stock')
             ->where('name', 'like', '%' . $searchValue . '%')
             ->whereNull('parent_id');
 
@@ -545,7 +546,7 @@ class WholesaleController extends Controller
                     '</a>';
             })
             ->addColumn('qty_remaining', function ($row) {
-                return '<span class="fw-bold ms-3 check-product">' . ($row->qty_remaining ?? 0) . '</span>';
+                return '<span class="fw-bold ms-3 check-product">' . ($row->get_stock->stock_available) . '</span>';
             })
             ->rawColumns(['checkbox', 'name', 'qty_remaining'])
             ->make(true);
