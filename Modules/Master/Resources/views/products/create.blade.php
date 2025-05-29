@@ -451,35 +451,6 @@
     </div>
 @section('script')
     <script>
-        let quill; // Definisikan di luar agar bisa diakses global
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const quillElement = document.getElementById('kt_ecommerce_add_product_description');
-
-            if (quillElement) {
-                quill = new Quill(quillElement, {
-                    modules: {
-                        toolbar: [
-                            [{
-                                header: [1, 2, false]
-                            }],
-                            ['bold', 'italic', 'underline'],
-                            ['image', 'code-block']
-                        ]
-                    },
-                    placeholder: "Type your text here...",
-                    theme: "snow"
-                });
-            }
-
-            quill.root.innerHTML = '{{ $data->description ?? old('description') }}'; // Set konten awal
-
-            document.getElementById('add_product_form').addEventListener('submit', function() {
-                const description = document.getElementById('description_input');
-                description.value = quill.root.innerHTML; // Ambil konten HTML
-            });
-        });
-
         $('#category_id').select2({
             placeholder: 'Select a Category',
             ajax: {
@@ -525,25 +496,74 @@
 
         function addVariant() {
             let html = `
-                <tr>
-                    <td>
-                        <input type="text" name="variant_name[]" class="form-control mb-2" placeholder="Product name" />
-                    </td>
-                    <td>
-                        <input type="text" name="variant_price[]" class="form-control format-number mb-2" placeholder="Product price" />
-                    </td>                    
-                    <td class="text-end">
-                        <button type="button" class="btn btn-icon btn-danger remove_variant">
-                            <i class="ki-outline ki-cross fs-2"></i>
-                        </button>
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    <select name="variant[id][]" class="form-select mb-2 select2_product"></select>
+                </td>
+                <td>
+                    <input type="text" name="variant[price][]" class="form-control format-number mb-2" placeholder="Product price" />
+                </td>                    
+                <td class="text-end">
+                    <button type="button" class="btn btn-icon btn-danger remove_variant">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </td>
+            </tr>
             `;
             $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-            $('#variant_table').on('click', '.remove_variant', function() {
-                $(this).closest('tr').remove();
+            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
+                placeholder: 'Ketik nama produk',
+                tags: true, // ini aktifkan fitur menambah item baru
+                ajax: {
+                    url: "{{ route('ajax.getProduct') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data, params) {
+                        const term = params.term || '';
+
+                        // Map hasil dari server
+                        let results = data.map(item => ({
+                            id: item.id, // penting: pastikan id-nya sesuai yg mau kamu simpan
+                            text: item.name
+                        }));
+
+                        // Kalau term (yang diketik user) tidak ada di hasil, tambahkan manual
+                        if (term && !results.some(r => r.text.toLowerCase() === term.toLowerCase())) {
+                            results.push({
+                                id: term, // kita pakai term sebagai id juga (karena produk baru)
+                                text: term
+                            });
+                        }
+
+                        return {
+                            results: results
+                        };
+                    },
+                    cache: true
+                },
+                createTag: function(params) {
+                    const term = $.trim(params.term);
+
+                    if (term === '') {
+                        return null;
+                    }
+
+                    return {
+                        id: term,
+                        text: term,
+                        newTag: true // optional: kalau mau tandai item baru
+                    };
+                }
             });
-            bindFormatNumber(); // Re-bind ke elemen baru setelah append
+
+
+
+            bindFormatNumber();
         }
         $('#variant_table').on('click', '.remove_variant', function() {
             $(this).closest('tr').remove();

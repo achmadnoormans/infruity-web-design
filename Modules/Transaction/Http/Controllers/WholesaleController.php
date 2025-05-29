@@ -530,7 +530,7 @@ class WholesaleController extends Controller
             ->with('category')
             ->with('get_stock')
             ->where('name', 'like', '%' . $searchValue . '%')
-            ->whereNull('parent_id');
+            ->whereNull('is_variant');
 
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();

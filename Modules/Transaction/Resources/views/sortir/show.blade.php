@@ -70,30 +70,30 @@
                                 </tr>
                             </thead>
                             <tbody class="fw-semibold text-gray-600">
-                                @foreach ($productChild as $product)
+                                @foreach ($productChild as $item)
                                     {{-- {{ dd($product) }} --}}
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center"
                                                 data-kt-ecommerce-edit-order-filter="product"
-                                                data-kt-ecommerce-edit-order-id="{{ $product->id }}">
+                                                data-kt-ecommerce-edit-order-id="{{ $item->product->id }}">
                                                 <!--begin::Thumbnail-->
-                                                <a href="{{ url('products/' . $product->id) }}" class="symbol symbol-50px">
+                                                <a href="{{ url('products/' . $item->product->id) }}" class="symbol symbol-50px">
                                                     <span class="symbol-label"
-                                                        style="background-image:url({{ asset('storage/' . $product->image) }});"></span>
+                                                        style="background-image:url({{ asset('storage/' . $item->product->image) }});"></span>
                                                 </a>
                                                 <!--end::Thumbnail-->
                                                 <div class="ms-5">
                                                     <!--begin::Title-->
-                                                    <a href="{{ url('products/' . $product->id) }}"
-                                                        class="text-gray-800 text-hover-primary fs-5 fw-bold">{{ $product->name }}</a>
+                                                    <a href="{{ url('products/' . $item->product->id) }}"
+                                                        class="text-gray-800 text-hover-primary fs-5 fw-bold">{{ $item->product->name }}</a>
                                                     <!--end::Title-->
                                                     <!--begin::SKU-->
-                                                    <div class="text-muted fs-7">SKU: {{ $product->sku }}</div>
+                                                    <div class="text-muted fs-7">SKU: {{ $item->product->sku }}</div>
                                                     <!--end::SKU-->
                                                     <!--begin::Unit-->
                                                     <div class="text-muted fs-7">Product Unit: <span
-                                                            class="badge badge-light-success">{{ $product->unit->abbreviation }}</span>
+                                                            class="badge badge-light-success">{{ $item->product->unit->abbreviation }}</span>
                                                     </div>
                                                     <!--end::Unit-->
                                                 </div>
@@ -102,7 +102,7 @@
                                         <td class="text-end pe-5" data-order="42">
                                             <input type="number" step="0.01" min="0"
                                                 class="form-control form-control-solid text-end quantity-input"
-                                                name="quantity[{{ $product->id }}]" value="" placeholder="0" />
+                                                name="quantity[{{ $item->product->id }}]" value="" placeholder="0" />
                                         </td>
                                     </tr>
                                 @endforeach

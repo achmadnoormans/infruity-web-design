@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductChild;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Modules\Transaction\Entities\StockIn;
 use Modules\Transaction\Entities\StockOut;
@@ -60,7 +61,7 @@ class SortirController extends Controller
     {
         // dd($id);
         $data['product'] = DB::table('sortir_view')->where('id', $id)->first();
-        $data['productChild'] = Product::where('parent_id', $data['product']->id)->get();
+        $data['productChild'] = ProductChild::with('product')->where('parent_id', $data['product']->id)->get();
         // dd($data);
         return view('transaction::sortir.show', $data);
     }

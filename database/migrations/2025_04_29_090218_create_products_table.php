@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->enum('status', ['receipt', 'no-receipt'])->default('no-receipt');
             $table->integer('level')->default(1);
             $table->integer('parent_id')->nullable();
+            $table->integer('is_variant')->nullable();
             $table->integer('category_id')->nullable();
             $table->integer('direct_stock')->nullable();
             $table->integer('hpp')->nullable();
@@ -41,7 +42,6 @@ return new class extends Migration {
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
                 'category_id' => 1,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'receipt',
                 'hpp' => 40000,
@@ -54,7 +54,6 @@ return new class extends Migration {
                 'description' => 'Pisang kuning segar siap makan.',
                 'price' => 30000,
                 'category_id' => 4,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 25000,
@@ -67,7 +66,6 @@ return new class extends Migration {
                 'description' => 'Jeruk impor dengan rasa manis dan asam seimbang.',
                 'price' => 45000,
                 'category_id' => 5,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 35000,
@@ -80,7 +78,6 @@ return new class extends Migration {
                 'description' => 'Mangga lokal dengan aroma harum dan rasa legit.',
                 'price' => 40000,
                 'category_id' => 2,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 30000,
@@ -93,7 +90,6 @@ return new class extends Migration {
                 'description' => 'Anggur besar dan manis cocok untuk konsumsi langsung.',
                 'price' => 60000,
                 'category_id' => 3,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 45000,
@@ -106,7 +102,6 @@ return new class extends Migration {
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
                 'category_id' => 1,
-                'parent_id' => 1,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 40000,
@@ -119,7 +114,6 @@ return new class extends Migration {
                 'description' => 'Apel manis dan renyah asal Jepang.',
                 'price' => 50000,
                 'category_id' => 1,
-                'parent_id' => 1,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 40000,
@@ -132,7 +126,6 @@ return new class extends Migration {
                 'description' => 'Anggur manis dan renyah asal Jepang.',
                 'price' => 50000,
                 'category_id' => 3,
-                'parent_id' => 5,
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'hpp' => 40000,
@@ -145,7 +138,6 @@ return new class extends Migration {
                 'description' => 'Apel yang dibekukan.',
                 'price' => 50000,
                 'category_id' => 1,
-                'parent_id' => null,
                 'direct_stock' => null,
                 'status' => 'receipt',
                 'hpp' => 40000,

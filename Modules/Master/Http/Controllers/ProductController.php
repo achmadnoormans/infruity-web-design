@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
+use Modules\Master\Entities\ProductChild;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -92,20 +93,32 @@ class ProductController extends Controller
             $product->save();
 
             $productId = $product->id;
-            if (isset($request->variant_name)) {
-                foreach ($request->variant_name as $key => $value) {
-                    $variant = new Product();
-                    $variant->parent_id = $productId;
-                    $variant->name = $value;
-                    $variant->price = $request->variant_price[$key];
-                    $variant->category_id = $product->category_id;
-                    $variant->product_unit = $product->product_unit;
-                    $variant->stock = $product->stock;
-                    $variant->limit = $product->limit;
-                    $variant->handling = $product->handling;
-                    $variant->created_by = Auth::user()->id_user;
-                    $variant->description = strip_tags($request->description ?? '');
-                    $variant->save();
+            if (isset($request->variant)) {
+                foreach ($request->variant['id'] as $key => $value) {
+                    if (is_numeric($value)) {
+                        $variant = Product::find($value);
+                        $variant->is_variant = 1;
+                        $variant->save();
+                    } else {
+                        $variant = new Product();
+                        $variant->parent_id = $productId;
+                        $variant->name = $value;
+                        $variant->price = $request->variant['price'][$key];
+                        $variant->category_id = $product->category_id;
+                        $variant->product_unit = $product->product_unit;
+                        $variant->stock = $product->stock;
+                        $variant->limit = $product->limit;
+                        $variant->handling = $product->handling;
+                        $variant->is_variant = 1;
+                        $variant->created_by = Auth::user()->id_user;
+                        $variant->description = strip_tags($request->description ?? '');
+                        $variant->save();
+                    }
+
+                    $child = new ProductChild();
+                    $child->product_id = $variant->id;
+                    $child->parent_id = $productId;
+                    $child->save();
                 }
             }
             DB::commit();
@@ -218,21 +231,34 @@ class ProductController extends Controller
 
             // Hapus semua varian yang ada
             Product::where('parent_id', $id)->delete();
+            $productId = $id;
             // Simpan varian baru
-            if (isset($request->variant_name)) {
-                foreach ($request->variant_name as $key => $value) {
-                    $variant = new Product();
-                    $variant->parent_id = $id;
-                    $variant->name = $value;
-                    $variant->price = $request->variant_price[$key];
-                    $variant->category_id = $product->category_id;
-                    $variant->product_unit = $product->product_unit;
-                    $variant->stock = $product->stock;
-                    $variant->limit = $product->limit;
-                    $variant->handling = $product->handling;
-                    $variant->created_by = Auth::user()->id_user;
-                    $variant->description = strip_tags($request->description ?? '');
-                    $variant->save();
+            if (isset($request->variant)) {
+                foreach ($request->variant['id'] as $key => $value) {
+                    if (is_numeric($value)) {
+                        $variant = Product::find($value);
+                        $variant->is_variant = 1;
+                        $variant->save();
+                    } else {
+                        $variant = new Product();
+                        $variant->parent_id = $productId;
+                        $variant->name = $value;
+                        $variant->price = $request->variant['price'][$key];
+                        $variant->category_id = $product->category_id;
+                        $variant->product_unit = $product->product_unit;
+                        $variant->stock = $product->stock;
+                        $variant->limit = $product->limit;
+                        $variant->handling = $product->handling;
+                        $variant->is_variant = 1;
+                        $variant->created_by = Auth::user()->id_user;
+                        $variant->description = strip_tags($request->description ?? '');
+                        $variant->save();
+                    }
+
+                    $child = new ProductChild();
+                    $child->product_id = $variant->id;
+                    $child->parent_id = $productId;
+                    $child->save();
                 }
             }
 
