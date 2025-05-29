@@ -568,6 +568,52 @@
         $('#variant_table').on('click', '.remove_variant', function() {
             $(this).closest('tr').remove();
         });
+
+        @if (isset($variant) && $variant->count() > 0)
+            const response = {!! json_encode($variant) !!};
+            console.log(response);
+            $('#kt_ecommerce_edit_order_selected_products_body').empty();
+
+            // Loop hasil response
+            response.forEach(item => {
+                let html = `
+                <tr>
+                    <td>
+                        <select name="variant[id][]" class="form-select mb-2 select2_product">
+                            <option value="${item.product_id}" selected>${item.product.name}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="variant[price][]" class="form-control format-number mb-2" placeholder="Product price" value="${item.product.price || ''}"/>
+                    </td>                    
+                    <td class="text-end">
+                        <button type="button" class="btn btn-icon btn-danger remove_variant">
+                            <i class="ki-outline ki-cross fs-2"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+                $('#kt_ecommerce_edit_order_selected_products_body').append(html);
+            });
+
+            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
+                placeholder: 'Select product',
+                ajax: {
+                    url: "{{ route('ajax.getProduct') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: params => ({
+                        search: params.term
+                    }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name
+                        }))
+                    })
+                }
+            });
+        @endif
     </script>
     @if (request()->segment(3) === 'show')
         <script>

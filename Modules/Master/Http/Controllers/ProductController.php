@@ -170,7 +170,7 @@ class ProductController extends Controller
         } else {
             $data['category'] = null;
         }
-        $data['variant'] = Product::where('parent_id', $id)->get();
+        $data['variant'] = ProductChild::with('product')->where('parent_id', $id)->get();
         // dd($data);
         return view('master::products.create', $data);
     }
@@ -230,7 +230,7 @@ class ProductController extends Controller
             }
 
             // Hapus semua varian yang ada
-            Product::where('parent_id', $id)->delete();
+            ProductChild::where('parent_id', $id)->delete();
             $productId = $id;
             // Simpan varian baru
             if (isset($request->variant)) {
