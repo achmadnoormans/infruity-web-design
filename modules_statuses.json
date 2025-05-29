@@ -7,8 +7,6 @@
     "Grouplayanan": true,
     "Controller": true,
     "VendorBusdevController": true,
-    "Permohonan": true,
     "Chat": true,
-    "Arsip": true,
     "Transaction": true
 }
