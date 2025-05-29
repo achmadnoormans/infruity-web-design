@@ -176,7 +176,11 @@ class SortirController extends Controller
                 return $html;
             })
             ->addColumn('quantity', function ($item) {
-                return '<span class="badge badge-light-primary">' . toNumber($item->stock_available) . ' ' . $item->satuan . '</span>';
+                $class = 'badge badge-light-primary';
+                if ($item->stock_available <= 0) {
+                    $class = 'badge badge-light-danger';
+                }
+                return '<span class="' . $class . '">' . toNumber($item->stock_available) . ' ' . $item->satuan . '</span>';
             })
             ->addColumn('action', function ($item) {
                 return '
