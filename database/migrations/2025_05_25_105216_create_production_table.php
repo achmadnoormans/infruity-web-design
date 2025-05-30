@@ -26,17 +26,17 @@ return new class extends Migration
             $table->timestamps();
         });
         
-        DB::table('production')->insert([
-            [
-                'production_number' => 'PRO' . now()->format('Ym') . '001',
-                'product_id' => 9, // ID produk Apel Frozen
-                'quantity' => 1,
-                'production_date' => now(),
-                'status' => 'posting',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],   
-        ]);
+        // DB::table('production')->insert([
+        //     [
+        //         'production_number' => 'PRO' . now()->format('Ym') . '001',
+        //         'product_id' => 9, // ID produk Apel Frozen
+        //         'quantity' => 1,
+        //         'production_date' => now(),
+        //         'status' => 'posting',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],   
+        // ]);
     }
 
     /**

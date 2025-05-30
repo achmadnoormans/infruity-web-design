@@ -357,7 +357,7 @@
 </div>
 <!--begin:Menu item-->
 <div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), ['production', 'receipt', 'receipt']) ? 'here show' : '' }} menu-accordion">
+    class="menu-item {{ in_array(Request::segment(1), ['production', 'receipt', 'receipt', 'parcel']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
     <span class="menu-link">
         <span class="menu-icon">
@@ -375,7 +375,7 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'receipt' ? 'active' : '' }}" href="{{ url('receipt') }}">
+            <a class="menu-link {{ Request::segment(1) == 'receipt' ? 'active' : '' }}" href="{{ url('receipt') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

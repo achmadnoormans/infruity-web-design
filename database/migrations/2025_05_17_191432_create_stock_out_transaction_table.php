@@ -24,32 +24,32 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('stock_out_transaction')->insert([
-            [
-                'code' => 'SO2505001',
-                'type_id' => 1,
-                'date' => date('Y-m-d'),
-                'product_id' => 1,
-                'quantity' => 1,
-                'avg_price' => 1000,
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'code' => 'SO2505002',
-                'type_id' => 2,
-                'date' => date('Y-m-d'),
-                'product_id' => 5,
-                'quantity' => 2,
-                'avg_price' => 1000,
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('stock_out_transaction')->insert([
+        //     [
+        //         'code' => 'SO2505001',
+        //         'type_id' => 1,
+        //         'date' => date('Y-m-d'),
+        //         'product_id' => 1,
+        //         'quantity' => 1,
+        //         'avg_price' => 1000,
+        //         'created_by' => 1,
+        //         'updated_by' => 1,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'code' => 'SO2505002',
+        //         'type_id' => 2,
+        //         'date' => date('Y-m-d'),
+        //         'product_id' => 5,
+        //         'quantity' => 2,
+        //         'avg_price' => 1000,
+        //         'created_by' => 1,
+        //         'updated_by' => 1,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
     }
 
     /**

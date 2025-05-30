@@ -23,38 +23,38 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        DB::table('wholesale')->insert([
-            [
-                'supplier_id' => 1,
-                'order_number' => 'PO' . date('Ym') . '001',
-                'order_date' => date('2025-05-01'),
-                'status' => 'posting',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'supplier_id' => 2,
-                'order_number' => 'PO' . date('Ym') . '002',
-                'order_date' => date('2025-05-02'),
-                'status' => 'posting',
-                'created_by' => 1,
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'supplier_id' => 3,
-                'order_number' => 'PO' . date('Ym') . '003',
-                'order_date' => date('2025-05-03'),
-                'status' => 'posting',
-                'created_by' => 2,
-                'updated_by' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('wholesale')->insert([
+        //     [
+        //         'supplier_id' => 1,
+        //         'order_number' => 'PO' . date('Ym') . '001',
+        //         'order_date' => date('2025-05-01'),
+        //         'status' => 'posting',
+        //         'created_by' => 1,
+        //         'updated_by' => 1,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'supplier_id' => 2,
+        //         'order_number' => 'PO' . date('Ym') . '002',
+        //         'order_date' => date('2025-05-02'),
+        //         'status' => 'posting',
+        //         'created_by' => 1,
+        //         'updated_by' => 1,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'supplier_id' => 3,
+        //         'order_number' => 'PO' . date('Ym') . '003',
+        //         'order_date' => date('2025-05-03'),
+        //         'status' => 'posting',
+        //         'created_by' => 2,
+        //         'updated_by' => 2,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
     }
 
     /**

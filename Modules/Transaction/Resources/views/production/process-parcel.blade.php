@@ -190,8 +190,7 @@
                             <input type="hidden" id="typeList">
                             <div class="mb-3">
                                 <label for="inputQuantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="inputQuantity" placeholder="Enter quantity"
-                                    min="1">
+                                <input type="number" step="0.01" class="form-control" id="inputQuantity" placeholder="Enter quantity" >
                             </div>
 
                             <div class="mb-3">

@@ -22,22 +22,22 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('production_detail')->insert([
-            [
-                'production_id' => 1,
-                'product_id' => 1, // ID produk Apel Fuji BS 1
-                'quantity' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'production_id' => 1,
-                'product_id' => 5, // ID produk Apel Fuji BS 2
-                'quantity' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('production_detail')->insert([
+        //     [
+        //         'production_id' => 1,
+        //         'product_id' => 1, // ID produk Apel Fuji BS 1
+        //         'quantity' => 10,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'production_id' => 1,
+        //         'product_id' => 5, // ID produk Apel Fuji BS 2
+        //         'quantity' => 10,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
     }
 
     /**
