@@ -317,10 +317,7 @@
                     var form = $('#kt_modal_add_customer_form');
                     form.attr('action', urlUpdate);
                     $('#methodField').val('PUT');
-
-                    // Tampilkan modal
-                    var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
-                    modal.show();
+                    $('#kt_modal_add_customer').modal('show');
                     bindFormatNumber();
                 },
                 error: function(xhr) {

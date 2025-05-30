@@ -92,7 +92,7 @@
             <div class="card card-flush py-4">
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Pilih Bahan</h2>
+                        <h2>Detail Bahan</h2>
                     </div>
                 </div>
                 <!--begin::Card body-->
@@ -101,23 +101,50 @@
                         <div class="d-flex flex-column gap-10">
                             <!--begin::Table-->
                             <div class="table table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="variant_table">
+                                <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
+                                    id="kt_ecommerce_edit_order_selected_products_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Actions</th>
+                                            <th class="min-w-200px">Product</th>
+                                            <th class="min-w-100px">Hpp</th>
+                                            <th class="min-w-100px">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
+                                        <tr class="text-muted text-center">
+                                            <td colspan="6">Select one or more products from the list below by ticking
+                                                the
+                                                checkbox.</td>
+                                        </tr>
                                     </tbody>
                                 </table>
+                                <hr>
+                                <!--begin::Total price-->
+                                <div class="fw-bold fs-4">Plan Budget:
+                                    <span id="">{{ tonumber($data->budget) }}</span>
+                                </div>
+                                <!--end::Total price-->
+                                <!--begin::Total price-->
+                                <div class="fw-bold fs-4">Actual Budget:
+                                    <span id="totalSemuaProduk">0.00</span>
+                                </div>
+                                <!--end::Total price-->
+                                <!--begin::Total price-->
+                                <div class="fw-bold fs-4">Hpp:
+                                    <span id="totalHpp">0.00</span>
+                                </div>
+                                <!--end::Total price-->
+                                <!--begin::Total price-->
+                                <div class="fw-bold fs-4">Profit:
+                                    <span id="totalProfit">0.00</span>
+                                </div>
+                                <!--end::Total price-->
                             </div>
                             <!--end::Input group-->
-                            <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
+                            {{-- <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
                                 onclick="addVariant()">
                                 <i class="ki-outline ki-plus fs-2"></i>Tambah Product
-                            </button>
+                            </button> --}}
                             <!--end::Table-->
                         </div>
                     </div>
@@ -136,18 +163,20 @@
                     class="btn btn-light me-5">Cancel</a>
                 <!--end::Button-->
 
-                <input type="hidden" name="submit_type" id="submit_type" value="draft">
-                <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
-                    <span class="indicator-label">Draft</span>
-                    <span class="indicator-progress">Please wait...
-                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                </button>
+                @if (Request::segment(2) != 'show')
+                    <input type="hidden" name="submit_type" id="submit_type" value="draft">
+                    <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
+                        <span class="indicator-label">Draft</span>
+                        <span class="indicator-progress">Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                    </button>
 
-                <button type="submit" class="btn btn-primary" onclick="setSubmitType('posting')">
-                    <span class="indicator-label">Posting</span>
-                    <span class="indicator-progress">Please wait...
-                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                </button>
+                    <button type="submit" class="btn btn-primary" onclick="setSubmitType('posting')">
+                        <span class="indicator-label">Posting</span>
+                        <span class="indicator-progress">Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                    </button>
+                @endif
                 <!--end::Button-->
             </div>
         </div>
@@ -176,49 +205,6 @@
             $(this).find(":submit").html(
                 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
             );
-        });
-
-        function addVariant() {
-            let html = `
-            <tr>
-                <td>
-                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                    </select>
-                </td>
-                <td>
-                    <input type="number" step="0.01" name="ingredients_quantity[]" value="" class="form-control mb-2" placeholder="Product quantity" />
-                </td>                    
-                <td class="text-end">
-                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                        <i class="ki-outline ki-cross fs-2"></i>
-                    </button>
-                </td>
-            </tr>
-            `;
-            $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                placeholder: 'Select product',
-                ajax: {
-                    url: "{{ route('ajax.getProduct') }}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
-                }
-            });
-            $('#variant_table').on('click', '.remove_variant', function() {
-                $(this).closest('tr').remove();
-            }); // Re-bind ke elemen baru setelah append
-        }
-        $('#variant_table').on('click', '.remove_variant', function() {
-            $(this).closest('tr').remove();
         });
 
         $('#product_id').select2({
@@ -261,53 +247,109 @@
             document.getElementById('submit_type').value = type;
         }
 
-
-        @if (isset($production_detail) && $production_detail->count() > 0)
-            const response = {!! json_encode($production_detail) !!};
-            console.log(response);
-            $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-            // Loop hasil response
-            response.forEach(item => {
-                let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.product_id}" selected>${item.products.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-            });
-
-            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                placeholder: 'Select product',
-                ajax: {
-                    url: "{{ route('ajax.getProduct') }}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
+        const parcelId = "{{ $data->id }}";
+        var url = `{{ url('parcel/get-product/${parcelId}') }}`;
+        console.log(url);
+        tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
+            processing: true,
+            serverSide: false,
+            info: false,
+            paging: false,
+            ajax: url,
+            fixedColumns: {
+                leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
+                rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
+            },
+            columnDefs: [{
+                orderable: false,
+                targets: -1 // Nonaktifkan sorting untuk kolom action
+            }], // Ganti dengan route untuk ambil data
+            columns: [{
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'hpp',
+                    name: 'hpp'
+                },
+                {
+                    data: 'harga_jual',
+                    name: 'harga_jual'
                 }
-            });
-        @endif
+            ],
+            language: {
+                emptyTable: "Tidak ada produk yang dipilih."
+            }
+        });
+
+        tableSelectedProduct.on('draw', function() {
+            let budget = {{ $data->budget }};
+            let total = tableSelectedProduct.column(2, {
+                page: 'current'
+            }).data().reduce(function(a, b) {
+                let cleanedB = 0;
+
+                if (typeof b === 'string') {
+                    // Hilangkan "Rp.", spasi, dan titik
+                    cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
+                } else {
+                    cleanedB = b;
+                }
+
+                return parseFloat(a) + parseFloat(cleanedB || 0);
+            }, 0);
+
+            let totalHpp = tableSelectedProduct.column(1, {
+                page: 'current'
+            }).data().reduce(function(a, b) {
+                let cleanedB = 0;
+
+                if (typeof b === 'string') {
+                    // Hilangkan "Rp.", spasi, dan titik
+                    cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
+                } else {
+                    cleanedB = b;
+                }
+
+                return parseFloat(a) + parseFloat(cleanedB || 0);
+            }, 0);
+
+            let sisa = budget - total;
+            let profit = total - totalHpp;
+
+            $('#sisaBudget').text(sisa.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }));
+
+            $('#totalHpp').text(totalHpp.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }));
+
+            $('#totalSemuaProduk').text(total.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }));
+
+            $('#totalProfit').text(profit.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }));
+        });
     </script>
+
+    @if (Route::currentRouteName() == 'parcel.show')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const formElements = document.querySelectorAll('form input, form select, form textarea, form button');
+
+                formElements.forEach(element => {
+                    element.disabled = true;
+                });
+            });
+        </script>
+    @endif
 @endsection
 
 @endsection

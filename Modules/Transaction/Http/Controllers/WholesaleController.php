@@ -208,7 +208,6 @@ class WholesaleController extends Controller
                         ]);
                     }
                 }
-
             }
 
             // dd($wholesaleProduct);
@@ -336,11 +335,9 @@ class WholesaleController extends Controller
             ->addColumn('name', function ($item) {
                 $html = '';
                 if ($item->supplier_id != null) {
-                    $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
-                    ;
+                    $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
                 } else {
-                    $html .= $item->product->name . '<br>' . '<span class="text-danger">Tidak ada supplier</span>' . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
-                    ;
+                    $html .= $item->product->name . '<br>' . '<span class="text-danger">Tidak ada supplier</span>' . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;;
                 }
                 return $html;
             })
@@ -529,8 +526,10 @@ class WholesaleController extends Controller
         $query = Product::query()
             ->with('category')
             ->with('get_stock')
-            ->where('name', 'like', '%' . $searchValue . '%')
-            ->whereNull('is_variant');
+            ->where('name', 'like', '%' . $searchValue . '%');
+        if ($request->url != 'parcel') {
+            $query = $query->whereNull('is_variant');
+        }
 
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();

@@ -93,7 +93,9 @@ class ProductionParcelController extends Controller
      */
     public function show($id)
     {
-        return view('transaction::show');
+        $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
+        $data['production_detail'] = ProductionParcelDetail::with('product')->where('production_id', $id)->get();
+        return view('transaction::production.create-parcel', $data);
     }
 
     /**
@@ -220,14 +222,14 @@ class ProductionParcelController extends Controller
                 return $item->status;
             })
             ->addColumn('action', function ($item) {
-                $html = '';
-                $html .= '
-                    <div class="dropstart">
-                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
-                            <li>
+                $html = '<div class="dropstart">
+                            <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                                <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+
+                if ($item->status != 'complete') {
+                    $html .= '  <li>
                                 <a class="dropdown-item" href="' . route('parcel.edit', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
@@ -247,9 +249,17 @@ class ProductionParcelController extends Controller
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </li>
-                        </ul>
-                    </div>
                     ';
+                } else {
+                    $html .= '  <li>
+                                    <a class="dropdown-item" href="' . route('parcel.show', $item->id) . '">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </li>
+                    ';
+                }
+                $html .= '</ul>
+                    </div>';
                 return $html;
             })
             ->addColumn('production_id', function ($item) {
@@ -267,7 +277,7 @@ class ProductionParcelController extends Controller
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $html = '';
-                $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation . '<br> Harga : ' . toNumber($item->product->price). '';
+                $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation . '<br> Harga : ' . toNumber($item->product->price) . '';
                 return $html;
             })
             ->addColumn('hpp', function ($item) {
@@ -377,7 +387,7 @@ class ProductionParcelController extends Controller
 
             if ($validated['price'] != null) {
                 $product = Product::findOrFail($detailProduct->product_id);
-                $product->price = $validated['price'];
+                $product->price = str_replace('.', '', $validated['price']);
                 $product->save();
             }
             DB::commit();
@@ -413,10 +423,22 @@ class ProductionParcelController extends Controller
             DB::beginTransaction();
             $parcel = ProductionParcel::findOrFail($id);
             $parcel->status = 'complete';
+
+            // create product
+            $product = new Product();
+            $product->name = 'PARCEL - ' . $parcel->production_number;
+            $product->description = 'Generate parcel ' . $parcel->production_number . 'by System';
+            $product->price = $parcel->budget ?? '';
+            $product->product_unit = 3;
+            $product->created_by = Auth::user()->id_user;
+            $product->save();
+
+            $parcel->product_id = $product->id;
             $parcel->save();
+
             DB::commit();
             return response()->json([
-                'message' => 'Parcel berhasil diterima.',
+                'message' => 'Parcel berhasil diterima dan menjadi produk.',
             ], 201);
         } catch (Exception $e) {
             DB::rollback();

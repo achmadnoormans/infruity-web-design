@@ -387,7 +387,7 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
+            <a class="menu-link {{ Request::segment(1) == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -399,7 +399,7 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'parcel' ? 'active' : '' }}" href="{{ url('parcel') }}">
+            <a class="menu-link {{ Request::segment(1) == 'parcel' ? 'active' : '' }}" href="{{ url('parcel') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

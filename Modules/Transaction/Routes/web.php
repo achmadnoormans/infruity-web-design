@@ -68,6 +68,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('receipt/data', [ProductReceiptController::class, 'get_data'])->name('receipt-data');
 
     Route::resource('parcel', ProductionParcelController::class)->names('parcel')->except('show');
+    Route::get('parcel/show/{id}', [ProductionParcelController::class, 'show'])->name('parcel.show');
     Route::get('parcel/data', [ProductionParcelController::class, 'get_data'])->name('parcel-data');
     Route::get('parcel/process/{id}', [ProductionParcelController::class, 'process'])->name('parcel.process');
     Route::get('parcel/get-product/{id}', [ProductionParcelController::class,'get_product'])->name('parcel.get-product');

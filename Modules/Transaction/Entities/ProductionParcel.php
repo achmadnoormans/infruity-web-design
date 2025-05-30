@@ -18,7 +18,7 @@ class ProductionParcel extends Model
         $orderData = self::select(DB::raw('CAST(RIGHT(production_number, 3) AS UNSIGNED) + 1 AS production_number'))
             ->whereRaw('MONTH(created_at) = MONTH(NOW())')
             ->whereRaw('YEAR(created_at) = YEAR(NOW())')
-            ->whereRaw('SUBSTRING(production_number, 1, 2) = ?', ['PRC'])
+            ->whereRaw('SUBSTRING(production_number, 1, 3) = ?', ['PRC'])
             ->orderByRaw('CAST(RIGHT(production_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();

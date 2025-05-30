@@ -18,68 +18,89 @@ CREATE VIEW transaction_stock AS
 SELECT
 	* 
 FROM
-	(
-SELECT
-	product_id,
-	quantity,
-	avg_price,
-	date,
-	`code` AS reff 
-FROM
-	stock_in UNION ALL
-SELECT
-	product_id,
-	- quantity,
-	avg_price,
-	date,
-	`code` 
-FROM
-	stock_out UNION ALL
-SELECT
-	product_id,
-	quantity,
-	price,
-	wholesale.order_date,
-	'wholelsale' AS reff 
-FROM
-	wholesale_product
-	JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
-WHERE
-	wholesale.`status` = 'posting' 
-	AND product_id != 0 UNION ALL
-SELECT
-	product_id,
-	- quantity,
-	avg_price,
-	date,
-	'stock-out' 
-FROM
-	stock_out_transaction UNION ALL
-SELECT
-	product_id,
-	difference,
-	avg_price,
-	date,
-	'stock-opname' 
-FROM
-	stock_opname UNION ALL
-SELECT
-	product_id,
-	quantity,
-	NULL,
-	production_date,
-	'production' 
-FROM
-	production UNION ALL
-SELECT
-	production_detail.product_id,
-	- production_detail.quantity,
-	NULL,
-	production.production_date,
-	'production-detail' 
-FROM
-	production_detail
-	JOIN production ON production.id = production_detail.production_id 
+	(-- 	STOCK IN
+	SELECT
+		product_id,
+		quantity,
+		avg_price,
+		date,
+		`code` AS reff 
+	FROM
+		stock_in UNION ALL-- 	STOCK OUT
+	SELECT
+		product_id,
+		- quantity,
+		avg_price,
+		date,
+		`code` 
+	FROM
+		stock_out UNION ALL-- 	WHOLESALE
+	SELECT
+		product_id,
+		quantity,
+		price,
+		wholesale.order_date,
+		'wholelsale' AS reff 
+	FROM
+		wholesale_product
+		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+	WHERE
+		wholesale.`status` = 'posting' 
+		AND product_id != 0 UNION ALL-- 	STOCK OUT TRANSACTION
+	SELECT
+		product_id,
+		- quantity,
+		avg_price,
+		date,
+		'stock-out' 
+	FROM
+		stock_out_transaction UNION ALL-- 	STOCK OPNAME
+	SELECT
+		product_id,
+		difference,
+		avg_price,
+		date,
+		'stock-opname' 
+	FROM
+		stock_opname UNION ALL-- 	PRODUCTION (PRODUCT RESEP)(+)
+	SELECT
+		product_id,
+		quantity,
+		NULL,
+		production_date,
+		'production' 
+	FROM
+		production UNION ALL-- DETAIL PRODUCTION (-)
+	SELECT
+		production_detail.product_id,
+		- production_detail.quantity,
+		NULL,
+		production.production_date,
+		'production-detail' 
+	FROM
+		production_detail
+		JOIN production ON production.id = production_detail.production_id UNION ALL-- 	DETAIL PARCEL (-)
+	SELECT
+		production_parcel_detail.product_id,
+		- production_parcel_detail.quantity,
+		NULL,
+		production_parcel.production_date,
+		'parcel' 
+	FROM
+		production_parcel_detail
+		JOIN production_parcel ON production_parcel.id = production_parcel_detail.production_id 
+	WHERE
+		production_parcel.`status` = 'complete' UNION ALL-- 	PARCEL (+)
+	SELECT
+		product_id,
+		quantity,
+		budget,
+		production_date,
+		'parcel' 
+	FROM
+		production_parcel 
+	WHERE
+	production_parcel.product_id IS NOT NULL 
 	) AS Q;
 
 DROP VIEW IF EXISTS sortir_view;
