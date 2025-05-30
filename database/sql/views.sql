@@ -26,7 +26,7 @@ SELECT
 	date,
 	`code` AS reff 
 FROM
-	stock_in UNION
+	stock_in UNION ALL
 SELECT
 	product_id,
 	- quantity,
@@ -34,7 +34,7 @@ SELECT
 	date,
 	`code` 
 FROM
-	stock_out UNION
+	stock_out UNION ALL
 SELECT
 	product_id,
 	quantity,
@@ -46,7 +46,7 @@ FROM
 	JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
 WHERE
 	wholesale.`status` = 'posting' 
-	AND product_id != 0 UNION
+	AND product_id != 0 UNION ALL
 SELECT
 	product_id,
 	- quantity,
@@ -54,7 +54,7 @@ SELECT
 	date,
 	'stock-out' 
 FROM
-	stock_out_transaction UNION
+	stock_out_transaction UNION ALL
 SELECT
 	product_id,
 	difference,
@@ -62,7 +62,7 @@ SELECT
 	date,
 	'stock-opname' 
 FROM
-	stock_opname UNION
+	stock_opname UNION ALL
 SELECT
 	product_id,
 	quantity,
@@ -70,7 +70,7 @@ SELECT
 	production_date,
 	'production' 
 FROM
-	production UNION
+	production UNION ALL
 SELECT
 	production_detail.product_id,
 	- production_detail.quantity,

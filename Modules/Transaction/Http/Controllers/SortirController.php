@@ -137,16 +137,16 @@ class SortirController extends Controller
             }
 
             if (isset($request->buang) && $request->buang > 0) {
-                $stockOut = new StockOut();
-                $stockOut->code = 'buang';
-                $stockOut->reference_id = $request->product_id;
-                $stockOut->date = date('Y-m-d');
-                $stockOut->product_id = $request->product_id;
-                $stockOut->quantity = $request->buang ?? 0;
-                $stockOut->created_by = Auth::user()->id_user;
-                $stockOut->save();
+                $buang = new StockOut();
+                $buang->code = 'buang';
+                $buang->reference_id = $request->product_id;
+                $buang->date = date('Y-m-d');
+                $buang->product_id = $request->product_id;
+                $buang->quantity = $request->buang ?? 0;
+                $buang->created_by = Auth::user()->id_user;
+                $buang->save();
             }
-
+            // dd($stockIn, $stockOut);
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();

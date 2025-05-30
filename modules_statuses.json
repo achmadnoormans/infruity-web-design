@@ -8,5 +8,6 @@
     "Controller": true,
     "VendorBusdevController": true,
     "Chat": true,
-    "Transaction": true
+    "Transaction": true,
+    "Pos": true
 }
