@@ -242,7 +242,7 @@
                         <div class="mb-3">
                             <label for="inputQuantity" class="form-label">Quantity</label>
                             <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
-                                placeholder="Enter quantity" min="1" name="qty">
+                                placeholder="Enter quantity" step="0.01" name="qty">
                         </div>
 
                         <div class="mb-3">
