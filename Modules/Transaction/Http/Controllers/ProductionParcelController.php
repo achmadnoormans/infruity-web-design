@@ -290,6 +290,7 @@ class ProductionParcelController extends Controller
 
     public function save_product(Request $request)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'production_id' => 'required|exists:production_parcel,id',
             'id' => 'required|exists:products,id',

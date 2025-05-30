@@ -147,7 +147,7 @@
 
             // Tombol Add Product dari modal
             $('#submitQty').on('click', function() {
-                const qty = parseInt($('#inputQuantity').val());
+                const qty = parseFloat($('#inputQuantity').val());
                 const sellPrice = parseFloat(unformatNumber($('#inputSellPrice').val()));
                 const id = $('#inputProductId').val();
 
