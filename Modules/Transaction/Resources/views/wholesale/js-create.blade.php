@@ -344,7 +344,9 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.'
+                        text: response.message || 'Data berhasil disimpan.',
+                        showConfirmButton: false,
+                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                     }).then(() => {
                         // 1. Reset form
                         form.trigger('reset');
