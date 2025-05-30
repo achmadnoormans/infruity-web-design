@@ -264,7 +264,7 @@
                             <label for="inputSupplier" class="form-label">Supplier</label>
                             <select id="inputSupplierEdit" class="form-select" data-control="select2"
                                 name="supplier_id">
-                                <option selected disabled>Choose supplier</option>
+                                <option value="">Choose supplier</option>
                                 @foreach ($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach

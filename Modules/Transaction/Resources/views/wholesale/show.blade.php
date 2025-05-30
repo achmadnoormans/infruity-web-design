@@ -1,8 +1,12 @@
 @extends('template.root')
 
 @section('content')
-    <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row" action="#" method="POST"
+    <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
+        action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
         enctype="multipart/form-data" data-kt-redirect="">
+        @if (isset($data))
+            @method('PUT')
+        @endif
         @csrf
         <!--begin::Aside column-->
         <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
@@ -53,46 +57,10 @@
         <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
             <!--begin::Order details-->
             <div class="card card-flush py-4">
-                <!--begin::Card body-->
-                <div class="card-body pt-0">
-                    <div class="d-flex flex-column gap-10">
-                        <!--begin::Search products-->
-                        <div class="d-flex align-items-center position-relative mb-n7">
-                            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                            <input type="text" data-kt-ecommerce-edit-order-filter="search"
-                                class="form-control form-control-solid w-100 w-lg-50 ps-12" id="search"
-                                placeholder="Search Products" />
-                        </div>
-                        <!--end::Search products-->
-                        <!--begin::Table-->
-                        <table class="table align-middle table-row-dashed fs-6 gy-5"
-                            id="kt_ecommerce_edit_order_product_table">
-                            <thead>
-                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                    <th class="w-25px pe-2"></th>
-                                    <th class="min-w-200px">Product</th>
-                                    <th class="min-w-100px text-end pe-5">Qty Remaining</th>
-                                </tr>
-                            </thead>
-                            <tbody class="fw-semibold text-gray-600">
-
-                            </tbody>
-                        </table>
-                        <!--end::Table-->
-                    </div>
-                </div>
-                <!--end::Card header-->
-            </div>
-            <!--end::Order details-->
-            <!--begin::Order details-->
-            <div class="card card-flush py-4">
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Select Products</h2>
+                        <h2>Detail Products</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -111,10 +79,8 @@
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                                             <th class="min-w-200px">Product</th>
-                                            <th class="min-w-100px">Qty</th>
                                             <th class="min-w-100px">Price</th>
                                             <th class="min-w-100px">Total</th>
-                                            <th class="min-w-150px">Supplier</th>
                                             <th class="min-w-100px text-end">Actions</th>
                                         </tr>
                                     </thead>
@@ -132,7 +98,7 @@
                             <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
                             <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Total Kulak:
+                            <div class="fw-bold fs-4">Total Belanja:
                                 <span id="totalSemuaProduk">0.00</span>
                             </div>
                             <!--end::Total price-->
@@ -160,7 +126,7 @@
                     <!--begin::Billing address-->
                     <div class="d-flex flex-column gap-5 gap-md-7">
                         <textarea name="description" id="description" class="form-control form-control-solid" rows="5"
-                            placeholder="Enter your notes here..." disabled>{{ isset($data) ? $data->description : '' }}</textarea>
+                            placeholder="Enter your notes here...">{{ isset($data) ? $data->description : '' }}</textarea>
                     </div>
                     <!--end::Billing address-->
                 </div>
@@ -197,15 +163,15 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="inputPrice" class="form-label">Harga Kulak</label>
-                                <input type="number" class="form-control" id="inputPrice" placeholder="Enter price"
-                                    min="0" step="0.01">
+                                <label for="inputPrice" class="form-label">Harga Beli</label>
+                                <input type="text" class="form-control format-number" id="inputPrice"
+                                    placeholder="Enter price" min="0">
                             </div>
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Jual</label>
-                                <input type="number" class="form-control" id="inputSellPrice" placeholder="Enter price"
-                                    min="0" step="0.01">
+                                <input type="text" class="form-control format-number" id="inputSellPrice"
+                                    placeholder="Enter price" min="0">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -219,7 +185,7 @@
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
-                    class="btn btn-light me-5">Cancel</a>
+                    class="btn btn-light me-5">Back</a>
                 <!--end::Button-->
             </div>
         </div>
@@ -258,8 +224,8 @@
 
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="inputPriceEdit" name="price"
-                                placeholder="Enter price" min="0" step="0.01">
+                            <input type="number" class="form-control format-number" id="inputPriceEdit" name="price"
+                                placeholder="Enter price" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->
@@ -282,5 +248,5 @@
             </div>
         </div>
     </div>
-    @include('transaction::wholesale.js-show')
+    @include('transaction::wholesale.js-create')
 @endsection

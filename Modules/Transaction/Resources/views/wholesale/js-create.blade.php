@@ -72,7 +72,12 @@
                 serverSide: false,
                 info: false,
                 paging: false,
-                ajax: url,
+                ajax: {
+                    url: url,
+                    data: function(d) {
+                        d.url = "{{ request()->segment(1) }}/{{ request()->segment(2) }}";
+                    }
+                },
                 fixedColumns: {
                     leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
                     rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)

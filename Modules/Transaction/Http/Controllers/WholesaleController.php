@@ -143,7 +143,7 @@ class WholesaleController extends Controller
         // Validasi input
         // dd($request->all());
         $validated = $request->validate([
-            'supplier_id' => 'required|exists:supplier,id',
+            'supplier_id' => 'nullable|exists:supplier,id',
             'price' => 'required|numeric',
             'qty' => 'required|numeric',
         ]);
@@ -339,7 +339,7 @@ class WholesaleController extends Controller
                     $html .= $item->product->name . '<br>' . $item->supplier->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
                     ;
                 } else {
-                    $html .= $item->product->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
+                    $html .= $item->product->name . '<br>' . '<span class="text-danger">Tidak ada supplier</span>' . '<br> Jumlah : ' . $item->quantity . ' ' . $item->product->unit->abbreviation;
                     ;
                 }
                 return $html;
