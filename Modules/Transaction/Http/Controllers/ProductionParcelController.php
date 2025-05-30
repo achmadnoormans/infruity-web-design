@@ -104,7 +104,7 @@ class ProductionParcelController extends Controller
     public function edit($id)
     {
         $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
-        $data['production_detail'] = ProductionParcelDetail::with('products')->where('production_id', $id)->get();
+        $data['production_detail'] = ProductionParcelDetail::with('product')->where('production_id', $id)->get();
         return view('transaction::production.create-parcel', $data);
     }
 
