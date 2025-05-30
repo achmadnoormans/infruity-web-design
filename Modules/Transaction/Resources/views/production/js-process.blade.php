@@ -151,10 +151,10 @@
                 const sellPrice = parseFloat(unformatNumber($('#inputSellPrice').val()));
                 const id = $('#inputProductId').val();
 
-                if (!qty || qty <= 0) {
-                    Swal.fire("Error", "Quantity harus diisi dan lebih dari 0.", "error");
-                    return;
-                }
+                // if (!qty || qty <= 0) {
+                //     Swal.fire("Error", "Quantity harus diisi dan lebih dari 0.", "error");
+                //     return;
+                // }
 
                 // Kirim data ke server via AJAX
                 $.ajax({

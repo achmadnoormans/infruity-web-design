@@ -246,7 +246,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="inputPrice" class="form-label">Price</label>
+                            <label for="inputPrice" class="form-label">Harga Jual</label>
                             <input type="text" class="form-control format-number" id="inputPriceEdit" name="price"
                                 placeholder="Enter price" min="0">
                         </div>
