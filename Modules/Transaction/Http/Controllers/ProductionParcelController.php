@@ -306,11 +306,6 @@ class ProductionParcelController extends Controller
             ], 404);
         }
 
-        if ($validated['qty'] <= 0) {
-            return response()->json([
-                'message' => 'Qty tidak boleh 0',
-            ], 404);
-        }
         try {
             DB::beginTransaction();
             $detailProduct = new ProductionParcelDetail();
