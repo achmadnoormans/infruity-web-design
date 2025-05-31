@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
 use Modules\Transaction\Entities\WholesaleProduct;
+use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\StockIn;
 use Modules\Transaction\Entities\StockOut;
 use Yajra\DataTables\Facades\DataTables;
@@ -121,6 +122,21 @@ class SortirController extends Controller
                     $stockIn->quantity = $value ?? 0;
                     $stockIn->avg_price = $hpp;
                     $stockIn->created_by = Auth::user()->id_user;
+
+                    $variant = ProductStock::where('id', $key)->first();
+                    $variantStock = (float) $variant->stock_available ?? 0;
+                    $variantHpp = $variant->hpp ?? 0;
+                    if ($variantStock <= 0) {
+                        Product::where("id", $key)->update([
+                            'hpp' => $hpp,
+                        ]);
+                    } else {
+                        $newHpp = collect([$hpp, $variantHpp])->avg();
+                        Product::where("id", $key)->update([
+                            'hpp' => $newHpp,
+                        ]);
+                    }
+
                     $stockIn->save();
                 }
 
