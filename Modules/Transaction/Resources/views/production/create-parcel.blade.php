@@ -247,96 +247,98 @@
             document.getElementById('submit_type').value = type;
         }
 
-        const parcelId = "{{ $data->id }}";
-        var url = `{{ url('parcel/get-product/${parcelId}') }}`;
-        console.log(url);
-        tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
-            processing: true,
-            serverSide: false,
-            info: false,
-            paging: false,
-            ajax: url,
-            fixedColumns: {
-                leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
-                rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
-            },
-            columnDefs: [{
-                orderable: false,
-                targets: -1 // Nonaktifkan sorting untuk kolom action
-            }], // Ganti dengan route untuk ambil data
-            columns: [{
-                    data: 'name',
-                    name: 'name'
+        @if (isset($data))
+            const parcelId = "{{ $data->id }}";
+            var url = `{{ url('parcel/get-product/${parcelId}') }}`;
+            console.log(url);
+            tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
+                processing: true,
+                serverSide: false,
+                info: false,
+                paging: false,
+                ajax: url,
+                fixedColumns: {
+                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
+                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
                 },
-                {
-                    data: 'hpp',
-                    name: 'hpp'
-                },
-                {
-                    data: 'harga_jual',
-                    name: 'harga_jual'
+                columnDefs: [{
+                    orderable: false,
+                    targets: -1 // Nonaktifkan sorting untuk kolom action
+                }], // Ganti dengan route untuk ambil data
+                columns: [{
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'hpp',
+                        name: 'hpp'
+                    },
+                    {
+                        data: 'harga_jual',
+                        name: 'harga_jual'
+                    }
+                ],
+                language: {
+                    emptyTable: "Tidak ada produk yang dipilih."
                 }
-            ],
-            language: {
-                emptyTable: "Tidak ada produk yang dipilih."
-            }
-        });
+            });
 
-        tableSelectedProduct.on('draw', function() {
-            let budget = {{ $data->budget }};
-            let total = tableSelectedProduct.column(2, {
-                page: 'current'
-            }).data().reduce(function(a, b) {
-                let cleanedB = 0;
+            tableSelectedProduct.on('draw', function() {
+                let budget = {{ $data->budget }};
+                let total = tableSelectedProduct.column(2, {
+                    page: 'current'
+                }).data().reduce(function(a, b) {
+                    let cleanedB = 0;
 
-                if (typeof b === 'string') {
-                    // Hilangkan "Rp.", spasi, dan titik
-                    cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
-                } else {
-                    cleanedB = b;
-                }
+                    if (typeof b === 'string') {
+                        // Hilangkan "Rp.", spasi, dan titik
+                        cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
+                    } else {
+                        cleanedB = b;
+                    }
 
-                return parseFloat(a) + parseFloat(cleanedB || 0);
-            }, 0);
+                    return parseFloat(a) + parseFloat(cleanedB || 0);
+                }, 0);
 
-            let totalHpp = tableSelectedProduct.column(1, {
-                page: 'current'
-            }).data().reduce(function(a, b) {
-                let cleanedB = 0;
+                let totalHpp = tableSelectedProduct.column(1, {
+                    page: 'current'
+                }).data().reduce(function(a, b) {
+                    let cleanedB = 0;
 
-                if (typeof b === 'string') {
-                    // Hilangkan "Rp.", spasi, dan titik
-                    cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
-                } else {
-                    cleanedB = b;
-                }
+                    if (typeof b === 'string') {
+                        // Hilangkan "Rp.", spasi, dan titik
+                        cleanedB = b.replace(/Rp\.?\s?/g, '').replace(/\./g, '').replace(',', '.');
+                    } else {
+                        cleanedB = b;
+                    }
 
-                return parseFloat(a) + parseFloat(cleanedB || 0);
-            }, 0);
+                    return parseFloat(a) + parseFloat(cleanedB || 0);
+                }, 0);
 
-            let sisa = budget - total;
-            let profit = total - totalHpp;
+                let sisa = budget - total;
+                let profit = total - totalHpp;
 
-            $('#sisaBudget').text(sisa.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }));
+                $('#sisaBudget').text(sisa.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
 
-            $('#totalHpp').text(totalHpp.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }));
+                $('#totalHpp').text(totalHpp.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
 
-            $('#totalSemuaProduk').text(total.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }));
+                $('#totalSemuaProduk').text(total.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
 
-            $('#totalProfit').text(profit.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }));
-        });
+                $('#totalProfit').text(profit.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
+            });
+        @endif
     </script>
 
     @if (Route::currentRouteName() == 'parcel.show')
