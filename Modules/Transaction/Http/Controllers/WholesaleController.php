@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductChild;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
 use PhpParser\Node\Expr\Cast\Double;
@@ -194,16 +195,28 @@ class WholesaleController extends Controller
             if ($request->submit_type == 'posting') {
                 $wholesaleProduct = WholesaleProduct::with('product', 'productStock')->where('wholesale_id', $id)->get();
                 foreach ($wholesaleProduct as $key => $value) {
-                    $stock = $value->productStock->stock_available ?? 0;
+                    $wholesaleProductChild = ProductChild::with('product', 'productStock')->where('parent_id', $value->product_id);
+                    $totalStock = $wholesaleProductChild->get()->sum(function ($child) {
+                        return $child->productStock->stock_available ?? 0;
+                    });
+                    // dd($totalStock);
+                    // $stock = $value->productStock->stock_available ?? 0;
+                    $stock = $totalStock;
                     $hpp = $value->product->hpp ?? 0;
 
                     if ($stock == 0) {
                         Product::where("id", $value->product_id)->update([
                             'hpp' => $value->price,
                         ]);
+                        Product::whereIn('id', $wholesaleProductChild->pluck('product_id')->toArray())->update([
+                            'hpp' => $value->price,
+                        ]);
                     } else {
                         $newHpp = collect([$hpp, $value->price])->avg();
                         Product::where("id", $value->product_id)->update([
+                            'hpp' => $newHpp,
+                        ]);
+                        Product::whereIn('id', $wholesaleProductChild->pluck('product_id')->toArray())->update([
                             'hpp' => $newHpp,
                         ]);
                     }

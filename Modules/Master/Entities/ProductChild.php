@@ -5,6 +5,7 @@ namespace Modules\Master\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\Product;
+use Modules\Transaction\Entities\ProductStock;
 
 class ProductChild extends Model
 {
@@ -21,5 +22,10 @@ class ProductChild extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function productStock()
+    {
+        return $this->belongsTo(ProductStock::class, 'product_id', 'id');
     }
 }
