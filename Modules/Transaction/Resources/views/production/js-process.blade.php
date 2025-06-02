@@ -34,7 +34,8 @@
                             <div class="d-flex align-items-center"
                                 data-kt-ecommerce-edit-order-id="${row.id}"
                                 data-kt-ecommerce-edit-order-type="${row.type}"
-                                data-kt-ecommerce-edit-order-price="${row.price}">
+                                data-kt-ecommerce-edit-order-price="${row.price}"
+                                data-kt-ecommerce-edit-order-hpp="${row.hpp}">
                                 <div class="ms-5">
                                     <a href="#" class="text-gray-800 text-hover-primary fs-5 fw-bold">${data}</a>
                                 </div>
@@ -46,7 +47,10 @@
                         name: 'qty_remaining',
                         className: 'text-end',
                     }
-                ]
+                ],
+                language: {
+                    emptyTable: "Silahkan Search Product untuk menambahkan produk."
+                }
             });
 
             $('#search').on('keyup', function() {
@@ -114,7 +118,8 @@
 
             // Checkbox change event
             $('#kt_ecommerce_edit_order_product_table').on('click', '.check-product', function() {
-                console.log('clik');
+                let calculationType = document.querySelector('input[name="calculation_type"]:checked')
+                    .value;
                 const row = $(this).closest('tr');
                 const checked = $(this).is(':checked');
                 const productId = row.find('[data-kt-ecommerce-edit-order-id]').data(
@@ -123,6 +128,8 @@
                     'kt-ecommerce-edit-order-type');
                 const price = row.find('[data-kt-ecommerce-edit-order-id]').data(
                     'kt-ecommerce-edit-order-price');
+                const hpp = row.find('[data-kt-ecommerce-edit-order-id]').data(
+                    'kt-ecommerce-edit-order-hpp');
 
                 const productName = row.find('a.text-gray-800').text().trim();
                 // const productImage = row.find('.symbol-label').css('background-image').replace(
@@ -136,12 +143,25 @@
                     price: price,
                     type: type
                 };
-                console.log(selectedProduct);
-                $('#inputProductId').val(productId);
-                $('#inputSellPrice').val(price);
-                $('#typeList').val(type);
-                $('#inputQuantity').val('');
-                $('#modalInputQty').modal('show');
+                // console.log(selectedProduct);
+                if (calculationType == 'weight_to_price') {
+                    $('#inputProductId').val(productId);
+                    $('#inputSellPrice').val(price);
+                    $('#typeList').val(type);
+                    $('#inputQuantity').val('');
+                    $('#modalInputQty').modal('show');
+                } else {
+                    var url = `{{ route('parcel.save-product') }}`;
+                    var form = $('#modalInputPrcForm');
+                    form.attr('action', url);
+                    $('#methodFieldPrc').val('POST');
+                    $('#inputProductIdPrc').val(productId);
+                    $('#inputSellPricePrc').val(price);
+                    $('#typeList').val(type);
+                    $('#inputPrice').val('');
+                    $('#modalInputPrc').modal('show');
+                }
+
                 bindFormatNumber();
             });
 
@@ -307,17 +327,31 @@
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
+                    let calculationType = document.querySelector('input[name="calculation_type"]:checked')
+                        .value;
 
+                    if (calculationType == 'weight_to_price') {
+                        $('#inputPriceEdit').val(response.data.price);
+                        $('#inputQuantityEdit').val(response.data.quantity);
+                        $('#inputSupplierEdit').val(response.data.supplier_id).trigger('change');
+
+                        // Set action dan method form
+                        var form = $('#kt_modal_add_customer_form');
+                        form.attr('action', urlUpdate);
+                        $('#methodField').val('PUT');
+                        $('#kt_modal_add_customer').modal('show');
+                    } else {
+                        var form = $('#modalInputPrcForm');
+                        form.attr('action', urlUpdate);
+                        $('#methodFieldPrc').val('PUT');
+                        $('#inputProductIdPrc').val(id);
+                        $('#inputSellPricePrc').val(response.data.price);
+                        $('#inputQuantityPrc').val(response.data.quantity);
+                        $('#inputPrice').val(response.data.nominal);
+                        $('#modalInputPrc').modal('show');
+                    }
                     // Set nilai input
-                    $('#inputPriceEdit').val(response.data.price);
-                    $('#inputQuantityEdit').val(response.data.quantity);
-                    $('#inputSupplierEdit').val(response.data.supplier_id).trigger('change');
 
-                    // Set action dan method form
-                    var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', urlUpdate);
-                    $('#methodField').val('PUT');
-                    $('#kt_modal_add_customer').modal('show');
                     bindFormatNumber();
                 },
                 error: function(xhr) {
@@ -351,7 +385,9 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.'
+                        text: response.message || 'Data berhasil disimpan.',
+                        showConfirmButton: false,
+                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                     }).then(() => {
                         // 1. Reset form
                         form.trigger('reset');
@@ -415,7 +451,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });
 
                             // Reload DataTable setelah berhasil menghapus data
@@ -433,5 +471,83 @@
                 }
             });
         }
+
+        function calculateQuantity() {
+            // Ambil value dari input price
+            let price = parseFloat(
+                document.getElementById('inputPrice').value.replace(/[.,]/g, '')
+            ) || 0;
+            let sellPrice = parseFloat(
+                document.getElementById('inputSellPricePrc').value.replace(/[.,]/g, '')
+            ) || 0;
+
+            // Cek biar nggak bagi nol
+            let result = 0;
+            if (sellPrice !== 0) {
+                result = price / sellPrice;
+            }
+
+            // Set hasil ke inputQuantityPrc, fix 2 angka desimal
+            document.getElementById('inputQuantityPrc').value = result.toFixed(2);
+        }
+        document.getElementById('inputPrice').addEventListener('keyup', calculateQuantity);
+
+        $('#modalInputPrcForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+            var submitBtn = $('#kt_modal_add_customer_submit_prc');
+            console.log(form.serialize());
+
+            // Show loading
+            submitBtn.prop('disabled', true);
+            submitBtn.find('.indicator-label').hide();
+            submitBtn.find('.indicator-progress').show();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data berhasil disimpan.',
+                        showConfirmButton: false,
+                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
+                    }).then(() => {
+                        // 1. Reset form
+                        form.trigger('reset');
+
+                        // 5. Tutup modal
+                        const modalEl = document.getElementById('modalInputPrc');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        modalInstance.hide();
+
+                        if (typeof tableSelectedProduct !== 'undefined') {
+                            tableSelectedProduct.ajax.reload(null, false);
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    var msg = 'Terjadi kesalahan saat menyimpan data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                },
+                complete: function() {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitBtn.find('.indicator-label').show();
+                    submitBtn.find('.indicator-progress').hide();
+                }
+            });
+        });
     </script>
 @endsection

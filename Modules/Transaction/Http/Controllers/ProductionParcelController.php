@@ -343,7 +343,7 @@ class ProductionParcelController extends Controller
 
             if ($validated['sell_price'] != null) {
                 $product = Product::findOrFail($validated['id']);
-                $product->price = $validated['sell_price'];
+                $product->price = str_replace('.', '', $validated['sell_price']);
                 $product->save();
             }
             DB::commit();
@@ -367,6 +367,7 @@ class ProductionParcelController extends Controller
         $data = ProductionParcelDetail::findOrFail($id);
         $product = Product::findOrFail($data->product_id);
         $data->price = $product->price;
+        $data->nominal = $product->price * $data->quantity;
         return response()->json([
             'data' => $data
         ], 201);
@@ -376,7 +377,7 @@ class ProductionParcelController extends Controller
     {
         $validated = $request->validate([
             'qty' => 'required|numeric',
-            'price' => 'nullable',
+            'sell_price' => 'nullable',
         ]);
 
         try {
@@ -385,9 +386,9 @@ class ProductionParcelController extends Controller
             $detailProduct->quantity = $validated['qty'];
             $detailProduct->save();
 
-            if ($validated['price'] != null) {
+            if ($validated['sell_price'] != null) {
                 $product = Product::findOrFail($detailProduct->product_id);
-                $product->price = str_replace('.', '', $validated['price']);
+                $product->price = str_replace('.', '', $validated['sell_price']);
                 $product->save();
             }
             DB::commit();
