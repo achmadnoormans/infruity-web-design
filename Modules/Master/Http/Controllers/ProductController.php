@@ -470,6 +470,14 @@ class ProductController extends Controller
         return response()->json($query);
     }
 
+    public function listProduct(Request $request)
+    {
+        $search = $request->input('search', '');
+        $query = Product::with('category')->get();
+
+        return response()->json($query);
+    }
+
     /**
      * Get data for DataTables
      * @param Request $request

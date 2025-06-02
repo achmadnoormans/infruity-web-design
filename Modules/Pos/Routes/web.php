@@ -1,4 +1,5 @@
 <?php
+use Modules\Pos\Http\Controllers\PosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,6 +12,6 @@
 |
 */
 
-Route::prefix('pos')->group(function() {
-    Route::get('/', 'PosController@index');
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
+    Route::get('pos', [PosController::class, 'index'])->name('pos');
 });
