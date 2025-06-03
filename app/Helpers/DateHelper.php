@@ -253,3 +253,23 @@ if (!function_exists('decrypt')) {
         return openssl_decrypt($ciphertext, 'AES-128-CTR', $key, 0, $iv);
     }
 }
+
+if (!function_exists('formatRibuanToK')) {
+    function formatRibuanToK($number)
+    {
+        // Pastikan input numerik
+        $number = floatval(preg_replace('/[^\d.-]/', '', $number));
+
+        if ($number >= 1000) {
+            // Jika kelipatan 1000 pas, tidak tampil desimal
+            if ($number % 1000 == 0) {
+                return ($number / 1000) . 'K';
+            } else {
+                return number_format($number / 1000, 1) . 'K';
+            }
+        }
+
+        return (string) $number;
+    }
+}
+

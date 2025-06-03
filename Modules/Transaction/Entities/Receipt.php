@@ -10,10 +10,15 @@ class Receipt extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'code',
+        'product_id',
+        'description',
+        'created_by',
+    ];
     protected $table = 'receipt';
     protected $primaryKey = 'id';
-    
+
     protected static function newFactory()
     {
         return \Modules\Transaction\Database\factories\ReceiptFactory::new();
@@ -28,7 +33,7 @@ class Receipt extends Model
             ->orderByRaw('CAST(RIGHT(code, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
-            $orderPad = '001';
+        $orderPad = '001';
         if ($orderData && $orderData->code) {
             $orderPad = str_pad($orderData->code, 3, '0', STR_PAD_LEFT);
         }

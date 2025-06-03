@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Transaction\Entities\ProductionParcel;
+use Modules\Transaction\Entities\ProductReceipt;
+use Modules\Transaction\Entities\Receipt;
 use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
@@ -422,30 +424,64 @@ class ProductionParcelController extends Controller
     {
         try {
             DB::beginTransaction();
+
+            $userId = Auth::id(); // Ambil user sekali
             $parcel = ProductionParcel::findOrFail($id);
             $parcel->status = 'complete';
 
-            // create product
-            $product = new Product();
-            $product->name = 'PARCEL - ' . $parcel->production_number;
-            $product->description = 'Generate parcel ' . $parcel->production_number . 'by System';
-            $product->price = $parcel->budget ?? '';
-            $product->product_unit = 3;
-            $product->created_by = Auth::user()->id_user;
+            // Create product
+            $productNameBase = 'PARCEL ' . formatRibuanToK($parcel->budget);
+            $product = new Product([
+                'name' => Product::generateProductName($productNameBase),
+                'description' => 'Generate parcel ' . $parcel->production_number . ' by System',
+                'price' => $parcel->budget ?? '',
+                'product_unit' => 3,
+                'status' => 'receipt',
+                'created_by' => $userId,
+            ]);
             $product->save();
+
+            $receipt = new Receipt([
+                'code' => Receipt::getOrderNumber(),
+                'product_id' => $product->id,
+                'description' => $product->description,
+                'created_by' => $userId,
+            ]);
+            $receipt->save();
+
+            // Ambil detail produk parcel
+            $details = ProductionParcelDetail::where('production_id', $parcel->id)->get();
+
+            // Persiapkan data insert massal
+            $productReceipts = [];
+            foreach ($details as $item) {
+                $productReceipts[] = [
+                    'receipt_id' => $receipt->id,
+                    'product_id' => $product->id,
+                    'product_receipt_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            // Insert massal untuk meningkatkan performa
+            ProductReceipt::insert($productReceipts);
 
             $parcel->product_id = $product->id;
             $parcel->save();
 
             DB::commit();
+
             return response()->json([
                 'message' => 'Parcel berhasil diterima dan menjadi produk.',
             ], 201);
-        } catch (Exception $e) {
-            DB::rollback();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
-                'message' => 'Parcel gagal diterima.',
-            ], 404);
+                'message' => 'Parcel gagal diterima. ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

@@ -10,7 +10,14 @@ class ProductReceipt extends Model
     use HasFactory;
 
     protected $table = 'product_receipt';
-    protected $fillable = [];
+    protected $fillable = [
+        'receipt_id',
+        'product_id',
+        'product_receipt_id',
+        'quantity',
+        'created_at',
+        'updated_at',
+    ];
     
     protected static function newFactory()
     {

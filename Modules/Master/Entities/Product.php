@@ -13,7 +13,14 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'product_unit',
+        'status',
+        'created_by',
+    ];
     protected $table = 'products';
 
     protected static function newFactory()
@@ -38,5 +45,27 @@ class Product extends Model
     public function get_stock()
     {
         return $this->belongsTo('Modules\Transaction\Entities\ProductStock', 'id', 'id');
+    }
+
+    public static function generateProductName($baseName)
+    {
+        // Ambil semua produk yang nama depannya sama persis
+        $existing = self::where('name', 'LIKE', $baseName . ' - %')
+            ->pluck('name');
+
+        // Cari nomor urut tertinggi
+        $maxNumber = 0;
+        foreach ($existing as $name) {
+            if (preg_match('/^' . preg_quote($baseName, '/') . ' - (\d+)$/', $name, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $maxNumber) {
+                    $maxNumber = $number;
+                }
+            }
+        }
+
+        // Buat nama baru dengan urutan berikutnya
+        $newNumber = $maxNumber + 1;
+        return $baseName . ' - ' . $newNumber;
     }
 }
