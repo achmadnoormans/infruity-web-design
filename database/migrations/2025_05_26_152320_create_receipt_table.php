@@ -21,16 +21,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('receipt')->insert([
-            [
-                'code' => 'RCP202505001',
-                'product_id' => 9,
-                'description' => 'Receipt for Apel Frozen',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        // DB::table('receipt')->insert([
+        //     [
+        //         'code' => 'RCP202505001',
+        //         'product_id' => 9,
+        //         'description' => 'Receipt for Apel Frozen',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
 
-        ]);
+        // ]);
     }
 
     /**

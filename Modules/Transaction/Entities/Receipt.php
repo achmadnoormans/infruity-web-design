@@ -29,7 +29,7 @@ class Receipt extends Model
         $orderData = self::select(DB::raw('CAST(RIGHT(code, 3) AS UNSIGNED) + 1 AS code'))
             ->whereRaw('MONTH(created_at) = MONTH(NOW())')
             ->whereRaw('YEAR(created_at) = YEAR(NOW())')
-            ->whereRaw('SUBSTRING(code, 1, 2) = ?', ['RCP'])
+            ->whereRaw('SUBSTRING(code, 1, 3) = ?', ['RCP'])
             ->orderByRaw('CAST(RIGHT(code, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();

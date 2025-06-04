@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::create('production', function (Blueprint $table) {
             $table->id();
             $table->string('production_number', 20); // Kolom untuk nomor pesanan
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->decimal('quantity', 10, 2)->default(1);
-            $table->date('production_date');
+            $table->date('production_date')->nullable();
             $table->enum('status', ['draft', 'posting', 'complete'])->default('posting');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('staff_id')->nullable();

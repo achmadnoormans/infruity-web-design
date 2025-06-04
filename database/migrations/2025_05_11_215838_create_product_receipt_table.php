@@ -24,24 +24,24 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('product_receipt')->insert([
-            [
-                'receipt_id' => 1,
-                'product_id' => 9,
-                'product_receipt_id' => 1,
-                'quantity' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'receipt_id' => 1,
-                'product_id' => 9,
-                'product_receipt_id' => 6,
-                'quantity' => 7,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('product_receipt')->insert([
+        //     [
+        //         'receipt_id' => 1,
+        //         'product_id' => 9,
+        //         'product_receipt_id' => 1,
+        //         'quantity' => 10,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'receipt_id' => 1,
+        //         'product_id' => 9,
+        //         'product_receipt_id' => 6,
+        //         'quantity' => 7,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
     }
 
     /**
