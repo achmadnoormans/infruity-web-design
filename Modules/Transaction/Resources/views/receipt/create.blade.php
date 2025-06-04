@@ -224,7 +224,7 @@
                             <tr>
                                 <td>
                                     <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.product_id}" selected>${item.product.name}</option>
+                                        <option value="${item.product_receipt_id}" selected>${item.ingredients.name}</option>
                                     </select>
                                 </td>
                                 <td>

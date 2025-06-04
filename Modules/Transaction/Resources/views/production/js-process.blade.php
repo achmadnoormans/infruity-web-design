@@ -438,38 +438,58 @@
                     confirmButton: 'btn btn-success',
                     cancelButton: 'btn btn-secondary'
                 },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/parcel/set-selesai/${id}`, // Ganti dengan URL yang sesuai
-                        type: 'POST',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.',
-                                showConfirmButton: false,
-                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
-                            });
+                buttonsStyling: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    const confirmBtn = Swal.getConfirmButton();
+                    confirmBtn.disabled = false;
+                },
+                preConfirm: () => {
+                    Swal.showLoading(); // Tampilkan loading di tombol konfirmasi
 
-                            // Reload DataTable setelah berhasil menghapus data
-                            window.location.href = "{{ url('parcel') }}";
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: xhr.responseJSON?.message ||
-                                    'Terjadi kesalahan saat menghapus data.'
-                            });
-                        }
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: `/parcel/set-selesai/${id}`,
+                            type: 'POST',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                resolve(response);
+                            },
+                            error: function(xhr) {
+                                reject(xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat menyelesaikan.');
+                            }
+                        });
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: result.value.message || 'Parcel berhasil diselesaikan.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    // Redirect setelah delay
+                    setTimeout(() => {
+                        window.location.href = "{{ url('parcel') }}";
+                    }, 1500);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Opsional: aksi jika batal
+                } else if (result.isDismissed && result.dismiss !== Swal.DismissReason.cancel) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: result.reason || 'Terjadi kesalahan saat menyelesaikan parcel.'
                     });
                 }
             });
+
         }
 
         function calculateQuantity() {

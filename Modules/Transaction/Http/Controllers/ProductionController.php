@@ -116,8 +116,7 @@ class ProductionController extends Controller
         $data['data'] = Production::find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         $data['selectedProduct'] = Product::find($data['data']->product_id);
-        // dd($data);
-        return view('transaction::receipt.create', $data);
+        return view('transaction::production.create', $data);
     }
 
     /**

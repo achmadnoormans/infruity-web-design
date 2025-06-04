@@ -9,6 +9,8 @@ use Modules\Transaction\Entities\ProductionParcel;
 use Modules\Transaction\Entities\ProductReceipt;
 use Modules\Transaction\Entities\Receipt;
 use Modules\Transaction\Entities\ProductionParcelDetail;
+use Modules\Transaction\Entities\Production;
+use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -452,8 +454,24 @@ class ProductionParcelController extends Controller
             // Ambil detail produk parcel
             $details = ProductionParcelDetail::where('production_id', $parcel->id)->get();
 
+            $parcel->product_id = $product->id;
+            $parcel->save();
+
+            $production = new Production([
+                'production_number' => Production::getOrderNumber(), // Use Production's method instead of Receipt's
+                'product_id' => $product->id,
+                'quantity' => $parcel->quantity,
+                'production_date' => now(),
+                'status' => 'complete',
+                'description' => $product->description,
+                'staff_id' => $parcel->staff_id,
+                'created_by' => $userId,
+            ]);
+            $production->save();
+
             // Persiapkan data insert massal
             $productReceipts = [];
+            $productionDetail = [];
             foreach ($details as $item) {
                 $productReceipts[] = [
                     'receipt_id' => $receipt->id,
@@ -463,13 +481,20 @@ class ProductionParcelController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
-            }
 
+                $productionDetail[] = [
+                    'production_id' => $production->id,
+                    'product_id' => $item->product_id,
+                    'quantity' => $item->quantity,
+                    'created_by' => $userId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            // dd($productReceipts, $productionDetail);
             // Insert massal untuk meningkatkan performa
             ProductReceipt::insert($productReceipts);
-
-            $parcel->product_id = $product->id;
-            $parcel->save();
+            ProductionDetail::insert($productionDetail);
 
             DB::commit();
 

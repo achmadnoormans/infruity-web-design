@@ -12,8 +12,19 @@ class Production extends Model
 
     protected $table = 'production';
     protected $primaryKey = 'id';
-    protected $fillable = [];
-    
+    protected $fillable = [
+        'production_number',
+        'product_id',
+        'quantity',
+        'production_date',
+        'status',
+        'description',
+        'staff_id',
+        'created_by',
+        'updated_by'
+    ];
+
+
     public static function getOrderNumber()
     {
         $orderData = self::select(DB::raw('CAST(RIGHT(production_number, 3) AS UNSIGNED) + 1 AS production_number'))
@@ -23,7 +34,7 @@ class Production extends Model
             ->orderByRaw('CAST(RIGHT(production_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
-            $orderPad = '001';
+        $orderPad = '001';
         if ($orderData && $orderData->production_number) {
             $orderPad = str_pad($orderData->production_number, 3, '0', STR_PAD_LEFT);
         }

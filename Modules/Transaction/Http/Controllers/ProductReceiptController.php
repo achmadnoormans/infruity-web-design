@@ -116,7 +116,7 @@ class ProductReceiptController extends Controller
     public function edit($id)
     {
         $data['data'] = Receipt::find($id);
-        $data['production_detail'] = ProductReceipt::with('product')->where('receipt_id', $id)->get();
+        $data['production_detail'] = ProductReceipt::with('product', 'ingredients')->where('receipt_id', $id)->get();
         $data['selectedProduct'] = Product::find($data['data']->product_id);
         // dd($data);
         return view('transaction::receipt.create', $data);
