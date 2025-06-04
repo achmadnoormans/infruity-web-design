@@ -63,9 +63,20 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('production', ProductionController::class)->names('production')->except('show');
     Route::get('production/data', [ProductionController::class, 'get_data'])->name('production-data');
     Route::get('products/get-receipt', [ProductReceiptController::class, 'getReceipt'])->name('products.get-receipt');
+    Route::get('production/get-receipt/{id}', [ProductReceiptController::class,'get_product'])->name('production.get-receipt');
+    Route::get('production/get-detail/{id}', [ProductionController::class,'get_detail_product'])->name('production.get-receipt');
+    Route::delete('production/delete-detail/{id}', [ProductionController::class,'delete_detail'])->name('production.delete_detail');
+    Route::post('production/save-ajax', [ProductionController::class, 'save_additional_ingredient'])->name('production.save-ajax');
+    Route::delete('production/delete-product/{id}', [ProductionController::class, 'delete_additional_ingredient'])->name('production.delete-ajax');
+    Route::get('production/edit-product/{id}', [ProductionController::class, 'edit_additional_ingredient'])->name('production.edit-ajax');
+    Route::put('production/update-product/{id}', [ProductionController::class, 'update_additional_ingredient'])->name('production.edit-ajax');
 
     Route::resource('receipt', ProductReceiptController::class)->names('receipt')->except('show');
     Route::get('receipt/data', [ProductReceiptController::class, 'get_data'])->name('receipt-data');
+    Route::post('receipt/save-ajax', [ProductReceiptController::class, 'save_additional_ingredient'])->name('receipt.save-ajax');
+    Route::delete('receipt/delete-product/{id}', [ProductReceiptController::class, 'delete_additional_ingredient'])->name('receipt.delete-ajax');
+    Route::get('receipt/edit-product/{id}', [ProductReceiptController::class, 'edit_additional_ingredient'])->name('receipt.edit-ajax');
+    Route::put('receipt/update-product/{id}', [ProductReceiptController::class, 'update_additional_ingredient'])->name('receipt.edit-ajax');
 
     Route::resource('parcel', ProductionParcelController::class)->names('parcel')->except('show');
     Route::get('parcel/show/{id}', [ProductionParcelController::class, 'show'])->name('parcel.show');

@@ -45,6 +45,7 @@
                                 @endif
                             </select>
                             <input type="hidden" name="submit_type" id="submit_type" value="draft">
+                            <input type="hidden" name="id_receipt" id="id_receipt">
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -81,7 +82,7 @@
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <select name="staff_id" id="staff_id" class="form-select mb-2">
-                                
+
                             </select>
                             <!--end::Input-->
                         </div>
@@ -105,25 +106,144 @@
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <div class="d-flex flex-column gap-10">
-                        <!--begin::Table-->
-                        <div class="table table-responsive">
-                            <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="variant_table">
-                                <thead>
-                                    <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                        <th>Product</th>
-                                        <th>Quantity</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="kt_ecommerce_edit_order_selected_products_body">
-                                </tbody>
-                            </table>
+                        <!--begin::Input group-->
+                        <div class="fv-row mb-2">
+                            <!--begin::Label-->
+                            <label class="fs-6 fw-semibold mb-2">Type Perhitungan
+                                <span class="ms-1" data-bs-toggle="tooltip"
+                                    title="Pilih tipe perhitungan yang akan digunakan">
+                                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </span></label>
+                            <!--End::Label-->
+                            <!--begin::Row-->
+                            <div class="row row-cols-2 row-cols-md-2 row-cols-lg-1 row-cols-xl-2 g-9" data-kt-buttons="true"
+                                data-kt-buttons-target="[data-kt-button='true']">
+                                <!--begin::Col-->
+                                <div class="col">
+                                    <!--begin::Option-->
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex text-start p-6"
+                                        data-kt-button="true">
+                                        <!--begin::Radio-->
+                                        <span
+                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                            <input class="form-check-input" type="radio" name="calculation_type"
+                                                value="weight_to_price" />
+                                        </span>
+                                        <!--end::Radio-->
+                                        <!--begin::Info-->
+                                        <span class="ms-5">
+                                            <span class="fs-4 fw-bold text-gray-800 d-block">Weight to Price</span>
+                                        </span>
+                                        <!--end::Info-->
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Col-->
+                                <!--begin::Col-->
+                                <div class="col">
+                                    <!--begin::Option-->
+                                    <label
+                                        class="btn btn-outline btn-outline-dashed btn-active-light-primary active d-flex text-start p-6"
+                                        data-kt-button="true">
+                                        <!--begin::Radio-->
+                                        <span
+                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
+                                            <input class="form-check-input" type="radio" name="calculation_type"
+                                                value="price_to_weight" checked="checked" />
+                                        </span>
+                                        <!--end::Radio-->
+                                        <!--begin::Info-->
+                                        <span class="ms-5">
+                                            <span class="fs-4 fw-bold text-gray-800 d-block">Price to Weight</span>
+                                        </span>
+                                        <!--end::Info-->
+                                    </label>
+                                    <!--end::Option-->
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Row-->
                         </div>
                         <!--end::Input group-->
-                        <button class="variant btn btn-light-primary btn-sm mb-10" type="button" onclick="addVariant()">
-                            <i class="ki-outline ki-plus fs-2"></i>Tambah Product
-                        </button>
+                        <!--begin::Search products-->
+                        <div class="d-flex align-items-center position-relative mb-n7">
+                            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            <input type="text" data-kt-ecommerce-edit-order-filter="search"
+                                class="form-control form-control-solid w-100 w-lg-50 ps-12" id="search"
+                                placeholder="Search Products" />
+                        </div>
+                        <!--end::Search products-->
+                        <!--begin::Table-->
+                        <table class="table align-middle table-row-dashed fs-6 gy-5"
+                            id="kt_ecommerce_edit_order_product_table">
+                            <thead>
+                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
+                                    {{-- <th class="w-25px pe-2"></th> --}}
+                                    <th class="min-w-200px">Product</th>
+                                    <th class="min-w-100px text-end pe-5">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody class="fw-semibold text-gray-600">
+
+                            </tbody>
+                        </table>
                         <!--end::Table-->
+                    </div>
+                </div>
+                <!--end::Card header-->
+            </div>
+            <!--end::Order details-->
+            <!--begin::Order details-->
+            <div class="card card-flush py-4">
+                <!--begin::Card header-->
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Preview Products</h2>
+                    </div>
+                </div>
+                <!--end::Card header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <div class="d-flex flex-column gap-10">
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Add products to this order</label>
+                            <!--end::Label-->
+                            <!--begin::Selected products-->
+                            <div class="table table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
+                                    id="kt_ecommerce_edit_order_selected_products_table">
+                                    <thead>
+                                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                            <th class="min-w-200px">Product</th>
+                                            <th class="min-w-100px">Hpp</th>
+                                            <th class="min-w-100px">Total</th>
+                                            <th class="min-w-100px text-end"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="kt_ecommerce_edit_order_selected_products_body">
+                                        <tr class="text-muted text-center">
+                                            <td colspan="6">Select one or more products from the list below by ticking
+                                                the
+                                                checkbox.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Tempat hidden input -->
+                            <div id="selected-products-hidden"></div>
+                        </div>
+                        <!--end::Input group-->
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -152,281 +272,132 @@
         </div>
         <!--end::Main column-->
     </form>
-    {{-- @include('transaction::wholesale.js-create') --}}
-@section('script')
-    <script>
-        let selectedProduct = {}; // Global, satu kali saja
-        var tableSelectedProduct;
 
-        $(document).ready(function() {
+    <div class="modal fade" id="modalInputQty" tabindex="-1" aria-labelledby="modalInputQtyLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalInputQtyLabel">Input Product Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="inputProductId">
+                    <input type="hidden" id="typeList">
+                    <div class="mb-3">
+                        <label for="inputQuantity" class="form-label">Quantity</label>
+                        <input type="number" step="0.01" class="form-control" id="inputQuantity"
+                            placeholder="Enter quantity">
+                    </div>
 
-            // Checkbox change event
+                    <div class="mb-3">
+                        <label for="inputPrice" class="form-label">Harga Jual</label>
+                        <input type="text" class="form-control format-number" id="inputSellPrice"
+                            placeholder="Enter price" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitQty">Add Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Quantity Input -->
+    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-labelledby="modalEditQtyLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="{{ url('receipt') }}" id="kt_modal_add_customer_form"
+                    data-kt-redirect="#">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditQtyLabel">Edit Detail</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="_method" id="methodField" value="">
+                        <div class="mb-3">
+                            <label for="inputQuantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
+                                placeholder="Enter quantity" step="0.01" name="qty">
+                        </div>
 
-            $("#kt_ecommerce_edit_order_date").flatpickr({
-                altInput: !0,
-                altFormat: "d F, Y",
-                dateFormat: "Y-m-d"
-            });
+                        <div class="mb-3">
+                            <label for="inputPrice" class="form-label">Harga Jual</label>
+                            <input type="text" class="form-control format-number" id="inputPriceEdit"
+                                name="sell_price" placeholder="Enter price" min="0">
+                        </div>
+                    </div>
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
+                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        });
+    <div class="modal fade" id="modalInputPrc" tabindex="-1" aria-labelledby="modalEditQtyLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form" action="{{ url('receipt') }}" id="modalInputPrcForm"
+                    data-kt-redirect="#">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalInputPrcLabel">Edit Detail</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="_method" id="methodFieldPrc" value="">
+                        <input type="hidden" id="inputProductIdPrc" name="product_id">
+                        <input type="hidden" id="inputReceiptIdPrc" name="receipt_id">
+                        <input type="hidden" id="inputProductReceiptPrc" name="id">
+                        <input type="hidden" id="typeList">
+                        <div class="mb-3">
+                            <label for="inputPrice" class="form-label">Masukkan Harga</label>
+                            <input type="text" class="form-control format-number" id="inputPrice"
+                                placeholder="Enter price" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputQuantity" class="form-label">Quantity</label>
+                            <input type="number" name="qty" step="0.01" class="form-control"
+                                id="inputQuantityPrc" placeholder="Enter quantity" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputPrice" class="form-label">Harga Jual</label>
+                            <input type="text" name="sell_price" class="form-control format-number"
+                                id="inputSellPricePrc" placeholder="Enter price" min="0" readonly>
+                        </div>
+                    </div>
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Discard</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_modal_add_customer_submit_prc" class="btn btn-primary">
+                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
 
-        $("#kt_ecommerce_edit_order_form").submit(function() {
-            $(this).find(":submit").attr('disabled', 'disabled');
-            $(this).find(":submit").html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        });
-
-        function addVariant() {
-            let html = `
-            <tr>
-                <td>
-                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                    </select>
-                </td>
-                <td>
-                    <input type="number" step="0.01" name="ingredients_quantity[]" value="" class="form-control mb-2" placeholder="Product quantity" />
-                </td>                    
-                <td class="text-end">
-                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                        <i class="ki-outline ki-cross fs-2"></i>
-                    </button>
-                </td>
-            </tr>
-            `;
-            $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                placeholder: 'Select product',
-                ajax: {
-                    url: "{{ route('ajax.getProduct') }}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
-                }
-            });
-            $('#variant_table').on('click', '.remove_variant', function() {
-                $(this).closest('tr').remove();
-            }); // Re-bind ke elemen baru setelah append
-        }
-        $('#variant_table').on('click', '.remove_variant', function() {
-            $(this).closest('tr').remove();
-        });
-
-        $('#product_id').select2({
-            placeholder: 'Select a product',
-            ajax: {
-                url: '{{ route('products.get-product-receipt') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name
-                    }))
-                })
-            }
-        });
-
-        $('#staff_id').select2({
-            placeholder: 'Select a staff',
-            ajax: {
-                url: '{{ route('staff.get-staff') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name
-                    }))
-                })
-            }
-        });
-
-        $('#product_id').on('change', function() {
-            const productId = $(this).val();
-
-            $.ajax({
-                url: "{{ route('products.get-receipt') }}",
-                type: 'GET',
-                data: {
-                    product_id: productId
-                },
-                success: function(response) {
-                    // console.log(response);
-                    // Bersihkan isi sebelumnya jika perlu
-                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-                    // Loop hasil response
-                    response.forEach(item => {
-                        let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.id}" selected>${item.ingredients.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                        $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-                    });
-
-                    $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                        placeholder: 'Select product',
-                        ajax: {
-                            url: "{{ route('ajax.getProduct') }}",
-                            dataType: 'json',
-                            delay: 250,
-                            data: params => ({
-                                search: params.term
-                            }),
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name
-                                }))
-                            })
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });
-
-        function setSubmitType(type) {
-            document.getElementById('submit_type').value = type;
-        }
-
-        $('#quantity').on('change', function() {
-            const quantity = $(this).val();
-            const productId = $('#product_id').val();
-
-            $.ajax({
-                url: "{{ route('products.get-receipt') }}",
-                type: 'GET',
-                data: {
-                    product_id: productId
-                },
-                success: function(response) {
-                    // console.log(response);
-                    // Bersihkan isi sebelumnya jika perlu
-                    $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-                    // Loop hasil response
-                    response.forEach(item => {
-                        let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.id}" selected>${item.ingredients.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity * quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                        $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-                    });
-
-                    $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                        placeholder: 'Select product',
-                        ajax: {
-                            url: "{{ route('ajax.getProduct') }}",
-                            dataType: 'json',
-                            delay: 250,
-                            data: params => ({
-                                search: params.term
-                            }),
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name
-                                }))
-                            })
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });
-
-        @if (isset($production_detail) && $production_detail->count() > 0)
-            const response = {!! json_encode($production_detail) !!};
-            console.log(response);
-            $('#kt_ecommerce_edit_order_selected_products_body').empty();
-
-            // Loop hasil response
-            response.forEach(item => {
-                let html = `
-                            <tr>
-                                <td>
-                                    <select name="product_receipt_id[]" class="form-select mb-2 select2_product">
-                                        <option value="${item.product_id}" selected>${item.products.name}</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="number" step="0.01" name="ingredients_quantity[]" value="${item.quantity || ''}" class="form-control mb-2" placeholder="Product quantity" />
-                                </td>                    
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-icon btn-danger remove_variant">
-                                        <i class="ki-outline ki-cross fs-2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            `;
-                $('#kt_ecommerce_edit_order_selected_products_body').append(html);
-            });
-
-            $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                placeholder: 'Select product',
-                ajax: {
-                    url: "{{ route('ajax.getProduct') }}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
-                }
-            });
-        @endif
-    </script>
-@endsection
-
+                </form>
+            </div>
+        </div>
+    </div>
+    @include('transaction::production.js-create')
 @endsection

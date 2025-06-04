@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
+use Modules\Transaction\Entities\ProductReceipt;
+use Modules\Transaction\Entities\Receipt;
 use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -37,7 +39,14 @@ class ProductionController extends Controller
      */
     public function create()
     {
-        return view('transaction::production.create');
+        $production = new Production();
+        $production->production_number = Production::getOrderNumber();
+        $production->production_date = date('Y-m-d');
+        $production->status = 'draft';
+        $production->created_by = Auth::user()->id_user;
+        $production->save();
+        // return view('transaction::production.create');
+        return redirect('production/' . $production->id . '/edit');
     }
 
     /**
@@ -93,7 +102,6 @@ class ProductionController extends Controller
         }
 
         return redirect('production')->with('success', 'Produksi berhasil');
-
     }
 
     /**
@@ -116,6 +124,8 @@ class ProductionController extends Controller
         $data['data'] = Production::find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         $data['selectedProduct'] = Product::find($data['data']->product_id);
+        $data['receipt'] = Receipt::where('product_id', $data['data']->product_id)->first();
+        // dd($data);
         return view('transaction::production.create', $data);
     }
 
@@ -127,11 +137,12 @@ class ProductionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'product_id' => 'required|exists:products,id',
+            'product_id' => 'required|exists:receipt,id',
             'submit_type' => 'required|in:draft,posting',
             'production_date' => 'required|date',
-            'product_receipt_id' => 'required|array',
+            // 'product_receipt_id' => 'required|array',
             'quantity' => 'required',
             'staff_id' => 'nullable|exists:staff,id',
         ]);
@@ -143,9 +154,11 @@ class ProductionController extends Controller
         }
 
         try {
+            $receipt = Receipt::find($request->product_id);
+            $productId = $receipt->product_id;
             DB::beginTransaction();
             $production = Production::findOrFail($id);
-            $production->product_id = $request->product_id;
+            $production->product_id = $productId;
             $production->production_date = $request->production_date;
             $production->status = $request->submit_type;
             $production->created_by = Auth::user()->id_user;
@@ -157,17 +170,18 @@ class ProductionController extends Controller
             // Hapus detail produksi yang lama
             ProductionDetail::where('production_id', $productionId)->delete();
             // Simpan detail produksi yang baru
-            if (empty($request->product_receipt_id)) {
+            $detail = ProductReceipt::where('receipt_id', $request->id_receipt)->get();
+            if (empty($detail)) {
                 return redirect()->back()->withInput($request->all())
                     ->with('error', 'Detail produksi tidak boleh kosong');
             }
 
             // dd($request->product_receipt_id);
-            foreach ($request->product_receipt_id as $key => $product) {
+            foreach ($detail as $key => $product) {
                 $productionDetail = new ProductionDetail();
                 $productionDetail->production_id = $productionId;
-                $productionDetail->product_id = $product;
-                $productionDetail->quantity = $request->ingredients_quantity[$key];
+                $productionDetail->product_id = $product->product_receipt_id;
+                $productionDetail->quantity = $product->quantity * $production->quantity;
                 // dd($productionDetail);
                 $productionDetail->save();
             }
@@ -206,6 +220,83 @@ class ProductionController extends Controller
                 'message' => 'Gagal menghapus data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function delete_detail(Request $request, $id)
+    {
+        try {
+            $userId = Auth::user()->id_user;
+            DB::beginTransaction();
+            ProductionDetail::where('production_id', $id)->delete();
+            $newProduct = ProductReceipt::where('receipt_id', $request->receipt_id)->get();
+            foreach ($newProduct as $key => $product) {
+                $productionDetail[] = [
+                    'production_id' => $id,
+                    'product_id' => $product->product_receipt_id,
+                    'quantity' => $product->quantity,
+                    'created_by' => $userId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            ProductionDetail::insert($productionDetail);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_detail_product(Request $request, $id)
+    {
+        // dd($request->all());
+        $data = ProductionDetail::with('products')->where('production_id', $id)->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $html = '';
+                $html .= $item->products->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->products->unit->abbreviation . '<br> Harga : ' . toNumber($item->products->price) . '';
+                return $html;
+            })
+            ->addColumn('hpp', function ($item) {
+                return 'Rp' . toNumber($item->products->hpp * $item->quantity);
+            })
+            ->addColumn('harga_jual', function ($item) {
+                return toNumber($item->products->price * $item->quantity);
+            })
+            ->addColumn('action', function ($item) use ($request) {
+                $html = '';
+
+                $html .= '
+                    <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                    ';
+                return $html;
+            })
+            ->rawColumns(['name', 'action', 'harga_jual'])
+            ->make(true);
     }
 
     public function get_data(Request $request)

@@ -11,13 +11,14 @@ use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 
 class ProductReceiptController extends Controller
 {
@@ -96,6 +97,82 @@ class ProductReceiptController extends Controller
         }
 
         return redirect('receipt')->with('success', 'Produksi berhasil');
+    }
+
+    public function save_additional_ingredient(Request $request)
+    {
+        // dd($request->all());
+        try {
+            DB::beginTransaction();
+            $productReceipt = new ProductReceipt();
+            $productReceipt->receipt_id = $request->receipt_id;
+            $productReceipt->product_id = $request->id;
+            $productReceipt->product_receipt_id = $request->product_id;
+            $productReceipt->quantity = $request->qty;
+            $productReceipt->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal disimpan.' . $e->getMessage(),
+                'data' => $productReceipt
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Product berhasil disimpan.',
+            'data' => $productReceipt
+        ], 201);
+    }
+
+    public function delete_additional_ingredient(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $deteilProduct = ProductReceipt::findOrFail($id);
+            $deteilProduct->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product berhasil dihapus.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal dihapus.',
+            ], 404);
+        }
+    }
+
+    public function edit_additional_ingredient(Request $request, $id)
+    {
+        $data = ProductReceipt::with('ingredients')->findOrFail($id);
+        return response()->json([
+            'data' => $data
+        ], 201);
+    }
+
+    public function update_additional_ingredient(Request $request, $id)
+    {
+        // dd($request->all());
+        $validated = $request->validate([
+            'qty' => 'required|numeric',
+            'sell_price' => 'nullable',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $detailProduct = ProductReceipt::findOrFail($id);
+            $detailProduct->quantity = $validated['qty'];
+            $detailProduct->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Product updated failed']);
+        }
+
+        return response()->json(['message' => 'Product updated successfully']);
     }
 
     /**
@@ -211,10 +288,63 @@ class ProductReceiptController extends Controller
 
     public function getReceipt(Request $request)
     {
+        $data = Receipt::with('products')
+            ->select('*')
+            ->get();
+        return response()->json($data);
+    }
+
+    public function ProductReceipt(Request $request)
+    {
         $data = ProductReceipt::with('product')->with('ingredients')->where('product_id', $request->product_id)
             ->select('*')
             ->get();
         return response()->json($data);
+    }
+
+    public function get_product(Request $request, $id)
+    {
+        // dd($request->all());
+        $data = ProductReceipt::with('product')->with('ingredients')->where('receipt_id', $id)->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $html = '';
+                $html .= $item->ingredients->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->ingredients->unit->abbreviation . '<br> Harga : ' . toNumber($item->ingredients->price) . '';
+                return $html;
+            })
+            ->addColumn('hpp', function ($item) {
+                return 'Rp' . toNumber($item->ingredients->hpp * $item->quantity);
+            })
+            ->addColumn('harga_jual', function ($item) {
+                return toNumber($item->ingredients->price * $item->quantity);
+            })
+            ->addColumn('action', function ($item) use ($request) {
+                $html = '';
+
+                $html .= '
+                    <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="editProduct(' . $item->id . ')" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                    ';
+                return $html;
+            })
+            ->rawColumns(['name', 'action', 'harga_jual'])
+            ->make(true);
     }
 
     public function get_data(Request $request)

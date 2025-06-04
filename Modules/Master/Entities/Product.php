@@ -47,6 +47,11 @@ class Product extends Model
         return $this->belongsTo('Modules\Transaction\Entities\ProductStock', 'id', 'id');
     }
 
+    public function receipt()
+    {
+        return $this->belongsTo('Modules\Transaction\Entities\Receipt', 'product_id', 'id');
+    }
+
     public static function generateProductName($baseName)
     {
         // Ambil semua produk yang nama depannya sama persis
