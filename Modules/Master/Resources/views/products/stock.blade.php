@@ -59,9 +59,9 @@
                             </th> --}}
                             <th class="min-w-200px">Product</th>
                             <th class="text-end min-w-70px">Hpp</th>
-                            <th class="text-end min-w-100px">Stock</th>
+                            <th class="text-end min-w-70px">Stock</th>
                             <th class="d-none">Category</th>
-                            <th class="text-end min-w-70px"></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600">
