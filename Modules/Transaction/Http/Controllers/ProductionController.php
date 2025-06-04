@@ -166,25 +166,25 @@ class ProductionController extends Controller
             $production->staff_id = $request->staff_id;
             $production->save();
 
-            $productionId = $id;
-            // Hapus detail produksi yang lama
-            ProductionDetail::where('production_id', $productionId)->delete();
-            // Simpan detail produksi yang baru
-            $detail = ProductReceipt::where('receipt_id', $request->id_receipt)->get();
-            if (empty($detail)) {
-                return redirect()->back()->withInput($request->all())
-                    ->with('error', 'Detail produksi tidak boleh kosong');
-            }
+            // $productionId = $id;
+            // // Hapus detail produksi yang lama
+            // ProductionDetail::where('production_id', $productionId)->delete();
+            // // Simpan detail produksi yang baru
+            // $detail = ProductReceipt::where('receipt_id', $request->id_receipt)->get();
+            // if (empty($detail)) {
+            //     return redirect()->back()->withInput($request->all())
+            //         ->with('error', 'Detail produksi tidak boleh kosong');
+            // }
 
-            // dd($request->product_receipt_id);
-            foreach ($detail as $key => $product) {
-                $productionDetail = new ProductionDetail();
-                $productionDetail->production_id = $productionId;
-                $productionDetail->product_id = $product->product_receipt_id;
-                $productionDetail->quantity = $product->quantity * $production->quantity;
-                // dd($productionDetail);
-                $productionDetail->save();
-            }
+            // // dd($request->product_receipt_id);
+            // foreach ($detail as $key => $product) {
+            //     $productionDetail = new ProductionDetail();
+            //     $productionDetail->production_id = $productionId;
+            //     $productionDetail->product_id = $product->product_receipt_id;
+            //     $productionDetail->quantity = $product->quantity * $production->quantity;
+            //     // dd($productionDetail);
+            //     $productionDetail->save();
+            // }
 
             DB::commit();
         } catch (Exception $e) {
@@ -297,6 +297,55 @@ class ProductionController extends Controller
             })
             ->rawColumns(['name', 'action', 'harga_jual'])
             ->make(true);
+    }
+
+    public function edit_additional_ingredient(Request $request, $id)
+    {
+        $data = ProductionDetail::with('products')->findOrFail($id);
+        return response()->json([
+            'data' => $data
+        ], 201);
+    }
+
+    public function update_additional_ingredient(Request $request, $id)
+    {
+        // dd($request->all());
+        $validated = $request->validate([
+            'qty' => 'required|numeric',
+            'sell_price' => 'nullable',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $detailProduct = ProductionDetail::findOrFail($id);
+            $detailProduct->quantity = $validated['qty'];
+            $detailProduct->save();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['message' => 'Product updated failed']);
+        }
+
+        return response()->json(['message' => 'Product updated successfully']);
+    }
+
+    public function delete_additional_ingredient(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $deteilProduct = ProductionDetail::findOrFail($id);
+            $deteilProduct->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Product berhasil dihapus.',
+            ], 201);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal dihapus.',
+            ], 404);
+        }
     }
 
     public function get_data(Request $request)

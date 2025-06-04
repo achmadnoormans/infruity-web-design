@@ -90,9 +90,6 @@
                     'kt-ecommerce-edit-order-price');
                 const hpp = row.find('[data-kt-ecommerce-edit-order-id]').data(
                     'kt-ecommerce-edit-order-hpp');
-
-                const receipt_id = selectedReceiptId;
-                const productReceipt = selectedProductId;
                 const productName = row.find('a.text-gray-800').text().trim();
                 // const productImage = row.find('.symbol-label').css('background-image').replace(
                 //     /^url\(["']?/, '').replace(/["']?\)$/, '');
@@ -148,7 +145,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/receipt/delete-product/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/production/delete-product/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -173,8 +170,8 @@
         }
 
         function editProduct(id) {
-            var url = `{{ url('receipt/edit-product/${id}') }}`;
-            var urlUpdate = `{{ url('receipt/update-product/${id}') }}`;
+            var url = `{{ url('production/edit-product/${id}') }}`;
+            var urlUpdate = `{{ url('production/update-product/${id}') }}`;
 
             $.ajax({
                 url: url,
@@ -199,9 +196,8 @@
                         form.attr('action', urlUpdate);
                         $('#methodFieldPrc').val('PUT');
                         $('#inputProductIdPrc').val(response.data.product_receipt_id);
-                        $('#inputReceiptIdPrc').val(selectedProductId);
                         $('#inputProductReceiptPrc').val(response.data.id);
-                        $('#inputSellPricePrc').val(response.data.ingredients.price);
+                        $('#inputSellPricePrc').val(response.data.products.price);
                         $('#inputQuantityPrc').val(response.data.quantity);
                         $('#inputPrice').val(response.data.nominal);
                         $('#modalInputPrc').modal('show');
@@ -426,14 +422,9 @@
         });
 
         // Additional JavaScript code for handling the modal and form submission
-        @if (isset($receipt))
-            const response = {!! json_encode($receipt) !!};
-            // console.log(response);
-            receipt_id = response.id;
-            selectedReceiptId = response.id;
-            selectedProductId = response.product_id;
-            console.log(selectedReceiptId, selectedProductId);
-            var url = `{{ url('production/get-receipt/${receipt_id}') }}`;
+        @if (isset($data))
+            const productionId = {{ $data->id }};
+            var url = `{{ url('production/get-detail/${productionId}') }}`;
             tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
                 processing: true,
                 serverSide: false,

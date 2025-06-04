@@ -70,6 +70,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::delete('production/delete-product/{id}', [ProductionController::class, 'delete_additional_ingredient'])->name('production.delete-ajax');
     Route::get('production/edit-product/{id}', [ProductionController::class, 'edit_additional_ingredient'])->name('production.edit-ajax');
     Route::put('production/update-product/{id}', [ProductionController::class, 'update_additional_ingredient'])->name('production.edit-ajax');
+    Route::delete('production/delete-product/{id}', [ProductionController::class, 'delete_additional_ingredient'])->name('receipt.delete-ajax');
 
     Route::resource('receipt', ProductReceiptController::class)->names('receipt')->except('show');
     Route::get('receipt/data', [ProductReceiptController::class, 'get_data'])->name('receipt-data');
