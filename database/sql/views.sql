@@ -79,28 +79,7 @@ FROM
 		'production-detail' 
 	FROM
 		production_detail
-		JOIN production ON production.id = production_detail.production_id UNION ALL-- 	DETAIL PARCEL (-)
-	SELECT
-		production_parcel_detail.product_id,
-		- production_parcel_detail.quantity,
-		NULL,
-		production_parcel.production_date,
-		'parcel' 
-	FROM
-		production_parcel_detail
-		JOIN production_parcel ON production_parcel.id = production_parcel_detail.production_id 
-	WHERE
-		production_parcel.`status` = 'complete' UNION ALL-- 	PARCEL (+)
-	SELECT
-		product_id,
-		quantity,
-		budget,
-		production_date,
-		'parcel' 
-	FROM
-		production_parcel 
-	WHERE
-	production_parcel.product_id IS NOT NULL 
+		JOIN production ON production.id = production_detail.production_id 
 	) AS Q;
 
 DROP VIEW IF EXISTS sortir_view;
