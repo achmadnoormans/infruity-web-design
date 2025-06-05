@@ -350,7 +350,7 @@ class ProductionController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Production::with('products')->get();
+        $data = Production::with('products')->whereNotNull('product_id')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
