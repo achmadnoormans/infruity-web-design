@@ -66,6 +66,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('production/get-receipt/{id}', [ProductReceiptController::class,'get_product'])->name('production.get-receipt');
     Route::get('production/get-detail/{id}', [ProductionController::class,'get_detail_product'])->name('production.get-receipt');
     Route::delete('production/delete-detail/{id}', [ProductionController::class,'delete_detail'])->name('production.delete_detail');
+    Route::post('production/update-product-id/{id}', [ProductionController::class,'update_product_id'])->name('production.update_product_id');
     Route::post('production/save-ajax', [ProductionController::class, 'save_additional_ingredient'])->name('production.save-ajax');
     Route::delete('production/delete-product/{id}', [ProductionController::class, 'delete_additional_ingredient'])->name('production.delete-ajax');
     Route::get('production/edit-product/{id}', [ProductionController::class, 'edit_additional_ingredient'])->name('production.edit-ajax');

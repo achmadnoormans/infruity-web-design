@@ -361,7 +361,7 @@
                         <input type="hidden" name="_method" id="methodFieldPrc" value="">
                         <input type="hidden" id="inputProductIdPrc" name="product_id">
                         <input type="hidden" id="inputReceiptIdPrc" name="receipt_id">
-                        <input type="hidden" id="inputProductReceiptPrc" name="id">
+                        <input type="hidden" id="inputProductionIdPrc" name="production_id">
                         <input type="hidden" id="typeList">
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Masukkan Harga</label>

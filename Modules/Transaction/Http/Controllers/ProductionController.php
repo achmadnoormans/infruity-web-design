@@ -254,6 +254,30 @@ class ProductionController extends Controller
         }
     }
 
+    public function update_product_id(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+            $receipt = Receipt::with('products')->find($request->receipt_id);
+            $productId = $receipt->product_id;
+            Production::where('id', $id)->update([
+                'product_id' => $productId,
+                'status' => 'draft',
+            ]);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function get_detail_product(Request $request, $id)
     {
         // dd($request->all());
@@ -304,6 +328,32 @@ class ProductionController extends Controller
         $data = ProductionDetail::with('products')->findOrFail($id);
         return response()->json([
             'data' => $data
+        ], 201);
+    }
+
+    public function save_additional_ingredient(Request $request)
+    {
+        // dd($request->all());
+        try {
+            DB::beginTransaction();
+            $productionDetail = new ProductionDetail();
+            $productionDetail->production_id = $request->production_id;
+            $productionDetail->product_id = $request->product_id;
+            $productionDetail->quantity = $request->qty;
+            $productionDetail->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Product gagal disimpan.' . $e->getMessage(),
+                'data' => $productionDetail
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Product berhasil disimpan.',
+            'data' => $productionDetail
         ], 201);
     }
 

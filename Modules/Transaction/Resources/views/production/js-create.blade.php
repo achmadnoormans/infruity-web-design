@@ -101,7 +101,6 @@
                     // image: productImage,
                     price: price,
                     type: type,
-                    receipt_id: receipt_id,
                 };
                 console.log(selectedProduct);
                 if (calculationType == 'weight_to_price') {
@@ -111,13 +110,12 @@
                     $('#inputQuantity').val('');
                     $('#modalInputQty').modal('show');
                 } else {
-                    var url = `{{ route('receipt.save-ajax') }}`;
+                    var url = `{{ route('production.save-ajax') }}`;
                     var form = $('#modalInputPrcForm');
                     form.attr('action', url);
                     $('#methodFieldPrc').val('POST');
                     $('#inputProductIdPrc').val(productId);
-                    $('#inputReceiptIdPrc').val(receipt_id);
-                    $('#inputProductReceiptPrc').val(productReceipt);
+                    $('#inputProductionIdPrc').val('{{ $data->id }}');
                     $('#inputSellPricePrc').val(price);
                     $('#typeList').val(type);
                     $('#inputPrice').val('');
@@ -292,12 +290,32 @@
                 }
             });
 
+            $.ajax({
+                url: `/production/update-product-id/${productionId}`, // Ganti dengan URL yang sesuai
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    receipt_id: productId,
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: xhr.responseJSON?.message ||
+                            'Terjadi kesalahan saat menghapus data.'
+                    });
+                }
+            });
+
 
 
             // Jika DataTable sudah ada, destroy dan bersihkan
             if ($.fn.DataTable.isDataTable('#kt_ecommerce_edit_order_selected_products_table')) {
                 $('#kt_ecommerce_edit_order_selected_products_table').DataTable().clear().destroy();
-                $('#kt_ecommerce_edit_order_selected_products_table').empty(); // penting!
+                // $('#kt_ecommerce_edit_order_selected_products_table').empty(); // penting!
             }
 
             tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
