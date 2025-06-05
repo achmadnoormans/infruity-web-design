@@ -307,7 +307,7 @@
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="{{ url('receipt') }}" id="kt_modal_add_customer_form"
+                <form class="form" action="{{ url('production') }}" id="kt_modal_add_customer_form"
                     data-kt-redirect="#">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalEditQtyLabel">Edit Detail</h5>
@@ -350,7 +350,7 @@
     <div class="modal fade" id="modalInputPrc" tabindex="-1" aria-labelledby="modalEditQtyLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="{{ url('receipt') }}" id="modalInputPrcForm"
+                <form class="form" action="{{ url('production') }}" id="modalInputPrcForm"
                     data-kt-redirect="#">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalInputPrcLabel">Edit Detail</h5>

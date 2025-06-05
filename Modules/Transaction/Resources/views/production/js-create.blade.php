@@ -180,7 +180,7 @@
                         .value;
 
                     if (calculationType == 'weight_to_price') {
-                        $('#inputPriceEdit').val(response.data.price);
+                        $('#inputPriceEdit').val(response.data.products.price);
                         $('#inputQuantityEdit').val(response.data.quantity);
                         $('#inputSupplierEdit').val(response.data.supplier_id).trigger('change');
 
@@ -381,6 +381,108 @@
         }
         document.getElementById('inputPrice').addEventListener('keyup', calculateQuantity);
 
+        //Weight to Price
+        $('#submitQty').on('click', function() {
+            const qty = parseFloat($('#inputQuantity').val());
+            const sellPrice = parseFloat(unformatNumber($('#inputSellPrice').val()));
+            const id = $('#inputProductId').val();
+
+            // if (!qty || qty <= 0) {
+            //     Swal.fire("Error", "Quantity harus diisi dan lebih dari 0.", "error");
+            //     return;
+            // }
+
+            // Kirim data ke server via AJAX
+            $.ajax({
+                url: "{{ route('production.save-ajax') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    product_id: id,
+                    qty: qty,
+                    sell_price: sellPrice,
+                    production_id: '{{ $data->id }}'
+                },
+                success: function(response) {
+                    $('#modalInputQty').modal('hide');
+                    // 6. Refresh DataTable
+                    if (typeof tableSelectedProduct !== 'undefined') {
+                        tableSelectedProduct.ajax.reload(null, false);
+                    }
+                },
+                error: function(xhr) {
+                    var msg = 'Terjadi kesalahan saat menyimpan data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                }
+            });
+        });
+
+        $('#kt_modal_add_customer_form').on('submit', function(e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+            var submitBtn = $('#kt_modal_add_customer_submit');
+            // console.log(form.serialize());
+
+            // Show loading
+            submitBtn.prop('disabled', true);
+            submitBtn.find('.indicator-label').hide();
+            submitBtn.find('.indicator-progress').show();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data berhasil disimpan.',
+                        showConfirmButton: false,
+                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
+                    }).then(() => {
+                        // 1. Reset form
+                        form.trigger('reset');
+
+                        // 5. Tutup modal
+                        const modalEl = document.getElementById('kt_modal_add_customer');
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        modalInstance.hide();
+
+                        if (typeof tableSelectedProduct !== 'undefined') {
+                            tableSelectedProduct.ajax.reload(null, false);
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    var msg = 'Terjadi kesalahan saat menyimpan data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                },
+                complete: function() {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitBtn.find('.indicator-label').show();
+                    submitBtn.find('.indicator-progress').hide();
+                }
+            });
+        });
+
+        // Price to Weight
         $('#modalInputPrcForm').on('submit', function(e) {
             e.preventDefault();
 
