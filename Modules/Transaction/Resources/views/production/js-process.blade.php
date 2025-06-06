@@ -382,25 +382,16 @@
                 url: url,
                 data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
                 success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.',
-                        showConfirmButton: false,
-                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
-                    }).then(() => {
-                        // 1. Reset form
-                        form.trigger('reset');
+                    form.trigger('reset');
 
-                        // 5. Tutup modal
-                        const modalEl = document.getElementById('kt_modal_add_customer');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        modalInstance.hide();
+                    // 5. Tutup modal
+                    const modalEl = document.getElementById('kt_modal_add_customer');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    modalInstance.hide();
 
-                        if (typeof tableSelectedProduct !== 'undefined') {
-                            tableSelectedProduct.ajax.reload(null, false);
-                        }
-                    });
+                    if (typeof tableSelectedProduct !== 'undefined') {
+                        tableSelectedProduct.ajax.reload(null, false);
+                    }
                 },
                 error: function(xhr) {
                     var msg = 'Terjadi kesalahan saat menyimpan data.';
@@ -427,6 +418,13 @@
         }
 
         function setSelesai(id) {
+            let rawText = $('#totalHpp').text();
+            let totalHpp = parseInt(
+                rawText.replace(/[^0-9,]/g, '').replace(/\./g, '').split(',')[0]
+            ) || 0;
+
+            console.log(totalHpp); // 19125
+
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: 'Parcel tidak bisa diedit ketika sudah diselesaikan',
@@ -453,7 +451,8 @@
                             url: `/parcel/set-selesai/${id}`,
                             type: 'POST',
                             data: {
-                                _token: $('meta[name="csrf-token"]').attr('content')
+                                _token: $('meta[name="csrf-token"]').attr('content'),
+                                hpp: totalHpp,
                             },
                             success: function(response) {
                                 resolve(response);
@@ -530,25 +529,17 @@
                 url: url,
                 data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
                 success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.',
-                        showConfirmButton: false,
-                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
-                    }).then(() => {
-                        // 1. Reset form
-                        form.trigger('reset');
+                    // 1. Reset form
+                    form.trigger('reset');
 
-                        // 5. Tutup modal
-                        const modalEl = document.getElementById('modalInputPrc');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        modalInstance.hide();
+                    // 5. Tutup modal
+                    const modalEl = document.getElementById('modalInputPrc');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    modalInstance.hide();
 
-                        if (typeof tableSelectedProduct !== 'undefined') {
-                            tableSelectedProduct.ajax.reload(null, false);
-                        }
-                    });
+                    if (typeof tableSelectedProduct !== 'undefined') {
+                        tableSelectedProduct.ajax.reload(null, false);
+                    }
                 },
                 error: function(xhr) {
                     var msg = 'Terjadi kesalahan saat menyimpan data.';

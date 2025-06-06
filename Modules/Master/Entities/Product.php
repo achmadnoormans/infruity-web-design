@@ -19,6 +19,8 @@ class Product extends Model
         'price',
         'product_unit',
         'status',
+        'hpp',
+        'fee',
         'created_by',
     ];
     protected $table = 'products';

@@ -74,6 +74,7 @@ class ProductionParcelController extends Controller
             $production->production_date = date('Y-m-d', strtotime($request->production_date));
             $production->status = $request->submit_type;
             $production->staff_id = $request->staff_id;
+            $production->fee = $request->fee;
             $production->save();
 
             DB::commit();
@@ -439,6 +440,8 @@ class ProductionParcelController extends Controller
                 'price' => $parcel->budget ?? '',
                 'product_unit' => 3,
                 'status' => 'receipt',
+                'hpp' => $request->hpp ?? 0,
+                'fee' => $parcel->fee ?? 0,
                 'created_by' => $userId,
             ]);
             $product->save();

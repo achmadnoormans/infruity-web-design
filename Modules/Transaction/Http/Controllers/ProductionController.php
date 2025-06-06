@@ -227,8 +227,15 @@ class ProductionController extends Controller
         try {
             $userId = Auth::user()->id_user;
             DB::beginTransaction();
+            $receipt = Receipt::with('products')->find($request->receipt_id);
+            $productId = $receipt->product_id;
+            Production::where('id', $id)->update([
+                'product_id' => $productId,
+                'status' => 'draft',
+            ]);
             ProductionDetail::where('production_id', $id)->delete();
             $newProduct = ProductReceipt::where('receipt_id', $request->receipt_id)->get();
+            $productionDetail = [];
             foreach ($newProduct as $key => $product) {
                 $productionDetail[] = [
                     'production_id' => $id,
@@ -239,7 +246,9 @@ class ProductionController extends Controller
                     'updated_at' => now(),
                 ];
             }
-            ProductionDetail::insert($productionDetail);
+            if (!empty($productionDetail)) {
+                ProductionDetail::insert($productionDetail);
+            }
             DB::commit();
             return response()->json([
                 'success' => true,

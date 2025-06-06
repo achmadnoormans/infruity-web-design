@@ -83,6 +83,17 @@
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Fee</label>
+                            <!--end::Label-->
+                            <!--begin::Auto-generated ID-->
+                            <input type="text" name="fee" id="fee" class="form-control format-number mb-2"
+                                placeholder="Enter Fee Product" value="{{ isset($data) ? $data->fee : old('fee') }}" />
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
                     </div>
                 </div>
                 <!--end::Card header-->

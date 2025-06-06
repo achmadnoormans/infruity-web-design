@@ -265,97 +265,81 @@
         $('#product_id').on('change', function() {
             const productId = $(this).val();
             const productionId = {{ $data->id }};
-            var url = `{{ url('production/get-detail/${productionId}') }}`;
+            const url = `{{ url('production/get-detail/${productionId}') }}`;
 
+            // Nonaktifkan select sampai datatable selesai
+            $('#product_id').prop('disabled', true);
+
+            // Kirim request untuk menghapus detail dulu
             $.ajax({
-                url: `/production/delete-detail/${productionId}`, // Ganti dengan URL yang sesuai
+                url: `/production/delete-detail/${productionId}`,
                 type: 'DELETE',
                 data: {
                     _token: $('meta[name="csrf-token"]').attr('content'),
                     receipt_id: productId,
                 },
                 success: function(response) {
-                    // Reload DataTable setelah berhasil menghapus data
                     if (typeof tableSelectedProduct !== 'undefined') {
                         tableSelectedProduct.ajax.reload(null, false);
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: xhr.responseJSON?.message ||
-                            'Terjadi kesalahan saat menghapus data.'
-                    });
+                    console.log(xhr);
                 }
             });
 
-            $.ajax({
-                url: `/production/update-product-id/${productionId}`, // Ganti dengan URL yang sesuai
-                type: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    receipt_id: productId,
-                },
-                success: function(response) {
-                    console.log(response);
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: xhr.responseJSON?.message ||
-                            'Terjadi kesalahan saat menghapus data.'
-                    });
-                }
-            });
-
-
-
-            // Jika DataTable sudah ada, destroy dan bersihkan
+            // Destroy jika sudah ada
             if ($.fn.DataTable.isDataTable('#kt_ecommerce_edit_order_selected_products_table')) {
                 $('#kt_ecommerce_edit_order_selected_products_table').DataTable().clear().destroy();
-                // $('#kt_ecommerce_edit_order_selected_products_table').empty(); // penting!
             }
 
-            tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
-                processing: true,
-                serverSide: false,
-                info: false,
-                paging: false,
-                ajax: url,
-                fixedColumns: {
-                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
-                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
-                },
-                columnDefs: [{
-                    orderable: false,
-                    targets: -1 // Nonaktifkan sorting untuk kolom action
-                }], // Ganti dengan route untuk ambil data
-                columns: [{
-                        data: 'name',
-                        name: 'name'
+            // Inisialisasi kembali DataTable
+            tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table')
+                .on('preXhr.dt', function() {
+                    $('#product_id').prop('disabled', true); // disable saat loading
+                })
+                .on('xhr.dt', function() {
+                    $('#product_id').prop('disabled', false); // enable setelah load selesai
+                })
+                .DataTable({
+                    processing: true,
+                    serverSide: false,
+                    info: false,
+                    paging: false,
+                    ajax: url,
+                    fixedColumns: {
+                        leftColumns: 0,
+                        rightColumns: 1
                     },
-                    {
-                        data: 'hpp',
-                        name: 'hpp'
-                    },
-                    {
-                        data: 'harga_jual',
-                        name: 'harga_jual'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
+                    columnDefs: [{
                         orderable: false,
-                        searchable: false
+                        targets: -1
+                    }],
+                    columns: [{
+                            data: 'name',
+                            name: 'name'
+                        },
+                        {
+                            data: 'hpp',
+                            name: 'hpp'
+                        },
+                        {
+                            data: 'harga_jual',
+                            name: 'harga_jual'
+                        },
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        }
+                    ],
+                    language: {
+                        emptyTable: "Tidak ada produk yang dipilih."
                     }
-                ],
-                language: {
-                    emptyTable: "Tidak ada produk yang dipilih."
-                }
-            });
+                });
         });
+
 
         function setSubmitType(type) {
             document.getElementById('submit_type').value = type;

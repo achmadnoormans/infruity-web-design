@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('budget')->default(0);
             $table->integer('quantity')->default(1);
             $table->text('description')->nullable();
+            $table->integer('fee')->default(0);
             $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

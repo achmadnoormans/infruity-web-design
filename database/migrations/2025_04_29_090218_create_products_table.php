@@ -31,6 +31,7 @@ return new class extends Migration {
             $table->integer('direct_stock')->nullable();
             $table->integer('hpp')->nullable();
             $table->date('hpp_date')->nullable();
+            $table->integer('fee')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

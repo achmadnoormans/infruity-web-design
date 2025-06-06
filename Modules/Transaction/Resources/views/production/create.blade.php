@@ -227,7 +227,7 @@
                                             <th class="min-w-200px">Product</th>
                                             <th class="min-w-100px">Hpp</th>
                                             <th class="min-w-100px">Total</th>
-                                            <th class="min-w-100px text-end"></th>
+                                            <th class="text-end"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
@@ -331,8 +331,8 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Discard</button>
+                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Close</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
@@ -350,8 +350,7 @@
     <div class="modal fade" id="modalInputPrc" tabindex="-1" aria-labelledby="modalEditQtyLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form class="form" action="{{ url('production') }}" id="modalInputPrcForm"
-                    data-kt-redirect="#">
+                <form class="form" action="{{ url('production') }}" id="modalInputPrcForm" data-kt-redirect="#">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalInputPrcLabel">Edit Detail</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -382,8 +381,8 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Discard</button>
+                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Close</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit_prc" class="btn btn-primary">

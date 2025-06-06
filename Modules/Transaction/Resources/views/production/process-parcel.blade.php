@@ -320,8 +320,8 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Discard</button>
+                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Close</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
@@ -372,8 +372,8 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Discard</button>
+                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Close</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit_prc" class="btn btn-primary">
