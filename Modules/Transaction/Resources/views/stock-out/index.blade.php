@@ -149,7 +149,7 @@
                                 <label class="fs-6 fw-semibold mb-2">Quantity</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="number" class="form-control form-control-solid" placeholder=""
+                                <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
                                     name="quantity" />
                                 <!--end::Input-->
                             </div>
@@ -281,7 +281,9 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Data berhasil disimpan.'
+                            text: response.message || 'Data berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500
                         }).then(() => {
                             // 1. Reset form
                             form.trigger('reset');

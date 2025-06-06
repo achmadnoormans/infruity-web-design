@@ -44,7 +44,7 @@ class StockOutModel extends Model
             $orderPad = str_pad($orderData->code, 3, '0', STR_PAD_LEFT);
         }
 
-        $prefix = 'PO' . now()->format('ym');
+        $prefix = 'SO' . now()->format('ym');
         $newCode = $prefix . $orderPad;
 
         return $newCode;

@@ -88,6 +88,7 @@
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="product_id" id="product_id"
                                     data-placeholder="Select a product">
+                                    <option value="">Pilih Product</option>
                                 </select>
                                 <!--end::Input-->
                             </div>
@@ -109,7 +110,7 @@
                                 <label class="fs-6 fw-semibold mb-2">Stock</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="number" class="form-control form-control-solid" placeholder=""
+                                <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
                                     name="quantity" />
                                 <!--end::Input-->
                             </div>
@@ -250,6 +251,8 @@
 
                             // 2. Hapus input _method
                             form.find('input[name="_method"]').remove();
+                           $('select[name="product_id"]').val(null).trigger('change'); // Reset select2
+                           $('#product_id select').val(null).trigger('change');
 
                             // 3. Kembalikan action form ke default (untuk create)
                             form.attr('action',
