@@ -267,6 +267,22 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
+                                @if (isset($data) && ($data->product_unit == 3 && $data->status == 'receipt')) 
+                                    <!--begin::Input group-->
+                                    <div class="mb-10 fv-row">
+                                        <!--begin::Label-->
+                                        <label class="form-label">Fee</label>
+                                        <!--end::Label-->
+                                        <!--begin::Input-->
+                                        <input type="text" name="fee" class="form-control format-number mb-2"
+                                            placeholder="Product fee" value="{{ $data->fee ?? old('fee') }}" />
+                                        <!--end::Input-->
+                                        <!--begin::Description-->
+                                        <div class="text-muted fs-7">Set the product fee.</div>
+                                        <!--end::Description-->
+                                    </div>
+                                    <!--end::Input group-->
+                                @endif
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
