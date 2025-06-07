@@ -28,7 +28,10 @@
                             <label class="form-label">Order ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
-                            <div class="fw-bold fs-3">#{{ isset($data) ? $data->production_number : '14364' }}</div>
+                            <div class="fw-bold fs-3">
+                                #{{ isset($data) ? $data->production_number : '14364' }}
+                                <span class="badge badge-info">{{ $data->quantity ?? 0 }} Pcs</span>
+                            </div>
                             <!--end::Input-->
                         </div>
                         <!--end::Input group-->
@@ -210,26 +213,38 @@
                             <!-- Tempat hidden input -->
                             <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
-                            <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Plan Budget:
-                                <span id="">{{ tonumber($data->budget) }}</span>
-                            </div>
-                            <!--end::Total price-->
-                            <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Actual Budget:
-                                <span id="totalSemuaProduk">0.00</span>
-                            </div>
-                            <!--end::Total price-->
-                            <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Hpp:
-                                <span id="totalHpp">0.00</span>
-                            </div>
-                            <!--end::Total price-->
-                            <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Profit:
-                                <span id="totalProfit">0.00</span>
-                            </div>
-                            <!--end::Total price-->
+                            <table class="table table-sm fw-bold fs-4">
+                                <tr>
+                                    <td>Plan Budget</td>
+                                    <td>:</td>
+                                    <td><span id="">Rp {{ tonumber($data->budget) }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Actual Budget</td>
+                                    <td>:</td>
+                                    <td><span id="totalSemuaProduk">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Fee</td>
+                                    <td>:</td>
+                                    <td><span id="totalFee">Rp {{ toNumber($data->quantity * $data->fee) }}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Hpp</td>
+                                    <td>:</td>
+                                    <td><span id="totalHpp">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Actual Budget</td>
+                                    <td>:</td>
+                                    <td><span id="totalActualBudget">0.00</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Profit</td>
+                                    <td>:</td>
+                                    <td><span id="totalProfit">0.00</span></td>
+                                </tr>
+                            </table>
                         </div>
                         <!--end::Input group-->
                         <!--begin::Separator-->
@@ -313,8 +328,8 @@
 
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Harga Jual</label>
-                            <input type="text" class="form-control format-number" id="inputPriceEdit" name="sell_price"
-                                placeholder="Enter price" min="0">
+                            <input type="text" class="form-control format-number" id="inputPriceEdit"
+                                name="sell_price" placeholder="Enter price" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->
@@ -360,13 +375,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="inputQuantity" class="form-label">Quantity</label>
-                            <input type="number" name="qty" step="0.01" class="form-control" id="inputQuantityPrc"
-                                placeholder="Enter quantity" readonly>
+                            <input type="number" name="qty" step="0.01" class="form-control"
+                                id="inputQuantityPrc" placeholder="Enter quantity" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Harga Jual</label>
-                            <input type="text" name="sell_price" class="form-control format-number" id="inputSellPricePrc"
-                                placeholder="Enter price" min="0" readonly>
+                            <input type="text" name="sell_price" class="form-control format-number"
+                                id="inputSellPricePrc" placeholder="Enter price" min="0" readonly>
                         </div>
                     </div>
                     <!--begin::Modal footer-->

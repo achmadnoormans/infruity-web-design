@@ -216,6 +216,7 @@
 
             tableSelectedProduct.on('draw', function() {
                 let budget = {{ $data->budget }};
+                let fee = {{ $data->fee * $data->quantity }};
                 let total = tableSelectedProduct.column(2, {
                     page: 'current'
                 }).data().reduce(function(a, b) {
@@ -248,6 +249,7 @@
 
                 let sisa = budget - total;
                 let profit = total - totalHpp;
+                let totalActual = total + fee;
 
                 $('#sisaBudget').text(sisa.toLocaleString('id-ID', {
                     style: 'currency',
@@ -265,6 +267,11 @@
                 }));
 
                 $('#totalProfit').text(profit.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }));
+
+                $('#totalActualBudget').text(totalActual.toLocaleString('id-ID', {
                     style: 'currency',
                     currency: 'IDR'
                 }));
