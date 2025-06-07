@@ -200,10 +200,11 @@ class WholesaleController extends Controller
                         return $child->productStock->stock_available ?? 0;
                     });
                     // dd($totalStock);
-                    // $stock = $value->productStock->stock_available ?? 0;
-                    $stock = $totalStock;
+                    $stock = $value->productStock->stock_available ?? 0;
+                    $stock += $totalStock;
                     $hpp = $value->product->hpp ?? 0;
 
+                    // dd($stock);
                     if ($stock == 0) {
                         Product::where("id", $value->product_id)->update([
                             'hpp' => $value->price,
