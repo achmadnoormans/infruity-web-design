@@ -280,4 +280,16 @@ class CustomerController extends Controller
             ->rawColumns(['name', 'action', 'birth_of_date'])
             ->make(true);
     }
+
+    public function getCustomer(Request $request)
+    {
+        $search = $request->get('search');
+
+        $data = Customer::where('name', 'like', '%' . $search . '%')
+            ->select('id', 'name')
+            ->limit(10)
+            ->get();
+
+        return response()->json($data);
+    }
 }

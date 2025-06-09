@@ -25,11 +25,6 @@ class Product extends Model
     ];
     protected $table = 'products';
 
-    protected static function newFactory()
-    {
-        return \Modules\Master\Database\factories\ProductFactory::new();
-    }
-
     public function category()
     {
         return $this->belongsTo(ProductCategory::class);

@@ -44,6 +44,8 @@
          <!--end::Aside toggle-->
      </div>
      <!--end::Brand-->
-     @include('template.toolbar')
+     @if (!isset($alpinejs))
+         @include('template.toolbar')
+     @endif
  </div>
  <!--end::Header-->

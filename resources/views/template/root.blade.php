@@ -27,7 +27,15 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/global/plugins.bundle.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.bundle.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- @livewireStyles --}}
+    @isset($livewire)
+        @livewireStyles
+    @endisset
+    @isset($alpinejs)
+        <script>
+            console.log('load alpinejs');
+        </script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @endisset
     <!--end::Global Stylesheets Bundle-->
     <script>
         // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking) if (window.top != window.self) { window.top.location.replace(window.self.location.href); }
