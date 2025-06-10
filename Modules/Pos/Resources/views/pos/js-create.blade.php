@@ -247,6 +247,49 @@
                     if (modal) modal.hide();
                 },
 
+                // Update quantity item di cart
+                updateCartItemQty(itemId, newQty) {
+                    if (newQty < 0.01) return; // Minimal qty 0.01
+
+                    const item = this.cart.find(i => i.id === itemId);
+                    if (item) {
+                        const oldQty = item.qty;
+                        item.qty = parseFloat(newQty);
+
+                        // Recalculate total_input proportionally
+                        if (item.total_input && oldQty > 0) {
+                            const pricePerUnit = (item.total_input + item.discount) / oldQty;
+                            item.total_input = (pricePerUnit * item.qty) - item.discount;
+                        } else {
+                            item.total_input = item.price * item.qty;
+                        }
+                    }
+                },
+
+                // Update discount item di cart
+                updateCartItemDiscount(itemId, newDiscount) {
+                    const item = this.cart.find(i => i.id === itemId);
+                    if (item) {
+                        item.discount = parseFloat(newDiscount) || 0;
+                    }
+                },
+
+                // Increment quantity
+                incrementQty(itemId) {
+                    const item = this.cart.find(i => i.id === itemId);
+                    if (item) {
+                        this.updateCartItemQty(itemId, item.qty + 1);
+                    }
+                },
+
+                // Decrement quantity
+                decrementQty(itemId) {
+                    const item = this.cart.find(i => i.id === itemId);
+                    if (item && item.qty > 0.01) {
+                        this.updateCartItemQty(itemId, Math.max(0.01, item.qty - 1));
+                    }
+                },
+
                 // Method untuk menghitung total quantity (jumlah items)
                 getTotalQuantity() {
                     return this.cart.reduce((total, item) => total + parseFloat(item.qty || 0), 0);
@@ -255,9 +298,8 @@
                 // Method untuk menghitung total price
                 getTotalPrice() {
                     return this.cart.reduce((sum, item) => {
-                        // Gunakan total_input jika ada, jika tidak gunakan perhitungan price * qty - discount
-                        const itemTotal = item.total_input || (item.price * item.qty - item.discount);
-                        return sum + itemTotal;
+                        const itemTotal = (item.total_input || (item.price * item.qty)) - (item.discount || 0);
+                        return sum + Math.max(0, itemTotal); // Pastikan tidak minus
                     }, 0);
                 },
 

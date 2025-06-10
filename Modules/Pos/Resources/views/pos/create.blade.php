@@ -305,48 +305,183 @@
 
             <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true"
                 x-show="showCartModal" @keydown.escape.window="closeCartModal()" style="display: none;" x-transition>
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
+                <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+                    <div class="modal-content h-100">
+                        <div class="modal-header flex-shrink-0">
                             <h5 class="modal-title">Keranjang Belanja</h5>
                             <button type="button" class="btn-close" @click="closeCartModal()"></button>
                         </div>
-                        <div class="modal-body">
-                            <template x-if="cart.length === 0">
-                                <p>Keranjang kosong.</p>
-                            </template>
-                            <template x-for="(item, index) in cart" :key="item.id">
-                                <div class="card card-body mb-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div
-                                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h5 class="mb-1" x-text="item.name"></h5>
-                                                <span class="text-muted">Qty : <span x-text="item.qty"></span></span>
-                                                <br>
-                                                <span class="badge badge-light-info fs-4"
-                                                    x-text="(item.total_input || item.price * item.qty).toLocaleString()">Total</span>
+
+                        <!-- Scrollable Body -->
+                        <div class="modal-body flex-grow-1 overflow-auto p-0">
+                            <div class="p-3">
+                                <template x-if="cart.length === 0">
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">Keranjang kosong.</p>
+                                    </div>
+                                </template>
+
+                                <div id="cart-items-container">
+                                    <template x-for="(item, index) in cart" :key="item.id">
+                                        <div class="card card-body mb-3 cart-item">
+                                            <!-- Mobile Layout (Stack Vertically) -->
+                                            <div class="d-block d-lg-none">
+                                                <!-- Product Name & Price -->
+                                                <div class="mb-2 pb-2 border-bottom">
+                                                    <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
+                                                    <small class="text-muted">@ Rp <span
+                                                            x-text="item.price.toLocaleString()"></span></small>
+                                                </div>
+
+                                                <!-- Quantity & Discount Row -->
+                                                <div class="row mb-3">
+                                                    <div class="col-7">
+                                                        <label class="form-label small mb-1 fw-semibold">Quantity</label>
+                                                        <div class="input-group">
+                                                            <button class="btn btn-outline-secondary" type="button"
+                                                                @click="decrementQty(item.id)">
+                                                                <i class="fas fa-minus"></i>
+                                                            </button>
+                                                            <input type="number" class="form-control text-center fw-bold"
+                                                                :value="item.qty"
+                                                                @input="updateCartItemQty(item.id, $event.target.value)"
+                                                                min="0.01" step="0.01">
+                                                            <button class="btn btn-outline-secondary" type="button"
+                                                                @click="incrementQty(item.id)">
+                                                                <i class="fas fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <label class="form-label small mb-1 fw-semibold">Diskon</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text">Rp</span>
+                                                            <input type="number" class="form-control"
+                                                                :value="item.discount"
+                                                                @input="updateCartItemDiscount(item.id, $event.target.value)"
+                                                                min="0" step="1000" placeholder="0">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Total & Delete Row -->
+                                                <div
+                                                    class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                                    <div>
+                                                        <span class="badge bg-primary fs-6 px-3 py-2">
+                                                            Total: Rp <span
+                                                                x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()"></span>
+                                                        </span>
+                                                    </div>
+                                                    <button @click="removeFromCart(item.id)"
+                                                        class="btn btn-outline-danger" title="Hapus">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Desktop Layout (Horizontal) -->
+                                            <div class="d-none d-lg-block">
+                                                <div class="row align-items-center">
+                                                    <!-- Product Info -->
+                                                    <div class="col-lg-4">
+                                                        <h5 class="mb-1" x-text="item.name"></h5>
+                                                        <small class="text-muted">@ Rp <span
+                                                                x-text="item.price.toLocaleString()"></span></small>
+                                                    </div>
+
+                                                    <!-- Quantity Controls -->
+                                                    <div class="col-lg-3">
+                                                        <label class="form-label small">Quantity</label>
+                                                        <div class="input-group input-group-sm">
+                                                            <button class="btn btn-outline-secondary" type="button"
+                                                                @click="decrementQty(item.id)">
+                                                                <i class="fas fa-minus"></i>
+                                                            </button>
+                                                            <input type="number" class="form-control text-center"
+                                                                :value="item.qty"
+                                                                @input="updateCartItemQty(item.id, $event.target.value)"
+                                                                min="0.01" step="0.01">
+                                                            <button class="btn btn-outline-secondary" type="button"
+                                                                @click="incrementQty(item.id)">
+                                                                <i class="fas fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Discount Input -->
+                                                    <div class="col-lg-2">
+                                                        <label class="form-label small">Diskon (Rp)</label>
+                                                        <input type="number" class="form-control form-control-sm"
+                                                            :value="item.discount"
+                                                            @input="updateCartItemDiscount(item.id, $event.target.value)"
+                                                            min="0" step="1000" placeholder="0">
+                                                    </div>
+
+                                                    <!-- Total & Actions -->
+                                                    <div class="col-lg-2">
+                                                        <label class="form-label small">Total</label>
+                                                        <div class="fw-bold text-primary">
+                                                            Rp <span
+                                                                x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Delete Button -->
+                                                    <div class="col-lg-1 text-end">
+                                                        <button @click="removeFromCart(item.id)"
+                                                            class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <button @click="removeFromCart(item.id)" class="btn">
-                                            <div>
-                                                <span>
-                                                    <i class="fas fa-trash text-danger fs-2x"></i>
-                                                </span>
-                                            </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fixed Footer -->
+                        <div class="modal-footer flex-shrink-0 bg-light border-top">
+                            <!-- Mobile Footer -->
+                            <div class="w-100 d-block d-lg-none">
+                                <div class="row align-items-center">
+                                    <div class="col-12 text-center mb-2">
+                                        <h4 class="mb-0 text-primary fw-bold">
+                                            Total: Rp <span x-text="getTotalPrice().toLocaleString()"></span>
+                                        </h4>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-secondary w-100" @click="closeCartModal()">
+                                            <i class="fas fa-times"></i> Tutup
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-success w-100" @click="submitTransaction()"
+                                            :disabled="cart.length === 0">
+                                            <i class="fas fa-credit-card"></i> Checkout
                                         </button>
                                     </div>
                                 </div>
-                            </template>
-                            <div class="mt-3 fw-bold">
-                                Total Keseluruhan: Rp <span x-text="totalPrice().toLocaleString()"></span>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="closeCartModal()">Tutup</button>
-                            <button class="btn btn-success" @click="submitTransaction()">
-                                <i class="fas fa-credit-card"></i> Checkout
-                            </button>
+
+                            <!-- Desktop Footer -->
+                            <div class="d-none d-lg-flex justify-content-between align-items-center w-100">
+                                <button class="btn btn-secondary" @click="closeCartModal()">
+                                    <i class="fas fa-times"></i> Tutup
+                                </button>
+                                <div class="text-end">
+                                    <h5 class="mb-2 text-primary">
+                                        Total: Rp <span x-text="getTotalPrice().toLocaleString()"></span>
+                                    </h5>
+                                    <button class="btn btn-success btn-lg" @click="submitTransaction()"
+                                        :disabled="cart.length === 0">
+                                        <i class="fas fa-credit-card"></i> Checkout
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
