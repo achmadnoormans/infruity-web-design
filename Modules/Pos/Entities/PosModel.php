@@ -11,7 +11,11 @@ class PosModel extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'customer_id',
+        'date',
+        'created_by'
+    ];
     protected $table = 'pos_transaction';
 
     public function details(): HasMany

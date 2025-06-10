@@ -17,4 +17,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('pos', PosController::class)->names('pos')->except('show');
     Route::get('pos/show/{id}', [PosController::class,'show'])->name('pos.show');
     Route::get('pos/data', [PosController::class, 'get_data'])->name('pos-data');
+    Route::post('pos/submitTransaction', [PosController::class, 'store'])->name('pos-submit');
 });

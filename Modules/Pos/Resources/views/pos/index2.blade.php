@@ -131,7 +131,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.'
+                                text: response.message || 'Data berhasil dihapus.',
+                                showConfirmButton: false,
+                                timer: 1500
                             });
 
                             // Reload DataTable setelah berhasil menghapus data

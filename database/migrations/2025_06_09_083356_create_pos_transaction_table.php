@@ -28,6 +28,7 @@ return new class extends Migration
             $table->decimal('quantity', 10, 2);
             $table->integer('price');
             $table->integer('discount');
+            $table->integer('subtotal');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -54,6 +55,7 @@ return new class extends Migration
                 'product_id' => 1,
                 'quantity' => 2,
                 'price' => 10000,
+                'subtotal' => 20000,
                 'discount' => 500,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -63,6 +65,7 @@ return new class extends Migration
                 'product_id' => 1,
                 'quantity' => 4,
                 'price' => 40000,
+                'subtotal' => 160000,
                 'discount' => 5000,
                 'created_at' => now(),
                 'updated_at' => now(),

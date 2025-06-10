@@ -72,20 +72,23 @@
                                 <strong x-text="item.name"></strong>
                                 <div class="small text-muted">
                                     Harga: Rp <span x-text="item.price.toLocaleString()"></span>
-                                    | Total: Rp <span x-text="item.total_input.toLocaleString()"></span>
+                                    | Total: Rp <span x-text="(item.total_input || 0).toLocaleString()"></span>
                                     | Qty: <input type="number" min="1"
                                         class="form-control d-inline-block w-auto ms-1" x-model.number="item.qty">
                                     | Diskon: <input type="number" min="0"
                                         class="form-control d-inline-block w-auto ms-1" x-model.number="item.discount">
                                 </div>
                             </div>
-                            <button class="btn btn-sm btn-outline-danger" @click="removeFromCart(item.id)"><i
-                                    class="fas fa-trash"></i> Hapus</button>
+                            <button class="btn btn-sm btn-danger" @click="removeFromCart(item.id)"><i
+                                    class="fas fa-trash"></i></button>
                         </div>
                     </template>
                     <div class="text-end mt-3">
                         <h5>Total: Rp <span x-text="totalPrice().toLocaleString()"></span></h5>
-                        <button class="btn btn-success mt-2"><i class="fas fa-credit-card"></i> Checkout</button>
+                        <button class="btn btn-success mt-2" @click="submitTransaction()">
+                            <i class="fas fa-credit-card"></i>
+                            Checkout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -167,154 +170,5 @@
         </div>
     </div>
     <!--end::Aside column-->
-@section('script')
-    <script type="text/javascript">
-        $('#customer_id').select2({
-            placeholder: 'Select a customer',
-            ajax: {
-                url: '{{ route('customer.get-customer') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name
-                    }))
-                })
-            }
-        });
-
-
-        function posApp() {
-            return {
-                products: [],
-                cart: [],
-                searchTerm: "",
-                isLoading: false,
-
-                showModal: false,
-                modalProduct: null,
-                modalQty: 1,
-                modalTotalPrice: 0,
-                inputMode: 'qty', // 'qty' atau 'price',
-                modalDiscount: 0,
-                discountMode: 'nominal', // atau 'percent'
-
-                init() {
-                    this.isLoading = true;
-                    fetch('/ajax/listProduct')
-                        .then(res => res.json())
-                        .then(data => {
-                            this.products = data;
-                        })
-                        .finally(() => {
-                            this.isLoading = false;
-                        });
-                },
-
-                filteredProducts() {
-                    if (this.searchTerm === "") return this.products;
-                    return this.products.filter(p =>
-                        p.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-                    );
-                },
-
-                openModal(product) {
-                    this.modalProduct = product;
-                    this.modalQty = 1;
-                    this.modalTotalPrice = product.price;
-                    this.inputMode = 'qty';
-                    this.modalDiscount = 0;
-                    this.discountMode = 'nominal';
-
-                    this.showModal = true;
-
-                    setTimeout(() => {
-                        const modal = new bootstrap.Modal(document.getElementById('productModal'));
-                        modal.show();
-                    }, 0);
-                },
-
-                closeModal() {
-                    this.showModal = false;
-                    const modalEl = document.getElementById('productModal');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                },
-
-                updateQtyFromTotal() {
-                    if (this.inputMode !== 'price') return;
-                    if (this.modalProduct && this.modalProduct.price > 0) {
-                        this.modalQty = parseFloat((this.modalTotalPrice / this.modalProduct.price).toFixed(2));
-                    }
-                },
-
-                updateTotalFromQty() {
-                    if (this.inputMode !== 'qty') return;
-                    if (this.modalProduct) {
-                        this.modalTotalPrice = this.modalQty * this.modalProduct.price;
-                    }
-                },
-
-                calculateDiscountAmount() {
-                    if (this.discountMode === 'percent') {
-                        return parseFloat(((this.modalTotalPrice || 0) * (this.modalDiscount || 0) / 100).toFixed(2));
-                    } else {
-                        return Number(this.modalDiscount || 0);
-                    }
-                },
-
-                confirmAddToCart() {
-                    const discount = this.calculateDiscountAmount();
-                    const existing = this.cart.find(i => i.id === this.modalProduct.id);
-
-                    const itemData = {
-                        ...this.modalProduct,
-                        // price: this.modalTotalPrice / this.modalQty, // harga per item
-                        qty: this.modalQty,
-                        discount: discount,
-                        total_input: this.modalTotalPrice // harga total yang diinput user
-                    };
-
-                    if (existing) {
-                        existing.qty += this.modalQty;
-                        existing.discount += discount;
-                        existing.total_input += this.modalTotalPrice;
-                    } else {
-                        this.cart.push(itemData);
-                    }
-
-                    this.closeModal();
-                },
-
-                removeFromCart(id) {
-                    this.cart = this.cart.filter(i => i.id !== id);
-                },
-
-                totalPrice() {
-                    return this.cart.reduce((sum, item) => {
-                        return sum + (item.price * item.qty - item.discount);
-                    }, 0);
-                },
-
-                formatRupiah(value) {
-                    return new Intl.NumberFormat('id-ID').format(Number(value));
-                },
-
-                get formattedPrice() {
-                    return this.formatRupiah(this.modalTotalPrice);
-                },
-
-                set formattedPrice(val) {
-                    const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
-                    this.modalTotalPrice = Number(raw || 0);
-                    this.updateQtyFromTotal();
-                }
-            }
-        }
-    </script>
-@endsection
+    @include('pos::pos.js-create')
 @endsection
