@@ -34,6 +34,15 @@
                 modalDiscount: 0,
                 discountMode: 'nominal', // atau 'percent'
 
+                // Animation states
+                badgeAnimation: false,
+                priceAnimation: false,
+                showNotification: false,
+                notificationMessage: '',
+                showFlyingProduct: false,
+                flyingProductStyle: '',
+                flyingProductName: '',
+
                 init() {
                     this.isLoading = true;
                     fetch('/ajax/listProduct')
@@ -220,8 +229,113 @@
                                 text: err || 'Terjadi kesalahan saat menyimpan data.'
                             });
                         });
-                }
+                },
 
+                showCartModal: false, // di dalam return {...}
+                openCartModal() {
+                    this.showCartModal = true;
+                    setTimeout(() => {
+                        const modal = new bootstrap.Modal(document.getElementById('cartModal'));
+                        modal.show();
+                    }, 0);
+                },
+
+                closeCartModal() {
+                    this.showCartModal = false;
+                    const modalEl = document.getElementById('cartModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                },
+
+                // Method untuk menghitung total quantity (jumlah items)
+                getTotalQuantity() {
+                    return this.cart.reduce((total, item) => total + parseFloat(item.qty || 0), 0);
+                },
+
+                // Method untuk menghitung total price
+                getTotalPrice() {
+                    return this.cart.reduce((sum, item) => {
+                        // Gunakan total_input jika ada, jika tidak gunakan perhitungan price * qty - discount
+                        const itemTotal = item.total_input || (item.price * item.qty - item.discount);
+                        return sum + itemTotal;
+                    }, 0);
+                },
+
+                // Method untuk animasi tambah ke keranjang
+                addToCartWithAnimation(event, product) {
+                    // 1. Animasi flying product
+                    this.createFlyingAnimation(event, product);
+
+                    // 2. Tambah ke keranjang
+                    this.addToCart(product);
+
+                    // 3. Animasi badge
+                    this.animateBadges();
+
+                    // 4. Animasi tombol produk
+                    this.animateProductButton(product);
+
+                    // 5. Show notification
+                    this.showSuccessNotification(product);
+                },
+
+                // Animasi produk terbang ke keranjang
+                createFlyingAnimation(event, product) {
+                    const rect = event.currentTarget.getBoundingClientRect();
+
+                    this.flyingProductName = product.name;
+                    this.flyingProductStyle = `
+                left: ${rect.left}px; 
+                top: ${rect.top}px;
+                z-index: 9999;
+            `;
+
+                    this.showFlyingProduct = true;
+
+                    // Hide after animation
+                    setTimeout(() => {
+                        this.showFlyingProduct = false;
+                    }, 800);
+                },
+
+                // Animasi badge
+                animateBadges() {
+                    // Animate quantity badge
+                    this.badgeAnimation = true;
+                    setTimeout(() => {
+                        this.badgeAnimation = false;
+                    }, 400);
+
+                    // Animate price badge with delay
+                    setTimeout(() => {
+                        this.priceAnimation = true;
+                        setTimeout(() => {
+                            this.priceAnimation = false;
+                        }, 500);
+                    }, 200);
+                },
+
+                // Animasi tombol produk
+                animateProductButton(product) {
+                    // Set flag untuk animasi bounce
+                    product.isAdding = true;
+
+                    // Reset setelah animasi selesai
+                    setTimeout(() => {
+                        product.isAdding = false;
+                    }, 300);
+                },
+
+                // Show success notification
+                showSuccessNotification(product) {
+                    this.notificationMessage = `${product.name} ditambahkan ke keranjang!`;
+                    this.showNotification = true;
+
+                    // Hide notification after 3 seconds
+                    setTimeout(() => {
+                        this.showNotification = false;
+                    }, 3000);
+                },
             }
         }
     </script>
