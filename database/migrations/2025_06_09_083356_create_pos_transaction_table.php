@@ -16,6 +16,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->date('date')->nullable();
+            $table->integer('total')->nullable();
+            $table->integer('paid')->nullable();
+            $table->integer('return')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -38,12 +41,18 @@ return new class extends Migration
             [
                 'customer_id' => 1,
                 'date' => date('Y-m-d'),
+                'total' => 20000,
+                'paid' => 30000,
+                'return' => 10000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'customer_id' => 2,
                 'date' => date('Y-m-d'),
+                'total' => 160000,
+                'paid' => 200000,
+                'return' => 40000,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

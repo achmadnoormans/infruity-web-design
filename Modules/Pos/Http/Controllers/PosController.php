@@ -103,7 +103,10 @@ class PosController extends Controller
      */
     public function show($id)
     {
-        return view('pos::show');
+        $data['data'] = PosModel::with('customer')->findOrFail($id);
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        // dd($data);
+        return view('pos::pos.receipt', $data);
     }
 
     /**
