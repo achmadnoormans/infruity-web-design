@@ -412,3 +412,23 @@
     <!--end:Menu sub-->
 </div>
 <!--end:Menu item-->
+<div class="menu-item pt-5">
+    <!--begin:Menu content-->
+    <div class="menu-content">
+        <span class="menu-heading fw-bold text-uppercase fs-7">Pos</span>
+    </div>
+    <!--end:Menu content-->
+</div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'pos' ? 'active' : '' }}" href="{{ url('pos') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Pos App</span>
+    </a>
+    <!--end:Menu link-->
+</div>

@@ -58,6 +58,9 @@ class PosController extends Controller
             'items.*.total_input' => 'required|numeric|min:0',
         ]);
 
+        $sum_discount = array_sum(array_column($request->items, 'discount'));
+        $sum_total_input = array_sum(array_column($request->items, 'total_input'));
+
         DB::beginTransaction();
         try {
 
@@ -65,6 +68,7 @@ class PosController extends Controller
             $pos = new PosModel([
                 'customer_id' => $request->customer_id,
                 'date' => date('Y-m-d'),
+                'total' => $sum_total_input - $sum_discount,
                 'created_by' => $userId,
             ]);
             $pos->save();
@@ -89,10 +93,16 @@ class PosController extends Controller
 
             DB::commit();
 
-            return response()->json(['success' => true]);
+            return response()->json([
+                'success' => true,
+                'id' => $pos->id,
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -156,6 +166,40 @@ class PosController extends Controller
         }
     }
 
+    public function savePayment(Request $request, $id)
+    {
+        // dd($request->all(), $id);
+        $request->validate([
+            'payment_method' => 'required|in:cash,transfer,qris,ewallet',
+            'paid_amount' => 'required|numeric|min:1',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $pos = PosModel::findOrFail($id);
+            $total = $pos->total;
+            $pos->payment_method = $request->payment_method;
+            $pos->paid = $request->paid_amount;
+            $pos->return = $request->paid_amount - $total;
+            $pos->save();
+            // dd($pos);
+            DB::commit();
+            // return redirect('pos/' . $id . '/receipt')->with('success', 'Pembayaran berhasil disimpan.');
+            return redirect()->route('pos.index')->with('success', 'Pembayaran berhasil disimpan.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
+        }
+    }
+
+    public function showReceipt($id)
+    {
+        $data['data'] = PosModel::with('customer')->findOrFail($id);
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        // dd($data);
+        return view('pos::pos.receipt2', $data);
+    }
+
     public function get_data(Request $request)
     {
         $data = PosModel::with('customer')->get();
@@ -175,9 +219,19 @@ class PosController extends Controller
                             <div class="ms-5">
                                 <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->customer->name . '</a>
                                 <br>
-                                <span class="text-muted d-block"> Tgl : ' . dateindo($item->date) . '</span>
-                                <span class="text-muted d-block"> Jml Prod : ' . ($item->total_quantity) . '</span>
-                            </div>';
+                                <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
+                    if ($item->payment_method == 'cash') {
+                        $html .= '<span class="badge badge-light-success">Tunai</span>';
+                    } else if ($item->payment_method == 'transfer') {
+                        $html .= '<span class="badge badge-light-primary">Transfer</span>';
+                    } else if ($item->payment_method == 'qris') {
+                        $html .= '<span class="badge badge-light-info"> QRIS</span>';
+                    } else if ($item->payment_method == 'ewallet') {
+                        $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
+                    } else {
+                        $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
+                    }
+                    $html .= '</div>';
                 } else {
                     $html .= '<div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                 <a href="' . url('pos') . '/' . $item->id . '/show' . '">
@@ -187,9 +241,19 @@ class PosController extends Controller
                             <div class="ms-5">
                                 <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Tidak Ada Customer</a>
                                 <br>
-                                <span class="text-muted d-block"> Tgl : ' . dateindo($item->date) . '</span>
-                                <span class="text-muted d-block"> Jml Prod : ' . ($item->total_quantity) . '</span>
-                            </div>';
+                                <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
+                    if ($item->payment_method == 'cash') {
+                        $html .= '<span class="badge badge-light-success">Tunai</span>';
+                    } else if ($item->payment_method == 'transfer') {
+                        $html .= '<span class="badge badge-light-primary">Transfer</span>';
+                    } else if ($item->payment_method == 'qris') {
+                        $html .= '<span class="badge badge-light-info">QRIS</span>';
+                    } else if ($item->payment_method == 'ewallet') {
+                        $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
+                    } else {
+                        $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
+                    }
+                    $html .= '</div>';
                 }
                 $html .= '</div>';
                 return $html;
@@ -216,11 +280,7 @@ class PosController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                            </li>
+                            
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>

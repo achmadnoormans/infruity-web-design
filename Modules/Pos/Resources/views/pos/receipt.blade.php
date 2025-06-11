@@ -377,16 +377,55 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        {{-- <!-- Footer -->
         <div class="receipt-footer">
             <div class="thank-you">Terima kasih atas kunjungan Anda!</div>
             <div>Barang yang sudah dibeli tidak dapat dikembalikan</div>
             <div>Simpan struk ini sebagai bukti pembelian</div>
-        </div>
+        </div> --}}
+
+        <!-- Payment Form -->
+
+        @include('template.notif')
+        <form action="{{ route('receipt.payment', $data->id) }}" method="POST" style="padding: 20px;">
+            @csrf
+            <div class="section-title">Pembayaran</div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="payment_method" style="display: block; font-weight: 500;">Metode Pembayaran</label>
+                <select name="payment_method" id="payment_method" required style="width: 100%; padding: 8px;"
+                    class="form-control">
+                    <option value="">-- Pilih --</option>
+                    <option value="cash">Cash</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="qris">QRIS</option>
+                    <option value="ewallet">E-Wallet</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="paid_amount_display" style="display: block; font-weight: 500;">Nominal Dibayarkan</label>
+                <input type="text" id="paid_amount_display" class="form-control" style="width: 100%; padding: 8px;"
+                    required>
+
+                <!-- Ini hidden input yang menyimpan nilai asli -->
+                <input type="hidden" name="paid_amount" id="paid_amount">
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <label for="change_amount" style="display: block; font-weight: 500;">Kembalian</label>
+                <input type="text" id="change_amount" class="form-control" readonly
+                    style="width: 100%; padding: 8px; background: #e9ecef;">
+            </div>
+
+            <button type="submit" class="print-button">💾 Simpan Pembayaran</button>
+        </form>
+
     </div>
 
     <button class="print-button" onclick="window.print()">🖨️ Cetak Receipt</button>
-    <a class="print-button" href="{{ url(Request::segment(1)) }}" style="text-align: center; text-decoration: none;">Kembali</a>
+    <a class="print-button" href="{{ url(Request::segment(1)) }}"
+        style="text-align: center; text-decoration: none;">Kembali</a>
 
     <script>
         // Auto print ketika halaman dimuat (opsional)
@@ -399,6 +438,35 @@
         if (urlParams.get('print') === 'true') {
             window.print();
         }
+
+        const displayInput = document.getElementById('paid_amount_display');
+        const hiddenInput = document.getElementById('paid_amount');
+        const changeOutput = document.getElementById('change_amount');
+
+        // Ubah ini ke nilai total sebenarnya
+        const total = {{ $data->total ?? $subtotal }};
+
+        function formatRupiah(number) {
+            return 'Rp ' + number.toLocaleString('id-ID');
+        }
+
+        function parseRupiah(rupiahString) {
+            return parseInt(rupiahString.replace(/[^\d]/g, '')) || 0;
+        }
+
+        displayInput.addEventListener('input', function() {
+            let numericValue = parseRupiah(this.value);
+
+            // Set hidden input untuk dikirim ke backend
+            hiddenInput.value = numericValue;
+
+            // Format ulang input yang ditampilkan
+            this.value = formatRupiah(numericValue);
+
+            // Hitung dan tampilkan kembalian
+            const change = numericValue - total;
+            changeOutput.value = change >= 0 ? formatRupiah(change) : 'Rp 0';
+        });
     </script>
 </body>
 

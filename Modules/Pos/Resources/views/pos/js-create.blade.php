@@ -203,6 +203,7 @@
                         })
                         .then(res => res.json())
                         .then(data => {
+                            console.log(data);
                             if (data.success) {
                                 Swal.fire({
                                     icon: 'success',
@@ -212,7 +213,7 @@
                                 this.cart = []; // Kosongkan keranjang
                                 document.getElementById('customer_id').value = '';
                                 $('#customer_id').val(null).trigger('change');
-                                window.location.href = '/pos';
+                                window.location.href = '/pos/show/' + data.id;
                             } else {
                                 Swal.fire({
                                     icon: 'error',

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('total')->nullable();
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
+            $table->string('payment_method')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -44,6 +45,7 @@ return new class extends Migration
                 'total' => 20000,
                 'paid' => 30000,
                 'return' => 10000,
+                'payment_method' => 'cash',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -53,6 +55,7 @@ return new class extends Migration
                 'total' => 160000,
                 'paid' => 200000,
                 'return' => 40000,
+                'payment_method' => 'transfer',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

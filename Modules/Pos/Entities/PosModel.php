@@ -14,6 +14,7 @@ class PosModel extends Model
     protected $fillable = [
         'customer_id',
         'date',
+        'total',
         'created_by'
     ];
     protected $table = 'pos_transaction';
