@@ -37,7 +37,7 @@ class PosController extends Controller
     public function create()
     {
         $data['alpinejs'] = true;
-        return view('pos::pos.create', $data);
+        return view('pos::pos.create2', $data);
     }
 
     /**
