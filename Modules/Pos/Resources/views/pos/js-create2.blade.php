@@ -52,7 +52,7 @@
                 priceAnimation: false,
 
                 init() {
-                    
+
                 },
 
                 formatRupiah(value) {
@@ -145,7 +145,7 @@
                     }; // salin data item
                     this.editProduct = item;
                     this.editProductName = item.name;
-                    this.editProductUnit = item.unit.abbreviation;
+                    this.editProductUnit = item.unit;
                     this.editTitle = item.name;
                     this.editQty = item.qty;
                     this.editTotal = item.total_input || (item.qty * item.price);
@@ -220,6 +220,9 @@
                             this.addProduct.name = data.text;
                             this.addProduct.unit = data.unit.abbreviation;
                             this.addProduct.price = data.price;
+                            this.addProduct.total = this.addProduct.qty * this.addProduct.price;
+                            this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
+                                .total);
                             this.updateAddTotalFromQty();
                         });
                     }, 0);
@@ -233,6 +236,21 @@
                     const qty = parseFloat(this.addProduct.qty) || 0;
                     const price = parseFloat(this.addProduct.price) || 0;
                     this.addProduct.total = qty * price;
+                    this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct.total);
+                },
+                updateQtyFromAddTotal(e) {
+                    let val = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+                    const total = parseFloat(val || 0);
+                    const price = parseFloat(this.addProduct.price) || 1;
+
+                    const qty = total / price;
+
+                    this.addProduct.total = total;
+                    this.addProduct.qty = parseFloat(qty.toFixed(2));
+                    this.addProduct.formattedAddTotalInput = this.formatRupiah(total);
+                },
+                formatRupiah(angka) {
+                    return angka.toLocaleString('id-ID');
                 },
                 get formattedAddPrice() {
                     return this.formatRupiah(this.addProduct.price);
@@ -247,7 +265,7 @@
                 },
                 saveAddToCart() {
                     const discount = Number(this.addProduct.discount || 0);
-                    const total_input = this.addProduct.qty * this.addProduct.price;
+                    const total_input = this.addProduct.total;
 
                     this.cart.push({
                         id: this.addProduct.id,

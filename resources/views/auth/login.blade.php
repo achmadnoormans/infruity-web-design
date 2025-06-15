@@ -155,9 +155,9 @@ License: For each use you must have a valid license purchased only from above li
                 <!--begin::Content-->
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
                     <!--begin::Logo-->
-                    <a href="index.html" class="mb-0 mb-lg-12">
-                        <img alt="Logo" src="{{ asset('assets/media/logos/logo-infruity.png') }}"
-                            class="h-60px h-lg-75px" />
+                    <a href="{{ url('/') }}">
+                        {{-- <img alt="Logo" src="{{ asset('images/logo-infruity.png') }}" class="h-25px h-lg-25px" /> --}}
+                        <h1 class="text-white fw-bold fs-1">in!fruity</h1>
                     </a>
                     <!--end::Logo-->
                     <!--begin::Image-->

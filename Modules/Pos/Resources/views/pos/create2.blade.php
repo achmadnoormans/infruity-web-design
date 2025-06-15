@@ -236,7 +236,7 @@
                                 <div class="col-9 mb-3">
                                     <label class="form-label">Harga</label>
                                     <input type="text" class="form-control" x-model="formattedAddPrice"
-                                        @input="updateAddPriceFromFormatted">
+                                        @input="updateAddPriceFromFormatted" readonly>
                                 </div>
                             </div>
 
@@ -256,10 +256,10 @@
                             <!-- Jumlah Harga -->
                             <div class="mb-3">
                                 <label class="form-label">Jumlah Harga</label>
-                                <input type="text" class="form-control" x-model="formattedAddTotal" readonly>
+                                <input type="text" class="form-control" x-model="addProduct.formattedAddTotalInput"
+                                    @input="updateQtyFromAddTotal">
                             </div>
                         </div>
-
                         <div class="modal-footer">
                             <button class="btn btn-secondary" @click="closeAddModal()">Batal</button>
                             <button class="btn btn-primary" @click="saveAddToCart()">Simpan</button>
