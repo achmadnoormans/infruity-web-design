@@ -112,7 +112,7 @@
                             <label class="required form-label">Tanggal Transaksi</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                            <input type="date" class="form-control" name="date">
+                            <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}">
                             <!--end::Editor-->
                         </div>
                     </div>
@@ -130,81 +130,93 @@
                 <!--end::Input group-->
             </div>
         </div>
-        <div x-data="posApp()" x-init="init()" class="card card-body mb-3">
-            <div class="mb-4 d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="fs-5 fw-bold d-flex">Produk yang dijual</span>
-                    <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
+        <div x-data="posApp()" x-init="init()">
+            <div class="card card-body mb-3">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="fs-5 fw-bold d-flex">Produk yang dijual</span>
+                        <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
+                    </div>
+                    <button @click="openAddModal()"
+                        class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+                        <i class="fa-solid fa-plus"></i> Tambah
+                    </button>
                 </div>
-                <button @click="openAddModal()"
-                    class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
-                    <i class="fa-solid fa-plus"></i> Tambah
-                </button>
-            </div>
-            {{-- <!-- Cart --> --}}
-            <div class="col-md-12" style="height: 200px; overflow-y: auto;">
-                <div>
-                    <template x-if="cart.length === 0">
-                        <div class="text-center py-5">
-                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">Keranjang kosong.</p>
-                        </div>
-                    </template>
-
-                    <div id="cart-items-container">
-                        <template x-for="(item, index) in cart" :key="item.id">
-                            <div class="card card-body mb-3 cart-item">
-                                <!-- Mobile Layout (Stack Vertically) -->
-                                <div class="d-block d-lg-none" @click="openEditModal(item)">
-                                    <!-- Product Name & Price -->
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="mb-2">
-                                            <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                            <small class="text-muted d-flex">
-                                                Qty : <span x-text="item.qty"></span>
-                                            </small>
-                                            <small class="text-muted d-flex">
-                                                Harga <span x-text="item.price.toLocaleString()"></span>
-                                            </small>
-                                            <small class="text-muted">
-                                                Discount <span x-text="item.discount.toLocaleString()"></span>
-                                            </small>
-                                        </div>
-                                        <div class="mb-2 pb-2">
-                                            <span class="fs-6 px-3 py-2">
-                                                Total: Rp <span
-                                                    x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()">
-                                                    ></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Desktop Layout (Horizontal) -->
-                                <div class="d-none d-lg-block" @click="openEditModal(item)">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="mb-2">
-                                            <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                            <small class="text-muted d-flex">
-                                                Qty : <span x-text="item.qty"></span>
-                                            </small>
-                                            <small class="text-muted d-flex">
-                                                Harga <span x-text="item.price.toLocaleString()"></span>
-                                            </small>
-                                            <small class="text-muted">
-                                                Discount <span x-text="item.discount.toLocaleString()"></span>
-                                            </small>
-                                        </div>
-                                        <div class="mb-2 pb-2">
-                                            <span class="fs-6 px-3 py-2">
-                                                Total: Rp <span
-                                                    x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()"></span>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                {{-- <!-- Cart --> --}}
+                <div class="col-md-12" style="height: 200px; overflow-y: auto;">
+                    <div>
+                        <template x-if="cart.length === 0">
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">Keranjang kosong.</p>
                             </div>
                         </template>
+
+                        <div id="cart-items-container">
+                            <template x-for="(item, index) in cart" :key="item.id">
+                                <div class="card card-body mb-3 cart-item">
+                                    <!-- Mobile Layout (Stack Vertically) -->
+                                    <div class="d-block d-lg-none" @click="openEditModal(item)">
+                                        <!-- Product Name & Price -->
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="mb-2">
+                                                <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
+                                                <small class="text-muted d-flex">
+                                                    Qty : <span x-text="item.qty"></span>
+                                                </small>
+                                                <small class="text-muted d-flex">
+                                                    Harga <span x-text="item.price.toLocaleString()"></span>
+                                                </small>
+                                                <small class="text-muted">
+                                                    Discount <span x-text="item.discount.toLocaleString()"></span>
+                                                </small>
+                                            </div>
+                                            <div class="mb-2 pb-2">
+                                                <span class="fs-6 px-3 py-2">
+                                                    Total: Rp <span
+                                                        x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()">
+                                                        ></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Desktop Layout (Horizontal) -->
+                                    <div class="d-none d-lg-block" @click="openEditModal(item)">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="mb-2">
+                                                <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
+                                                <small class="text-muted d-flex">
+                                                    Qty : <span x-text="item.qty"></span>
+                                                </small>
+                                                <small class="text-muted d-flex">
+                                                    Harga <span x-text="item.price.toLocaleString()"></span>
+                                                </small>
+                                                <small class="text-muted">
+                                                    Discount <span x-text="item.discount.toLocaleString()"></span>
+                                                </small>
+                                            </div>
+                                            <div class="mb-2 pb-2">
+                                                <span class="fs-6 px-3 py-2">
+                                                    Total: Rp <span
+                                                        x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-body">
+                {{-- Ringkasan --}}
+                <div class="mt-4 border-top pt-3">
+                    <div class="d-flex justify-content-between">
+                        <span x-text="totalProduk">Total Produk</span>
+                        <span class="fw-bold" x-text="totalHargaKeseluruhan"></span>
                     </div>
                 </div>
             </div>
@@ -250,8 +262,10 @@
                             <!-- Diskon -->
                             <div class="mb-3">
                                 <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                                <input type="number" class="form-control" x-model="addProduct.discount">
+                                <input type="text" class="form-control"
+                                    :value="formatRupiah(addProduct.discountNominal || 0)" @input="updateDiscountValue">
                             </div>
+
 
                             <!-- Jumlah Harga -->
                             <div class="mb-3">

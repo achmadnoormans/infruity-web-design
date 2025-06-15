@@ -44,6 +44,7 @@
                     unit: '',
                     price: 0,
                     discount: 0,
+                    discountNominal: 0,
                     qty: 1
                 },
 
@@ -267,19 +268,54 @@
                 updateAddTotalFromQty() {
                     const qty = parseFloat(this.addProduct.qty) || 0;
                     const price = parseFloat(this.addProduct.price) || 0;
-                    this.addProduct.total = qty * price;
+                    const discount = parseFloat(this.addProduct.discount) || 0;
+                    this.addProduct.total = (qty * price) - discount;
                     this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct.total);
                 },
                 updateQtyFromAddTotal(e) {
-                    let val = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
-                    const total = parseFloat(val || 0);
-                    const price = parseFloat(this.addProduct.price) || 1;
+                    let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+                    const inputTotal = parseFloat(raw || 0);
+                    const price = parseFloat(this.addProduct.price || 1);
+                    const discount = parseFloat(this.addProduct.discount || 0);
 
-                    const qty = total / price;
+                    // Hitung qty dari total + diskon
+                    const qty = (inputTotal + discount) / price;
 
-                    this.addProduct.total = total;
                     this.addProduct.qty = parseFloat(qty.toFixed(2));
-                    this.addProduct.formattedAddTotalInput = this.formatRupiah(total);
+                    this.addProduct.total = inputTotal;
+                    this.addProduct.formattedAddTotalInput = this.formatRupiah(inputTotal);
+                },
+
+                updateDiscountValue(e) {
+                    let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+                    let input = parseFloat(raw || 0);
+
+                    const qty = parseFloat(this.addProduct.qty || 0);
+                    const price = parseFloat(this.addProduct.price || 0);
+                    const subtotal = qty * price;
+
+                    // Cegah pembagian dengan 0
+                    if (subtotal === 0) {
+                        this.addProduct.discount = 0;
+                        this.addProduct.discountNominal = 0;
+                        return;
+                    }
+
+                    if (input > 100) {
+                        // Input dianggap nominal rupiah
+                        this.addProduct.discount = input;
+                        this.addProduct.discountNominal = input;
+                    } else {
+                        // Input dianggap persen
+                        let diskonRupiah = (input / 100) * subtotal;
+                        this.addProduct.discount = diskonRupiah;
+                        this.addProduct.discountNominal = input;
+                    }
+
+                    // Update total setelah diskon
+                    const totalAfterDiscount = subtotal - this.addProduct.discount;
+                    this.addProduct.total = totalAfterDiscount;
+                    this.addProduct.formattedAddTotalInput = this.formatRupiah(totalAfterDiscount);
                 },
                 formatRupiah(angka) {
                     return angka.toLocaleString('id-ID');
@@ -324,8 +360,19 @@
                     // Reset Select2 input juga
                     $('#select_product').val(null).trigger('change');
                 },
-
                 // End Add Product Section
+
+                // Total
+                totalProduk() {
+                    return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
+                },
+                totalHargaKeseluruhan() {
+                    return this.cart.reduce((sum, item) => {
+                        const total = (item.total_input || (item.price * item.qty)) - (item.discount || 0);
+                        return sum + total;
+                    }, 0).toLocaleString('id-ID');
+                },
+
 
                 showCartModal: false, // di dalam return {...}
                 openCartModal() {
