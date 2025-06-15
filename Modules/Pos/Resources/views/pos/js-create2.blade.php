@@ -181,6 +181,38 @@
                         this.editTotalFormatted = this.formatRupiah(this.editTotal);
                     }
                 },
+                calculateEditDiscountAmount() {
+                    const val = parseFloat(this.editDiscount || 0);
+                    if (val <= 100) {
+                        return parseFloat(((this.editTotal || 0) * val / 100).toFixed(2)); // persen
+                    } else {
+                        return val; // nominal
+                    }
+                },
+                // Update otomatis qty berdasarkan total
+                updateEditQtyFromTotal() {
+                    if (this.editItem && this.editItem.price > 0) {
+                        this.editQty = parseFloat((this.editTotal / this.editItem.price).toFixed(2));
+                    }
+                },
+
+                // Update total otomatis berdasarkan qty
+                updateEditTotalFromQty() {
+                    if (this.editItem) {
+                        this.editTotal = parseFloat((this.editQty * this.editItem.price).toFixed(2));
+                    }
+                },
+
+                saveEditToCart() {
+                    const idx = this.cart.findIndex(i => i.id === this.editItem.id);
+                    if (idx !== -1) {
+                        const disc = this.calculateEditDiscountAmount();
+                        this.cart[idx].qty = this.editQty;
+                        this.cart[idx].total_input = this.editTotal;
+                        this.cart[idx].discount = disc;
+                    }
+                    this.closeEditModal();
+                },
                 // End edit modal section
 
                 closeEditModal() {
@@ -294,34 +326,6 @@
                 },
 
                 // End Add Product Section
-
-
-
-                // Update otomatis qty berdasarkan total
-                updateEditQtyFromTotal() {
-                    if (this.editItem && this.editItem.price > 0) {
-                        this.editQty = parseFloat((this.editTotal / this.editItem.price).toFixed(2));
-                    }
-                },
-
-                // Update total otomatis berdasarkan qty
-                updateEditTotalFromQty() {
-                    if (this.editItem) {
-                        this.editTotal = parseFloat((this.editQty * this.editItem.price).toFixed(2));
-                    }
-                },
-
-                saveEditToCart() {
-                    const idx = this.cart.findIndex(i => i.id === this.editItem.id);
-                    if (idx !== -1) {
-                        const disc = this.calculateEditDiscountAmount();
-                        this.cart[idx].qty = this.editQty;
-                        this.cart[idx].total_input = this.editTotal;
-                        this.cart[idx].discount = disc;
-                    }
-                    this.closeEditModal();
-                },
-
 
                 showCartModal: false, // di dalam return {...}
                 openCartModal() {
