@@ -214,6 +214,17 @@
                     }
                     this.closeEditModal();
                 },
+
+                deleteFromCart() {
+                    if (!this.editItem) return;
+
+                    const index = this.cart.findIndex(item => item.id === this.editItem.id);
+                    if (index !== -1) {
+                        this.cart.splice(index, 1);
+                        this.closeEditModal();
+                    }
+                },
+
                 // End edit modal section
 
                 closeEditModal() {
@@ -332,6 +343,15 @@
                     return this.formatRupiah(this.addProduct.qty * this.addProduct.price);
                 },
                 saveAddToCart() {
+                    if (!this.addProduct.id) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produk belum dipilih',
+                            text: 'Silakan pilih produk terlebih dahulu.',
+                        });
+                        return;
+                    }
+                    
                     const discount = Number(this.addProduct.discount || 0);
                     const total_input = this.addProduct.total;
 

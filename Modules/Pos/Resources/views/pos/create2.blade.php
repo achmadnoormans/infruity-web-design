@@ -215,8 +215,22 @@
                 {{-- Ringkasan --}}
                 <div class="mt-4 border-top pt-3">
                     <div class="d-flex justify-content-between">
-                        <span x-text="totalProduk">Total Produk</span>
-                        <span class="fw-bold" x-text="totalHargaKeseluruhan"></span>
+                        <div>
+                            <span>Total</span> <span x-text="totalProduk"></span>
+                        </div>
+                        <div class="fw-bold">
+                            <span>Rp</span>
+                            <span x-text="totalHargaKeseluruhan"></span>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col">
+                            <button
+                                class="btn btn-sm btn-outline btn-outline btn-outline-primary btn-active-light-primary w-100">Simpan</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-sm btn-primary w-100">Bayar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,8 +240,8 @@
                 x-show="showAddModal" style="display: none;">
                 <div class="modal-dialog modal-fullscreen-sm-down">
                     <div class="modal-content" x-data>
-                        <div class="modal-header">
-                            <h5 class="modal-title">Tambah Produk</h5>
+                        <div class="modal-header" style="background-color: #ff000d; color: #fff;">
+                            <h5 class="modal-title" style="color: #fff">Tambah Produk</h5>
                             <button type="button" class="btn-close" @click="closeAddModal()"></button>
                         </div>
                         <div class="modal-body">
@@ -275,7 +289,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="closeAddModal()">Batal</button>
+                            <button class="btn btn-secondary" @click="closeAddModal()">Tutup</button>
                             <button class="btn btn-primary" @click="saveAddToCart()">Simpan</button>
                         </div>
                     </div>
@@ -322,6 +336,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <button class="btn btn-danger me-auto" @click="deleteFromCart()">Hapus Produk</button>
                             <button class="btn btn-secondary" @click="closeEditModal()">Batal</button>
                             <button class="btn btn-primary" @click="saveEditToCart()">Simpan</button>
                         </div>
