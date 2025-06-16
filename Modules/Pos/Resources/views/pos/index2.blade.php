@@ -27,7 +27,7 @@
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-start min-w-200px">Name</th>
-                            <th class="text-start">Date</th>
+                            <th class="text-start min-w-100px">Date</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
