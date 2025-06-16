@@ -230,6 +230,29 @@ class CustomerController extends Controller
         }
     }
 
+    public function storeCustomer(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+        ]);
+
+        $customer = Customer::create([
+            'name' => $validated['name'],
+            'whatsapp' => $validated['phone'],
+            'address' => $validated['address'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'customer' => [
+                'id' => $customer->id,
+                'name' => $customer->name
+            ]
+        ]);
+    }
+
     public function get_data(Request $request)
     {
         $data = Customer::orderBy('name', 'asc')->get();

@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Modules\Pos\Http\Controllers\PosController;
+use Modules\Master\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +22,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('pos/{id}/payment', [PosController::class, 'savePayment'])->name('receipt.payment');
     Route::get('pos/{id}/receipt', [PosController::class, 'showReceipt'])->name('pos.receipt');
     Route::post('pos/save-transaction', [PosController::class, 'saveTransaction'])->name('pos.receipt');
+    Route::post('/pos/customers', [CustomerController::class, 'storeCustomer']);
 
 });

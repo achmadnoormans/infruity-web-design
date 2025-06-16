@@ -352,6 +352,16 @@
                         return;
                     }
 
+                    const isExist = this.cart.some(item => item.id === this.addProduct.id);
+                    if (isExist) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produk sudah ditambahkan',
+                            text: 'Produk ini sudah ada di keranjang.',
+                        });
+                        return;
+                    }
+
                     const discount = Number(this.addProduct.discount || 0);
                     const total_input = this.addProduct.total;
 
@@ -551,7 +561,55 @@
                     this.diskonGlobal = 0;
                     this.subtotal = 0;
                     this.totalHargaKeseluruhan = 0;
+                },
+
+                addCustomer() {
+                    const modal = new bootstrap.Modal(document.getElementById('customerModal'));
+                    modal.show();
+                },
+
+                saveCustomer() {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
+                    const name = document.querySelector('[x-model="customerName"]').value;
+                    const phone = document.querySelector('[x-model="customerPhone"]').value;
+                    const address = document.querySelector('[x-model="customerAddress"]').value;
+
+                    // if (!name || !phone || !address) {
+                    //     Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
+                    //     return;
+                    // }
+
+                    fetch('/pos/customers', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({
+                                name,
+                                phone,
+                                address
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                modal.hide();
+                                // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
+
+                                // Tambahkan ke Select2
+                                const option = new Option(res.customer.name, res.customer.id, true, true);
+                                $('#customer_id').append(option).trigger('change');
+                            } else {
+                                Swal.fire('Gagal', res.message ?? 'Gagal menyimpan customer.', 'error');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            Swal.fire('Error', 'Terjadi kesalahan saat menyimpan.', 'error');
+                        });
                 }
+
 
             }
         }

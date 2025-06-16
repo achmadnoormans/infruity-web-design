@@ -12,7 +12,11 @@ class Customer extends Model
     use HasFactory;
 
     protected $table = 'customer';
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'address',
+        'phone',
+    ];
     
     protected static function newFactory()
     {

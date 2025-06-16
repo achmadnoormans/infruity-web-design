@@ -87,19 +87,30 @@
     </style>
 
     <!--begin::Aside column-->
-    <div class="w-100 flex-lg-row-auto mb-7 me-7 me-lg-10">
+    <div class="w-100 flex-lg-row-auto mb-7 me-7 me-lg-10" x-data="posApp()" x-init="init()">
         <div class="card card-body mb-3">
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
-                <div class="fv-row">
-                    <!--begin::Label-->
-                    <label class="required form-label">Select Customer</label>
-                    <!--end::Label-->
-                    <!--begin::Editor-->
-                    <select class="form-select" id="customer_id" name="customer_id">
-                        <option value="">Select Customer</option>
-                    </select>
-                    <!--end::Editor-->
+                <div class="row">
+                    <div class="col-9">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Select Customer</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <select class="form-select" id="customer_id" name="customer_id">
+                                <option value="">Select Customer</option>
+                            </select>
+                            <!--end::Editor-->
+                        </div>
+                    </div>
+                    <div class="col-3 mt-8">
+                        <button @click="addCustomer()"
+                            class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
                 </div>
                 <!--end::Input group-->
             </div>
@@ -130,7 +141,7 @@
                 <!--end::Input group-->
             </div>
         </div>
-        <div x-data="posApp()" x-init="init()">
+        <div>
             <div class="card card-body mb-3">
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <div>
@@ -233,8 +244,8 @@
                                 <!-- Input Diskon -->
                                 <div class="mb-3">
                                     <label class="form-label mb-1">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                                    <input type="text" class="form-control text-end" :value="formatRupiah(diskonGlobal)"
-                                        @input="updateDiskonGlobal">
+                                    <input type="text" class="form-control text-end"
+                                        :value="formatRupiah(diskonGlobal)" @input="updateDiskonGlobal">
                                 </div>
 
                                 <!-- Total Setelah Diskon -->
@@ -375,6 +386,38 @@
                             <button class="btn btn-danger me-auto" @click="deleteFromCart()">Hapus Produk</button>
                             <button class="btn btn-secondary" @click="closeEditModal()">Batal</button>
                             <button class="btn btn-primary" @click="saveEditToCart()">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- Modal Add CCustomer --}}
+            <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" x-data="{ customerName: '', customerPhone: '', customerAddress: '' }">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="customerModalLabel">Tambah Customer</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Nama</label>
+                                <input type="text" class="form-control" x-model="customerName"
+                                    placeholder="Nama customer">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">No WhatsApp</label>
+                                <input type="text" class="form-control" x-model="customerPhone"
+                                    placeholder="08xxxxxxxxxx">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Alamat</label>
+                                <textarea class="form-control" x-model="customerAddress" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button class="btn btn-primary" @click="saveCustomer()">Simpan</button>
                         </div>
                     </div>
                 </div>
