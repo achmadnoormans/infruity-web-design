@@ -351,7 +351,7 @@
                         });
                         return;
                     }
-                    
+
                     const discount = Number(this.addProduct.discount || 0);
                     const total_input = this.addProduct.total;
 
@@ -466,81 +466,93 @@
                     }, 0);
                 },
 
-                // Method untuk animasi tambah ke keranjang
-                addToCartWithAnimation(event, product) {
-                    // 1. Animasi flying product
-                    this.createFlyingAnimation(event, product);
-
-                    // 2. Tambah ke keranjang
-                    this.addToCart(product);
-
-                    // 3. Animasi badge
-                    this.animateBadges();
-
-                    // 4. Animasi tombol produk
-                    this.animateProductButton(product);
-
-                    // 5. Show notification
-                    this.showSuccessNotification(product);
+                // Method untuk rincian total
+                diskonGlobal: 0,
+                get subtotal() {
+                    return this.cart.reduce((sum, item) => {
+                        const total = (item.total_input || item.price * item.qty) - (item.discount || 0);
+                        return sum + total;
+                    }, 0);
+                },
+                get totalHargaKeseluruhan() {
+                    const diskon = this.diskonGlobal;
+                    if (diskon <= 100) {
+                        // As percent
+                        return Math.round(this.subtotal - (this.subtotal * (diskon / 100)));
+                    }
+                    // As nominal
+                    return Math.max(this.subtotal - diskon, 0);
+                },
+                updateDiskonGlobal(e) {
+                    const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                    this.diskonGlobal = val;
+                },
+                formatRupiah(number) {
+                    number = parseFloat(number || 0);
+                    return number.toLocaleString("id-ID");
                 },
 
-                // Animasi produk terbang ke keranjang
-                createFlyingAnimation(event, product) {
-                    const rect = event.currentTarget.getBoundingClientRect();
+                // Action save Transaction
+                saveTransaction() {
+                    if (this.cart.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Keranjang kosong',
+                            text: 'Silakan tambahkan produk terlebih dahulu!',
+                        });
+                        return;
+                    }
+                    const customerId = document.querySelector('select[name="customer_id"]').value;
+                    const transactionDate = document.querySelector('input[name="date"]').value;
+                    const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
 
-                    this.flyingProductName = product.name;
-                    this.flyingProductStyle = `
-                left: ${rect.left}px; 
-                top: ${rect.top}px;
-                z-index: 9999;
-            `;
+                    const data = {
+                        customer_id: customerId,
+                        date: transactionDate,
+                        invoice_number: invoiceNumber,
+                        items: this.cart,
+                        subtotal: this.subtotal,
+                        discount: this.diskonGlobal,
+                        total: this.totalHargaKeseluruhan,
+                    };
 
-                    this.showFlyingProduct = true;
-
-                    // Hide after animation
-                    setTimeout(() => {
-                        this.showFlyingProduct = false;
-                    }, 800);
+                    // Simulasi kirim ke server
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    fetch('/pos/save-transaction', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Transaksi berhasil disimpan!',
+                            });
+                            // this.resetPOS(); // Reset cart dsb.
+                            window.location.href = '/pos';
+                        })
+                        .catch(err => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menyimpan transaksi.',
+                            });
+                            console.error(err);
+                        });
                 },
+                resetPOS() {
+                    this.cart = [];
+                    this.diskonGlobal = 0;
+                    this.subtotal = 0;
+                    this.totalHargaKeseluruhan = 0;
+                }
 
-                // Animasi badge
-                animateBadges() {
-                    // Animate quantity badge
-                    this.badgeAnimation = true;
-                    setTimeout(() => {
-                        this.badgeAnimation = false;
-                    }, 400);
-
-                    // Animate price badge with delay
-                    setTimeout(() => {
-                        this.priceAnimation = true;
-                        setTimeout(() => {
-                            this.priceAnimation = false;
-                        }, 500);
-                    }, 200);
-                },
-
-                // Animasi tombol produk
-                animateProductButton(product) {
-                    // Set flag untuk animasi bounce
-                    product.isAdding = true;
-
-                    // Reset setelah animasi selesai
-                    setTimeout(() => {
-                        product.isAdding = false;
-                    }, 300);
-                },
-
-                // Show success notification
-                showSuccessNotification(product) {
-                    this.notificationMessage = `${product.name} ditambahkan ke keranjang!`;
-                    this.showNotification = true;
-
-                    // Hide notification after 3 seconds
-                    setTimeout(() => {
-                        this.showNotification = false;
-                    }, 3000);
-                },
             }
         }
     </script>

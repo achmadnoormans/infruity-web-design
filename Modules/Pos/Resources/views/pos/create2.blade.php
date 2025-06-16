@@ -213,6 +213,42 @@
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
+                <div class="accordion mb-3" id="accordionTotal">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTotal">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTotal" aria-expanded="false" aria-controls="collapseTotal">
+                                Rincian Total
+                            </button>
+                        </h2>
+                        <div id="collapseTotal" class="accordion-collapse collapse" aria-labelledby="headingTotal"
+                            data-bs-parent="#accordionTotal">
+                            <div class="accordion-body">
+                                <!-- Subtotal -->
+                                <div class="mb-3 d-flex justify-content-between">
+                                    <span class="fw-semibold">Subtotal</span>
+                                    <span class="text-end">Rp <span x-text="formatRupiah(subtotal)"></span></span>
+                                </div>
+
+                                <!-- Input Diskon -->
+                                <div class="mb-3">
+                                    <label class="form-label mb-1">Diskon (Rp jika > 100, % jika ≤ 100)</label>
+                                    <input type="text" class="form-control text-end" :value="formatRupiah(diskonGlobal)"
+                                        @input="updateDiskonGlobal">
+                                </div>
+
+                                <!-- Total Setelah Diskon -->
+                                <div class="pt-2 border-top mt-3 d-flex justify-content-between">
+                                    <span class="fw-bold">Total Setelah Diskon</span>
+                                    <span class="fw-bold text-end">Rp <span
+                                            x-text="formatRupiah(totalHargaKeseluruhan)"></span></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mt-4 border-top pt-3">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -220,13 +256,13 @@
                         </div>
                         <div class="fw-bold">
                             <span>Rp</span>
-                            <span x-text="totalHargaKeseluruhan"></span>
+                            <span x-text="formatRupiah(totalHargaKeseluruhan)"></span>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col">
-                            <button
-                                class="btn btn-sm btn-outline btn-outline btn-outline-primary btn-active-light-primary w-100">Simpan</button>
+                            <button class="btn btn-sm btn-outline btn-outline-primary btn-active-light-primary w-100"
+                                @click="saveTransaction()">Simpan</button>
                         </div>
                         <div class="col">
                             <button class="btn btn-sm btn-primary w-100">Bayar</button>

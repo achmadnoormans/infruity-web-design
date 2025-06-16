@@ -17,9 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->date('date')->nullable();
             $table->integer('total')->nullable();
+            $table->integer('discount')->nullable();
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
             $table->string('payment_method')->nullable();
+            $table->enum('status', ['draft', 'paid', 'canceled'])->default('draft');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -46,6 +48,7 @@ return new class extends Migration
                 'paid' => 30000,
                 'return' => 10000,
                 'payment_method' => 'cash',
+                'status' => 'paid',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -56,6 +59,7 @@ return new class extends Migration
                 'paid' => 200000,
                 'return' => 40000,
                 'payment_method' => 'transfer',
+                'status' => 'paid',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -200,6 +200,65 @@ class PosController extends Controller
         return view('pos::pos.receipt2', $data);
     }
 
+    public function saveTransaction(Request $request)
+    {
+        // dd($request->all());
+        $data = $request->validate([
+            'customer_id' => 'nullable|exists:customer,id',
+            'date' => 'required|date',
+            'invoice_number' => 'nullable',
+            'items' => 'required|array',
+            'subtotal' => 'required|numeric',
+            'discount' => 'required|numeric',
+            'total' => 'required|numeric',
+        ]);
+
+        try {
+            $userId = Auth::id();
+            DB::beginTransaction();
+            // Simpan ke tabel transaksi (buat dulu kalau belum ada)
+            $pos = new PosModel([
+                'customer_id' => $data['customer_id'],
+                'date' => $data['date'],
+                'subtotal' => $data['subtotal'],
+                'total' => $data['total'],
+                'discount' => $data['discount'],
+                'created_by' => $userId,
+            ]);
+            $pos->save();
+
+            // Simpan item transaksi
+            $transaksiId = $pos->id;
+            foreach ($data['items'] as $item) {
+                PosDetailModel::insert([
+                    'pos_id' => $transaksiId,
+                    'product_id' => $item['id'],
+                    'price' => $item['price'],
+                    'quantity' => $item['qty'],
+                    'discount' => $item['discount'] ?? 0,
+                    'subtotal' => $item['total_input'] ?? ($item['price'] * $item['qty']) - $item['discount'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil disimpan',
+                'transaksi_id' => $transaksiId
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function get_data(Request $request)
     {
         $data = PosModel::with('customer')->get();
@@ -217,19 +276,15 @@ class PosController extends Controller
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->customer->name . '</a>
+                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>
                                 <br>
                                 <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
-                    if ($item->payment_method == 'cash') {
-                        $html .= '<span class="badge badge-light-success">Tunai</span>';
-                    } else if ($item->payment_method == 'transfer') {
-                        $html .= '<span class="badge badge-light-primary">Transfer</span>';
-                    } else if ($item->payment_method == 'qris') {
-                        $html .= '<span class="badge badge-light-info"> QRIS</span>';
-                    } else if ($item->payment_method == 'ewallet') {
-                        $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
+                    if ($item->status == 'paid') {
+                        $html .= '<span class="badge badge-light-success">Paid</span>';
+                    } else if ($item->status == 'draft') {
+                        $html .= '<span class="badge badge-light-danger">Draft</span>';
                     } else {
-                        $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
+                        $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
                     }
                     $html .= '</div>';
                 } else {
@@ -242,16 +297,12 @@ class PosController extends Controller
                                 <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Tidak Ada Customer</a>
                                 <br>
                                 <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
-                    if ($item->payment_method == 'cash') {
-                        $html .= '<span class="badge badge-light-success">Tunai</span>';
-                    } else if ($item->payment_method == 'transfer') {
-                        $html .= '<span class="badge badge-light-primary">Transfer</span>';
-                    } else if ($item->payment_method == 'qris') {
-                        $html .= '<span class="badge badge-light-info">QRIS</span>';
-                    } else if ($item->payment_method == 'ewallet') {
-                        $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
+                    if ($item->status == 'paid') {
+                        $html .= '<span class="badge badge-light-success">Paid</span>';
+                    } else if ($item->status == 'draft') {
+                        $html .= '<span class="badge badge-light-danger">Draft</span>';
                     } else {
-                        $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
+                        $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
                     }
                     $html .= '</div>';
                 }
@@ -265,7 +316,19 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                return dateindo($item->date);
+                $html = '' . dateindo($item->date) . '<br>';
+                if ($item->payment_method == 'cash') {
+                    $html .= '<span class="badge badge-light-success">Tunai</span>';
+                } else if ($item->payment_method == 'transfer') {
+                    $html .= '<span class="badge badge-light-primary">Transfer</span>';
+                } else if ($item->payment_method == 'qris') {
+                    $html .= '<span class="badge badge-light-info">QRIS</span>';
+                } else if ($item->payment_method == 'ewallet') {
+                    $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
+                }
+                return $html;
             })
             ->addColumn('action', function ($item) {
                 $html = '';
@@ -291,7 +354,7 @@ class PosController extends Controller
                     ';
                 return $html;
             })
-            ->rawColumns(['name', 'action'])
+            ->rawColumns(['name', 'action', 'date'])
             ->make(true);
     }
 }
