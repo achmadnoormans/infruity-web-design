@@ -21,12 +21,12 @@ return new class extends Migration
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
             $table->string('payment_method')->nullable();
-            $table->enum('status', ['draft', 'paid', 'canceled'])->default('draft');
+            $table->enum('status', ['draft', 'paid', 'debt', 'canceled'])->default('draft');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
-        
+
         Schema::create('pos_transaction_detail', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pos_id');

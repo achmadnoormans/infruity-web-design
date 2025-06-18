@@ -17,7 +17,24 @@
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
-
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <div class="w-50 mw-150px">
+                        <!--begin::Select2-->
+                        @php
+                            $category = ['draft', 'paid', 'debt', 'canceled'];
+                        @endphp
+                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
+                            <option value="all">All</option>
+                            @foreach ($category as $category)
+                                <option value="{{ $category }}">{{ ucwords($category) }}</option>
+                            @endforeach
+                        </select>
+                        <!--end::Select2-->
+                    </div>
+                </div>
+                <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
@@ -64,6 +81,7 @@
                     url: "{{ route('pos-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
                     }
                 },
                 order: [
@@ -90,10 +108,7 @@
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
-                let val = $(this).val();
-
-                if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(1).search(val).draw();
+                dataTable.draw(); // trigger fetch ulang dari server
             });
         });
 

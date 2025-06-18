@@ -579,6 +579,11 @@
                     //     return;
                     // }
 
+                    if (!name) {
+                        Swal.fire('Lengkapi data', 'Minimal Isi nama.', 'warning');
+                        return;
+                    }
+
                     fetch('/pos/customers', {
                             method: 'POST',
                             headers: {

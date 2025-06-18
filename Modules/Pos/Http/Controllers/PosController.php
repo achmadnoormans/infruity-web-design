@@ -261,7 +261,11 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = PosModel::with('customer')->get();
+        $query = PosModel::with('customer');
+        if ($request->has('status_filter') && $request->status_filter !== 'all') {
+            $query = $query->where('status', $request->status_filter);
+        }
+        $data = $query->get();
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
