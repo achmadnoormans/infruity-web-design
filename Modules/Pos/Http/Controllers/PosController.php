@@ -37,6 +37,7 @@ class PosController extends Controller
     public function create()
     {
         $data['alpinejs'] = true;
+        $data['invoice_number'] = PosModel::getOrderNumber();
         return view('pos::pos.create2', $data);
     }
 
@@ -204,7 +205,8 @@ class PosController extends Controller
     {
         // dd($request->all());
         $data = $request->validate([
-            'customer_id' => 'nullable|exists:customer,id',
+            // 'customer_id' => 'nullable|exists:customer,id',
+            'customer_id' => 'nullable',
             'date' => 'required|date',
             'invoice_number' => 'nullable',
             'items' => 'required|array',
@@ -220,6 +222,7 @@ class PosController extends Controller
             $pos = new PosModel([
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
+                'invoice_number' => PosModel::getOrderNumber(),
                 'subtotal' => $data['subtotal'],
                 'total' => $data['total'],
                 'discount' => $data['discount'],

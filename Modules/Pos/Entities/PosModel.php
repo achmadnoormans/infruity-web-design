@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
+use Illuminate\Support\Facades\DB;
 
 class PosModel extends Model
 {
@@ -13,6 +14,7 @@ class PosModel extends Model
 
     protected $fillable = [
         'customer_id',
+        'invoice_number',
         'date',
         'total',
         'dicount',
@@ -46,5 +48,25 @@ class PosModel extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    public static function getOrderNumber()
+    {
+        $orderData = self::select(DB::raw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) + 1 AS order_number'))
+            ->whereRaw('MONTH(created_at) = MONTH(NOW())')
+            ->whereRaw('YEAR(created_at) = YEAR(NOW())')
+            ->whereRaw('SUBSTRING(invoice_number, 1, 3) = ?', ['INV'])
+            ->orderByRaw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) DESC')
+            ->limit(1)
+            ->first();
+            $orderPad = '001';
+        if ($orderData && $orderData->order_number) {
+            $orderPad = str_pad($orderData->order_number, 3, '0', STR_PAD_LEFT);
+        }
+
+        $prefix = 'INV' . now()->format('Ym');
+        $newCode = $prefix . $orderPad;
+
+        return $newCode;
     }
 }

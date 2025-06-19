@@ -9,12 +9,22 @@
                 data: params => ({
                     search: params.term
                 }),
-                processResults: data => ({
-                    results: data.map(item => ({
+                processResults: data => {
+                    // Tambahkan pelanggan umum di atas
+                    const umum = {
+                        id: '0', // Gunakan string khusus jika perlu dibedakan
+                        text: 'Pelanggan Umum'
+                    };
+
+                    const results = data.map(item => ({
                         id: item.id,
                         text: item.name
-                    }))
-                })
+                    }));
+
+                    return {
+                        results: [umum, ...results]
+                    };
+                }
             }
         });
 

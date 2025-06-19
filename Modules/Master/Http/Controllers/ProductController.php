@@ -472,8 +472,10 @@ class ProductController extends Controller
 
     public function listProduct(Request $request)
     {
-        $search = $request->input('search', '');
-        $query = Product::with('category', 'get_stock', 'unit')->get();
+        $search = $request->input('term', '');
+        $query = Product::with('category', 'get_stock', 'unit')
+            ->where('name', 'like', '%' . $search . '%')
+            ->get();
 
         return response()->json($query);
     }

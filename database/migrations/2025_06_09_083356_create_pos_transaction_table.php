@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->date('date')->nullable();
+            $table->string('invoice_number')->nullable();
             $table->integer('total')->nullable();
             $table->integer('discount')->nullable();
             $table->integer('paid')->nullable();
@@ -44,6 +45,7 @@ return new class extends Migration
             [
                 'customer_id' => 1,
                 'date' => date('Y-m-d'),
+                'invoice_number' => 'INV202506001',
                 'total' => 20000,
                 'paid' => 30000,
                 'return' => 10000,
@@ -55,6 +57,7 @@ return new class extends Migration
             [
                 'customer_id' => 2,
                 'date' => date('Y-m-d'),
+                'invoice_number' => 'INV202506002',
                 'total' => 160000,
                 'paid' => 200000,
                 'return' => 40000,

@@ -133,7 +133,8 @@
                             <label class="required form-label">Nomor Faktur</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                            <input type="text" class="form-control" name="invoice_number">
+                            <input type="text" class="form-control" name="invoice_number" value="{{ $invoice_number }}"
+                                readonly>
                             <!--end::Editor-->
                         </div>
                     </div>
@@ -173,10 +174,8 @@
                                             <div class="mb-2">
                                                 <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
                                                 <small class="text-muted d-flex">
-                                                    Qty : <span x-text="item.qty"></span>
-                                                </small>
-                                                <small class="text-muted d-flex">
-                                                    Harga <span x-text="item.price.toLocaleString()"></span>
+                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>) @
+                                                    <span x-text="item.price.toLocaleString()"></span>
                                                 </small>
                                                 <small class="text-muted">
                                                     Discount <span x-text="item.discount.toLocaleString()"></span>
