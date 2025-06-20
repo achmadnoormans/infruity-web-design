@@ -534,6 +534,7 @@
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
                         total: this.totalHargaKeseluruhan,
+                        status: 'draft',
                     };
 
                     // Simulasi kirim ke server
@@ -566,6 +567,64 @@
                             console.error(err);
                         });
                 },
+                // Pembayaran 
+                goToPayment() {
+                    if (this.cart.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Keranjang kosong',
+                            text: 'Silakan tambahkan produk terlebih dahulu!',
+                        });
+                        return;
+                    }
+                    const customerId = document.querySelector('select[name="customer_id"]').value;
+                    const transactionDate = document.querySelector('input[name="date"]').value;
+                    const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+
+                    const data = {
+                        customer_id: customerId,
+                        date: transactionDate,
+                        invoice_number: invoiceNumber,
+                        items: this.cart,
+                        subtotal: this.subtotal,
+                        discount: this.diskonGlobal,
+                        total: this.totalHargaKeseluruhan,
+                        status: 'paid',
+                    };
+
+                    // Simulasi kirim ke server
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    fetch('/pos/save-transaction', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Transaksi berhasil disimpan!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            // this.resetPOS(); // Reset cart dsb.
+                            window.location.href = `/pos/payment/${res.transaksi_id}`;
+                        })
+                        .catch(err => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menyimpan transaksi.',
+                            });
+                            console.error(err);
+                        });
+                },
+
                 resetPOS() {
                     this.cart = [];
                     this.diskonGlobal = 0;

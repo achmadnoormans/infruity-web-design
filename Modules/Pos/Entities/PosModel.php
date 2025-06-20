@@ -18,6 +18,7 @@ class PosModel extends Model
         'date',
         'total',
         'dicount',
+        'status',
         'created_by'
     ];
     protected $table = 'pos_transaction';

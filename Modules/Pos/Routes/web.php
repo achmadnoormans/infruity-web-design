@@ -23,5 +23,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/{id}/receipt', [PosController::class, 'showReceipt'])->name('pos.receipt');
     Route::post('pos/save-transaction', [PosController::class, 'saveTransaction'])->name('pos.receipt');
     Route::post('/pos/customers', [CustomerController::class, 'storeCustomer']);
+    Route::get('pos/payment/{id}', [PosController::class, 'payment'])->name('pos.payment');
 
 });

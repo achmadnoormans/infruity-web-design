@@ -166,7 +166,7 @@
 
                         <div id="cart-items-container">
                             <template x-for="(item, index) in cart" :key="item.id">
-                                <div class="card card-body mb-3 cart-item">
+                                <div class="card mb-3 p-4 cart-item">
                                     <!-- Mobile Layout (Stack Vertically) -->
                                     <div class="d-block d-lg-none" @click="openEditModal(item)">
                                         <!-- Product Name & Price -->
@@ -275,7 +275,7 @@
                                 @click="saveTransaction()">Simpan</button>
                         </div>
                         <div class="col">
-                            <button class="btn btn-sm btn-primary w-100">Bayar</button>
+                            <button class="btn btn-sm btn-primary w-100" @click="goToPayment()">Bayar</button>
                         </div>
                     </div>
                 </div>

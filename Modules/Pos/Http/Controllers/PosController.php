@@ -26,8 +26,7 @@ class PosController extends Controller
      */
     public function index()
     {
-        $data['alpinejs'] = true;
-        return view('pos::pos.index2', $data);
+        return view('pos::pos.index2');
     }
 
     /**
@@ -213,6 +212,7 @@ class PosController extends Controller
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
             'total' => 'required|numeric',
+            'status' => 'nullable|in:draft,paid,unpaid',
         ]);
 
         try {
@@ -226,6 +226,7 @@ class PosController extends Controller
                 'subtotal' => $data['subtotal'],
                 'total' => $data['total'],
                 'discount' => $data['discount'],
+                'status' => $data['status'] ?? 'draft',
                 'created_by' => $userId,
             ]);
             $pos->save();
@@ -260,6 +261,15 @@ class PosController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function payment($id)
+    {
+        $data['alpinejs'] = true;
+        $data['data'] = PosModel::with('customer')->findOrFail($id);
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        // dd($data);
+        return view('pos::pos.payment', $data);
     }
 
     public function get_data(Request $request)
