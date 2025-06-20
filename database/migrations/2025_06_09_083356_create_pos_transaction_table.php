@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('discount')->nullable();
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
-            $table->string('payment_method')->nullable();
+            $table->integer('payment_method')->nullable();
             $table->enum('status', ['draft', 'paid', 'debt', 'canceled'])->default('draft');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -41,6 +41,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('pos_payment', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('pos_id');
+            $table->integer('total');
+            $table->integer('payment_method');
+            $table->integer('branch_id')->nullable();
+            $table->date('date')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+        });
+
         DB::table('pos_transaction')->insert([
             [
                 'customer_id' => 1,
@@ -49,7 +61,7 @@ return new class extends Migration
                 'total' => 20000,
                 'paid' => 30000,
                 'return' => 10000,
-                'payment_method' => 'cash',
+                'payment_method' => 1,
                 'status' => 'paid',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -61,7 +73,7 @@ return new class extends Migration
                 'total' => 160000,
                 'paid' => 200000,
                 'return' => 40000,
-                'payment_method' => 'transfer',
+                'payment_method' => 2,
                 'status' => 'paid',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -99,5 +111,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('pos_transaction');
         Schema::dropIfExists('pos_transaction_detail');
+        Schema::dropIfExists('pos_payment');
     }
 };

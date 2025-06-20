@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
+use Modules\Pos\Entities\Payment;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -166,30 +167,76 @@ class PosController extends Controller
         }
     }
 
-    public function savePayment(Request $request, $id)
+    public function savePayment(Request $request)
     {
-        // dd($request->all(), $id);
-        $request->validate([
-            'payment_method' => 'required|in:cash,transfer,qris,ewallet',
-            'paid_amount' => 'required|numeric|min:1',
+        // dd($request->all());
+        $data = $request->validate([
+            'date' => 'required|date',
+            'transaction_id' => 'required|exists:pos_transaction,id',
+            'branch_id' => 'required|exists:branch,id',
+            // 'account_id' => 'required|exists:account,id',
+            'payment_id' => 'required|exists:payment_method,id',
+            'total_payment' => 'required|numeric|min:1',
         ]);
 
         try {
             DB::beginTransaction();
-            $pos = PosModel::findOrFail($id);
+
+            // Simpan ke tabel pembayaran
+            $payment = new Payment([
+                'date' => $data['date'],
+                'pos_id' => $data['transaction_id'],
+                'branch_id' => $data['branch_id'],
+                // 'account_id' => $data['account_id'],
+                'payment_method' => $data['payment_id'],
+                'total' => $data['total_payment'],
+                'created_by' => Auth::user()->id_user,
+            ]);
+            // dd($payment);
+            $payment->save();
+
+            $totalPayment = Payment::where('pos_id', $data['transaction_id'])
+                ->sum('total');
+
+            $pos = PosModel::findOrFail($data['transaction_id']);
             $total = $pos->total;
-            $pos->payment_method = $request->payment_method;
-            $pos->paid = $request->paid_amount;
-            $pos->return = $request->paid_amount - $total;
+            $pos->paid = $totalPayment;
+            if ($totalPayment > $total) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Total pembayaran tidak boleh lebih dari total transaksi.',
+                ], 500);
+            }
+            $status = 'debt';
+            if ($totalPayment == $total) {
+                $status = 'paid';
+            }
+            $pos->status = $status;
             $pos->save();
-            // dd($pos);
             DB::commit();
-            // return redirect('pos/' . $id . '/receipt')->with('success', 'Pembayaran berhasil disimpan.');
-            return redirect()->route('pos.index')->with('success', 'Pembayaran berhasil disimpan.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil disimpan',
+                'payment' => $payment,
+                'pos' => $pos,
+            ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Gagal menyimpan pembayaran: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan transaksi',
+                'error' => $e->getMessage()
+            ], 500);
         }
+    }
+
+    public function listPayment($id)
+    {
+        $payments = Payment::with('paymentMethod')->where('pos_id', $id)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return response()->json($payments);
     }
 
     public function showReceipt($id)
@@ -358,6 +405,11 @@ class PosController extends Controller
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
+                                    <i class="bi bi-cash-stack"></i>
                                 </a>
                             </li>
                             
