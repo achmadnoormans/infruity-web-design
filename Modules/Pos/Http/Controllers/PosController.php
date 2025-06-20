@@ -321,7 +321,7 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer');
+        $query = PosModel::with('customer', 'payment');
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -381,17 +381,7 @@ class PosController extends Controller
             })
             ->addColumn('date', function ($item) {
                 $html = '' . dateindo($item->date) . '<br>';
-                if ($item->payment_method == 'cash') {
-                    $html .= '<span class="badge badge-light-success">Tunai</span>';
-                } else if ($item->payment_method == 'transfer') {
-                    $html .= '<span class="badge badge-light-primary">Transfer</span>';
-                } else if ($item->payment_method == 'qris') {
-                    $html .= '<span class="badge badge-light-info">QRIS</span>';
-                } else if ($item->payment_method == 'ewallet') {
-                    $html .= '<span class="badge badge-light-warning">E-Wallet</span>';
-                } else {
-                    $html .= '<span class="badge badge-light-danger">' . $item->payment_method . '</span>';
-                }
+                $html .= '<span class="badge badge-light-primary">'. $item->payment->name .'</span>';
                 return $html;
             })
             ->addColumn('action', function ($item) {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
+use Modules\Master\Entities\PaymentMethod;
 use Illuminate\Support\Facades\DB;
 
 class PosModel extends Model
@@ -50,6 +51,12 @@ class PosModel extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
+
+    public function payment()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method');
+    }
+
 
     public static function getOrderNumber()
     {
