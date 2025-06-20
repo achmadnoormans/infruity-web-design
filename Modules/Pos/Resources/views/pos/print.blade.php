@@ -352,6 +352,7 @@
     </div>
 
     <button class="print-button" onclick="window.print()">Cetak Receipt</button>
+    <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
 
     <script>
         // Auto print jika ada parameter print=true di URL

@@ -410,6 +410,11 @@ class PosController extends Controller
                                     <i class="bi bi-cash-stack"></i>
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
+                                    <i class="fa fa-receipt"></i>
+                                </a>
+                            </li>
                             
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
