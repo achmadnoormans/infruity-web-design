@@ -26,5 +26,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/payment/{id}', [PosController::class, 'payment'])->name('pos.payment');
     Route::post('pos/savePayment', [PosController::class, 'savePayment'])->name('pos.savePayment');
     Route::get('pos/listPayment/{id}', [PosController::class, 'listPayment'])->name('pos.listPayment');
+    Route::get('pos/printPayment/{id}', [PosController::class, 'printPayment'])->name('pos.printPayment');
 
 });

@@ -259,7 +259,7 @@ class PosController extends Controller
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
             'total' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,unpaid',
+            'status' => 'nullable|in:draft,paid,debt',
         ]);
 
         try {
@@ -317,6 +317,14 @@ class PosController extends Controller
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         // dd($data);
         return view('pos::pos.payment', $data);
+    }
+
+    public function printPayment($id)
+    {
+        $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        // dd($data);
+        return view('pos::pos.print', $data);
     }
 
     public function get_data(Request $request)

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
 use Modules\Master\Entities\PaymentMethod;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class PosModel extends Model
 {
@@ -18,7 +19,7 @@ class PosModel extends Model
         'invoice_number',
         'date',
         'total',
-        'dicount',
+        'discount',
         'status',
         'created_by'
     ];
@@ -55,6 +56,11 @@ class PosModel extends Model
     public function payment()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 

@@ -120,8 +120,18 @@
                 </div>
             </div>
         </div>
-        <div class="card-body d-flex">
-            <button type="submit" class="btn btn-primary flex-fill" @click="submitPayment()">Bayar</button>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-9">
+                    <button type="submit" class="btn btn-primary w-100" @click="submitPayment()"><i
+                            class="bi bi-cash-stack"></i> Bayar</button>
+                </div>
+                <div class="col-3">
+                    <a href="{{ route('pos.printPayment', $data->id) }}" class="btn btn-success w-100">
+                        <i class="fa-solid fa-print"></i>
+                    </a>
+                </div>
+            </div>
         </div>
 
     </div>

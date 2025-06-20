@@ -590,7 +590,7 @@
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
                         total: this.totalHargaKeseluruhan,
-                        status: 'paid',
+                        status: 'debt',
                     };
 
                     // Simulasi kirim ke server
@@ -613,8 +613,9 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+                            console.log(res);
                             // this.resetPOS(); // Reset cart dsb.
-                            window.location.href = `/pos/payment/${res.transaksi_id}`;
+                            // window.location.href = `/pos/payment/${res.transaksi_id}`;
                         })
                         .catch(err => {
                             Swal.fire({

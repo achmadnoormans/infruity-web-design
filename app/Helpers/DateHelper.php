@@ -143,7 +143,7 @@ if (!function_exists('tonumberround')) {
     function tonumberround($data)
     {
 
-        $data = number_format($data, 2, ',', '.');
+        $data = number_format($data, 0, ',', '.');
         return $data;
 
     }
