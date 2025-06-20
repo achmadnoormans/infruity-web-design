@@ -39,7 +39,17 @@
                 }
             }
         });
-
+        $.ajax({
+            url: '{{ route('ajax.getBranch') }}',
+            dataType: 'json',
+            success: function(data) {
+                const defaultBranch = data.find(item => item.id === 1);
+                if (defaultBranch) {
+                    const option = new Option(defaultBranch.name, defaultBranch.id, true, true);
+                    $('#branch_id').append(option).trigger('change');
+                }
+            }
+        });
 
         function posApp() {
             return {

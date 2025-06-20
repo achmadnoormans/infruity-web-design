@@ -28,6 +28,7 @@
             }
         });
 
+        $('#customer_id').append(new Option('Pelanggan Umum', '0', true, true)).trigger('change');
 
         function posApp() {
             return {

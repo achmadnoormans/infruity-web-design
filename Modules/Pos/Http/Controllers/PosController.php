@@ -381,7 +381,7 @@ class PosController extends Controller
             })
             ->addColumn('date', function ($item) {
                 $html = '' . dateindo($item->date) . '<br>';
-                $html .= '<span class="badge badge-light-primary">'. $item->payment->name .'</span>';
+                // $html .= '<span class="badge badge-light-primary">'. $item->payment->name .'</span>';
                 return $html;
             })
             ->addColumn('action', function ($item) {
