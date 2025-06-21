@@ -18,8 +18,22 @@
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
+                <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="w-50 mw-150px">
+                    <div class="input-group mw-350px">
+                        <input class="form-control form-control-solid rounded rounded-end-0" placeholder="Pick date range"
+                            id="kt_ecommerce_sales_flatpickr" />
+                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                            <i class="ki-duotone ki-cross fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        </button>
+                    </div>
+                </div>
+                <!--end::Card toolbar-->
+                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <div class="w-100 mw-150px">
                         <!--begin::Select2-->
                         @php
                             $category = ['draft', 'paid', 'debt', 'canceled'];
@@ -43,7 +57,7 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="pos-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th class="text-start min-w-200px">Name</th>
+                            <th class="text-start min-w-150px">Name</th>
                             <th class="text-start min-w-100px">Date</th>
                             <th class="text-end"></th>
                         </tr>
@@ -82,6 +96,12 @@
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
+                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        if (range) {
+                            var dates = range.split(' to ');
+                            d.start_date = dates[0];
+                            d.end_date = dates[1] ?? dates[0]; // jika hanya pilih 1 tanggal
+                        }
                     }
                 },
                 order: [
@@ -109,6 +129,16 @@
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+                altInput: !0,
+                altFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
+                mode: "range",
+                onChange: function(e, t, n) {
+                    dataTable.draw();
+                }
             });
         });
 

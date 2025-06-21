@@ -30,6 +30,11 @@ class PosModel extends Model
         return $this->hasMany(PosDetailModel::class, 'pos_id', 'id');
     }
 
+    public function paymentDetails(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'pos_id', 'id');
+    }
+
     // Total Quantity
     public function getTotalQuantityAttribute()
     {
@@ -46,6 +51,18 @@ class PosModel extends Model
     public function getTotalDiscountAttribute()
     {
         return $this->details->sum('discount');
+    }
+
+    // Total Payment
+    public function getTotalPaymentAttribute()
+    {
+        return $this->paymentDetails->sum('total');
+    }
+
+    // Total Due
+    public function getTotalDueAttribute()
+    {
+        return $this->total - $this->getTotalPaymentAttribute();
     }
 
     public function customer()

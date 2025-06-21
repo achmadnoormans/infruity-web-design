@@ -613,9 +613,9 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                            console.log(res);
+                            // console.log(res);
                             // this.resetPOS(); // Reset cart dsb.
-                            // window.location.href = `/pos/payment/${res.transaksi_id}`;
+                            window.location.href = `/pos/payment/${res.transaksi_id}`;
                         })
                         .catch(err => {
                             Swal.fire({

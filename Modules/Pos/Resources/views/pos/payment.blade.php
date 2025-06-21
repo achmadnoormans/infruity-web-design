@@ -71,7 +71,7 @@
                         Kurang bayar senilai Rp. <span x-text="formatRupiah(Math.abs(paymentDifference))"></span>
                     </small>
                     <small class="text-success" x-show="paymentDifference > 0">
-                        Kelebihan bayar senilai Rp. <span x-text="formatRupiah(paymentDifference)"></span>
+                        Uang Kembalian Rp. <span x-text="formatRupiah(paymentDifference)"></span>
                     </small>
                 </div>
             </div>

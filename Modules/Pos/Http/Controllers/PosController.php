@@ -27,7 +27,8 @@ class PosController extends Controller
      */
     public function index()
     {
-        return view('pos::pos.index2');
+        $data['alpinejs'] = true;
+        return view('pos::pos.index2', $data);
     }
 
     /**
@@ -333,51 +334,24 @@ class PosController extends Controller
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
         $data = $query->get();
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $colors = ['warning', 'success', 'info', 'primary'];
-                $color = $colors[$item->id % count($colors)];
                 $html = '<div class="d-flex align-items-center">';
+                $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= '<div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '">
-                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr($item->customer->name, 0, 1)) . '</div>
-                                </a>
-                            </div>
-                            <div class="ms-5">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>
-                                <br>
-                                <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
-                    if ($item->status == 'paid') {
-                        $html .= '<span class="badge badge-light-success">Paid</span>';
-                    } else if ($item->status == 'draft') {
-                        $html .= '<span class="badge badge-light-danger">Draft</span>';
-                    } else {
-                        $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
-                    }
-                    $html .= '</div>';
+                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
                 } else {
-                    $html .= '<div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '">
-                                    <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . strtoupper(substr('#', 0, 1)) . '</div>
-                                </a>
-                            </div>
-                            <div class="ms-5">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>
-                                <br>
-                                <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
-                    if ($item->status == 'paid') {
-                        $html .= '<span class="badge badge-light-success">Paid</span>';
-                    } else if ($item->status == 'draft') {
-                        $html .= '<span class="badge badge-light-danger">Draft</span>';
-                    } else {
-                        $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
-                    }
-                    $html .= '</div>';
+                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
+                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . toNumber($item->total) . '</span>';
+                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . toNumber($item->total_due) . '</span>';
+                $html .= '</div>';
                 $html .= '</div>';
                 return $html;
             })
@@ -388,8 +362,14 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '' . dateindo($item->date) . '<br>';
-                // $html .= '<span class="badge badge-light-primary">'. $item->payment->name .'</span>';
+                $html = '<span class="text-muted fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
+                if ($item->status == 'paid') {
+                    $html .= '<span class="badge badge-light-success">Paid</span>';
+                } else if ($item->status == 'draft') {
+                    $html .= '<span class="badge badge-light-danger">Draft</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
+                }
                 return $html;
             })
             ->addColumn('action', function ($item) {

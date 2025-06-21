@@ -278,7 +278,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Kasir</span>
-                    <span class="info-value">: {{ $data->user->nm_user }}</span>
+                    <span class="info-value">: {{ $data->user->nm_user ?? 'Admin' }}</span>
                 </div>
             </div>
 
