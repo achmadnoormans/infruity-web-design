@@ -366,7 +366,7 @@ class PosController extends Controller
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Tidak Ada Customer</a>
+                                <a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>
                                 <br>
                                 <span class="text-muted d-block fs-7">Rp' . toNumber($item->total) . '</span>';
                     if ($item->status == 'paid') {
