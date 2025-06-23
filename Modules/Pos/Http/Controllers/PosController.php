@@ -328,6 +328,27 @@ class PosController extends Controller
         return view('pos::pos.print', $data);
     }
 
+    public function uploadReceipt(Request $request)
+    {
+        $image = $request->input('image');
+        if (!$image)
+            return response()->json(['error' => 'No image'], 400);
+
+        // Pisahkan data:image/png;base64,
+        $image_parts = explode(";base64,", $image);
+        $image_base64 = base64_decode($image_parts[1]);
+        $fileName = 'receipt_' . time() . '.png';
+
+        // Simpan di public/storage/receipts
+        $filePath = public_path('storage/receipts/' . $fileName);
+        file_put_contents($filePath, $image_base64);
+        
+        return response()->json([
+            'url' => asset('storage/receipts/' . $fileName),
+        ]);
+    }
+
+
     public function get_data(Request $request)
     {
         $query = PosModel::with('customer', 'payment');

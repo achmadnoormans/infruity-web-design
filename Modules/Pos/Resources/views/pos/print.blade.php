@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
     <title>Receipt - Invoice #12345</title>
     <style>
         * {
@@ -13,7 +16,7 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto', Arial, Helvetica, sans-serif;
             background-color: #fff;
             padding: 20px;
             line-height: 1.3;
@@ -37,7 +40,7 @@
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 8px;
-            text-transform: uppercase;
+
         }
 
         .store-info {
@@ -81,7 +84,7 @@
             font-size: 12px;
             font-weight: bold;
             margin-bottom: 5px;
-            text-transform: uppercase;
+
         }
 
         .customer-name {
@@ -99,7 +102,7 @@
             font-weight: bold;
             text-align: center;
             margin: 15px 0 8px 0;
-            text-transform: uppercase;
+
         }
 
         .items-table {
@@ -148,7 +151,8 @@
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 3px;
+            margin-top: 5px;
+            margin-bottom: 5px;
             font-size: 12px;
         }
 
@@ -161,11 +165,11 @@
         }
 
         .total-row {
-            border-top: 1px solid #000;
-            padding-top: 5px;
-            margin-top: 8px;
+            border-top: 1px dashed #000;
+            padding-top: 15px;
+            margin-top: 10px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 16px;
         }
 
         .receipt-footer {
@@ -178,30 +182,44 @@
         .thank-you {
             font-weight: bold;
             margin-bottom: 8px;
-            text-transform: uppercase;
+
         }
 
         .footer-note {
             margin-bottom: 3px;
         }
 
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
         .print-button {
-            background: #fff;
-            color: #000;
-            border: 2px solid #000;
-            padding: 10px 20px;
-            font-size: 12px;
+            background: #ffffff;
+            color: #333;
+            border: 2px solid #333;
+            padding: 10px 15px;
+            font-size: 13px;
             font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
-            margin: 20px auto;
-            display: block;
-            font-family: 'Courier New', monospace;
-            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
         .print-button:hover {
-            background: #f0f0f0;
+            background-color: #333;
+            color: #fff;
         }
+
+        @media print {
+            .button-group {
+                display: none;
+            }
+        }
+
 
         /* Responsive Design */
         @media (max-width: 480px) {
@@ -260,7 +278,7 @@
             <div class="store-name">in!fruity</div>
             <div class="store-info">
                 Jl. Merdeka No. 123, Surabaya<br>
-                Telp: (031) 123-4567<br>
+                instagram: @infruity<br>
             </div>
         </div>
 
@@ -269,16 +287,28 @@
             <!-- Invoice Info -->
             <div class="section">
                 <div class="info-row">
-                    <span class="info-label">No. Nota</span>
-                    <span class="info-value">: {{ $data->invoice_number }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Tanggal</span>
-                    <span class="info-value">: {{ dateindo($data->date) }}</span>
-                </div>
-                <div class="info-row">
                     <span class="info-label">Kasir</span>
-                    <span class="info-value">: {{ $data->user->nm_user ?? 'Admin' }}</span>
+                    <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Waktu</span>
+                    <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">No. Nota</span>
+                    <span class="info-value">{{ $data->invoice_number }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Pelanggan</span>
+                    <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Class</span>
+                    <span class="info-value">Silver Member</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Exp</span>
+                    <span class="info-value">50/100</span>
                 </div>
             </div>
 
@@ -294,29 +324,32 @@
 
             <div class="section-divider"></div>
 
-            <!-- Items -->
-            <div class="items-header">Detail Pembelian</div>
-
-            <div class="items-table">
-                <div class="items-table-header">
-                    <div class="table-row">
-                        <div class="item-name"><strong>Item</strong></div>
-                        <div class="item-qty"><strong>Qty</strong></div>
-                        <div class="item-price"><strong>Harga</strong></div>
-                        <div class="item-total"><strong>Total</strong></div>
-                    </div>
-                </div>
-
+            <div style="text-align: left; font-size: 12px; margin: 10px 0;">
                 @isset($detail)
                     @foreach ($detail as $item)
-                        <div class="table-row">
-                            <div class="item-name">{{ $item->product->name }}</div>
-                            <div class="item-qty">
-                                {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
-                            </div>
-                            <div class="item-price">{{ tonumberround($item->price) }}</div>
-                            <div class="item-total">{{ tonumberround($item->subtotal) }}</div>
-                        </div>
+                        <table width="100%">
+                            <tr>
+                                <td colspan="2">{{ $item->product->name }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {{ tonumberround($item->price) }} x
+                                    {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
+                                </td>
+                                <td style="text-align: right">{{ tonumberround($item->subtotal) }}</td>
+                            </tr>
+                            @isset($item->discount)
+                                @if ($item->discount > 0)
+                                    <tr>
+                                        <td>Diskon</td>
+                                        <td style="text-align: right">-{{ tonumberround($item->discount) }}</td>
+                                    </tr>
+                                @endif
+                            @endisset
+                            <tr>
+                                <td></td>
+                            </tr>
+                        </table>
                     @endforeach
                 @endisset
             </div>
@@ -324,35 +357,41 @@
             <!-- Summary -->
             <div class="summary-section">
                 <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value">Rp {{ tonumberround($data->total + $data->discount) }}</span>
+                    <span>Subtotal</span>
+                    <span>{{ tonumberround($data->total + $data->discount) }}</span>
                 </div>
                 <div class="summary-row">
-                    <span class="summary-label">Diskon</span>
-                    <span class="summary-value">Rp {{ tonumberround($data->discount) }}</span>
+                    <span>Diskon</span>
+                    <span>-{{ tonumberround($data->discount) }}</span>
                 </div>
                 <div class="summary-row total-row">
-                    <span class="summary-label">TOTAL BAYAR</span>
-                    <span class="summary-value">Rp {{ tonumberround($data->total) }}</span>
+                    <span>Total ({{ count($detail) }} Produk)</span>
+                    <span>{{ tonumberround($data->total) }}</span>
                 </div>
+            </div>
+            <div class="summary-section ">
                 <div class="summary-row">
-                    <span class="summary-label">Dibayar</span>
-                    <span class="summary-value">Rp {{ tonumberround($data->paid) }}</span>
+                    <span>Bayar</span>
+                    <span>-{{ tonumberround($data->paid) }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
         <div class="receipt-footer">
-            <div class="thank-you">Terima Kasih</div>
-            <div class="footer-note">Jangan lupa beli lagi</div>
-            <div class="footer-note">Powered by : Infruity</div>
-            <div class="footer-note">{{ now()->format('d/m/Y H:i:s') }}</div>
+            <div class="thank-you">Terima Kasih Sudah Berbelanja</div>
+            <div class="footer-note">-</div>
         </div>
     </div>
 
-    <button class="print-button" onclick="window.print()">Cetak Receipt</button>
-    <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
+    <div class="button-group">
+        <button class="print-button" onclick="window.print()">Cetak Receipt</button>
+        <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
+        <button class="print-button" onclick="downloadReceiptAsPNG()">Download PNG</button>
+        <button class="print-button" onclick="sendReceiptToWA()">Kirim ke WhatsApp</button>
+    </div>
+
+
 
     <script>
         // Auto print jika ada parameter print=true di URL
@@ -369,6 +408,56 @@
             setTimeout(() => {
                 window.close();
             }, 1000);
+        }
+
+        function downloadReceiptAsPNG() {
+            const receipt = document.querySelector('.receipt-container');
+            html2canvas(receipt, {
+                scale: 2, // Lebih tajam
+                backgroundColor: '#fff',
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'receipt_{{ $data->invoice_number ?? 'invoice' }}.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function sendReceiptToWA() {
+            const receipt = document.querySelector('.receipt-container');
+            html2canvas(receipt, {
+                scale: 2,
+                backgroundColor: '#fff',
+            }).then(canvas => {
+                const base64Image = canvas.toDataURL('image/png');
+
+                fetch('/upload-receipt', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            image: base64Image
+                        }),
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.url) {
+                            const message = encodeURIComponent(
+                                `Halo, berikut bukti transaksi Anda:\n${data.url}`);
+                            const phone = '6281230607050'; // Ganti dengan nomor tujuan
+                            const waUrl = `https://wa.me/${phone}?text=${message}`;
+                            window.open(waUrl, '_blank');
+                        } else {
+                            alert('Gagal upload gambar.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Terjadi kesalahan saat mengirim ke WhatsApp.');
+                    });
+            });
         }
     </script>
 </body>
