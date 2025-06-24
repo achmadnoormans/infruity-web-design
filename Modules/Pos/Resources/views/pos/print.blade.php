@@ -275,11 +275,7 @@
     <div class="receipt-container">
         <!-- Header -->
         <div class="receipt-header">
-            <div class="store-name">in!fruity</div>
-            <div class="store-info">
-                Jl. Merdeka No. 123, Surabaya<br>
-                instagram: @infruity<br>
-            </div>
+            {!! $setting->header !!}
         </div>
 
         <!-- Body -->
@@ -379,8 +375,7 @@
 
         <!-- Footer -->
         <div class="receipt-footer">
-            <div class="thank-you">Terima Kasih Sudah Berbelanja</div>
-            <div class="footer-note">-</div>
+            {!! $setting->footer !!}
         </div>
     </div>
 

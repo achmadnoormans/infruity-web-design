@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
 use Modules\Pos\Entities\Payment;
+use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -323,6 +324,7 @@ class PosController extends Controller
     public function printPayment($id)
     {
         $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         // dd($data);
         return view('pos::pos.print', $data);
