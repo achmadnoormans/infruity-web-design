@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('setting_nota', function (Blueprint $table) {
             $table->id();
             $table->string('logo')->nullable();
+            $table->boolean('is_using_logo')->default(false);
             $table->string('header')->nullable();
             $table->string('footer')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

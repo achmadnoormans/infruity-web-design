@@ -74,11 +74,18 @@ class SettingNotaController extends Controller
         // dd($request->all());
         DB::beginTransaction();
         try {
-            $userId = Auth::id(); // Ambil user sekali
-            $settingNota = new SettingNota([
-                'header' => $request->header,
-                'footer' => $request->footer,
-            ]);
+            $settingNota = SettingNota::findOrFail($id);
+            $settingNota->logo = $request->file('logo') ? $request->file('logo')->store('setting-nota', 'public') : $settingNota->logo;
+            $settingNota->header = $request->header;
+            $settingNota->footer = $request->footer;
+            $settingNota->is_using_logo = $request->logo_option == 1 ? true : false;
+            $settingNota->updated_by = Auth::id();
+            
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('logo', 'public');
+                $settingNota->logo = $path;
+                // $product->save();
+            }
             $settingNota->save();
 
             DB::commit();

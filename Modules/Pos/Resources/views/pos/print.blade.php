@@ -176,7 +176,7 @@
             text-align: center;
             padding: 15px 10px;
             border-top: 1px dashed #000;
-            font-size: 11px;
+            font-size: 13px;
         }
 
         .thank-you {
@@ -274,6 +274,11 @@
 <body>
     <div class="receipt-container">
         <!-- Header -->
+        @if ($setting->is_using_logo && $setting->logo)
+            <div class="receipt-header">
+                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" style="max-width: 100%; height: auto;">
+            </div>
+        @endif
         <div class="receipt-header">
             {!! $setting->header !!}
         </div>
