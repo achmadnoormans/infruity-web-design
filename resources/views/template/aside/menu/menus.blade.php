@@ -431,4 +431,15 @@
         <span class="menu-title">Pos App</span>
     </a>
     <!--end:Menu link-->
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'setting-nota' ? 'active' : '' }}" href="{{ url('setting-nota') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Setting Nota</span>
+    </a>
+    <!--end:Menu link-->
 </div>

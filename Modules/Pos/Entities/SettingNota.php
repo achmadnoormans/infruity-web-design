@@ -9,7 +9,12 @@ class SettingNota extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'header',
+        'footer',
+        'craeated_by',
+        'updated_by',
+    ];
     protected $table = 'setting_nota';
     
     protected static function newFactory()

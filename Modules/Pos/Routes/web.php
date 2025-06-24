@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Modules\Pos\Http\Controllers\PosController;
+use Modules\Pos\Http\Controllers\SettingNotaController;
 use Modules\Master\Http\Controllers\CustomerController;
 
 /*
@@ -28,4 +29,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/listPayment/{id}', [PosController::class, 'listPayment'])->name('pos.listPayment');
     Route::get('pos/printPayment/{id}', [PosController::class, 'printPayment'])->name('pos.printPayment');
     Route::post('/upload-receipt', [PosController::class, 'uploadReceipt']);
+    Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
 });
