@@ -79,9 +79,19 @@ FROM
 		'production-detail' 
 	FROM
 		production_detail
-		JOIN production ON production.id = production_detail.production_id 
+		JOIN production ON production.id = production_detail.production_id UNION ALL-- 		DETAIL POS
+	SELECT
+		pos_transaction_detail.product_id,
+		- pos_transaction_detail.quantity,
+		pos_transaction_detail.price,
+		pos_transaction.date,
+		'pos' 
+	FROM
+		pos_transaction_detail
+	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id 
 	) AS Q;
 
+-- Sortir view
 DROP VIEW IF EXISTS sortir_view;
 CREATE VIEW sortir_view AS
 SELECT

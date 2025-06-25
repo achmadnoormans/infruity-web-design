@@ -68,10 +68,12 @@
                     {
                         data: 'date',
                         name: 'date',
+                        className: 'text-end'
                     },
                     {
                         data: 'reff',
                         name: 'reff',
+                        className: 'text-end'
                     },
 
                 ],
