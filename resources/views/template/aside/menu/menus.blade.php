@@ -256,6 +256,19 @@
     </a>
     <!--end:Menu link-->
 </div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'branch' ? 'active' : '' }}" href="{{ url('branch') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Branch</span>
+    </a>
+    <!--end:Menu link-->
+</div>
 <div class="menu-item pt-5">
     <!--begin:Menu content-->
     <div class="menu-content">
