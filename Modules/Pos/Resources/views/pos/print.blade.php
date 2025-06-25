@@ -276,12 +276,13 @@
         <!-- Header -->
         @if ($setting->is_using_logo && $setting->logo)
             <div class="receipt-header">
-                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" style="max-width: 100%; height: auto;">
+                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" style="max-width: 20%; height: auto;">
+            </div>
+        @else
+            <div class="receipt-header">
+                {!! $setting->header !!}
             </div>
         @endif
-        <div class="receipt-header">
-            {!! $setting->header !!}
-        </div>
 
         <!-- Body -->
         <div class="receipt-body">
