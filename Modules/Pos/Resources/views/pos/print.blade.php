@@ -16,11 +16,11 @@
         }
 
         body {
-            font-family: 'Roboto', Arial, Helvetica, sans-serif;
+            font-family: 'Roboto';
             background-color: #fff;
             padding: 20px;
             line-height: 1.3;
-            color: #000;
+            color: #5f5d5d;
         }
 
         .receipt-container {
@@ -73,7 +73,7 @@
         }
 
         .info-value {
-            font-weight: bold;
+            font-weight: normal;
         }
 
         .customer-section {
@@ -316,11 +316,11 @@
 
             <div class="section-divider"></div>
 
-            <div style="text-align: center; font-size: 20px; margin: 10px 0;">
+            <div style="text-align: center; font-size: 16px; margin: 10px 0; color:#000;">
                 @if ($data->status == 'paid')
-                    <strong>## LUNAS ##</strong>
+                    <span>### LUNAS ###</span>
                 @else
-                    <strong>## BELUM LUNAS ##</strong>
+                    <span>### BELUM LUNAS ###</span>
                 @endif
             </div>
 
