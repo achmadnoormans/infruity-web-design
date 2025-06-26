@@ -68,6 +68,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('branch', BranchController::class)->names('branch')->except('show');
     Route::get('branch/data', [BranchController::class, 'get_data'])->name('branch.data');
+    
+    Route::resource('payment-method', PaymentMethodController::class)->names('payment-method')->except('show');
+    Route::get('payment-method/data', [PaymentMethodController::class, 'get_data'])->name('payment-method.data');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {

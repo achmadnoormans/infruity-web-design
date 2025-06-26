@@ -6,6 +6,12 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\PaymentMethod;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class PaymentMethodController extends Controller
 {
@@ -15,7 +21,7 @@ class PaymentMethodController extends Controller
      */
     public function index()
     {
-        return view('master::index');
+        return view('master::payment-method.index');
     }
 
     /**
@@ -34,7 +40,32 @@ class PaymentMethodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:payment_method,code',
+            'name' => 'required|string|max:255|unique:payment_method,name',
+        ]);
+
+        // Simpan data ke database
+        try {
+            DB::beginTransaction();
+            $paymentMethod = new PaymentMethod();
+            $paymentMethod->code = $validated['code'] ?? null;
+            $paymentMethod->name = $validated['name'] ?? null;
+            $paymentMethod->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Payment Method gagal disimpan.',
+                'data' => $paymentMethod
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Payment Method berhasil disimpan.',
+            'data' => $paymentMethod
+        ], 201);
     }
 
     /**
@@ -54,7 +85,8 @@ class PaymentMethodController extends Controller
      */
     public function edit($id)
     {
-        return view('master::edit');
+        $paymentMethod = PaymentMethod::findOrFail($id);
+        return response()->json($paymentMethod);
     }
 
     /**
@@ -65,7 +97,32 @@ class PaymentMethodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:payment_method,code,' . $id,
+            'name' => 'required|string|max:255|unique:payment_method,name,' . $id,
+        ]);
+
+        // Simpan data ke database
+        try {
+            DB::beginTransaction();
+            $paymentMethod = PaymentMethod::findOrFail($id);
+            $paymentMethod->code = $validated['code'] ?? null;
+            $paymentMethod->name = $validated['name'] ?? null;
+            $paymentMethod->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Payment Method gagal diupdate.',
+                'data' => $paymentMethod
+            ], 404);
+        }
+
+        // Kirim response JSON
+        return response()->json([
+            'message' => 'Payment Method berhasil diupdate.',
+            'data' => $paymentMethod
+        ], 201);
     }
 
     public function getPaymentMethod(Request $request)
@@ -87,6 +144,52 @@ class PaymentMethodController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $paymentMethod = PaymentMethod::findOrFail($id);
+            $paymentMethod->delete();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function get_data(Request $request)
+    {
+        $data = PaymentMethod::all();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('action', function ($row) {
+                $name = e($row->name);
+
+                return '
+                <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id . ')">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>';
+            })
+            ->rawColumns(['name', 'quantity', 'action'])
+            ->make(true);
     }
 }
