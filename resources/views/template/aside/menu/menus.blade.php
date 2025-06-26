@@ -282,6 +282,19 @@
     </a>
     <!--end:Menu link-->
 </div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ $link == 'account' ? 'active' : '' }}" href="{{ url('account') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Account</span>
+    </a>
+    <!--end:Menu link-->
+</div>
 <div class="menu-item pt-5">
     <!--begin:Menu content-->
     <div class="menu-content">

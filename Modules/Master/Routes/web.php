@@ -13,6 +13,7 @@ use Modules\Master\Http\Controllers\RegionController;
 use Modules\Master\Http\Controllers\StaffController;
 use Modules\Master\Http\Controllers\PaymentMethodController;
 use Modules\Master\Http\Controllers\BranchController;
+use Modules\Master\Http\Controllers\AccountController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -71,6 +72,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     
     Route::resource('payment-method', PaymentMethodController::class)->names('payment-method')->except('show');
     Route::get('payment-method/data', [PaymentMethodController::class, 'get_data'])->name('payment-method.data');
+
+    Route::resource('account', AccountController::class)->names('account')->except('show');
+    Route::get('account/data', [AccountController::class, 'get_data'])->name('account.data');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
