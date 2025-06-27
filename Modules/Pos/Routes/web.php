@@ -30,4 +30,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/printPayment/{id}', [PosController::class, 'printPayment'])->name('pos.printPayment');
     Route::post('/upload-receipt', [PosController::class, 'uploadReceipt']);
     Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
+    Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');
 });

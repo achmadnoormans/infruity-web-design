@@ -10,68 +10,9 @@
         @csrf
         <!--begin::Main column-->
         <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-            <!--begin::Order details-->
-            <div class="fv-row">
-                <!--begin::Label-->
-                <label class="fs-6 fw-semibold mb-2">Type
-                    <span class="ms-1" data-bs-toggle="tooltip"
-                        title="Select a discount type that will be applied to this product">
-                        <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                    </span></label>
-                <!--End::Label-->
-                <!--begin::Row-->
-                <div class="row row-cols-2 row-cols-md-6 row-cols-lg-1 row-cols-xl-2 g-9" data-kt-buttons="true"
-                    data-kt-buttons-target="[data-kt-button='true']">
-                    <!--begin::Col-->
-                    <div class="col">
-                        <!--begin::Option-->
-                        <label
-                            class="btn btn-outline btn-outline-dashed btn-active-light-primary {{ isset($data) && $data->is_using_logo == 1 ? 'active' : '' }} d-flex text-start p-6"
-                            data-kt-button="true">
-                            <!--begin::Radio-->
-                            <span
-                                class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                <input class="form-check-input" type="radio" name="logo_option" value="1"
-                                    {{ isset($data) && $data->is_using_logo == 1 ? 'checked' : '' }} />
-
-                            </span>
-                            <!--end::Radio-->
-                            <!--begin::Info-->
-                            <span class="ms-5">
-                                <span class="fs-4 fw-bold text-gray-800 d-block">With Logo</span>
-                            </span>
-                            <!--end::Info-->
-                        </label>
-                        <!--end::Option-->
-                    </div>
-                    <!--end::Col-->
-                    <!--begin::Col-->
-                    <div class="col">
-                        <!--begin::Option-->
-                        <label class="btn btn-outline btn-outline-dashed btn-active-light-primary {{ isset($data) && $data->is_using_logo == 0 ? 'active' : '' }} d-flex text-start p-6"
-                            data-kt-button="true">
-                            <!--begin::Radio-->
-                            <span
-                                class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                <input class="form-check-input" type="radio" name="logo_option" value="2"
-                                    {{ isset($data) && $data->is_using_logo == 0 ? 'checked' : '' }} />
-                            </span>
-                            <!--end::Radio-->
-                            <!--begin::Info-->
-                            <span class="ms-5">
-                                <span class="fs-4 fw-bold text-gray-800 d-block">No Logo</span>
-                            </span>
-                            <!--end::Info-->
-                        </label>
-                        <!--end::Option-->
-                    </div>
-                    <!--end::Col-->
-                </div>
-                <!--end::Row-->
+            <div class="text-end">
+                <a href="{{ url('setting-nota/view-receipt') }}" class="btn btn-success"><i class="fa fa-eye"></i>Preview
+                    Struk</a>
             </div>
             <!--begin::Thumbnail settings-->
             <div id="logo_upload_container" class="card card-flush py-4">
@@ -146,6 +87,110 @@
                             <label class="form-label">Header</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="brand_name" placeholder="Ex : in!fruity"
+                                value="{{ $data->brand_name ?? old('brand_name') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Address</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="brand_address"
+                                placeholder="Ex : Jl. Raya No. 1, Jakarta"
+                                value="{{ $data->brand_address ?? old('brand_address') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Social Media</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="brand_social_media"
+                                placeholder="Ex : @infruity"
+                                value="{{ $data->brand_social_media ?? old('brand_social_media') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Tampil Nama Kasir?</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <div class="form-check form-check-custom form-check-solid mb-2">
+                                <input class="form-check-input" type="checkbox" value="1" name="is_using_cashier"
+                                    {{ isset($data) && $data->is_using_cashier ? 'checked' : '' }} />
+                                <label class="form-check-label">Iya</label>
+                            </div>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Tampilkan nama kasir pada nota.</div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Tampil Nama Pelanggan?</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <div class="form-check form-check-custom form-check-solid mb-2">
+                                <input class="form-check-input" type="checkbox" value="1" name="is_using_customer"
+                                    {{ isset($data) && $data->is_using_customer ? 'checked' : '' }} />
+                                <label class="form-check-label">Iya</label>
+                            </div>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Tampilkan nama pelanggan pada nota.</div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Tampil Tanggal Transaksi?</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <div class="form-check form-check-custom form-check-solid mb-2">
+                                <input class="form-check-input" type="checkbox" value="1" name="is_using_date"
+                                    {{ isset($data) && $data->is_using_date ? 'checked' : '' }} />
+                                <label class="form-check-label">Iya</label>
+                            </div>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Tampilkan tanggal transaksi pada nota.</div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Tampil Nomer Faktur?</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <div class="form-check form-check-custom form-check-solid mb-2">
+                                <input class="form-check-input" type="checkbox" value="1"
+                                    name="is_using_invoice_number"
+                                    {{ isset($data) && $data->is_using_invoice_number ? 'checked' : '' }} />
+                                <label class="form-check-label">Iya</label>
+                            </div>
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Tampilkan nomor faktur pada nota.</div>
+                            <!--end::Description-->
+                        </div>
+                        <!--end::Input group-->
+                        {{-- <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Header</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
                             <div id="header_editor" name="header_editor" class="min-h-150px mb-2"></div>
                             <!--end::Editor-->
                             <!--begin::Description-->
@@ -153,7 +198,7 @@
                             <input type="hidden" name="header" id="header_input">
                             <!--end::Description-->
                         </div>
-                        <!--end::Input group-->
+                        <!--end::Input group--> --}}
                         <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
@@ -229,13 +274,13 @@
                 });
             }
 
-            header.root.innerHTML = `{!! $data->header ?? old('description') !!}`; // Set konten awal
+            // header.root.innerHTML = `{!! $data->header ?? old('description') !!}`; // Set konten awal
             footer.root.innerHTML = `{!! $data->footer ?? old('description') !!}`; // Set konten awal
 
             document.getElementById('add_product_form').addEventListener('submit', function() {
-                const headerData = document.getElementById('header_input');
+                // const headerData = document.getElementById('header_input');
                 const footerData = document.getElementById('footer_input');
-                headerData.value = header.root.innerHTML; // Ambil konten HTML
+                // headerData.value = header.root.innerHTML; // Ambil konten HTML
                 footerData.value = footer.root.innerHTML; // Ambil konten HTML
             });
 

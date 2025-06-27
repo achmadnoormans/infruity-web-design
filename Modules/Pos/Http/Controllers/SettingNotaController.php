@@ -75,10 +75,16 @@ class SettingNotaController extends Controller
         DB::beginTransaction();
         try {
             $settingNota = SettingNota::findOrFail($id);
-            $settingNota->logo = $request->file('logo') ? $request->file('logo')->store('setting-nota', 'public') : $settingNota->logo;
             $settingNota->header = $request->header;
             $settingNota->footer = $request->footer;
-            $settingNota->is_using_logo = $request->logo_option == 1 ? true : false;
+            $settingNota->is_using_logo = $request->hasFile('avatar') ? true : false;
+            $settingNota->brand_name = $request->brand_name;
+            $settingNota->brand_address = $request->brand_address;
+            $settingNota->brand_social_media = $request->brand_social_media;
+            $settingNota->is_using_cashier = $request->is_using_cashier ? true : false;
+            $settingNota->is_using_customer = $request->is_using_customer ? true : false;
+            $settingNota->is_using_date = $request->is_using_date ? true : false;
+            $settingNota->is_using_invoice_number = $request->is_using_invoice_number ? true : false;
             $settingNota->updated_by = Auth::id();
             
             if ($request->hasFile('avatar')) {
@@ -106,5 +112,15 @@ class SettingNotaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * View the receipt template.
+     * @return Renderable
+     */
+    public function viewReceipt()
+    {
+        $data['setting'] = SettingNota::first();
+        return view('pos::setting-nota.view', $data);
     }
 }
