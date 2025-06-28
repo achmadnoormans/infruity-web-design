@@ -8,6 +8,7 @@
                 </div>
                 <h2 class="mb-3">Pembayaran Berhasil!</h2>
                 <p class="mb-4">Terima kasih, pembayaran Anda telah berhasil diproses.</p>
+                <p class="mb-4">{{ dateindo($data->date) }}</p>
 
                 <div class="text-start w-100 mb-4">
                     <div class="d-flex justify-content-between py-1 border-bottom">

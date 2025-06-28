@@ -44,7 +44,7 @@
          <!--end::Aside toggle-->
      </div>
      <!--end::Brand-->
-     @if (!isset($alpinejs))
+     @if (Request::segment(1) != 'pos')
          @include('template.toolbar')
      @endif
  </div>

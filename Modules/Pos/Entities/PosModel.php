@@ -62,7 +62,8 @@ class PosModel extends Model
     // Total Due
     public function getTotalDueAttribute()
     {
-        return $this->total - $this->getTotalPaymentAttribute();
+        $totalDue = $this->total - $this->getTotalPaymentAttribute();
+        return $totalDue > 0 ? $totalDue : 0;
     }
 
     public function customer()

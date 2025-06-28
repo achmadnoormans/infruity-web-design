@@ -21,15 +21,15 @@
                     <strong>Total Dibayarkan:</strong>
                     <span class="text-muted">{{ toNumber($data->total ?? 0) }}</span>
                 </div>
-                @if ($totalPayment >= $data->pos->total)
+                @if (isset($data->return) && $data->return > 0)
                     <div class="d-flex justify-content-between py-1">
                         <strong>Kembalian:</strong>
-                        <span class="text-muted">{{ toNumber(($totalPayment ?? 0) - ($data->pos->total ?? 0)) }}</span>
+                        <span class="text-muted">{{ toNumber($data->return ?? 0) }}</span>
                     </div>
                 @else
                     <div class="d-flex justify-content-between py-1">
                         <strong>Kurang:</strong>
-                        <span class="text-muted">{{ toNumber(($data->pos->total ?? 0) - ($totalPayment ?? 0)) }}</span>
+                        <span class="text-muted">{{ toNumber($data->remaining ?? 0) }}</span>
                     </div>
                 @endif
             </div>

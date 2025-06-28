@@ -208,10 +208,10 @@ class PosController extends Controller
                 $lastPayment = Payment::findOrFail($payment->id);
                 $lastPayment->return = ($totalPayment - $total);
                 $lastPayment->save();
-                // return response()->json([
-                //     'success' => false,
-                //     'message' => 'Total pembayaran tidak boleh lebih dari total transaksi.',
-                // ], 500);
+            } else {
+                $lastPayment = Payment::findOrFail($payment->id);
+                $lastPayment->remaining = ($total - $totalPayment);
+                $lastPayment->save();
             }
             $status = 'debt';
             if ($totalPayment == $total) {
@@ -393,8 +393,8 @@ class PosController extends Controller
                 } else {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
-                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . toNumber($item->total) . '</span>';
-                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . toNumber($item->total_due) . '</span>';
+                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
+                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total_due) . '</span>';
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;
@@ -406,7 +406,7 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
+                $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
                 if ($item->status == 'paid') {
                     $html .= '<span class="badge badge-light-success">Paid</span>';
                 } else if ($item->status == 'draft') {

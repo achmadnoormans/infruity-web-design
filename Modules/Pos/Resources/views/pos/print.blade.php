@@ -44,6 +44,8 @@
         }
 
         .store-info {
+            display: block;
+            /* Biar setiap .store-info tampil di baris baru */
             font-size: 12px;
             line-height: 1.4;
         }
@@ -409,10 +411,12 @@
                     <span>Subtotal</span>
                     <span>{{ tonumberround($data->total + $data->discount) }}</span>
                 </div>
-                <div class="summary-row">
-                    <span>Diskon</span>
-                    <span>-{{ tonumberround($data->discount) }}</span>
-                </div>
+                @if ($data->discount > 0)
+                    <div class="summary-row">
+                        <span>Diskon</span>
+                        <span>-{{ tonumberround($data->discount) }}</span>
+                    </div>
+                @endif
                 <div class="summary-row total-row">
                     <span>Total ({{ count($detail) }} Produk)</span>
                     <span>{{ tonumberround($data->total) }}</span>
@@ -431,7 +435,7 @@
                 @else
                     <div class="summary-row">
                         <span>Kurang</span>
-                        <span>{{ tonumberround($data->total - $data->paid) }}</span>
+                        <span>{{ tonumberround($payment->remaining) }}</span>
                     </div>
                 @endif
             </div>

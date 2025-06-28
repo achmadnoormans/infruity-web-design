@@ -45,7 +45,8 @@ return new class extends Migration
             $table->id();
             $table->string('nota_number')->nullable();
             $table->unsignedBigInteger('pos_id');
-            $table->integer('total');
+            $table->integer('total');            
+            $table->integer('remaining')->nullable()->default(0);
             $table->integer('return')->nullable()->default(0);
             $table->integer('payment_method');
             $table->integer('branch_id')->nullable();
