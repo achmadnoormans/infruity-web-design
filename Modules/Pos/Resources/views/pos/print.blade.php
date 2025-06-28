@@ -268,6 +268,38 @@
                 padding: 10px 5px;
             }
         }
+
+        .receipt-header2 {
+            display: flex;
+            align-items: center;
+            /* Vertical center alignment */
+            gap: 10px;
+            /* Space between logo dan teks */
+            padding: 15px 10px;
+            text-align: center;
+            /* Pastikan teks rata kiri */
+        }
+
+        .receipt-logo {
+            max-width: 60px;
+            /* Logo fix width */
+            height: auto;
+        }
+
+        .receipt-text .store-name {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            /* Biar turun sendiri */
+            margin-bottom: 5px;
+        }
+
+        .receipt-text .store-info {
+            font-size: 12px;
+            line-height: 1.4;
+            display: block;
+            /* Biar masing-masing turun */
+        }
     </style>
 </head>
 
@@ -275,12 +307,19 @@
     <div class="receipt-container">
         <!-- Header -->
         @if ($setting->is_using_logo && $setting->logo)
-            <div class="receipt-header">
-                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" style="max-width: 20%; height: auto;">
+            <div class="receipt-header2">
+                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" class="receipt-logo">
+                <div class="receipt-text">
+                    <span class="store-name">{{ $setting->brand_name }}</span>
+                    <span class="store-info">{{ $setting->brand_address }}</span>
+                    <span class="store-info">{{ $setting->brand_social_media }}</span>
+                </div>
             </div>
         @else
             <div class="receipt-header">
-                {!! $setting->header !!}
+                <span class="store-name">{{ $setting->brand_name }}</span>
+                <span class="store-info">{{ $setting->brand_address }}</span>
+                <span class="store-info">{{ $setting->brand_social_media }}</span>
             </div>
         @endif
 
@@ -288,30 +327,38 @@
         <div class="receipt-body">
             <!-- Invoice Info -->
             <div class="section">
-                <div class="info-row">
-                    <span class="info-label">Kasir</span>
-                    <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Waktu</span>
-                    <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">No. Nota</span>
-                    <span class="info-value">{{ $data->invoice_number }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Pelanggan</span>
-                    <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Class</span>
-                    <span class="info-value">Silver Member</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Exp</span>
-                    <span class="info-value">50/100</span>
-                </div>
+                @if ($setting->is_using_cashier)
+                    <div class="info-row">
+                        <span class="info-label">Kasir</span>
+                        <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
+                    </div>
+                @endif
+                @if ($setting->is_using_date)
+                    <div class="info-row">
+                        <span class="info-label">Waktu</span>
+                        <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
+                    </div>
+                @endif
+                @if ($setting->is_using_invoice_number)
+                    <div class="info-row">
+                        <span class="info-label">No. Nota</span>
+                        <span class="info-value">{{ $data->invoice_number }}</span>
+                    </div>
+                @endif
+                @if ($setting->is_using_customer)
+                    <div class="info-row">
+                        <span class="info-label">Pelanggan</span>
+                        <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Class</span>
+                        <span class="info-value">Silver Member</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Exp</span>
+                        <span class="info-value">50/100</span>
+                    </div>
+                @endif
             </div>
 
             <div class="section-divider"></div>
@@ -374,8 +421,19 @@
             <div class="summary-section ">
                 <div class="summary-row">
                     <span>Bayar</span>
-                    <span>-{{ tonumberround($data->paid) }}</span>
+                    <span>{{ tonumberround($payment->total) }}</span>
                 </div>
+                @if (isset($payment->return) && $payment->return > 0)
+                    <div class="summary-row">
+                        <span>Kembalian</span>
+                        <span>{{ tonumberround($payment->return) }}</span>
+                    </div>
+                @else
+                    <div class="summary-row">
+                        <span>Kurang</span>
+                        <span>{{ tonumberround($data->total - $data->paid) }}</span>
+                    </div>
+                @endif
             </div>
         </div>
 

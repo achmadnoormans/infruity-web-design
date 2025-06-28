@@ -26,8 +26,10 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('/pos/customers', [CustomerController::class, 'storeCustomer']);
     Route::get('pos/payment/{id}', [PosController::class, 'payment'])->name('pos.payment');
     Route::post('pos/savePayment', [PosController::class, 'savePayment'])->name('pos.savePayment');
+    Route::get('pos/payment-notification/{id}', [PosController::class, 'paymentNotification'])->name('pos.paymentNotification');
     Route::get('pos/listPayment/{id}', [PosController::class, 'listPayment'])->name('pos.listPayment');
     Route::get('pos/printPayment/{id}', [PosController::class, 'printPayment'])->name('pos.printPayment');
+    Route::get('pos/printNota/{id}', [PosController::class, 'printNota'])->name('pos.printNota');
     Route::post('/upload-receipt', [PosController::class, 'uploadReceipt']);
     Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
     Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');

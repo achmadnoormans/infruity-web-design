@@ -187,6 +187,7 @@ class PosController extends Controller
             // Simpan ke tabel pembayaran
             $payment = new Payment([
                 'date' => $data['date'],
+                'nota_number' => date('YmdHis'),
                 'pos_id' => $data['transaction_id'],
                 'branch_id' => $data['branch_id'],
                 // 'account_id' => $data['account_id'],
@@ -204,10 +205,13 @@ class PosController extends Controller
             $total = $pos->total;
             $pos->paid = $totalPayment;
             if ($totalPayment > $total) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Total pembayaran tidak boleh lebih dari total transaksi.',
-                ], 500);
+                $lastPayment = Payment::findOrFail($payment->id);
+                $lastPayment->return = ($totalPayment - $total);
+                $lastPayment->save();
+                // return response()->json([
+                //     'success' => false,
+                //     'message' => 'Total pembayaran tidak boleh lebih dari total transaksi.',
+                // ], 500);
             }
             $status = 'debt';
             if ($totalPayment == $total) {
@@ -323,11 +327,11 @@ class PosController extends Controller
 
     public function printPayment($id)
     {
-        $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        // $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
         $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
-        // dd($data);
-        return view('pos::pos.print', $data);
+        return view('pos::pos.print-list-payment', $data);
     }
 
     public function uploadReceipt(Request $request)
@@ -344,10 +348,27 @@ class PosController extends Controller
         // Simpan di public/storage/receipts
         $filePath = public_path('storage/receipts/' . $fileName);
         file_put_contents($filePath, $image_base64);
-        
+
         return response()->json([
             'url' => asset('storage/receipts/' . $fileName),
         ]);
+    }
+
+    public function paymentNotification($id)
+    {
+        $data['data'] = Payment::with('paymentMethod', 'pos')->findOrFail($id);
+        $data['totalPayment'] = Payment::where('pos_id', $data['data']->pos_id)->sum('total');
+        return view('pos::pos.payment-success', $data);
+    }
+
+    public function printNota($id)
+    {
+        $data['payment'] = Payment::findOrFail($id);
+        $data['data'] = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+        $data['setting'] = SettingNota::first();
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
+        // dd($data);
+        return view('pos::pos.print', $data);
     }
 
 

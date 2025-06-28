@@ -28,7 +28,7 @@
                     <div class="col">
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Tanggal Transaksi</label>
+                            <label class="required form-label">Tipe Pembayaran</label>
                             <select class="form-select" id="payment_id" name="payment_id">
                                 <option value="">Select Payment</option>
                             </select>
@@ -123,8 +123,16 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-9">
-                    <button type="submit" class="btn btn-primary w-100" @click="submitPayment()"><i
-                            class="bi bi-cash-stack"></i> Bayar</button>
+                    <button type="button" class="btn btn-primary w-100" :disabled="loading" @click="submitPayment()">
+                        <template x-if="loading">
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                        </template>
+                        <template x-if="!loading">
+                            <i class="bi bi-cash-stack"></i>
+                        </template>
+                        <span x-text="loading ? 'Memproses...' : 'Bayar'"></span>
+                    </button>
+
                 </div>
                 <div class="col-3">
                     <a href="{{ route('pos.printPayment', $data->id) }}" class="btn btn-success w-100">

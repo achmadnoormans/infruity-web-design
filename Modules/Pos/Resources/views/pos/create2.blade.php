@@ -177,7 +177,7 @@
                                                     <span x-text="item.qty"></span>(<span x-text="item.unit"></span>) @
                                                     <span x-text="item.price.toLocaleString()"></span>
                                                 </small>
-                                                <small class="text-muted">
+                                                <small class="text-muted" x-show="item.discount > 0">
                                                     Discount <span x-text="item.discount.toLocaleString()"></span>
                                                 </small>
                                             </div>
@@ -202,7 +202,7 @@
                                                 <small class="text-muted d-flex">
                                                     Harga <span x-text="item.price.toLocaleString()"></span>
                                                 </small>
-                                                <small class="text-muted">
+                                                <small class="text-muted" x-show="item.discount > 0">
                                                     Discount <span x-text="item.discount.toLocaleString()"></span>
                                                 </small>
                                             </div>
@@ -275,7 +275,21 @@
                                 @click="saveTransaction()">Simpan</button>
                         </div>
                         <div class="col">
-                            <button class="btn btn-sm btn-primary w-100" @click="goToPayment()">Bayar</button>
+                            <!-- Di elemen root Alpine.js, misalnya -->
+                            <div x-data="{ loading: false }">
+                                <button class="btn btn-sm btn-primary w-100" @click="loading = true; goToPayment()"
+                                    :disabled="loading">
+                                    <template x-if="!loading">
+                                        <span>Bayar</span>
+                                    </template>
+                                    <template x-if="loading">
+                                        <span>
+                                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                                            Memproses...
+                                        </span>
+                                    </template>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

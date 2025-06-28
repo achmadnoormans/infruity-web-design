@@ -14,6 +14,7 @@ class Payment extends Model
 
     protected $fillable = [
         'pos_id',
+        'nota_number',
         'date',
         'total',
         'payment_method',

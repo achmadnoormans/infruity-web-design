@@ -43,8 +43,10 @@ return new class extends Migration
 
         Schema::create('pos_payment', function (Blueprint $table) {
             $table->id();
+            $table->string('nota_number')->nullable();
             $table->unsignedBigInteger('pos_id');
             $table->integer('total');
+            $table->integer('return')->nullable()->default(0);
             $table->integer('payment_method');
             $table->integer('branch_id')->nullable();
             $table->date('date')->nullable();
@@ -53,55 +55,55 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('pos_transaction')->insert([
-            [
-                'customer_id' => 1,
-                'date' => date('Y-m-d'),
-                'invoice_number' => 'INV202506001',
-                'total' => 20000,
-                'paid' => 30000,
-                'return' => 10000,
-                'payment_method' => 1,
-                'status' => 'paid',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'customer_id' => 2,
-                'date' => date('Y-m-d'),
-                'invoice_number' => 'INV202506002',
-                'total' => 160000,
-                'paid' => 200000,
-                'return' => 40000,
-                'payment_method' => 2,
-                'status' => 'paid',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('pos_transaction')->insert([
+        //     [
+        //         'customer_id' => 1,
+        //         'date' => date('Y-m-d'),
+        //         'invoice_number' => 'INV202506001',
+        //         'total' => 20000,
+        //         'paid' => 30000,
+        //         'return' => 10000,
+        //         'payment_method' => 1,
+        //         'status' => 'paid',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'customer_id' => 2,
+        //         'date' => date('Y-m-d'),
+        //         'invoice_number' => 'INV202506002',
+        //         'total' => 160000,
+        //         'paid' => 200000,
+        //         'return' => 40000,
+        //         'payment_method' => 2,
+        //         'status' => 'paid',
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
 
-        DB::table('pos_transaction_detail')->insert([
-            [
-                'pos_id' => 1,
-                'product_id' => 1,
-                'quantity' => 2,
-                'price' => 10000,
-                'subtotal' => 20000,
-                'discount' => 500,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'pos_id' => 2,
-                'product_id' => 1,
-                'quantity' => 4,
-                'price' => 40000,
-                'subtotal' => 160000,
-                'discount' => 5000,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // DB::table('pos_transaction_detail')->insert([
+        //     [
+        //         'pos_id' => 1,
+        //         'product_id' => 1,
+        //         'quantity' => 2,
+        //         'price' => 10000,
+        //         'subtotal' => 20000,
+        //         'discount' => 500,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        //     [
+        //         'pos_id' => 2,
+        //         'product_id' => 1,
+        //         'quantity' => 4,
+        //         'price' => 40000,
+        //         'subtotal' => 160000,
+        //         'discount' => 5000,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ],
+        // ]);
     }
 
     /**

@@ -56,6 +56,7 @@
                 totalDue: {{ $data->total - $data->paid }}, // Ganti dengan nilai dari data.total misalnya dari backend
                 totalPayment: {{ $data->total - $data->paid }},
                 paymentDifference: 0,
+                loading: false,
 
                 init() {
                     this.totalPayment = this.totalDue;
@@ -82,6 +83,8 @@
                 },
 
                 submitPayment() {
+                    this.loading = true; // mulai loading
+
                     const payload = {
                         date: document.querySelector('[name="date"]').value,
                         payment_id: document.querySelector('[name="payment_id"]').value,
@@ -94,6 +97,7 @@
 
                     if (!payload.payment_id || !payload.branch_id || !payload.date || !payload.total_payment) {
                         Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
+                        this.loading = false; // hentikan loading jika validasi gagal
                         return;
                     }
 
@@ -109,9 +113,8 @@
                         .then(res => res.json())
                         .then(res => {
                             if (res.success) {
-                                // console.log(res);
-                                Swal.fire("Sukses", res.message, "success");
-                                window.location.href = '/pos'; // redirect jika perlu
+                                console.log(res);
+                                window.location.href = '/pos/payment-notification/' + res.payment.id; // redirect jika perlu
                             } else {
                                 Swal.fire("Gagal", res.message, "error");
                             }
@@ -119,6 +122,10 @@
                         .catch(err => {
                             Swal.fire("Error", "Terjadi kesalahan menyimpan pembayaran.", "error");
                             console.error(err);
+                        })
+                        .finally(() => {
+                            this.loading =
+                            false; // pastikan loading dihentikan di akhir proses, baik sukses maupun error
                         });
                 },
 
