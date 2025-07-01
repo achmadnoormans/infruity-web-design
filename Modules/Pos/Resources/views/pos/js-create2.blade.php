@@ -54,6 +54,7 @@
                     name: '',
                     unit: '',
                     price: 0,
+                    hpp: 0,
                     discount: 0,
                     discountNominal: 0,
                     qty: 1
@@ -104,11 +105,11 @@
                             product_id: item.id,
                             qty: item.qty,
                             price: item.price,
+                            hpp: item.hpp,
                             discount: item.discount,
                             total_input: item.total_input
                         }))
                     };
-
                     fetch('/pos/submitTransaction', {
                             method: 'POST',
                             headers: {
@@ -265,7 +266,8 @@
                                         id: item.id,
                                         text: item.name,
                                         unit: item.unit,
-                                        price: item.price
+                                        price: item.price,
+                                        hpp: item.hpp,
                                     }))
                                 })
                             }
@@ -275,6 +277,7 @@
                             this.addProduct.name = data.text;
                             this.addProduct.unit = data.unit.abbreviation;
                             this.addProduct.price = data.price;
+                            this.addProduct.hpp = data.hpp ?? 0;
                             this.addProduct.total = this.addProduct.qty * this.addProduct.price;
                             this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
                                 .total);
@@ -380,12 +383,14 @@
                         id: this.addProduct.id,
                         name: this.addProduct.name,
                         price: this.addProduct.price,
+                        hpp: this.addProduct.hpp,
                         qty: this.addProduct.qty,
                         unit: this.addProduct.unit,
                         discount: discount > 100 ? discount : (discount / 100) * total_input,
                         total_input: total_input
                     });
 
+                    console.log(this.cart);
                     this.resetAddForm();
                 },
 
@@ -395,6 +400,7 @@
                         name: '',
                         unit: '',
                         price: 0,
+                        hpp: 0,
                         discount: 0,
                         qty: 1
                     };

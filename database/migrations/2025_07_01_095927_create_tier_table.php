@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tier', function (Blueprint $table) {
+        Schema::create('crm_tier', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->integer('level');
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table('tier')->insert([
+        DB::table('crm_tier')->insert([
             [
                 'name' => 'Bronze',
                 'level' => 1,

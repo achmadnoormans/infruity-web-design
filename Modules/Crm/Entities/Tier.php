@@ -9,6 +9,6 @@ class Tier extends Model
 {
     use HasFactory;
 
-    protected $table = 'tier';
+    protected $table = 'crm_tier';
     protected $fillable = [];
 }

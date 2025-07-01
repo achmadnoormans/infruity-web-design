@@ -294,8 +294,10 @@ class PosController extends Controller
                     'quantity' => $item['qty'],
                     'discount' => $item['discount'] ?? 0,
                     'subtotal' => $item['total_input'] ?? ($item['price'] * $item['qty']) - $item['discount'],
+                    'exp' => $item['price'] - $item['hpp'],
                     'created_at' => now(),
                     'updated_at' => now(),
+                    'created_by' => $userId,
                 ]);
             }
 
