@@ -126,6 +126,34 @@ FROM
     LEFT JOIN transaction_stock AS B ON A.id = B.product_id
         LEFT JOIN product_units AS C ON C.id = A.product_unit
 GROUP BY
-    A.id, C.abbreviation
+    A.id, C.abbreviation;
+
+-- View for Customer Tier
+DROP VIEW IF EXISTS vw_customer_tier;
+CREATE OR REPLACE VIEW vw_customer_tier AS
+WITH customer_exp AS (
+    SELECT SUM(A.exp) AS customer_exp, B.customer_id
+    FROM pos_transaction_detail AS A
+    JOIN pos_transaction AS B ON A.pos_id = B.id
+    GROUP BY B.customer_id
+),
+tier_range AS (
+    SELECT
+        id,
+        name AS tier_name,
+        exp AS min_exp,
+        LEAD(exp) OVER (ORDER BY `level`) AS max_exp
+    FROM crm_tier
+)
+SELECT
+    ce.customer_id,
+    tr.tier_name,
+    ce.customer_exp,
+    tr.min_exp,
+    tr.max_exp
+FROM customer_exp ce
+JOIN tier_range tr
+    ON ce.customer_exp >= tr.min_exp
+    AND (ce.customer_exp < tr.max_exp OR tr.max_exp IS NULL);
 
 

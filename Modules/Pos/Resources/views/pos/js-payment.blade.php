@@ -88,7 +88,7 @@
                     const payload = {
                         date: document.querySelector('[name="date"]').value,
                         payment_id: document.querySelector('[name="payment_id"]').value,
-                        account_id: document.querySelector('[name="account_id"]').value,
+                        // account_id: document.querySelector('[name="account_id"]').value,
                         total_payment: this.totalPayment,
                         branch_id: document.querySelector('[name="branch_id"]').value,
                         customer_id: '{{ $data->customer_id ?? '' }}', // kalau tersedia dari server

@@ -35,7 +35,7 @@
                             <!--end::Editor-->
                         </div>
                     </div>
-                    <div class="col">
+                    {{-- <div class="col">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Acc. Kas</label>
@@ -53,7 +53,7 @@
                             </select>
                             <!--end::Editor-->
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <!--end::Input group-->
             </div>

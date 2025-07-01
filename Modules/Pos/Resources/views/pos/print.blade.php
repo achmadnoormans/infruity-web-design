@@ -302,6 +302,74 @@
             display: block;
             /* Biar masing-masing turun */
         }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 999px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            height: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: var(--progress);
+            background: linear-gradient(90deg, #28a745, #a2ff86);
+            border-radius: 999px 0 0 999px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-weight: bold;
+            transition: width 1s ease-in-out;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .progress-label {
+            position: absolute;
+            right: 10px;
+            color: #333;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .info-row.align-center {
+            align-items: center;
+        }
+
+        .progress-inline-container {
+            flex: 1;
+            position: relative;
+            height: 18px;
+            background-color: #e0e0e0;
+            border-radius: 999px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .progress-inline-bar {
+            height: 100%;
+            width: var(--progress);
+            background: linear-gradient(90deg, #28a745, #a2ff86);
+            border-radius: 999px;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-inline-label {
+            position: absolute;
+            right: 8px;
+            color: #333;
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 2;
+        }
     </style>
 </head>
 
@@ -348,17 +416,25 @@
                     </div>
                 @endif
                 @if ($setting->is_using_customer)
+                    @php
+                        $currentExp = $tier->customer_exp;
+                        $maxExp = $tier->max_exp;
+                        $percent = min(100, ($currentExp / $maxExp) * 100); // pastikan max 100%
+                    @endphp
                     <div class="info-row">
                         <span class="info-label">Pelanggan</span>
                         <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Class</span>
-                        <span class="info-value">Silver Member</span>
+                        <span class="info-value">{{ $tier->tier_name }} Member</span>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Exp</span>
-                        <span class="info-value">50/100</span>
+                    <div class="info-row align-center">
+                        <span class="info-label">Progress</span>
+                        <div class="progress-inline-container">
+                            <div class="progress-inline-bar" style="--progress: {{ $percent }}%;"></div>
+                            <span class="progress-inline-label">{{ number_format($percent, 1) }}%</span>
+                        </div>
                     </div>
                 @endif
             </div>

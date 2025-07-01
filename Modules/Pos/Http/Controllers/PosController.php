@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
 use Modules\Pos\Entities\Payment;
+use Modules\Crm\Entities\CustomerTier;
 use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -369,6 +370,7 @@ class PosController extends Controller
         $data['data'] = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
         $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
+        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         // dd($data);
         return view('pos::pos.print', $data);
     }
