@@ -426,7 +426,8 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ Request::segment(1) == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
+            <a class="menu-link {{ Request::segment(1) == 'production' ? 'active' : '' }}"
+                href="{{ url('production') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -471,7 +472,8 @@
     </a>
     <!--end:Menu link-->
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'setting-nota' ? 'active' : '' }}" href="{{ url('setting-nota') }}">
+    <a class="menu-link {{ Request::segment(1) == 'setting-nota' ? 'active' : '' }}"
+        href="{{ url('setting-nota') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
@@ -479,6 +481,26 @@
             </i>
         </span>
         <span class="menu-title">Setting Nota</span>
+    </a>
+    <!--end:Menu link-->
+</div>
+<div class="menu-item pt-5">
+    <!--begin:Menu content-->
+    <div class="menu-content">
+        <span class="menu-heading fw-bold text-uppercase fs-7">Crm</span>
+    </div>
+    <!--end:Menu content-->
+</div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'tier' ? 'active' : '' }}" href="{{ url('tier') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Tier</span>
     </a>
     <!--end:Menu link-->
 </div>
