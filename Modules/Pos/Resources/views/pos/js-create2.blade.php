@@ -544,6 +544,8 @@
                     const customerId = document.querySelector('select[name="customer_id"]').value;
                     const transactionDate = document.querySelector('input[name="date"]').value;
                     const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                    const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
+                    const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
 
                     const data = {
                         customer_id: customerId,
@@ -553,6 +555,8 @@
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
                         ongkir: this.ongkirGlobal,
+                        ongkir_date: ongkirDate,
+                        ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
                         status: 'draft',
                     };
@@ -600,6 +604,8 @@
                     const customerId = document.querySelector('select[name="customer_id"]').value;
                     const transactionDate = document.querySelector('input[name="date"]').value;
                     const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                    const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
+                    const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
 
                     const data = {
                         customer_id: customerId,
@@ -609,6 +615,8 @@
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
                         ongkir: this.ongkirGlobal,
+                        ongkir_date: ongkirDate,
+                        ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
                         status: 'debt',
                     };

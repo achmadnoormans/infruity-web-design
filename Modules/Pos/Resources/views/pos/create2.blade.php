@@ -252,6 +252,17 @@
                                     <input type="text" class="form-control text-end"
                                         :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
                                 </div>
+                                <!-- Input Ongkir -->
+                                <div class="mb-3 row">
+                                    <div class="col">
+                                        <label class="form-label mb-1">Tgl Ongkir</label>
+                                        <input type="date" class="form-control" name="ongkir_date">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label mb-1">Jam</label>
+                                        <input type="time" class="form-control" name="ongkir_time">
+                                    </div>
+                                </div>
 
                                 <!-- Total Setelah Diskon -->
                                 <div class="pt-2 border-top mt-3 d-flex justify-content-between">

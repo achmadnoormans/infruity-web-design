@@ -268,6 +268,8 @@ class PosController extends Controller
             'ongkir' => 'required|numeric',
             'total' => 'required|numeric',
             'status' => 'nullable|in:draft,paid,debt',
+            'ongkir_date' => 'nullable|date',
+            'ongkir_time' => 'nullable|date_format:H:i',
         ]);
 
         try {
@@ -282,6 +284,8 @@ class PosController extends Controller
                 'total' => $data['total'],
                 'discount' => $data['discount'],
                 'ongkir' => $data['ongkir'],
+                'ongkir_date' => $data['ongkir_date'] ?? null,
+                'ongkir_time' => $data['ongkir_time'] ?? null,
                 'status' => $data['status'] ?? 'draft',
                 'created_by' => $userId,
             ]);
@@ -337,6 +341,17 @@ class PosController extends Controller
         $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         return view('pos::pos.print-list-payment', $data);
+    }
+
+    public function printDraftPayment($id)
+    {
+        $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
+        $data['setting'] = SettingNota::first();
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        // dd($data);
+        return view('pos::pos.print', $data);
     }
 
     public function uploadReceipt(Request $request)

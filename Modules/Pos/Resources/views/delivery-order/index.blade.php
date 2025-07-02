@@ -92,7 +92,7 @@
                     targets: -1 // Disable sorting for action column
                 }, ],
                 ajax: {
-                    url: "{{ route('pos-data') }}",
+                    url: "{{ route('delivery-order.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();

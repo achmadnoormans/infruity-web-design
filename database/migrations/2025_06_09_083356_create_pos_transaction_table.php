@@ -21,6 +21,9 @@ return new class extends Migration
             $table->integer('discount')->nullable();
             $table->integer('ongkir')->nullable()->default(0);
             $table->enum('ongkir_status', ['draft', 'delivered'])->default('draft');
+            $table->date('ongkir_date')->nullable();
+            $table->time('ongkir_time')->nullable();
+            $table->timestamp('delivered_at')->nullable();
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
             $table->integer('payment_method')->nullable();

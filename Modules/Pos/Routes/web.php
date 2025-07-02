@@ -30,9 +30,11 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/payment-notification/{id}', [PosController::class, 'paymentNotification'])->name('pos.paymentNotification');
     Route::get('pos/listPayment/{id}', [PosController::class, 'listPayment'])->name('pos.listPayment');
     Route::get('pos/printPayment/{id}', [PosController::class, 'printPayment'])->name('pos.printPayment');
+    Route::get('pos/printDraftPayment/{id}', [PosController::class, 'printDraftPayment'])->name('pos.printDraftPayment');
     Route::get('pos/printNota/{id}', [PosController::class, 'printNota'])->name('pos.printNota');
     Route::post('/upload-receipt', [PosController::class, 'uploadReceipt']);
     Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
     Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');
     Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
+    Route::get('delivery-order/data', [DeliveryOrderController::class, 'get_data'])->name('delivery-order.data');
 });

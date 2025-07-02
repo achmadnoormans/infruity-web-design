@@ -135,7 +135,7 @@
 
                 </div>
                 <div class="col-3">
-                    <a href="{{ route('pos.printPayment', $data->id) }}" class="btn btn-success w-100">
+                    <a href="{{ route('pos.printDraftPayment', $data->id) }}" class="btn btn-success w-100">
                         <i class="fa-solid fa-print"></i>
                     </a>
                 </div>

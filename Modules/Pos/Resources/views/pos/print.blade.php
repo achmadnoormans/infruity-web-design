@@ -418,24 +418,26 @@
                 @if ($setting->is_using_customer)
                     @php
                         $currentExp = $tier->customer_exp;
-                        $maxExp = $tier->max_exp;
+                        $maxExp = $tier->max_exp ?? $tier->min_exp;
                         $percent = min(100, ($currentExp / $maxExp) * 100); // pastikan max 100%
                     @endphp
                     <div class="info-row">
                         <span class="info-label">Pelanggan</span>
                         <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
                     </div>
-                    <div class="info-row">
-                        <span class="info-label">Class</span>
-                        <span class="info-value">{{ $tier->tier_name }} Member</span>
-                    </div>
-                    <div class="info-row align-center">
-                        <span class="info-label">Progress</span>
-                        <div class="progress-inline-container">
-                            <div class="progress-inline-bar" style="--progress: {{ $percent }}%;"></div>
-                            <span class="progress-inline-label">{{ number_format($percent, 1) }}%</span>
+                    @isset($data->customer->name)
+                        <div class="info-row">
+                            <span class="info-label">Class</span>
+                            <span class="info-value">{{ $tier->tier_name }} Member</span>
                         </div>
-                    </div>
+                        <div class="info-row align-center">
+                            <span class="info-label">Progress</span>
+                            <div class="progress-inline-container">
+                                <div class="progress-inline-bar" style="--progress: {{ $percent }}%;"></div>
+                                <span class="progress-inline-label">{{ number_format($percent, 1) }}%</span>
+                            </div>
+                        </div>
+                    @endisset
                 @endif
             </div>
 
@@ -499,19 +501,26 @@
                 </div>
             </div>
             <div class="summary-section ">
-                <div class="summary-row">
-                    <span>Bayar</span>
-                    <span>{{ tonumberround($payment->total) }}</span>
-                </div>
-                @if (isset($payment->return) && $payment->return > 0)
+                @if (isset($payment))
                     <div class="summary-row">
-                        <span>Kembalian</span>
-                        <span>{{ tonumberround($payment->return) }}</span>
+                        <span>Bayar</span>
+                        <span>{{ tonumberround($payment->total) }}</span>
                     </div>
+                    @if (isset($payment->return) && $payment->return > 0)
+                        <div class="summary-row">
+                            <span>Kembalian</span>
+                            <span>{{ tonumberround($payment->return) }}</span>
+                        </div>
+                    @else
+                        <div class="summary-row">
+                            <span>Kurang</span>
+                            <span>{{ tonumberround($payment->remaining) }}</span>
+                        </div>
+                    @endif
                 @else
                     <div class="summary-row">
-                        <span>Kurang</span>
-                        <span>{{ tonumberround($payment->remaining) }}</span>
+                        <span>Bayar</span>
+                        <span>{{ tonumberround($data->paid) }}</span>
                     </div>
                 @endif
             </div>
