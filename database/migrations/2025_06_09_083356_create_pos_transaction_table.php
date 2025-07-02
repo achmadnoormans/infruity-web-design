@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('pos_transaction', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid');
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->date('date')->nullable();
             $table->string('invoice_number')->nullable();
@@ -49,6 +50,7 @@ return new class extends Migration
 
         Schema::create('pos_payment', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid');
             $table->string('nota_number')->nullable();
             $table->unsignedBigInteger('pos_id');
             $table->integer('total');            

@@ -308,10 +308,19 @@ class CustomerController extends Controller
     {
         $search = $request->get('search');
 
-        $data = Customer::where('name', 'like', '%' . $search . '%')
-            ->select('id', 'name')
+        $customer = Customer::where('name', 'like', '%' . $search . '%')
+            ->orWhere('whatsapp', 'like', '%' . $search . '%')
+            ->select('*')
             ->limit(10)
             ->get();
+
+        $data = [];
+        foreach ($customer as $item) {
+            $data[] = [
+                'id' => $item->id,
+                'name' => $item->name . ' (' . $item->whatsapp . ')',
+            ];
+        }
 
         return response()->json($data);
     }

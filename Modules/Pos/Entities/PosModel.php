@@ -15,6 +15,7 @@ class PosModel extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'customer_id',
         'invoice_number',
         'date',

@@ -11,6 +11,7 @@ use Modules\Pos\Entities\Payment;
 use Modules\Crm\Entities\CustomerTier;
 use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -187,6 +188,7 @@ class PosController extends Controller
 
             // Simpan ke tabel pembayaran
             $payment = new Payment([
+                'uuid' => Str::uuid(),
                 'date' => $data['date'],
                 'nota_number' => date('YmdHis'),
                 'pos_id' => $data['transaction_id'],
@@ -277,6 +279,7 @@ class PosController extends Controller
             DB::beginTransaction();
             // Simpan ke tabel transaksi (buat dulu kalau belum ada)
             $pos = new PosModel([
+                'uuid' => Str::uuid(),
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
                 'invoice_number' => PosModel::getOrderNumber(),
