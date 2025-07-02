@@ -387,7 +387,7 @@
         <!-- Payment Form -->
 
         @include('template.notif')
-        <form action="{{ route('receipt.payment', $data->id) }}" method="POST" style="padding: 20px;">
+        {{-- <form action="{{ route('receipt.payment', $data->id) }}" method="POST" style="padding: 20px;">
             @csrf
             <div class="section-title">Pembayaran</div>
 
@@ -419,11 +419,11 @@
             </div>
 
             <button type="submit" class="print-button">💾 Simpan Pembayaran</button>
-        </form>
+        </form> --}}
 
     </div>
 
-    <button class="print-button" onclick="window.print()">🖨️ Cetak Receipt</button>
+    {{-- <button class="print-button" onclick="window.print()">🖨️ Cetak Receipt</button> --}}
     <a class="print-button" href="{{ url(Request::segment(1)) }}"
         style="text-align: center; text-decoration: none;">Kembali</a>
 

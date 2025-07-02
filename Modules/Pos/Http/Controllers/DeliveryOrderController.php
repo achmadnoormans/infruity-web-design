@@ -104,8 +104,7 @@ class DeliveryOrderController extends Controller
                 } else {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
-                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
-                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total_due) . '</span>';
+                $html .= '<br><span class="text-muted d-block fs-7">Ongkir Rp' . tonumberround($item->ongkir) . '</span>';
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;
@@ -117,13 +116,14 @@ class DeliveryOrderController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
-                if ($item->status == 'paid') {
-                    $html .= '<span class="badge badge-light-success">Paid</span>';
-                } else if ($item->status == 'draft') {
-                    $html .= '<span class="badge badge-light-danger">Draft</span>';
+                $html = '<span class="text-muted d-block fs-8">' . date('d M Y', strtotime($item->ongkir_date)) . '</span>';
+                $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
+                if ($item->ongkir_status == 'delivered') {
+                    $html .= '<span class="badge badge-light-success">Diterima</span>';
+                } else if ($item->ongkir_status == 'draft') {
+                    $html .= '<span class="badge badge-light-danger">Belum Dikirm</span>';
                 } else {
-                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
+                    $html .= '<span class="badge badge-light-warning">' . $item->ongkir_status . '</span>';
                 }
                 return $html;
             })
@@ -152,8 +152,8 @@ class DeliveryOrderController extends Controller
                             </li>
                             
                             <li>
-                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    <i class="bi bi-trash"></i>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSampai(' . $item->id . ')">
+                                    <i class="bi bi-check"></i>
                                 </a>
                             </li>
                         </ul>
