@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('invoice_number')->nullable();
             $table->integer('total')->nullable();
             $table->integer('discount')->nullable();
+            $table->integer('ongkir')->nullable()->default(0);
+            $table->enum('ongkir_status', ['draft', 'delivered'])->default('draft');
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
             $table->integer('payment_method')->nullable();

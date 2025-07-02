@@ -20,6 +20,7 @@ class PosModel extends Model
         'date',
         'total',
         'discount',
+        'ongkir',
         'status',
         'created_by'
     ];

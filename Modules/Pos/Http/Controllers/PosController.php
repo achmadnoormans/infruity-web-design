@@ -265,6 +265,7 @@ class PosController extends Controller
             'items' => 'required|array',
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
+            'ongkir' => 'required|numeric',
             'total' => 'required|numeric',
             'status' => 'nullable|in:draft,paid,debt',
         ]);
@@ -280,6 +281,7 @@ class PosController extends Controller
                 'subtotal' => $data['subtotal'],
                 'total' => $data['total'],
                 'discount' => $data['discount'],
+                'ongkir' => $data['ongkir'],
                 'status' => $data['status'] ?? 'draft',
                 'created_by' => $userId,
             ]);

@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Pos\Http\Controllers\PosController;
 use Modules\Pos\Http\Controllers\SettingNotaController;
+use Modules\Pos\Http\Controllers\DeliveryOrderController;
 use Modules\Master\Http\Controllers\CustomerController;
 
 /*
@@ -33,4 +34,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('/upload-receipt', [PosController::class, 'uploadReceipt']);
     Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
     Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');
+    Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
 });

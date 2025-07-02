@@ -246,6 +246,12 @@
                                     <input type="text" class="form-control text-end"
                                         :value="formatRupiah(diskonGlobal)" @input="updateDiskonGlobal">
                                 </div>
+                                <!-- Input Ongkir -->
+                                <div class="mb-3">
+                                    <label class="form-label mb-1">Ongkir</label>
+                                    <input type="text" class="form-control text-end"
+                                        :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
+                                </div>
 
                                 <!-- Total Setelah Diskon -->
                                 <div class="pt-2 border-top mt-3 d-flex justify-content-between">

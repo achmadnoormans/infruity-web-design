@@ -495,6 +495,7 @@
 
                 // Method untuk rincian total
                 diskonGlobal: 0,
+                ongkirGlobal: 0,
                 get subtotal() {
                     return this.cart.reduce((sum, item) => {
                         const total = (item.total_input || item.price * item.qty) - (item.discount || 0);
@@ -503,16 +504,27 @@
                 },
                 get totalHargaKeseluruhan() {
                     const diskon = this.diskonGlobal;
+                    const ongkir = this.ongkirGlobal;
+
+                    let totalSetelahDiskon = 0;
                     if (diskon <= 100) {
-                        // As percent
-                        return Math.round(this.subtotal - (this.subtotal * (diskon / 100)));
+                        // Diskon persen
+                        totalSetelahDiskon = this.subtotal - (this.subtotal * (diskon / 100));
+                    } else {
+                        // Diskon nominal
+                        totalSetelahDiskon = this.subtotal - diskon;
                     }
-                    // As nominal
-                    return Math.max(this.subtotal - diskon, 0);
+
+                    // Ongkir harus selalu ditambahkan
+                    return Math.max(totalSetelahDiskon + ongkir, 0);
                 },
                 updateDiskonGlobal(e) {
                     const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                     this.diskonGlobal = val;
+                },
+                updateOngkirGlobal(e) {
+                    const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                    this.ongkirGlobal = val;
                 },
                 formatRupiah(number) {
                     number = parseFloat(number || 0);
@@ -540,6 +552,7 @@
                         items: this.cart,
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
+                        ongkir: this.ongkirGlobal,
                         total: this.totalHargaKeseluruhan,
                         status: 'draft',
                     };
@@ -595,6 +608,7 @@
                         items: this.cart,
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
+                        ongkir: this.ongkirGlobal,
                         total: this.totalHargaKeseluruhan,
                         status: 'debt',
                     };
@@ -636,6 +650,7 @@
                 resetPOS() {
                     this.cart = [];
                     this.diskonGlobal = 0;
+                    this.ongkirGlobal = 0;
                     this.subtotal = 0;
                     this.totalHargaKeseluruhan = 0;
                 },
