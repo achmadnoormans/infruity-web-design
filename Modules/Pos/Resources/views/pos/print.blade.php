@@ -417,9 +417,13 @@
                 @endif
                 @if ($setting->is_using_customer)
                     @php
-                        $currentExp = $tier->customer_exp;
-                        $maxExp = $tier->max_exp ?? $tier->min_exp;
-                        $percent = min(100, ($currentExp / $maxExp) * 100); // pastikan max 100%
+                        if (isset($tier)) {
+                            $currentExp = $tier->customer_exp;
+                            $maxExp = $tier->max_exp ?? $tier->min_exp;
+                            $percent = min(100, ($currentExp / $maxExp) * 100);
+                        } else {
+                            $percent = 0;
+                        }
                     @endphp
                     <div class="info-row">
                         <span class="info-label">Pelanggan</span>
@@ -428,7 +432,7 @@
                     @isset($data->customer->name)
                         <div class="info-row">
                             <span class="info-label">Class</span>
-                            <span class="info-value">{{ $tier->tier_name }} Member</span>
+                            <span class="info-value">{{ $tier->tier_name ?? 'Bronze' }} Member</span>
                         </div>
                         <div class="info-row align-center">
                             <span class="info-label">Progress</span>

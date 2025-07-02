@@ -135,6 +135,7 @@ WITH customer_exp AS (
     SELECT SUM(A.exp) AS customer_exp, B.customer_id
     FROM pos_transaction_detail AS A
     JOIN pos_transaction AS B ON A.pos_id = B.id
+	WHERE B.status = 'paid'
     GROUP BY B.customer_id
 ),
 tier_range AS (
