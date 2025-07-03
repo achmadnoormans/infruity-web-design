@@ -101,10 +101,11 @@ class DeliveryOrderController extends Controller
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
+                    $html .= '<br><span class="text-muted d-block fs-7">' . ($item->customer->address) . '</span>';
                 } else {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
-                $html .= '<br><span class="text-muted d-block fs-7">Ongkir Rp' . tonumberround($item->ongkir) . '</span>';
+                $html .= '<span class="text-muted d-block fs-7">Ongkir Rp' . tonumberround($item->ongkir) . '</span>';
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;

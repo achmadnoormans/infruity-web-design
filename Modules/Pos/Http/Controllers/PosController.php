@@ -217,7 +217,7 @@ class PosController extends Controller
                 $lastPayment->save();
             }
             $status = 'debt';
-            if ($totalPayment == $total) {
+            if ($totalPayment >= $total) {
                 $status = 'paid';
             }
             $pos->status = $status;
@@ -405,7 +405,7 @@ class PosController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->get();
+        $data = $query->orderBy('id', 'DESC')->get();
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
