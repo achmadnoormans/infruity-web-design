@@ -248,18 +248,18 @@
                                 </div>
                                 <!-- Input Ongkir -->
                                 <div class="mb-3">
-                                    <label class="form-label mb-1">Ongkir</label>
+                                    <label class="form-label mb-1">Biaya Pengiriman</label>
                                     <input type="text" class="form-control text-end"
                                         :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
                                 </div>
                                 <!-- Input Ongkir -->
                                 <div class="mb-3 row">
                                     <div class="col">
-                                        <label class="form-label mb-1">Tgl Ongkir</label>
+                                        <label class="form-label mb-1">Jadwal</label>
                                         <input type="date" class="form-control" name="ongkir_date">
                                     </div>
-                                    <div class="col">
-                                        <label class="form-label mb-1">Jam</label>
+                                    <div class="col mt-1">
+                                        <label class="form-label mb-1"></label>
                                         <input type="time" class="form-control" name="ongkir_time">
                                     </div>
                                 </div>
@@ -294,8 +294,8 @@
                         <div class="col">
                             <!-- Di elemen root Alpine.js, misalnya -->
                             <div x-data="{ loading: false }">
-                                <button class="btn btn-sm btn-primary w-100" @click="loading = true; goToPayment()"
-                                    :disabled="loading">
+                                <button class="btn btn-sm btn-primary w-100"
+                                    @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
                                     <template x-if="!loading">
                                         <span>Bayar</span>
                                     </template>

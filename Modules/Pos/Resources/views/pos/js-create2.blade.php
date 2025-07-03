@@ -592,13 +592,14 @@
                         });
                 },
                 // Pembayaran 
-                goToPayment() {
+                goToPayment(doneCallback) {
                     if (this.cart.length === 0) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Keranjang kosong',
                             text: 'Silakan tambahkan produk terlebih dahulu!',
                         });
+                        if (typeof doneCallback === 'function') doneCallback();
                         return;
                     }
                     const customerId = document.querySelector('select[name="customer_id"]').value;
