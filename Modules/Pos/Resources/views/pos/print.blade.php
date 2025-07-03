@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.10/dist/easy.qrcode.min.js"></script>
 
     <title>Receipt - Invoice #12345</title>
     <style>
@@ -370,45 +371,55 @@
             font-weight: bold;
             z-index: 2;
         }
+
+        .receipt-container {
+            position: relative;
+            /* Wajib: agar posisi absolute di dalamnya bekerja */
+        }
+
+        .receipt-overlay-photo {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 90px;
+            height: auto;
+            z-index: 100;
+            opacity: 0.9;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
 <body>
     <div class="receipt-container">
         <!-- Header -->
-        @if ($setting->is_using_logo && $setting->logo)
-            <div class="receipt-header2">
-                <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" class="receipt-logo">
-                <div class="receipt-text">
+        <div class="receipt-container">
+            <!-- Foto overlay -->
+            <img src="{{ asset('images/42828.png') }}" alt="Overlay" class="receipt-overlay-photo">
+
+            <!-- Header -->
+            @if ($setting->is_using_logo && $setting->logo)
+                <div class="receipt-header2">
+                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" class="receipt-logo">
+                    <div class="receipt-text">
+                        <span class="store-name">{{ $setting->brand_name }}</span>
+                        <span class="store-info">{{ $setting->brand_address }}</span>
+                        <span class="store-info">{{ $setting->brand_social_media }}</span>
+                    </div>
+                </div>
+            @else
+                <div class="receipt-header">
                     <span class="store-name">{{ $setting->brand_name }}</span>
                     <span class="store-info">{{ $setting->brand_address }}</span>
                     <span class="store-info">{{ $setting->brand_social_media }}</span>
                 </div>
-            </div>
-        @else
-            <div class="receipt-header">
-                <span class="store-name">{{ $setting->brand_name }}</span>
-                <span class="store-info">{{ $setting->brand_address }}</span>
-                <span class="store-info">{{ $setting->brand_social_media }}</span>
-            </div>
-        @endif
+            @endif
+        </div>
 
         <!-- Body -->
         <div class="receipt-body">
             <!-- Invoice Info -->
             <div class="section">
-                @if ($setting->is_using_cashier)
-                    <div class="info-row">
-                        <span class="info-label">Kasir</span>
-                        <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
-                    </div>
-                @endif
-                @if ($setting->is_using_date)
-                    <div class="info-row">
-                        <span class="info-label">Waktu</span>
-                        <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
-                    </div>
-                @endif
                 @if ($setting->is_using_invoice_number)
                     <div class="info-row">
                         <span class="info-label">No. Nota</span>
@@ -442,6 +453,18 @@
                             </div>
                         </div>
                     @endisset
+                @endif
+                @if ($setting->is_using_date)
+                    <div class="info-row">
+                        <span class="info-label">Waktu</span>
+                        <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
+                    </div>
+                @endif
+                @if ($setting->is_using_cashier)
+                    <div class="info-row">
+                        <span class="info-label">Kasir</span>
+                        <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
+                    </div>
                 @endif
             </div>
 
@@ -534,6 +557,7 @@
         <div class="receipt-footer">
             {!! $setting->footer !!}
         </div>
+        <div id="qrcode" style="text-align: center"></div>
     </div>
 
     <div class="button-group">
@@ -611,6 +635,32 @@
                     });
             });
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var options = {
+                text: "{{ url('/cek-nota') . '/' . $data->uuid }}",
+                width: 100,
+                height: 100,
+                logo: "{{ asset('images/logo-infruity.png') }}", // Logo
+                logoWidth: 30,
+                logoHeight: 30,
+                quietZone: 5,
+                onRenderingEnd: function(qrCode) {
+                    setTimeout(() => {
+                        let canvas = document.querySelector("#qrcode canvas");
+                        if (canvas) {
+                            let qrBase64 = canvas.toDataURL("image/png"); // Convert ke base64
+                            document.getElementById("qrcodeInput").value = qrBase64;
+                            document.getElementById("qrcodeForm").submit(); // Kirim form otomatis
+                        } else {
+                            console.error("QR Code gagal dibuat.");
+                        }
+                    }, 5);
+                }
+            };
+
+            new QRCode(document.getElementById("qrcode"), options);
+        });
     </script>
 </body>
 
