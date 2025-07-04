@@ -278,7 +278,7 @@
                             this.addProduct.unit = data.unit.abbreviation;
                             this.addProduct.price = data.price;
                             this.addProduct.hpp = data.hpp ?? 0;
-                            this.addProduct.total = this.addProduct.qty * this.addProduct.price;
+                            subtotal = this.addProduct.qty * this.addProduct.price;
                             this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
                                 .total);
                             this.updateAddTotalFromQty();
@@ -498,7 +498,7 @@
                 ongkirGlobal: 0,
                 get subtotal() {
                     return this.cart.reduce((sum, item) => {
-                        const total = (item.total_input || item.price * item.qty) - (item.discount || 0);
+                        const total = (item.total_input || (item.price * item.qty) - (item.discount || 0));
                         return sum + total;
                     }, 0);
                 },

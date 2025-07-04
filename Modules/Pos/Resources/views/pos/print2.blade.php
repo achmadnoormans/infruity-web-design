@@ -7,6 +7,7 @@
     <title>In!Fruity Digital Receipt</title>
     <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.10/dist/easy.qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,6 +17,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            /* font-family: 'Roboto'; */
             background-color: #f3f4f6;
             padding: 20px;
             line-height: 1.5;
@@ -94,7 +96,7 @@
             font-size: 16px;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 4px;
+            /* margin-bottom: 4px; */
         }
 
         .level-text {
@@ -167,6 +169,16 @@
             font-size: 14px;
         }
 
+        .status-badge-danger {
+            display: inline-block;
+            background: #f56969;
+            color: #850505;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
         /* Items */
         .items-section {
             padding: 24px;
@@ -185,7 +197,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 4px;
+            /* margin-bottom: 4px; */
         }
 
         .item-name {
@@ -201,7 +213,7 @@
         .item-price {
             font-size: 14px;
             color: #6b7280;
-            margin-bottom: 4px;
+            /* margin-bottom: 4px; */
         }
 
         .discount {
@@ -498,7 +510,11 @@
 
             <!-- Status -->
             <div class="status-section">
-                <div class="status-badge">### LUNAS ###</div>
+                @if ($data->status == 'paid')
+                    <div class="status-badge">### LUNAS ###</div>
+                @else
+                    <div class="status-badge-danger">### BELUM LUNAS ###</div>
+                @endif
             </div>
 
             <!-- Items -->
@@ -509,14 +525,17 @@
                             <div class="item-details">
                                 <div class="item-header">
                                     <span class="item-name">{{ $item->product->name }}</span>
-                                    <span class="item-total">Rp {{ tonumberround($item->subtotal) }}</span>
+                                    <span class="item-total">Rp
+                                        {{ isset($item->discount) && $item->discount > 0 ? tonumberround($item->subtotal + $item->discount) : tonumberround($item->subtotal) }}</span>
                                 </div>
                                 <div class="item-price">{{ tonumberround($item->price) }} x
                                     {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}</div>
                                 <div class="discount">
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
-                                            <span>Diskon (10%)</span>
+                                            <span>Diskon
+                                                ({{ ($item->discount / ($item->subtotal + $item->discount)) * 100 }}%)
+                                            </span>
                                             <span>- {{ tonumberround($item->discount) }}</span>
                                         @endif
                                     @endisset
@@ -538,30 +557,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="item">
-                    <div class="item-details">
-                        <div class="item-header">
-                            <span class="item-name">Pepaya California</span>
-                            <span class="item-total">Rp 12.000</span>
-                        </div>
-                        <div class="item-price">Rp 12.000 x 1 (kg)</div>
-                        <div class="discount">
-                            <span>Diskon</span>
-                            <span>- Rp 2.000</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="item-details">
-                        <div class="item-header">
-                            <span class="item-name">Mencir super</span>
-                            <span class="item-total">Rp 75.000</span>
-                        </div>
-                        <div class="item-price">Rp 75.000 x 1 (kg)</div>
-                    </div>
-                </div> --}}
+                 --}}
             </div>
 
             <!-- Totals -->
