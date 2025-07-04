@@ -392,7 +392,7 @@ class PosController extends Controller
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
         $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         // dd($data);
-        return view('pos::pos.print', $data);
+        return view('pos::pos.print2', $data);
     }
 
 
