@@ -1,7 +1,7 @@
 @section('script')
     <script type="text/javascript">
         $('#customer_id').select2({
-            placeholder: 'Select a customer',
+            placeholder: 'Pilih pelanggan',
             ajax: {
                 url: '{{ route('customer.get-customer') }}',
                 dataType: 'json',
@@ -10,23 +10,60 @@
                     search: params.term
                 }),
                 processResults: data => {
-                    // Tambahkan pelanggan umum di atas
                     const umum = {
-                        id: '0', // Gunakan string khusus jika perlu dibedakan
-                        text: 'Pelanggan Umum'
+                        id: '0',
+                        name: 'Pelanggan Umum',
+                        address: '-',
+                        whatsapp: '-'
                     };
-
                     const results = data.map(item => ({
                         id: item.id,
-                        text: item.name
+                        name: item.name,
+                        address: item.address,
+                        whatsapp: item.whatsapp
                     }));
-
                     return {
                         results: [umum, ...results]
                     };
                 }
-            }
+            },
+            templateResult: formatCustomerOption, // render dropdown list
+            templateSelection: formatCustomerSelection // render selected item
         });
+
+        // Fungsi render untuk item di dropdown
+        function formatCustomerOption(customer) {
+            if (!customer.id) return customer.text; // placeholder
+
+            const name = customer.name ?? 'Pelanggan Umum';
+            const whatsapp = (customer.whatsapp !== undefined && customer.whatsapp !== null && customer.whatsapp !== '') ?
+                customer.whatsapp :
+                '-';
+            const address = (customer.address !== undefined && customer.address !== null && customer.address !== '') ?
+                customer.address :
+                '-';
+
+            return $(`
+                <div style="font-size: 13px; line-height: 1.4;">
+                    <strong>${name}</strong>
+                    <span class="text-muted flex d-flex fs-7">${whatsapp}</span>
+                    <span class="text-muted flex d-flex fs-7">${address}</span>
+                </div>
+            `);
+        }
+
+
+        // Fungsi render untuk item terpilih
+        function formatCustomerSelection(customer) {
+            if (!customer.id) return customer.text; // placeholder
+
+            const name = customer.name ?? 'Pelanggan Umum';
+            const whatsapp = (customer.whatsapp !== undefined && customer.whatsapp !== null && customer.whatsapp !== '') ?
+                customer.whatsapp :
+                '-';
+
+            return `${name} (${whatsapp})`;
+        }
 
         $('#customer_id').append(new Option('Pelanggan Umum', '0', true, true)).trigger('change');
 

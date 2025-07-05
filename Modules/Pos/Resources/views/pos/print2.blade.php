@@ -469,8 +469,8 @@
                     @endphp
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
-                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ $currentExp }} /
-                            {{ $maxExp }})</p>
+                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ $currentExp ?? 0 }} /
+                            {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"></div>
                         </div>
@@ -503,7 +503,7 @@
                         @if ($setting->is_using_cashier)
                             <span class="value">{{ ucwords(strtolower($data->user->nm_user ?? 'Admin')) }}</span>
                         @endif
-                        <span class="value">-</span>
+                        <span class="value">{{ ucwords(strtolower($payment->paymentMethod->name ?? '-')) }}</span>
                     </div>
                 </div>
             </div>
@@ -697,18 +697,6 @@
                 width: 100,
                 height: 100,
                 quietZone: 5,
-                onRenderingEnd: function(qrCode) {
-                    setTimeout(() => {
-                        let canvas = document.querySelector("#qrcode canvas");
-                        if (canvas) {
-                            let qrBase64 = canvas.toDataURL("image/png"); // Convert ke base64
-                            document.getElementById("qrcodeInput").value = qrBase64;
-                            document.getElementById("qrcodeForm").submit(); // Kirim form otomatis
-                        } else {
-                            console.error("QR Code gagal dibuat.");
-                        }
-                    }, 5);
-                }
             };
 
             new QRCode(document.getElementById("qrcode"), options);

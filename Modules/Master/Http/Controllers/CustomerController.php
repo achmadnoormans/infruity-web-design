@@ -318,7 +318,9 @@ class CustomerController extends Controller
         foreach ($customer as $item) {
             $data[] = [
                 'id' => $item->id,
-                'name' => $item->name . ' (' . $item->whatsapp . ')',
+                'name' => $item->name,
+                'address' => $item->address,
+                'whatsapp' => $item->whatsapp,
             ];
         }
 
