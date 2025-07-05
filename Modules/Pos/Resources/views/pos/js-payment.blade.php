@@ -82,6 +82,21 @@
                     return angka.toLocaleString('id-ID');
                 },
 
+                formatDateDMY(dateString) {
+                    if (!dateString) return '-';
+                    const date = new Date(dateString);
+                    if (isNaN(date)) return '-';
+
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                    ];
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear().toString().slice(-2);
+
+                    return `${day} ${month} ${year}`;
+                },
+
                 submitPayment() {
                     this.loading = true; // mulai loading
 
@@ -114,7 +129,8 @@
                         .then(res => {
                             if (res.success) {
                                 console.log(res);
-                                window.location.href = '/pos/payment-notification/' + res.payment.id; // redirect jika perlu
+                                window.location.href = '/pos/payment-notification/' + res.payment
+                                .id; // redirect jika perlu
                             } else {
                                 Swal.fire("Gagal", res.message, "error");
                             }
@@ -125,7 +141,7 @@
                         })
                         .finally(() => {
                             this.loading =
-                            false; // pastikan loading dihentikan di akhir proses, baik sukses maupun error
+                                false; // pastikan loading dihentikan di akhir proses, baik sukses maupun error
                         });
                 },
 

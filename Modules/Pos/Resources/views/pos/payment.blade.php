@@ -102,7 +102,7 @@
                                 <div class="mb-3 pb-3 border-bottom">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="text-muted">Tanggal</span>
-                                        <span class="fw-semibold" x-text="payment.date"></span>
+                                        <span class="fw-semibold" x-text="formatDateDMY(payment.date)"></span>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="text-muted">Metode</span>
@@ -112,6 +112,12 @@
                                         <span class="text-muted">Jumlah</span>
                                         <span class="fw-bold text-success">Rp <span
                                                 x-text="formatRupiah(payment.total)"></span></span>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <a class="btn btn-sm btn-primary"
+                                            :href="`/{{ Request::segment(1) }}/printNota/${payment.id}`" target="_blank">
+                                            <i class="fa fa-print"></i>
+                                        </a>
                                     </div>
                                 </div>
                             </template>
