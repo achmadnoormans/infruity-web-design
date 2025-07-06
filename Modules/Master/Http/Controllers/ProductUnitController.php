@@ -163,7 +163,8 @@ class ProductUnitController extends Controller
                                 </a>
                             </div>
                             <div class="ms-5">
-                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->name . '</a>
+                                <a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold d-flex">' . $item->name . '</a>
+                                <span class="text-muted fw-semibold d-block">' . $item->description . '</span>
                             </div>
                         </div>';
             })

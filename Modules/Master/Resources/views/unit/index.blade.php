@@ -41,8 +41,6 @@
                                 </div>
                             </th> --}}
                             <th>Name</th>
-                            <th>Abbreviation</th>
-                            <th>Description</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -152,7 +150,7 @@
             dataTable = $('#unit-table').DataTable({
                 processing: true,
                 serverSide: true,
-                responsive: true,
+                // responsive: true,
                 ajax: {
                     url: "{{ route('unit-data') }}",
                     data: function(d) {
@@ -165,14 +163,6 @@
                 columns: [{
                         data: 'name',
                         name: 'name'
-                    },
-                    {
-                        data: 'abbreviation',
-                        name: 'abbreviation'
-                    },
-                    {
-                        data: 'description',
-                        name: 'description',
                     },
                     {
                         data: 'action',
