@@ -114,7 +114,8 @@
         }
 
         .progress-fill {
-            width: 10%;
+            /* width: 10%; */
+            width: var(--progress);
             height: 100%;
             background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);
             border-radius: 4px;
@@ -453,10 +454,29 @@
             <div class="customer-section">
                 <div class="customer-info">
                     <div class="avatar">
-                        <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path
-                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
+                        @php
+                            $assetPath = asset('images/icon/bronze-icon.png');
+                            if (isset($tier->tier_name)) {
+                                switch ($tier->tier_name) {
+                                    case 'Bronze':
+                                        $assetPath = asset('images/icon/bronze-icon.png');
+                                        break;
+                                    case 'Silver':
+                                        $assetPath = asset('images/icon/silver-icon.png');
+                                        break;
+                                    case 'Gold':
+                                        $assetPath = asset('images/icon/gold-icon.png');
+                                        break;
+                                    case 'Platinum':
+                                        $assetPath = asset('images/icon/platinum-icon.png');
+                                        break;
+                                    default:
+                                        $assetPath = asset('images/icon/bronze-icon.png');
+                                        break;
+                                }
+                            }
+                        @endphp
+                        <img src="{{ $assetPath }}" alt="icon" width="48">
                     </div>
                     @php
                         if (isset($tier)) {
@@ -472,7 +492,7 @@
                         <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ $currentExp ?? 0 }} /
                             {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
-                            <div class="progress-fill"></div>
+                            <div class="progress-fill" style="--progress: {{ $percent }}%;"></div>
                         </div>
                     </div>
                 </div>
