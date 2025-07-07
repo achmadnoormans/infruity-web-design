@@ -150,6 +150,7 @@
 
         .value {
             font-weight: 500;
+            font-size: 14px;
             color: #1f2937;
         }
 
@@ -521,21 +522,22 @@
                             <span class="value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
                         @endif
                         @if ($setting->is_using_cashier)
-                            <span class="value">{{ ucwords(strtolower($data->user->nm_user ?? 'Admin')) }}</span>
+                            <span
+                                class="value">{{ Str::limit(ucwords(strtolower($data->user->nm_user ?? 'Admin')), 15, '...') }}</span>
                         @endif
                         <span class="value">{{ ucwords(strtolower($payment->paymentMethod->name ?? '-')) }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Status -->
+            {{-- <!-- Status -->
             <div class="status-section">
                 @if ($data->status == 'paid')
                     <div class="status-badge">### LUNAS ###</div>
                 @else
                     <div class="status-badge-danger">### BELUM LUNAS ###</div>
                 @endif
-            </div>
+            </div> --}}
 
             <!-- Items -->
             <div class="items-section">
