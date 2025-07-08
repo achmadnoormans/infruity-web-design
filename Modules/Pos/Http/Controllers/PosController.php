@@ -9,6 +9,7 @@ use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
 use Modules\Pos\Entities\Payment;
 use Modules\Crm\Entities\CustomerTier;
+use Modules\Crm\Entities\SettingExp;
 use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -296,6 +297,7 @@ class PosController extends Controller
 
             // Simpan item transaksi
             $transaksiId = $pos->id;
+            $settingExp = SettingExp::first();
             foreach ($data['items'] as $item) {
                 PosDetailModel::insert([
                     'pos_id' => $transaksiId,
@@ -305,6 +307,7 @@ class PosController extends Controller
                     'discount' => $item['discount'] ?? 0,
                     'subtotal' => $item['total_input'] ?? ($item['price'] * $item['qty']) - $item['discount'],
                     'exp' => $item['price'] - $item['hpp'],
+                    'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
                     'created_at' => now(),
                     'updated_at' => now(),
                     'created_by' => $userId,

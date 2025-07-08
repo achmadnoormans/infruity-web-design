@@ -43,6 +43,7 @@ return new class extends Migration
             $table->integer('discount');
             $table->integer('subtotal');
             $table->integer('exp');
+            $table->decimal('exp_value');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

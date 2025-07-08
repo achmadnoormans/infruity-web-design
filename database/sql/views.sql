@@ -132,7 +132,7 @@ GROUP BY
 DROP VIEW IF EXISTS vw_customer_tier;
 CREATE OR REPLACE VIEW vw_customer_tier AS
 WITH customer_exp AS (
-    SELECT SUM(A.exp) AS customer_exp, B.customer_id
+    SELECT SUM(A.exp_value) AS customer_exp, B.customer_id
     FROM pos_transaction_detail AS A
     JOIN pos_transaction AS B ON A.pos_id = B.id
 	WHERE B.status = 'paid'
