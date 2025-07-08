@@ -42,8 +42,8 @@ class TierController extends Controller
     {
         // dd($request->all());
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:tier,name',
-            'level' => 'required|integer|unique:tier,level',
+            'name' => 'required|string|max:255|unique:crm_tier,name',
+            'level' => 'required|integer|unique:crm_tier,level',
             'exp' => 'required|integer',
         ]);
 
@@ -101,8 +101,8 @@ class TierController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:tier,name,' . $id,
-            'level' => 'required|integer|unique:tier,level,' . $id,
+            'name' => 'required|string|max:255|unique:crm_tier,name,' . $id,
+            'level' => 'required|integer|unique:crm_tier,level,' . $id,
             'exp' => 'required',
         ]);
 
@@ -113,6 +113,10 @@ class TierController extends Controller
             $tier->name = $validated['name'];
             $tier->level = $validated['level'];
             $tier->exp = preg_replace('/[^0-9]/', '', $validated['exp']);
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('tiers', 'public');
+                $tier->icon = $path;
+            }
             $tier->save();
             DB::commit();
         } catch (Exception $e) {

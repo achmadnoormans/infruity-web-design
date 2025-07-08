@@ -74,7 +74,7 @@
         .avatar {
             width: 48px;
             height: 48px;
-            background: #2563eb;
+            /* background: #2563eb; */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -457,24 +457,27 @@
                     <div class="avatar">
                         @php
                             $assetPath = asset('images/icon/bronze-icon.png');
-                            if (isset($tier->tier_name)) {
-                                switch ($tier->tier_name) {
-                                    case 'Bronze':
-                                        $assetPath = asset('images/icon/bronze-icon.png');
-                                        break;
-                                    case 'Silver':
-                                        $assetPath = asset('images/icon/silver-icon.png');
-                                        break;
-                                    case 'Gold':
-                                        $assetPath = asset('images/icon/gold-icon.png');
-                                        break;
-                                    case 'Platinum':
-                                        $assetPath = asset('images/icon/platinum-icon.png');
-                                        break;
-                                    default:
-                                        $assetPath = asset('images/icon/bronze-icon.png');
-                                        break;
-                                }
+                            // if (isset($tier->tier_name)) {
+                            //     switch ($tier->tier_name) {
+                            //         case 'Bronze':
+                            //             $assetPath = asset('images/icon/bronze-icon.png');
+                            //             break;
+                            //         case 'Silver':
+                            //             $assetPath = asset('images/icon/silver-icon.png');
+                            //             break;
+                            //         case 'Gold':
+                            //             $assetPath = asset('images/icon/gold-icon.png');
+                            //             break;
+                            //         case 'Platinum':
+                            //             $assetPath = asset('images/icon/platinum-icon.png');
+                            //             break;
+                            //         default:
+                            //             $assetPath = asset('images/icon/bronze-icon.png');
+                            //             break;
+                            //     }
+                            // }
+                            if (isset($tier->icon)) {
+                                $assetPath = asset('storage/' . $tier->icon);
                             }
                         @endphp
                         <img src="{{ $assetPath }}" alt="icon" width="48">

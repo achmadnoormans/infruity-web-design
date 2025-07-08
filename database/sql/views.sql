@@ -142,6 +142,7 @@ tier_range AS (
     SELECT
         id,
         name AS tier_name,
+		icon,
         exp AS min_exp,
         LEAD(exp) OVER (ORDER BY `level`) AS max_exp
     FROM crm_tier
@@ -149,6 +150,7 @@ tier_range AS (
 SELECT
     ce.customer_id,
     tr.tier_name,
+	tr.icon,
     ce.customer_exp,
     tr.min_exp,
     tr.max_exp

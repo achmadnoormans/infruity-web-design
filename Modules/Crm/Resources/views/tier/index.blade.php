@@ -81,6 +81,72 @@
                             data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                             data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            <div id="logo_upload_container" class="card card-flush py-4">
+                                <!--begin::Card header-->
+                                <div class="card-header">
+                                    <!--begin::Card title-->
+                                    <div class="card-title">
+                                        <h2>Icon</h2>
+                                    </div>
+                                    <!--end::Card title-->
+                                </div>
+                                <!--end::Card header-->
+                                <!--begin::Card body-->
+                                <div class="card-body text-center pt-0">
+                                    <!--begin::Image input-->
+                                    <!--begin::Image input placeholder-->
+                                    <style>
+                                        .image-input-placeholder {
+                                            background-image: url({{ isset($data) && isset($data->icon) ? asset('storage/' . $data->icon) : asset('assets/media/svg/files/blank-image.svg') }});
+                                        }
+
+                                        [data-bs-theme="dark"] .image-input-placeholder {
+                                            background-image: url({{ isset($data) && isset($data->icon) ? asset('storage/' . $data->icon) : asset('assets/media/svg/files/blank-image-dark.svg') }});
+                                        }
+                                    </style>
+                                    <!--end::Image input placeholder-->
+                                    <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3"
+                                        data-kt-image-input="true">
+                                        <!--begin::Preview existing avatar-->
+                                        <div class="image-input-wrapper w-150px h-150px"></div>
+                                        <!--end::Preview existing avatar-->
+                                        <!--begin::Label-->
+                                        <label
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                            title="Change avatar">
+                                            <i class="ki-outline ki-pencil fs-7"></i>
+                                            <!--begin::Inputs-->
+                                            <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
+                                            <input type="hidden" name="avatar_remove" />
+                                            <!--end::Inputs-->
+                                        </label>
+                                        <!--end::Label-->
+                                        <!--begin::Cancel-->
+                                        <span
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                            title="Cancel avatar">
+                                            <i class="ki-outline ki-cross fs-2"></i>
+                                        </span>
+                                        <!--end::Cancel-->
+                                        <!--begin::Remove-->
+                                        <span
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                            title="Remove avatar">
+                                            <i class="ki-outline ki-cross fs-2"></i>
+                                        </span>
+                                        <!--end::Remove-->
+                                    </div>
+                                    <!--end::Image input-->
+                                    <!--begin::Description-->
+                                    <div class="text-muted fs-7">Set icon of tier</div>
+                                    <!--end::Description-->
+                                </div>
+                                <!--end::Card body-->
+                            </div>
+                            <br>
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
@@ -121,7 +187,8 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Discard</button>
+                        <button type="reset" id="kt_modal_add_customer_cancel"
+                            class="btn btn-light me-3">Discard</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
@@ -158,10 +225,9 @@
                     rightColumns: 1
                 },
                 columnDefs: [{
-                        orderable: false,
-                        targets: -1 // Disable sorting for action column
-                    },
-                ],
+                    orderable: false,
+                    targets: -1 // Disable sorting for action column
+                }, ],
                 ajax: {
                     url: "{{ route('tier.data') }}",
                     data: function(d) {
@@ -225,9 +291,11 @@
             $('#kt_modal_add_customer_form').on('submit', function(e) {
                 e.preventDefault();
 
-                var form = $(this);
-                var url = form.attr('action');
+                var form = $(this)[0];
+                var url = $(this).attr('action');
                 var submitBtn = $('#kt_modal_add_customer_submit');
+
+                var formData = new FormData(form); // Gunakan FormData agar file bisa ikut terkirim
 
                 // Show loading
                 submitBtn.prop('disabled', true);
@@ -237,7 +305,9 @@
                 $.ajax({
                     type: 'POST',
                     url: url,
-                    data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
@@ -246,50 +316,36 @@
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            // 1. Reset form
-                            form.trigger('reset');
-
-                            // 2. Hapus input _method
-                            form.find('input[name="_method"]').remove();
-
-                            // 3. Kembalikan action form ke default (untuk create)
-                            form.attr('action',
-                                `/${segment1}`); // Misal segment1 = 'tier'
-
-                            // 4. Kembalikan judul modal (opsional)
-                            $('#kt_modal_add_customer_header h2').text(
-                                'Tambah Tier');
-
-                            // 5. Tutup modal
+                            // Reset form, tutup modal, dan refresh DataTable
+                            $('#kt_modal_add_customer_form').trigger('reset');
+                            $('#kt_modal_add_customer_form').find(
+                                'input[name="_method"]').remove();
+                            $('#kt_modal_add_customer_form').attr('action',
+                                `/${segment1}`);
+                            $('#kt_modal_add_customer_header h2').text('Tambah Tier');
                             const modal = bootstrap.Modal.getInstance(document
                                 .getElementById('kt_modal_add_customer'));
                             if (modal) modal.hide();
-
-                            // 6. Refresh DataTable
-                            if (typeof dataTable !== 'undefined') {
-                                dataTable.ajax.reload(null, false);
-                            }
+                            if (typeof dataTable !== 'undefined') dataTable.ajax.reload(
+                                null, false);
                         });
                     },
                     error: function(xhr) {
-                        var msg = 'Terjadi kesalahan saat menyimpan data.';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            msg = xhr.responseJSON.message;
-                        }
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: msg
+                            text: xhr.responseJSON?.message ||
+                                'Terjadi kesalahan saat menyimpan data.'
                         });
                     },
                     complete: function() {
-                        // Reset loading state
                         submitBtn.prop('disabled', false);
                         submitBtn.find('.indicator-label').show();
                         submitBtn.find('.indicator-progress').hide();
                     }
                 });
             });
+
         });
 
         function reloadDataTable() {
@@ -357,6 +413,10 @@
                     $('input[name="name"]').val(response.name);
                     $('input[name="exp"]').val(response.exp);
                     $('input[name="level"]').val(response.level);
+                    // Tampilkan gambar jika ada
+                    if (response.icon) {
+                        $('.image-input-wrapper').css('background-image', `url(/storage/${response.icon})`);
+                    }
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
