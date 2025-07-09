@@ -109,17 +109,37 @@
             width: 100%;
             height: 8px;
             background: #e5e7eb;
-            border-radius: 4px;
-            overflow: hidden;
+            border-radius: 8px;
+            overflow: visible;
+            position: relative;
         }
 
         .progress-fill {
-            /* width: 10%; */
             width: var(--progress);
             height: 100%;
-            background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);
-            border-radius: 4px;
+            /* background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);             */
+            background: var(--fill-color);
+            border-radius: 8px;
+            position: relative;
+            transition: width 0.3s ease;
         }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%, -50%);
+            width: 14px;
+            height: 14px;
+            /* background-color: #16a34a; */
+            background-color: var(--fill-color);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        }
+
+
 
         /* Receipt Details */
         .receipt-details {
@@ -490,13 +510,21 @@
                         } else {
                             $percent = 0;
                         }
+
+                        $color = match (true) {
+                            $percent <= 25 => '#dc2626', // merah
+                            $percent <= 50 => '#eab308', // kuning
+                            $percent <= 75 => '#f97316', // orange
+                            default => '#16a34a', // hijau
+                        };
                     @endphp
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
                         <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ $currentExp ?? 0 }} /
                             {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="--progress: {{ $percent }}%;"></div>
+                            <div class="progress-fill"
+                                style="--progress: {{ $percent }}%; --fill-color : {{ $color }}"></div>
                         </div>
                     </div>
                 </div>
