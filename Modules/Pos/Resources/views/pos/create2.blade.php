@@ -209,7 +209,7 @@
                                             <div class="mb-2 pb-2">
                                                 <span class="fs-6 px-3 py-2">
                                                     Total: Rp <span
-                                                        x-text="((item.total_input || (item.price * item.qty)) - item.discount).toLocaleString()"></span>
+                                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()"></span>
                                                 </span>
                                             </div>
                                         </div>

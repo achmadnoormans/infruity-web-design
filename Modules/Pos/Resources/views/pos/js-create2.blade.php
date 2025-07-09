@@ -427,7 +427,7 @@
                         total_input: total_input
                     });
 
-                    console.log(this.cart);
+                    console.log('cart', this.cart);
                     this.resetAddForm();
                 },
 
