@@ -169,9 +169,10 @@
         }
 
         .value {
-            font-weight: 500;
+            /* font-weight: 500; */
             font-size: 14px;
-            color: #1f2937;
+            /* color: #1f2937; */
+            color: #6b7280;
         }
 
         /* Status */
@@ -228,8 +229,8 @@
         }
 
         .item-total {
-            font-weight: 500;
-            color: #1f2937;
+            /* font-weight: 500; */
+            color: #6b7280;
         }
 
         .item-price {
@@ -254,7 +255,7 @@
         .total-line {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            /* margin-bottom: 8px; */
             font-size: 14px;
         }
 
@@ -263,8 +264,8 @@
         }
 
         .total-value {
-            font-weight: 500;
-            color: #1f2937;
+            /* font-weight: 500; */
+            color: #6b7280;
         }
 
         .discount-line .total-value {
@@ -275,9 +276,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 12px;
-            border-top: 1px solid #e5e7eb;
-            margin-top: 8px;
+            /* padding-top: 12px; */
+            /* border-top: 1px solid #e5e7eb; */
+            /* margin-top: 8px; */
         }
 
         .grand-total-label {
@@ -289,7 +290,8 @@
         .grand-total-value {
             font-weight: 700;
             font-size: 18px;
-            color: #16a34a;
+            /* color: #16a34a; */
+            color: #1f2937;
         }
 
         /* Payment */
@@ -314,8 +316,8 @@
         }
 
         .payment-value {
-            font-weight: 500;
-            color: #1f2937;
+            /* font-weight: 500; */
+            color: #6b7280;
         }
 
         /* Footer */
@@ -578,11 +580,15 @@
                             <div class="item-details">
                                 <div class="item-header">
                                     <span class="item-name">{{ $item->product->name }}</span>
+                                </div>
+                                <div class="item-price" style=" display: flex;justify-content: space-between;">
+                                    <span>
+                                        {{ tonumberround($item->price) }} x
+                                        {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
+                                    </span>
                                     <span class="item-total">Rp
                                         {{ isset($item->discount) && $item->discount > 0 ? tonumberround($item->subtotal + $item->discount) : tonumberround($item->subtotal) }}</span>
                                 </div>
-                                <div class="item-price">{{ tonumberround($item->price) }} x
-                                    {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}</div>
                                 <div class="discount">
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
@@ -625,6 +631,8 @@
                         <span class="total-value">- Rp {{ tonumberround($data->discount) }}</span>
                     </div>
                 @endif
+            </div>
+            <div class="totals-section">
                 <div class="grand-total">
                     <span class="grand-total-label">Total ({{ count($detail) }} Produk)</span>
                     <span class="grand-total-value">{{ tonumberround($data->total) }}</span>
@@ -644,10 +652,10 @@
                             <span class="payment-value">Rp {{ tonumberround($payment->return) }} -</span>
                         </div>
                     @else
-                        <div class="payment-line">
+                        {{-- <div class="payment-line">
                             <span class="payment-label">Kurang</span>
                             <span class="payment-value">Rp {{ tonumberround($payment->remaining) }} -</span>
-                        </div>
+                        </div> --}}
                     @endif
                 </div>
             @endif
