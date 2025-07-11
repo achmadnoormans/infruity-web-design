@@ -235,8 +235,13 @@
                 },
                 calculateEditDiscountAmount() {
                     const val = parseFloat(this.editDiscount || 0);
+                    console.log('Discount:', val);
                     if (val <= 100) {
-                        return parseFloat(((this.editTotal || 0) * val / 100).toFixed(2)); // persen
+                        let qty = parseFloat(this.editQty || 0);
+                        let originalPrice = parseFloat(this.editPrice || 0);
+                        let discount = parseFloat(this.editDiscount || 0);
+                        let subtotal = qty * originalPrice;
+                        return parseFloat(((subtotal || 0) * val / 100).toFixed(2)); // persen
                     } else {
                         return val; // nominal
                     }
