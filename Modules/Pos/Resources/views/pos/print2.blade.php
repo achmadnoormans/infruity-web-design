@@ -255,7 +255,8 @@
             display: flex;
             justify-content: space-between;
             font-size: 14px;
-            color: #dc2626;
+            /* color: #dc2626; */
+            color: #6b7280;
         }
 
         /* Totals */
