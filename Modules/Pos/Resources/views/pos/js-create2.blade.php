@@ -75,6 +75,7 @@
                 // edit product
                 editModal: false,
                 editItem: null,
+                editPrice: 0,
                 editQty: 1,
                 editTotal: 0,
                 editDiscount: 0,
@@ -197,6 +198,7 @@
                     this.editProductName = item.name;
                     this.editProductUnit = item.unit;
                     this.editTitle = item.name;
+                    this.editPrice = item.price;
                     this.editQty = item.qty;
                     this.editTotal = item.total_input || (item.qty * item.price);
                     this.editTotalFormatted = this.formatRupiah(this.editTotal);
@@ -251,6 +253,24 @@
                     if (this.editItem) {
                         this.editTotal = parseFloat((this.editQty * this.editItem.price).toFixed(2));
                     }
+                },
+
+                updateEditDiscount() {
+                    let qty = parseFloat(this.editQty || 0);
+                    let originalPrice = parseFloat(this.editPrice || 0);
+                    let discount = parseFloat(this.editDiscount || 0);
+
+                    // Hitung total sebelum diskon
+                    let subtotal = qty * originalPrice;
+
+                    // Jika discount > 100 → anggap sebagai nominal (Rp)
+                    // Jika ≤ 100 → anggap sebagai persen
+                    let discountValue = discount > 100 ? discount : subtotal * (discount / 100);
+
+                    let totalAfterDiscount = subtotal - discountValue;
+
+                    this.editTotalFormatted = this.formatRupiah(totalAfterDiscount);
+                    this.editTotal = totalAfterDiscount;
                 },
 
                 saveEditToCart() {
