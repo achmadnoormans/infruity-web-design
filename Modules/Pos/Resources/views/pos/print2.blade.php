@@ -587,6 +587,7 @@
             <!-- Items -->
             <div class="items-section">
                 @isset($detail)
+                    {{-- {{ dd($detail) }} --}}
                     @foreach ($detail as $item)
                         <div class="item">
                             <div class="item-details">
@@ -632,15 +633,31 @@
             </div>
 
             <!-- Totals -->
+            @php
+                $discount = $data->discount;
+                $subtotal = $data->total;
+                if ($discount <= 100) {
+                    $discount = ($discount / 100) * $data->total;
+                    $subtotal = $subtotal + $discount;
+                } else {
+                    $subtotal = $subtotal + $discount;
+                }
+            @endphp
             <div class="totals-section">
                 <div class="total-line">
                     <span class="total-label">Subtotal</span>
-                    <span class="total-value">{{ tonumberround($data->total + $data->discount) }}</span>
+                    <span class="total-value">{{ tonumberround($subtotal) }}</span>
                 </div>
-                @if ($data->discount > 0)
+                @if ($discount > 0)
                     <div class="total-line discount-line">
                         <span class="total-label">Diskon</span>
-                        <span class="total-value">- Rp {{ tonumberround($data->discount) }}</span>
+                        <span class="total-value">{{ tonumberround($discount) }}</span>
+                    </div>
+                @endif
+                @if ($data->ongkir > 0)
+                    <div class="total-line">
+                        <span class="total-label">Biaya Pengiriman</span>
+                        <span class="total-value">{{ tonumberround($data->ongkir) }}</span>
                     </div>
                 @endif
             </div>
@@ -768,7 +785,7 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             var options = {
-                text: "{{ url('/cek-nota') . '/' . $payment->uuid }}",
+                text: "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : '') }}",
                 width: 100,
                 height: 100,
                 quietZone: 5,
