@@ -398,6 +398,21 @@ class PosController extends Controller
         return view('pos::pos.print2', $data);
     }
 
+    public function cekNota($id)
+    {
+        $data['payment'] = Payment::where('uuid', $id)->first();
+        if (isset($data['payment'])) {
+            $data['data'] = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+            $data['setting'] = SettingNota::first();
+            $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
+            $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+            // dd($data);
+            return view('pos::pos.print2', $data);
+        } else {
+            abort(404);
+        }
+    }
+
 
     public function get_data(Request $request)
     {

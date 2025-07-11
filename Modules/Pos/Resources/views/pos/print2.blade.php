@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>In!Fruity Digital Receipt</title>
+    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
+    <meta name="keywords" content="buah, umkm, pasar" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
+    <meta property="og:url" content="https://infruity.com" />
+    <meta property="og:site_name" content="Infruity" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="canonical" href="https://infruity.com" />
+    <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.10/dist/easy.qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
@@ -678,12 +690,14 @@
             </div>
         </div>
     </div>
-    <div class="button-group">
-        <button class="print-button" onclick="window.print()">Cetak Receipt</button>
-        <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
-        <button class="print-button" onclick="downloadReceiptAsPNG()">Download PNG</button>
-        <button class="print-button" onclick="sendReceiptToWA()">Kirim ke WhatsApp</button>
-    </div>
+    @if (Request::segment(1) != 'cek-nota')
+        <div class="button-group">
+            <button class="print-button" onclick="window.print()">Cetak Receipt</button>
+            <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
+            <button class="print-button" onclick="downloadReceiptAsPNG()">Download PNG</button>
+            <button class="print-button" onclick="sendReceiptToWA()">Kirim ke WhatsApp</button>
+        </div>
+    @endif
 
     <script>
         // Auto print jika ada parameter print=true di URL
@@ -754,7 +768,7 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             var options = {
-                text: "{{ url('/cek-nota') . '/' . $data->uuid }}",
+                text: "{{ url('/cek-nota') . '/' . $payment->uuid }}",
                 width: 100,
                 height: 100,
                 quietZone: 5,

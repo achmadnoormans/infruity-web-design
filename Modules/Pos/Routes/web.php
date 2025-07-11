@@ -18,7 +18,7 @@ use Modules\Master\Http\Controllers\CustomerController;
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('pos', PosController::class)->names('pos')->except('show');
-    Route::get('pos/show/{id}', [PosController::class,'show'])->name('pos.show');
+    Route::get('pos/show/{id}', [PosController::class, 'show'])->name('pos.show');
     Route::get('pos/data', [PosController::class, 'get_data'])->name('pos-data');
     Route::post('pos/submitTransaction', [PosController::class, 'store'])->name('pos-submit');
     Route::post('pos/{id}/payment', [PosController::class, 'savePayment'])->name('receipt.payment');
@@ -38,3 +38,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
     Route::get('delivery-order/data', [DeliveryOrderController::class, 'get_data'])->name('delivery-order.data');
 });
+
+Route::get('cek-nota/{id}', [PosController::class, 'cekNota'])->name('pos.cek-nota');

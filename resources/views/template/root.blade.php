@@ -12,10 +12,10 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
-    <meta property="og:url" content="https://keenthemes.com/metronic" />
+    <meta property="og:url" content="https://infruity.com" />
     <meta property="og:site_name" content="Infruity" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
+    <link rel="canonical" href="https://infruity.com" />
     <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
