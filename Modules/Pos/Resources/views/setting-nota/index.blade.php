@@ -116,73 +116,46 @@
                             <!--end::Editor-->
                         </div>
                         <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Tampil Nama Kasir?</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <div class="form-check form-check-custom form-check-solid mb-2">
-                                <input class="form-check-input" type="checkbox" value="1" name="is_using_cashier"
-                                    {{ isset($data) && $data->is_using_cashier ? 'checked' : '' }} />
-                                <label class="form-check-label">Iya</label>
-                            </div>
-                            <!--end::Input-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Tampilkan nama kasir pada nota.</div>
-                            <!--end::Description-->
-                        </div>
                         <!--end::Input group-->
-                        <!--begin::Input group-->
                         <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Tampil Nama Pelanggan?</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <div class="form-check form-check-custom form-check-solid mb-2">
-                                <input class="form-check-input" type="checkbox" value="1" name="is_using_customer"
-                                    {{ isset($data) && $data->is_using_customer ? 'checked' : '' }} />
-                                <label class="form-check-label">Iya</label>
-                            </div>
-                            <!--end::Input-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Tampilkan nama pelanggan pada nota.</div>
-                            <!--end::Description-->
+                            <label class="form-label d-flex justify-content-between">
+                                <span>Tampil Nama Kasir?</span>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="is_using_cashier" value="1"
+                                        {{ isset($data) && $data->is_using_cashier ? 'checked' : '' }}>
+                                </div>
+                            </label>
                         </div>
-                        <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Tampil Tanggal Transaksi?</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <div class="form-check form-check-custom form-check-solid mb-2">
-                                <input class="form-check-input" type="checkbox" value="1" name="is_using_date"
-                                    {{ isset($data) && $data->is_using_date ? 'checked' : '' }} />
-                                <label class="form-check-label">Iya</label>
-                            </div>
-                            <!--end::Input-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Tampilkan tanggal transaksi pada nota.</div>
-                            <!--end::Description-->
+                            <label class="form-label d-flex justify-content-between">
+                                <span>Tampil Nama Pelanggan?</span>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="is_using_customer" value="1"
+                                        {{ isset($data) && $data->is_using_customer ? 'checked' : '' }}>
+                                </div>
+                            </label>
                         </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
+
                         <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Tampil Nomer Faktur?</label>
-                            <!--end::Label-->
-                            <!--begin::Input-->
-                            <div class="form-check form-check-custom form-check-solid mb-2">
-                                <input class="form-check-input" type="checkbox" value="1"
-                                    name="is_using_invoice_number"
-                                    {{ isset($data) && $data->is_using_invoice_number ? 'checked' : '' }} />
-                                <label class="form-check-label">Iya</label>
-                            </div>
-                            <!--end::Input-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Tampilkan nomor faktur pada nota.</div>
-                            <!--end::Description-->
+                            <label class="form-label d-flex justify-content-between">
+                                <span>Tampil Tanggal Transaksi?</span>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="is_using_date" value="1"
+                                        {{ isset($data) && $data->is_using_date ? 'checked' : '' }}>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="fv-row">
+                            <label class="form-label d-flex justify-content-between">
+                                <span>Tampil Nomor Faktur?</span>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" name="is_using_invoice_number"
+                                        value="1"
+                                        {{ isset($data) && $data->is_using_invoice_number ? 'checked' : '' }}>
+                                </div>
+                            </label>
                         </div>
                         <!--end::Input group-->
                         {{-- <!--begin::Input group-->
