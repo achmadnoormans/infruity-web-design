@@ -40,3 +40,4 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 });
 
 Route::get('cek-nota/{id}', [PosController::class, 'cekNota'])->name('pos.cek-nota');
+Route::get('cek-nota/draft/{id}', [PosController::class, 'cekNotaDraft'])->name('pos.cek-nota.draft');

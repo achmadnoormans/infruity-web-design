@@ -748,45 +748,54 @@
         }
 
         function sendReceiptToWA() {
-            const receipt = document.querySelector('.container');
-            html2canvas(receipt, {
-                scale: 2,
-                backgroundColor: '#fff',
-            }).then(canvas => {
-                const base64Image = canvas.toDataURL('image/png');
-
-                fetch('/upload-receipt', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({
-                            image: base64Image
-                        }),
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.url) {
-                            const message = encodeURIComponent(
-                                `Halo, berikut bukti transaksi Anda:\n${data.url}`);
-                            const phone = '6281230607050'; // Ganti dengan nomor tujuan
-                            const waUrl = `https://wa.me/${phone}?text=${message}`;
-                            window.open(waUrl, '_blank');
-                        } else {
-                            alert('Gagal upload gambar.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Terjadi kesalahan saat mengirim ke WhatsApp.');
-                    });
-            });
+            const url = "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}";
+            const message = encodeURIComponent(
+                `Halo, berikut bukti transaksi Anda:\n${url}`);
+            const phone = '6281230607050'; // Ganti dengan nomor tujuan
+            const waUrl = `https://wa.me/${phone}?text=${message}`;
+            window.open(waUrl, '_blank');
         }
+
+        // function sendReceiptToWA() {
+        //     const receipt = document.querySelector('.container');
+        //     html2canvas(receipt, {
+        //         scale: 2,
+        //         backgroundColor: '#fff',
+        //     }).then(canvas => {
+        //         const base64Image = canvas.toDataURL('image/png');
+
+        //         fetch('/upload-receipt', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        //                 },
+        //                 body: JSON.stringify({
+        //                     image: base64Image
+        //                 }),
+        //             })
+        //             .then(res => res.json())
+        //             .then(data => {
+        //                 if (data.url) {
+        //                     const message = encodeURIComponent(
+        //                         `Halo, berikut bukti transaksi Anda:\n${data.url}`);
+        //                     const phone = '6281230607050'; // Ganti dengan nomor tujuan
+        //                     const waUrl = `https://wa.me/${phone}?text=${message}`;
+        //                     window.open(waUrl, '_blank');
+        //                 } else {
+        //                     alert('Gagal upload gambar.');
+        //                 }
+        //             })
+        //             .catch(err => {
+        //                 console.error(err);
+        //                 alert('Terjadi kesalahan saat mengirim ke WhatsApp.');
+        //             });
+        //     });
+        // }
 
         document.addEventListener("DOMContentLoaded", function() {
             var options = {
-                text: "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : '') }}",
+                text: "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}",
                 width: 100,
                 height: 100,
                 quietZone: 5,

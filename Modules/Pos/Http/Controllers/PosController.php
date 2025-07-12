@@ -413,6 +413,16 @@ class PosController extends Controller
         }
     }
 
+    public function cekNotaDraft($id)
+    {
+        $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
+        $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
+        $data['setting'] = SettingNota::first();
+        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['data']->id)->get();
+        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        // dd($data);
+        return view('pos::pos.print2', $data);
+    }
 
     public function get_data(Request $request)
     {
