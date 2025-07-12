@@ -136,19 +136,25 @@
             transition: width 0.3s ease;
         }
 
-        .progress-fill::after {
-            content: '';
+        .progress-fill::before {
+            content: attr(data-percent) '%';
+            /* isi teks dari atribut data-percent */
             position: absolute;
             right: 0;
             top: 50%;
             transform: translate(50%, -50%);
-            width: 14px;
-            height: 14px;
-            /* background-color: #16a34a; */
+            width: 24px;
+            height: 24px;
             background-color: var(--fill-color);
             border: 2px solid white;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
 
@@ -539,7 +545,8 @@
                             {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"
-                                style="--progress: {{ $percent }}%; --fill-color : {{ $color }}"></div>
+                                style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
+                                data-percent="{{ $percent }}"></div>
                         </div>
                     </div>
                 </div>
