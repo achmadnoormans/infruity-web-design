@@ -33,21 +33,22 @@
 
         // Fungsi render untuk item di dropdown
         function formatCustomerOption(customer) {
-            if (!customer.id) return customer.text; // placeholder
+            if (!customer.id) return customer.text;
 
             const name = customer.name ?? 'Pelanggan Umum';
-            const whatsapp = (customer.whatsapp !== undefined && customer.whatsapp !== null && customer.whatsapp !== '') ?
-                customer.whatsapp :
-                '-';
-            const address = (customer.address !== undefined && customer.address !== null && customer.address !== '') ?
-                customer.address :
-                '-';
+
+            if (customer.id === '0') {
+                return $(`<div style="font-size: 13px;"><strong>${name}</strong></div>`);
+            }
+
+            const whatsapp = customer.whatsapp || '-';
+            const address = customer.address || '-';
 
             return $(`
                 <div style="font-size: 13px; line-height: 1.4;">
                     <strong>${name}</strong>
-                    <span class="text-muted flex d-flex fs-7">${whatsapp}</span>
-                    <span class="text-muted flex d-flex fs-7">${address}</span>
+                    <span class="text-muted d-block fs-7">${whatsapp}</span>
+                    <span class="text-muted d-block fs-7">${address}</span>
                 </div>
             `);
         }
@@ -55,13 +56,15 @@
 
         // Fungsi render untuk item terpilih
         function formatCustomerSelection(customer) {
-            if (!customer.id) return customer.text; // placeholder
+            if (!customer.id) return customer.text;
 
             const name = customer.name ?? 'Pelanggan Umum';
-            const whatsapp = (customer.whatsapp !== undefined && customer.whatsapp !== null && customer.whatsapp !== '') ?
-                customer.whatsapp :
-                '-';
 
+            if (customer.id === '0') {
+                return name;
+            }
+
+            const whatsapp = customer.whatsapp || '-';
             return `${name} (${whatsapp})`;
         }
 
@@ -79,6 +82,7 @@
                 editQty: 1,
                 editTotal: 0,
                 editDiscount: 0,
+                editDiscountPercent: 0,
                 editDiscountMode: 'nominal', // atau 'percent'
                 editTotalFormatted: '',
                 editProductName: '',
@@ -95,6 +99,7 @@
                     hpp: 0,
                     discount: 0,
                     discountNominal: 0,
+                    discountPercent: 0,
                     qty: 1
                 },
 
@@ -271,11 +276,13 @@
                     // Jika discount > 100 → anggap sebagai nominal (Rp)
                     // Jika ≤ 100 → anggap sebagai persen
                     let discountValue = discount > 100 ? discount : subtotal * (discount / 100);
+                    let discountPercent = discount > 100 ? 0 : discount;
 
                     let totalAfterDiscount = subtotal - discountValue;
 
                     this.editTotalFormatted = this.formatRupiah(totalAfterDiscount);
                     this.editTotal = totalAfterDiscount;
+                    this.editDiscountPercent = discountPercent;
                 },
 
                 saveEditToCart() {
@@ -285,6 +292,7 @@
                         this.cart[idx].qty = this.editQty;
                         this.cart[idx].total_input = this.editTotal;
                         this.cart[idx].discount = disc;
+                        this.cart[idx].discountPercent = this.editDiscountPercent;
                     }
                     this.closeEditModal();
                 },
@@ -392,11 +400,13 @@
                         // Input dianggap nominal rupiah
                         this.addProduct.discount = input;
                         this.addProduct.discountNominal = input;
+                        this.addProduct.discountPercent = 0;
                     } else {
                         // Input dianggap persen
                         let diskonRupiah = (input / 100) * subtotal;
                         this.addProduct.discount = diskonRupiah;
                         this.addProduct.discountNominal = input;
+                        this.addProduct.discountPercent = input;
                     }
 
                     // Update total setelah diskon
@@ -449,6 +459,7 @@
                         qty: this.addProduct.qty,
                         unit: this.addProduct.unit,
                         discount: discount > 100 ? discount : (discount / 100) * total_input,
+                        discountPercent: this.addProduct.discountPercent,
                         total_input: total_input
                     });
 

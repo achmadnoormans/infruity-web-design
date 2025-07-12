@@ -174,12 +174,18 @@
                                             <div class="mb-2">
                                                 <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
                                                 <small class="text-muted d-flex">
-                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>) @
-                                                    <span x-text="item.price.toLocaleString()"></span>
+                                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
+                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
                                                 </small>
-                                                <small class="text-muted" x-show="item.discount > 0">
-                                                    Discount <span x-text="item.discount.toLocaleString()"></span>
-                                                </small>
+                                                <div>
+                                                    <small class="text-muted">Diskon</small>
+                                                    <small class="text-muted" x-show="item.discountPercent > 0">
+                                                        <span x-text="item.discountPercent"></span>%
+                                                    </small>
+                                                    <small class="text-muted" x-show="item.discount > 0">
+                                                        (-<span x-text="item.discount.toLocaleString()"></span>)
+                                                    </small>
+                                                </div>
                                             </div>
                                             <div class="mb-2 pb-2">
                                                 <span class="fs-6 px-3 py-2">
@@ -197,19 +203,24 @@
                                             <div class="mb-2">
                                                 <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
                                                 <small class="text-muted d-flex">
-                                                    Qty : <span x-text="item.qty"></span>
+                                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
+                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
                                                 </small>
-                                                <small class="text-muted d-flex">
-                                                    Harga <span x-text="item.price.toLocaleString()"></span>
-                                                </small>
-                                                <small class="text-muted" x-show="item.discount > 0">
-                                                    Discount <span x-text="item.discount.toLocaleString()"></span>
-                                                </small>
+                                                <div>
+                                                    <small class="text-muted">Diskon</small>
+                                                    <small class="text-muted" x-show="item.discountPercent > 0">
+                                                        <span x-text="item.discountPercent"></span>%
+                                                    </small>
+                                                    <small class="text-muted" x-show="item.discount > 0">
+                                                        (-<span x-text="item.discount.toLocaleString()"></span>)
+                                                    </small>
+                                                </div>
                                             </div>
                                             <div class="mb-2 pb-2">
                                                 <span class="fs-6 px-3 py-2">
                                                     Total: Rp <span
-                                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()"></span>
+                                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
+                                                        ></span>
                                                 </span>
                                             </div>
                                         </div>
