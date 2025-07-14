@@ -130,7 +130,8 @@
             width: var(--progress);
             height: 100%;
             /* background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);             */
-            background: var(--fill-color);
+            /* background: var(--fill-color); */
+            background : #16a34a;
             border-radius: 8px;
             position: relative;
             transition: width 0.3s ease;
@@ -145,7 +146,8 @@
             transform: translate(50%, -50%);
             width: 24px;
             height: 24px;
-            background-color: var(--fill-color);
+            /* background-color: var(--fill-color); */            
+            background : #16a34a;
             border: 2px solid white;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
@@ -541,7 +543,7 @@
                     @endphp
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
-                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ $currentExp ?? 0 }} /
+                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ floatval($currentExp) ?? 0 }} /
                             {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"
