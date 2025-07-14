@@ -131,23 +131,62 @@
             height: 100%;
             /* background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);             */
             /* background: var(--fill-color); */
-            background : #16a34a;
+            background: #16a34a;
             border-radius: 8px;
             position: relative;
             transition: width 0.3s ease;
         }
 
-        .progress-fill::before {
+        /* .progress-fill::before {
             content: attr(data-percent) '%';
-            /* isi teks dari atribut data-percent */
             position: absolute;
             right: 0;
             top: 50%;
             transform: translate(50%, -50%);
             width: 24px;
             height: 24px;
-            /* background-color: var(--fill-color); */            
-            background : #16a34a;
+            background: #16a34a;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        } */
+
+        /* .progress-fill::before {
+            content: attr(data-percent) '%';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        } */
+
+        .progress-fill::before {
+            content: attr(data-percent) '%';
+            position: absolute;
+            top: 50%;
+            transform: translate({{ request()->mode == 2 ? '-50%' : '50%' }}, -50%);
+            left: {{ request()->mode == 2 ? '0' : 'auto' }};
+            right: {{ request()->mode == 2 ? 'auto' : '0' }};
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
             border: 2px solid white;
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
@@ -543,7 +582,8 @@
                     @endphp
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
-                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }} ({{ floatval($currentExp) ?? 0 }} /
+                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
+                            ({{ floatval($currentExp) ?? 0 }} /
                             {{ $maxExp ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"
