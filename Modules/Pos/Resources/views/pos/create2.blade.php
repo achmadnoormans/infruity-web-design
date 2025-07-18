@@ -177,12 +177,12 @@
                                                     <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
                                                     <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
                                                 </small>
-                                                <div>
+                                                <div x-show="item.discount > 0">
                                                     <small class="text-muted">Diskon</small>
                                                     <small class="text-muted" x-show="item.discountPercent > 0">
                                                         <span x-text="item.discountPercent"></span>%
                                                     </small>
-                                                    <small class="text-muted" x-show="item.discount > 0">
+                                                    <small class="text-muted">
                                                         (-<span x-text="item.discount.toLocaleString()"></span>)
                                                     </small>
                                                 </div>
@@ -206,12 +206,12 @@
                                                     <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
                                                     <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
                                                 </small>
-                                                <div>
+                                                <div x-show="item.discount > 0">
                                                     <small class="text-muted">Diskon</small>
                                                     <small class="text-muted" x-show="item.discountPercent > 0">
                                                         <span x-text="item.discountPercent"></span>%
                                                     </small>
-                                                    <small class="text-muted" x-show="item.discount > 0">
+                                                    <small class="text-muted">
                                                         (-<span x-text="item.discount.toLocaleString()"></span>)
                                                     </small>
                                                 </div>
