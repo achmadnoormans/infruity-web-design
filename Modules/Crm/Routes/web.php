@@ -5,6 +5,7 @@ use Modules\Pos\Http\Controllers\SettingNotaController;
 use Modules\Master\Http\Controllers\CustomerController;
 use Modules\Crm\Http\Controllers\TierController;
 use Modules\Crm\Http\Controllers\SettingExpController;
+use Modules\Crm\Http\Controllers\PointScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('tier', TierController::class)->names('tier')->except('show');
     Route::get('tier/data', [TierController::class, 'get_data'])->name('tier.data');
     Route::resource('setting-exp', SettingExpController::class)->names('setting-exp')->except('show');
+    Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');
 });

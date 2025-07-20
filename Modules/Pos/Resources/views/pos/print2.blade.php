@@ -656,7 +656,7 @@
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
                                             <span>Diskon
-                                                ({{ ($item->discount / ($item->subtotal + $item->discount)) * 100 }}%)
+                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
                                             </span>
                                             <span>- {{ tonumberround($item->discount) }}</span>
                                         @endif
