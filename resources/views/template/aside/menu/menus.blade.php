@@ -547,11 +547,11 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'point-scheme' ? 'active' : '' }}" href="{{ url('point-scheme') }}">
+                <a class="menu-link {{ $link == 'point-schedule' ? 'active' : '' }}" href="{{ url('point-schedule') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Point Scheme</span>
+                <span class="menu-title">Point Schedule</span>
             </a>
             <!--end:Menu link-->
         </div>

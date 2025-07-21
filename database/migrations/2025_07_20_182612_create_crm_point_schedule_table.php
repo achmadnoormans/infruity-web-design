@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('frequency'); // Frequency in days
+            $table->integer('break')->default(1); // 1 for date, 2 for forever
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -69,6 +70,7 @@ return new class extends Migration
                 'start_date' => now(),
                 'end_date' => now()->addDays(90),
                 'frequency' => 1,
+                'break' => 2, // 1 for date
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

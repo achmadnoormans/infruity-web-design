@@ -70,7 +70,24 @@ class PointScheduleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $settingExp = PointSchedule::findOrFail($id);
+            $settingExp->start_date = $request->start_date;
+            $settingExp->end_date = $request->end_date;
+            $settingExp->frequency = $request->frequency;
+            $settingExp->break = $request->break;
+            $settingExp->updated_by = Auth::id();
+            $settingExp->save();
+
+            DB::commit();
+
+            return redirect()->route('point-schedule.index')->with('success', 'Atur Jadwal Reset Automatis berhasil');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput($request->all())
+                ->with('error', 'Pembuatan Atur Jadwal Reset Automatis gagal: ' . $e->getMessage());
+        }
     }
 
     /**

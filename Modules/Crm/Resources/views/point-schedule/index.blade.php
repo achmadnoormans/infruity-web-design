@@ -26,7 +26,7 @@
                             <label class="form-label">Tanggal Mulai</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                            <input type="date" class="form-control" name="start_date"
+                            <input type="date" class="form-control" name="start_date" id="start_date"
                                 value="{{ old('start_date', isset($data->start_date) ? $data->start_date : '') }}">
                             <!--end::Editor-->
                         </div>
@@ -39,12 +39,40 @@
                             <!--begin::Editor-->
                             <select name="frequency" id="frequency" class="form-control">
                                 @foreach ($frequencies as $item)
-                                    <option value="{{ $item->id }}" {{ old('frequency', isset($data->frequency) ? $data->frequency : '') == $item->id ? 'selected' : '' }}>{{ $item->name }}</option>
+                                    <option value="{{ $item->id }}"
+                                        {{ old('frequency', isset($data->frequency) ? $data->frequency : '') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}</option>
                                 @endforeach
                             </select>
                             <!--end::Editor-->
                         </div>
                         <!--end::Input group-->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!--begin::Label-->
+                                <label class="form-label">Selesai setelah</label>
+                                <!--end::Label-->
+                                <!--begin::Editor-->
+                                <select name="break" id="break" class="form-control">
+                                    <option value="1"
+                                        {{ old('break', isset($data->break) ? $data->break : '') == 1 ? 'selected' : '' }}>
+                                        Tanggal</option>
+                                    <option value="2"
+                                        {{ old('break', isset($data->break) ? $data->break : '') == 2 ? 'selected' : '' }}>
+                                        Selamanya</option>
+                                </select>
+                                <!--end::Editor-->
+                            </div>
+                            <div class="col-md-6">
+                                <!--begin::Label-->
+                                <label class="form-label">Tanggal Selesai</label>
+                                <!--end::Label-->
+                                <!--begin::Editor-->
+                                <input type="date" class="form-control" name="end_date" id="end_date"
+                                    value="{{ old('end_date', isset($data->end_date) ? $data->end_date : '') }}">
+                                <!--end::Editor-->
+                            </div>
+                        </div>
                     </div>
                     <!--end::Billing address-->
                 </div>
@@ -69,11 +97,48 @@
     </form>
 @section('script')
     <script>
-        $(document).ready(function() {
-            $('#skala').select2({
-                width: '100%',
-                placeholder: 'Pilih Skala'
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.getElementById('start_date');
+            const frequencySelect = document.getElementById('frequency');
+            const endDateInput = document.getElementById('end_date');
+            const breakSelect = document.getElementById('break');
+
+            function updateEndDate() {
+                const startDateStr = startDateInput.value;
+                const frequencyMonths = parseInt(frequencySelect.value);
+                const breakVal = breakSelect.value;
+
+                if (breakVal === '1') {
+                    endDateInput.value = '';
+                    endDateInput.readOnly = true;
+                    return;
+                } else {
+                    endDateInput.readOnly = false;
+                }
+
+                if (!startDateStr || isNaN(frequencyMonths)) {
+                    endDateInput.value = '';
+                    return;
+                }
+
+                const startDate = new Date(startDateStr);
+                const endDate = new Date(startDate);
+                endDate.setMonth(endDate.getMonth() + frequencyMonths);
+
+                // Format YYYY-MM-DD
+                const yyyy = endDate.getFullYear();
+                const mm = String(endDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(endDate.getDate()).padStart(2, '0');
+                endDateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+
+            // Event listeners
+            startDateInput.addEventListener('change', updateEndDate);
+            frequencySelect.addEventListener('change', updateEndDate);
+            breakSelect.addEventListener('change', updateEndDate);
+
+            // Jalankan sekali di awal jika nilai sudah terisi
+            updateEndDate();
         });
     </script>
 @endsection
