@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -17,6 +18,10 @@ return new class extends Migration
             $table->integer('level');
             $table->integer('exp');
             $table->string('icon')->nullable();
+            $table->integer('free_product_id')->nullable();
+            $table->integer('discount_transaction')->nullable();
+            $table->integer('birthday_gift')->nullable();
+            $table->integer('combo_promo')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

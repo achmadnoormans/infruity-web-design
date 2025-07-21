@@ -159,9 +159,33 @@ class TierController extends Controller
         }
     }
 
+    public function saveDetail(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'discount_transaction' => 'nullable',
+            'free_product_id' => 'nullable|exists:products,id',
+            'birthday_gift' => 'nullable',
+            'combo_promo' => 'nullable',
+        ]);
+        try {
+            DB::beginTransaction();
+            $tier = Tier::findOrFail($id);
+            $tier->discount_transaction = $validated['discount_transaction'];
+            $tier->free_product_id = $validated['free_product_id'];
+            $tier->birthday_gift = $validated['birthday_gift'];
+            $tier->combo_promo = $validated['combo_promo'];
+            $tier->save();
+            DB::commit();
+            return response()->json(['message' => 'Detail berhasil disimpan.', 'data' => $tier], 200);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => 'Gagal menyimpan detail: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function get_data(Request $request)
     {
-        $data = Tier::all();
+        $data = Tier::with('product')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {

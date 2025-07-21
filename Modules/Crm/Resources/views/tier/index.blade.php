@@ -249,11 +249,9 @@
                     {
                         data: 'action',
                         name: 'action',
-                        className: 'text-end',
                         orderable: false,
                         searchable: false
                     },
-
                 ],
                 order: [
                     [1, 'asc']
@@ -470,6 +468,145 @@
                 $('input[name="quantity"]').val(data.stock_available || 0);
             });
 
+        });
+
+        function format(rowData) {
+            return `
+                <div class="accordion-content">
+                    <form class="accordion-form" data-id="${rowData.id}">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Atur Benefit</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Diskon Setiap Transaksi
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="number" class="form-control" name="discount_transaction" value="${rowData.discount_transaction || ''}" placeholder="Masukkan diskon setiap transaksi" />
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Gratis Product
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select class="form-select select-product" name="free_product_id" style="width:100%;">
+                                            ${rowData.free_product_id ? `<option value="${rowData.free_product_id}" selected>${rowData.product.name}</option>` : '<option value="">Pilih Produk</option>'}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Hadiah Ulang Tahun
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select class="form-select select-product" name="birthday_gift" id="birthday_gift">
+                                            <option value="">Pilih Produk</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Promo Gabungan
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <select class="form-select" name="combo_promo" id="combo_promo">
+                                            <option value="">Pilih Produk</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        $('#transaction-table tbody').on('click', 'tr', function(e) {
+            if ($(e.target).closest('button, a').length) return;
+
+            let tr = $(this);
+            let row = dataTable.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                console.log(row.data());
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+
+                // Aktifkan select2 setelah konten ditambahkan ke DOM
+                tr.next().find('.select-product').select2({
+                    ajax: {
+                        url: '/ajax/listProduct',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                term: params.term
+                            };
+                        },
+                        processResults: function(data) {
+                            return {
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name
+                                }))
+                            };
+                        },
+                        cache: true
+                    },
+                    placeholder: 'Pilih Produk',
+                    minimumInputLength: 1
+                });
+            }
+        });
+
+        // Submit form di dalam accordion
+        $('#transaction-table tbody').on('submit', '.accordion-form', function(e) {
+            e.preventDefault();
+            let form = $(this);
+            let id = form.data('id');
+            let data = form.serialize();
+
+            $.ajax({
+                url: `/tier/${id}/save-detail`,
+                type: 'POST',
+                data: data,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function() {
+                    alert('Data berhasil disimpan!');
+                    if (typeof dataTable !== 'undefined') dataTable.ajax.reload(
+                        null, false);
+                },
+                error: function() {
+                    alert('Gagal menyimpan!');
+                }
+            });
         });
     </script>
 @endsection
