@@ -505,6 +505,19 @@
 </div>
 <div class="menu-item">
     <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'crm-dashboard' ? 'active' : '' }}" href="{{ url('crm-dashboard') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Dashboard</span>
+    </a>
+    <!--end:Menu link-->
+</div>
+<div class="menu-item">
+    <!--begin:Menu link-->
     <a class="menu-link {{ Request::segment(1) == 'tier' ? 'active' : '' }}" href="{{ url('tier') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">

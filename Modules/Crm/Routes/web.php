@@ -6,6 +6,7 @@ use Modules\Master\Http\Controllers\CustomerController;
 use Modules\Crm\Http\Controllers\TierController;
 use Modules\Crm\Http\Controllers\SettingExpController;
 use Modules\Crm\Http\Controllers\PointScheduleController;
+use Modules\Crm\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +27,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');
     Route::get('customer-report', [TierController::class, 'customerReport'])->name('customer.report');
     Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
+    Route::get('crm-dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
+    Route::get('crm-dashboard/top-distribution', [DashboardController::class, 'topDistribution'])->name('crm.dashboard.top-distribution');
+    Route::get('crm-dashboard/top-tier', [DashboardController::class, 'topTier'])->name('crm.dashboard.top-tier');
 });
