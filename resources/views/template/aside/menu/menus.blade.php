@@ -472,7 +472,8 @@
     </a>
     <!--end:Menu link-->
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'delivery-order' ? 'active' : '' }}" href="{{ url('delivery-order') }}">
+    <a class="menu-link {{ Request::segment(1) == 'delivery-order' ? 'active' : '' }}"
+        href="{{ url('delivery-order') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
@@ -517,19 +518,19 @@
 </div>
 <div class="menu-item">
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'setting-exp' ? 'active' : '' }}" href="{{ url('setting-exp') }}">
+    <a class="menu-link {{ Request::segment(1) == 'customer-report' ? 'active' : '' }}" href="{{ url('customer-report') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Setting Exp</span>
+        <span class="menu-title">Customer</span>
     </a>
     <!--end:Menu link-->
 </div>
 <div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), ['products']) ? 'here show' : '' }} menu-accordion">
+    class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
     <span class="menu-link">
         <span class="menu-icon">
@@ -547,7 +548,7 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'point-schedule' ? 'active' : '' }}" href="{{ url('point-schedule') }}">
+            <a class="menu-link {{ $link == 'point-schedule' ? 'active' : '' }}" href="{{ url('point-schedule') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -559,11 +560,15 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'products/create' ? 'active' : '' }}" href="{{ url('products/create') }}">
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
+            <a class="menu-link {{ Request::segment(1) == 'setting-exp' ? 'active' : '' }}"
+                href="{{ url('setting-exp') }}">
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-security-user">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
                 </span>
-                <span class="menu-title">Create Product</span>
+                <span class="menu-title">Setting Exp</span>
             </a>
             <!--end:Menu link-->
         </div>

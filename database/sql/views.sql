@@ -159,4 +159,17 @@ JOIN tier_range tr
     ON ce.customer_exp >= tr.min_exp
     AND (ce.customer_exp < tr.max_exp OR tr.max_exp IS NULL);
 
-
+-- View Report Customer
+DROP VIEW IF EXISTS vw_customer_report;
+CREATE OR REPLACE VIEW vw_customer_report AS
+SELECT 
+    c.id AS id_customer,
+    c.name AS nama_customer,
+    c.type AS type_customer,
+    COUNT(t.id) AS jumlah_transaksi,
+    SUM(t.total) AS total_transaksi,
+    MAX(t.date) AS transaksi_terbaru,
+    DATEDIFF(CURDATE(), MAX(t.date)) AS recency
+FROM customer c
+JOIN pos_transaction t ON t.customer_id = c.id
+GROUP BY c.id, c.name, c.type;

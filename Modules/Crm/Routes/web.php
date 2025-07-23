@@ -24,4 +24,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('tier/{id}/save-detail', [TierController::class, 'saveDetail'])->name('tier.save_detail');
     Route::resource('setting-exp', SettingExpController::class)->names('setting-exp')->except('show');
     Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');
+    Route::get('customer-report', [TierController::class, 'customerReport'])->name('customer.report');
+    Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
 });
