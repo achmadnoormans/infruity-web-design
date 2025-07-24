@@ -17,7 +17,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('crm::dashboard.index');
+        $data['totalCustomer'] = Customer::count();
+        return view('crm::dashboard.index', $data);
     }
 
     public function topDistribution(Request $request)

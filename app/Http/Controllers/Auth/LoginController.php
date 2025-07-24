@@ -54,7 +54,7 @@ class LoginController extends Controller
             }
             $role["role"] = Role::find($role_user->id_role)->toArray();
             Session($role);
-            return redirect('products')->with('success', 'Welcome Bro ' . Auth::user()->nm_user);
+            return redirect('dashboard')->with('success', 'Welcome Bro ' . Auth::user()->nm_user);
         } else {
             return redirect()->back()->with('error', 'Username atau Password tidak terdaftar');
         }

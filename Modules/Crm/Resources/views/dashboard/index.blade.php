@@ -17,18 +17,18 @@
                                 style="background-image:url('assets/media/svg/shapes/top-green.png" data-bs-theme="light">
                                 <!--begin::Title-->
                                 <h3 class="card-title align-items-start flex-column text-white pt-15">
-                                    <span class="fw-bold fs-2x mb-3">My Tasks</span>
+                                    <span class="fw-bold fs-2x mb-3">Overview</span>
                                     <div class="fs-4 text-white">
                                         <span class="opacity-75">You have</span>
                                         <span class="position-relative d-inline-block">
-                                            <a href="pages/user-profile/projects.html"
-                                                class="link-white opacity-75-hover fw-bold d-block mb-1">4 tasks</a>
+                                            <a href="{{ route('crm.dashboard') }}"
+                                                class="link-white opacity-75-hover fw-bold d-block mb-1">4 data</a>
                                             <!--begin::Separator-->
                                             <span
                                                 class="position-absolute opacity-50 bottom-0 start-0 border-2 border-body border-bottom w-100"></span>
                                             <!--end::Separator-->
                                         </span>
-                                        <span class="opacity-75">to comlete</span>
+                                        <span class="opacity-75">to overview</span>
                                     </div>
                                 </h3>
                                 <!--end::Title-->
@@ -144,10 +144,10 @@
                                                 <div class="m-0">
                                                     <!--begin::Number-->
                                                     <span
-                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">37</span>
+                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ $totalCustomer }}</span>
                                                     <!--end::Number-->
                                                     <!--begin::Desc-->
-                                                    <span class="text-gray-500 fw-semibold fs-6">Courses</span>
+                                                    <span class="text-gray-500 fw-semibold fs-6">New Customer</span>
                                                     <!--end::Desc-->
                                                 </div>
                                                 <!--end::Stats-->
@@ -173,10 +173,10 @@
                                                 <div class="m-0">
                                                     <!--begin::Number-->
                                                     <span
-                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">6</span>
+                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ $totalCustomer }}</span>
                                                     <!--end::Number-->
                                                     <!--begin::Desc-->
-                                                    <span class="text-gray-500 fw-semibold fs-6">Certificates</span>
+                                                    <span class="text-gray-500 fw-semibold fs-6">Total Customer</span>
                                                     <!--end::Desc-->
                                                 </div>
                                                 <!--end::Stats-->
@@ -203,10 +203,10 @@
                                                 <div class="m-0">
                                                     <!--begin::Number-->
                                                     <span
-                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">4,7</span>
+                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ $totalCustomer }}</span>
                                                     <!--end::Number-->
                                                     <!--begin::Desc-->
-                                                    <span class="text-gray-500 fw-semibold fs-6">Avg. Score</span>
+                                                    <span class="text-gray-500 fw-semibold fs-6">Customer Active</span>
                                                     <!--end::Desc-->
                                                 </div>
                                                 <!--end::Stats-->
@@ -233,10 +233,10 @@
                                                 <div class="m-0">
                                                     <!--begin::Number-->
                                                     <span
-                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">822</span>
+                                                        class="text-gray-700 fw-bolder d-block fs-2qx lh-1 ls-n1 mb-1">{{ $totalCustomer }}</span>
                                                     <!--end::Number-->
                                                     <!--begin::Desc-->
-                                                    <span class="text-gray-500 fw-semibold fs-6">Hours Learned</span>
+                                                    <span class="text-gray-500 fw-semibold fs-6">Customer inactive</span>
                                                     <!--end::Desc-->
                                                 </div>
                                                 <!--end::Stats-->

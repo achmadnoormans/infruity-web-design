@@ -1,11 +1,15 @@
 <?php
 // route for administrator
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\P_rolemenu;
+use Modules\Crm\Http\Controllers\DashboardController;
 
 Route::group(['prefix' => '/', 'middleware' => ['auth','role']], function () {
-	Route::get('/dashboard', 'DashboardController@index')->name('admin.module');
+    Route::get('/', [DashboardController::class, 'index'])->name('crm.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
+	// Route::get('/dashboard', 'DashboardController@index')->name('admin.module');
 	Route::get('/change-password', 'DashboardController@change_password')->name('change-password');
 	Route::post('/change-password', 'DashboardController@save_change_password')->name('save_change_password');
 	Route::get('/list-permohonan', 'DashboardController@list_permohonan')->name('admin.module');
