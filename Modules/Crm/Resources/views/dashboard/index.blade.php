@@ -441,156 +441,183 @@
     <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
     {{-- <script src="{{ asset('assets/js/widgets.bundle.js') }}"></script> --}}
     <script>
-        var KTChartsWidget18 = function() {
-            var e = {
-                    self: null,
-                    rendered: !1
-                },
-                t = function(e) {
-                    var t = document.getElementById("kt_charts_widget_18_chart");
-                    if (t) {
-                        var a = parseInt(KTUtil.css(t, "height")),
-                            l = KTUtil.getCssVariableValue("--bs-gray-900"),
-                            r = KTUtil.getCssVariableValue("--bs-border-dashed-color"),
-                            o = {
-                                series: [{
-                                    name: "Spent time",
-                                    data: [54, 42, 75, 110]
-                                }],
-                                chart: {
-                                    fontFamily: "inherit",
-                                    type: "bar",
-                                    height: a,
-                                    toolbar: {
-                                        show: !1
-                                    }
-                                },
-                                plotOptions: {
-                                    bar: {
-                                        horizontal: !1,
-                                        columnWidth: ["28%"],
-                                        borderRadius: 5,
-                                        dataLabels: {
-                                            position: "top"
+        let tierMapping = [];
+        let tierLabels = [];
+
+        fetch("{{ route('crm.dashboard.tier-graphic') }}")
+            .then(response => response.json())
+            .then(result => {
+                if (result.status && Array.isArray(result.data)) {
+                    tierMapping = result.data.map(item => item.total);
+                    tierLabels = result.data.map(item => item.name);
+                } else {
+                    console.error("Data tidak valid:", result);
+                }
+
+                console.log("tierMapping:", tierMapping);
+                // Jika mau ditampilkan di HTML juga
+                topTier = true;
+
+                // Inisialisasi grafik
+                var KTChartsWidget18 = function() {
+                    var e = {
+                            self: null,
+                            rendered: !1
+                        },
+                        t = function(e) {
+                            var t = document.getElementById("kt_charts_widget_18_chart");
+                            if (t) {
+                                var a = parseInt(KTUtil.css(t, "height")),
+                                    l = KTUtil.getCssVariableValue("--bs-gray-900"),
+                                    r = KTUtil.getCssVariableValue("--bs-border-dashed-color"),
+                                    o = {
+                                        series: [{
+                                            name: "Spent time",
+                                            data: tierMapping
+                                        }],
+                                        chart: {
+                                            fontFamily: "inherit",
+                                            type: "bar",
+                                            height: a,
+                                            toolbar: {
+                                                show: !1
+                                            }
                                         },
-                                        startingShape: "flat"
-                                    }
-                                },
-                                legend: {
-                                    show: !1
-                                },
-                                dataLabels: {
-                                    enabled: !0,
-                                    offsetY: -28,
-                                    style: {
-                                        fontSize: "13px",
-                                        colors: [l]
-                                    },
-                                    formatter: function(e) {
-                                        return e
-                                    }
-                                },
-                                stroke: {
-                                    show: !0,
-                                    width: 2,
-                                    colors: ["transparent"]
-                                },
-                                xaxis: {
-                                    categories: ["Bronze", "Silver", "Gold", "Platinum", ],
-                                    axisBorder: {
-                                        show: !1
-                                    },
-                                    axisTicks: {
-                                        show: !1
-                                    },
-                                    labels: {
-                                        style: {
-                                            colors: KTUtil.getCssVariableValue("--bs-gray-500"),
-                                            fontSize: "13px"
-                                        }
-                                    },
-                                    crosshairs: {
+                                        plotOptions: {
+                                            bar: {
+                                                horizontal: !1,
+                                                columnWidth: ["28%"],
+                                                borderRadius: 5,
+                                                dataLabels: {
+                                                    position: "top"
+                                                },
+                                                startingShape: "flat"
+                                            }
+                                        },
+                                        legend: {
+                                            show: !1
+                                        },
+                                        dataLabels: {
+                                            enabled: !0,
+                                            offsetY: -28,
+                                            style: {
+                                                fontSize: "13px",
+                                                colors: [l]
+                                            },
+                                            formatter: function(e) {
+                                                return e
+                                            }
+                                        },
+                                        stroke: {
+                                            show: !0,
+                                            width: 2,
+                                            colors: ["transparent"]
+                                        },
+                                        xaxis: {
+                                            categories: tierLabels,
+                                            axisBorder: {
+                                                show: !1
+                                            },
+                                            axisTicks: {
+                                                show: !1
+                                            },
+                                            labels: {
+                                                style: {
+                                                    colors: KTUtil.getCssVariableValue("--bs-gray-500"),
+                                                    fontSize: "13px"
+                                                }
+                                            },
+                                            crosshairs: {
+                                                fill: {
+                                                    gradient: {
+                                                        opacityFrom: 0,
+                                                        opacityTo: 0
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        yaxis: {
+                                            labels: {
+                                                style: {
+                                                    colors: KTUtil.getCssVariableValue("--bs-gray-500"),
+                                                    fontSize: "13px"
+                                                },
+                                                formatter: function(e) {
+                                                    return e + " Cust"
+                                                }
+                                            }
+                                        },
                                         fill: {
-                                            gradient: {
-                                                opacityFrom: 0,
-                                                opacityTo: 0
+                                            opacity: 1
+                                        },
+                                        states: {
+                                            normal: {
+                                                filter: {
+                                                    type: "none",
+                                                    value: 0
+                                                }
+                                            },
+                                            hover: {
+                                                filter: {
+                                                    type: "none",
+                                                    value: 0
+                                                }
+                                            },
+                                            active: {
+                                                allowMultipleDataPointsSelection: !1,
+                                                filter: {
+                                                    type: "none",
+                                                    value: 0
+                                                }
+                                            }
+                                        },
+                                        tooltip: {
+                                            style: {
+                                                fontSize: "12px"
+                                            },
+                                            y: {
+                                                formatter: function(e) {
+                                                    return +e + " hours"
+                                                }
+                                            }
+                                        },
+                                        colors: [KTUtil.getCssVariableValue("--bs-primary"), KTUtil
+                                            .getCssVariableValue(
+                                                "--bs-primary-light")
+                                        ],
+                                        grid: {
+                                            borderColor: r,
+                                            strokeDashArray: 4,
+                                            yaxis: {
+                                                lines: {
+                                                    show: !0
+                                                }
                                             }
                                         }
-                                    }
-                                },
-                                yaxis: {
-                                    labels: {
-                                        style: {
-                                            colors: KTUtil.getCssVariableValue("--bs-gray-500"),
-                                            fontSize: "13px"
-                                        },
-                                        formatter: function(e) {
-                                            return e + "H"
-                                        }
-                                    }
-                                },
-                                fill: {
-                                    opacity: 1
-                                },
-                                states: {
-                                    normal: {
-                                        filter: {
-                                            type: "none",
-                                            value: 0
-                                        }
-                                    },
-                                    hover: {
-                                        filter: {
-                                            type: "none",
-                                            value: 0
-                                        }
-                                    },
-                                    active: {
-                                        allowMultipleDataPointsSelection: !1,
-                                        filter: {
-                                            type: "none",
-                                            value: 0
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    style: {
-                                        fontSize: "12px"
-                                    },
-                                    y: {
-                                        formatter: function(e) {
-                                            return +e + " hours"
-                                        }
-                                    }
-                                },
-                                colors: [KTUtil.getCssVariableValue("--bs-primary"), KTUtil.getCssVariableValue(
-                                    "--bs-primary-light")],
-                                grid: {
-                                    borderColor: r,
-                                    strokeDashArray: 4,
-                                    yaxis: {
-                                        lines: {
-                                            show: !0
-                                        }
-                                    }
-                                }
-                            };
-                        e.self = new ApexCharts(t, o), setTimeout((function() {
-                            e.self.render(), e.rendered = !0
-                        }), 200)
+                                    };
+                                e.self = new ApexCharts(t, o), setTimeout((function() {
+                                    e.self.render(), e.rendered = !0
+                                }), 200)
+                            }
+                        };
+                    return {
+                        init: function() {
+                            t(e), KTThemeMode.on("kt.thememode.change", (function() {
+                                e.rendered && e.self.destroy(), t(e)
+                            }))
+                        }
                     }
-                };
-            return {
-                init: function() {
-                    t(e), KTThemeMode.on("kt.thememode.change", (function() {
-                        e.rendered && e.self.destroy(), t(e)
-                    }))
-                }
-            }
-        }();
-        "undefined" != typeof module && (module.exports = KTChartsWidget18), KTUtil.onDOMContentLoaded((function() {
-            KTChartsWidget18.init()
-        }));
+                }();
+                "undefined" != typeof module && (module.exports = KTChartsWidget18), KTUtil.onDOMContentLoaded((
+                    function() {
+                        KTChartsWidget18.init()
+                    }));
+            })
+            .catch(error => {
+                topTierContainer.innerHTML =
+                    '<div class="alert alert-danger">Gagal memuat data Top Tier.</div>';
+                console.error('Error:', error);
+            });
 
         var KTChartsWidget3 = function() {
             var e = {

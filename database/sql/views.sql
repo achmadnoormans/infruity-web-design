@@ -149,11 +149,18 @@ tier_range AS (
 )
 SELECT
     ce.customer_id,
+	tr.id AS tier_id,
     tr.tier_name,
 	tr.icon,
     ce.customer_exp,
     tr.min_exp,
-    tr.max_exp
+    tr.max_exp,
+	ROUND(
+        IF(tr.max_exp IS NOT NULL,
+            (ce.customer_exp / tr.max_exp) * 100,
+            100
+        ), 2
+    ) AS progress_percentage
 FROM customer_exp ce
 JOIN tier_range tr
     ON ce.customer_exp >= tr.min_exp
