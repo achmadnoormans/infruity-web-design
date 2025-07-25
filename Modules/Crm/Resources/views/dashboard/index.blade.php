@@ -577,7 +577,7 @@
                                             },
                                             y: {
                                                 formatter: function(e) {
-                                                    return +e + " hours"
+                                                    return +e + " Customer"
                                                 }
                                             }
                                         },
