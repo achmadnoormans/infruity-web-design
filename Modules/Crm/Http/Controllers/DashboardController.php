@@ -45,6 +45,7 @@ class DashboardController extends Controller
             ->select('customer.id', 'customer.name', 'vw_customer_tier.*', 'C.name as tier_name')
             ->limit(6)
             ->orderBy('C.level', 'desc')
+            ->orderBy('vw_customer_tier.customer_exp', 'desc')
             ->get();
         return view('crm::dashboard.top_tier', compact('data'));
     }
