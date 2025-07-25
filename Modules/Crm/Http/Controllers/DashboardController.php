@@ -59,7 +59,7 @@ class DashboardController extends Controller
                 DB::raw('COUNT(B.customer_id) as total'),
             ])
             ->groupBy('crm_tier.id', 'crm_tier.name')
-            ->orderBy('total', 'asc')
+            ->orderBy('crm_tier.level', 'asc')
             ->get();
         return response()->json([
             'status' => true,
