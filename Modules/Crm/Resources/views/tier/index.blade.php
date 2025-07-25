@@ -515,11 +515,11 @@
                                     </div>
                                     <div class="col-md-9">
                                         <select class="form-select select-product" name="birthday_gift" id="birthday_gift">
-                                            <option value="">Pilih Produk</option>
+                                            ${rowData.birthday_gift ? `<option value="${rowData.birthday_gift}" selected>${rowData.birthday.name}</option>` : '<option value="">Pilih Produk</option>'}
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                <div class="row fv-row mb-7 fv-plugins-icon-container align-items-center">
                                     <div class="col-md-3 text-md-text-start">
                                         <label class="fs-6 fw-semibold form-label mt-3">
                                             <span>
@@ -528,9 +528,12 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="form-select" name="combo_promo" id="combo_promo">
-                                            <option value="">Pilih Produk</option>
-                                        </select>
+                                        <div class="form-check form-switch mt-3">
+                                            <input class="form-check-input" type="checkbox" name="combo_promo" id="combo_promo" ${rowData.combo_promo == 1 ? 'checked' : ''} value="1">
+                                            <label class="form-check-label" for="combo_promo">
+                                                Aktifkan Promo Gabungan
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

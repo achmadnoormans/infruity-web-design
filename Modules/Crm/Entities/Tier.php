@@ -17,4 +17,9 @@ class Tier extends Model
     {
         return $this->belongsTo(Product::class, 'free_product_id');
     }
+
+    public function birthday()
+    {
+        return $this->belongsTo(Product::class, 'birthday_gift');
+    }
 }

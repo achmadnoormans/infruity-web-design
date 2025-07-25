@@ -165,7 +165,7 @@ class TierController extends Controller
         $validated = $request->validate([
             'discount_transaction' => 'nullable',
             'free_product_id' => 'nullable|exists:products,id',
-            'birthday_gift' => 'nullable',
+            'birthday_gift' => 'nullable|exists:products,id',
             'combo_promo' => 'nullable',
         ]);
         try {
@@ -191,7 +191,7 @@ class TierController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Tier::with('product')->get();
+        $data = Tier::with('product', 'birthday')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
