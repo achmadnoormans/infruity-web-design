@@ -254,6 +254,29 @@
                         <!--end::Lists Widget 19-->
                     </div>
                     <!--end::Col-->
+                    <div class="col-lg-12 col-xl-8 col-xxl-8 mb-5 mb-xl-0">
+                        <!--begin::Chart widget 3-->
+                        <div class="card card-flush overflow-hidden h-md-99">
+                            <!--begin::Header-->
+                            <div class="card-header py-5">
+                                <!--begin::Title-->
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bold text-gray-900">Trend New Customer</span>
+                                    <span class="text-gray-500 mt-1 fw-semibold fs-6">All Customer</span>
+                                </h3>
+                                <!--end::Title-->
+                            </div>
+                            <!--end::Header-->
+                            <!--begin::Card body-->
+                            <div class="card-body d-flex justify-content-between flex-column pb-1 px-0">
+                                <!--begin::Chart-->
+                                <div id="kt_charts_widget_3" class="min-h-auto ps-4 pe-6" style="height: 400px"></div>
+                                <!--end::Chart-->
+                            </div>
+                            <!--end::Card body-->
+                        </div>
+                        <!--end::Chart widget 3-->
+                    </div>
                     <!--begin::Col-->
                     <div class="col-xl-4 mb-xl-10">
                         <!--begin::List widget 20-->
@@ -281,36 +304,59 @@
                         </div>
                         <!--end::List widget 20-->
                     </div>
-                    <!--end::Col-->
-                    {{-- sini --}}
-                    <!--begin::Col-->
-                    <div class="col-xl-4 mb-xl-10">
-                        <!--begin::List widget 20-->
+                    <div class="col-xxl-8 mb-xl-10">
+                        <!--begin::Chart widget 22-->
                         <div class="card h-xl-100">
-                            <!--begin::Header-->
-                            <div class="card-header border-0 pt-5">
-                                <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bold text-gray-900">Top five Fruit have bought</span>
-                                    <span class="text-muted mt-1 fw-semibold fs-7">8k social visitors</span>
-                                </h3>
-                                <!--begin::Toolbar-->
-                                <div class="card-toolbar">
-                                    <a href="#" class="btn btn-sm btn-light">All Courses</a>
-                                </div>
-                                <!--end::Toolbar-->
-                            </div>
-                            <!--end::Header-->
                             <!--begin::Body-->
-                            <div id="segment-top-fruit">
-                                <div class="text-center py-10 text-primary">
-                                    Loading...
+                            <div class="card-body pb-3">
+                                <!--begin::Tab Content-->
+                                <div class="d-flex flex-wrap flex-md-nowrap">
+                                    <!--begin::Container-->
+                                    <div
+                                        class="d-flex justify-content-between flex-column w-225px w-md-600px mx-auto mx-md-0 pt-3 pb-10">
+                                        <!--begin::Title-->
+                                        <div class="fs-4 fw-bold text-gray-900 text-center mb-5">Gender Distribution
+                                            <br />for All Customer
+                                        </div>
+                                        <!--end::Title-->
+                                        <!--begin::Chart-->
+                                        <div id="kt_chart_widgets_22_chart_1" class="mx-auto mb-4"></div>
+                                        <!--end::Chart-->
+                                        <!--begin::Labels-->
+                                        <div class="mx-auto">
+                                            <!--begin::Label-->
+                                            <div class="d-flex align-items-center mb-2">
+                                                <!--begin::Bullet-->
+                                                <div class="bullet bullet-dot w-8px h-7px bg-success me-2"></div>
+                                                <!--end::Bullet-->
+                                                <!--begin::Label-->
+                                                <div class="fs-8 fw-semibold text-muted">Male(133)</div>
+                                                <!--end::Label-->
+                                            </div>
+                                            <!--end::Label-->
+                                            <!--begin::Label-->
+                                            <div class="d-flex align-items-center mb-2">
+                                                <!--begin::Bullet-->
+                                                <div class="bullet bullet-dot w-8px h-7px bg-primary me-2"></div>
+                                                <!--end::Bullet-->
+                                                <!--begin::Label-->
+                                                <div class="fs-8 fw-semibold text-muted">Female(9)</div>
+                                                <!--end::Label-->
+                                            </div>
+                                            <!--end::Label-->
+                                        </div>
+                                        <!--end::Labels-->
+                                    </div>
+                                    <!--end::Container-->
                                 </div>
+                                <!--end::Tab Content-->
                             </div>
-                            <!--end::Body-->
+                            <!--end: Card Body-->
                         </div>
-                        <!--end::List widget 20-->
+                        <!--end::Chart widget 22-->
                     </div>
                     <!--end::Col-->
+                    {{-- sini --}}
                 </div>
                 <!--end::Row-->
                 <!--begin::Row-->
@@ -386,44 +432,6 @@
                             <!--end: Card Body-->
                         </div>
                         <!--end::Chart widget 18-->
-                    </div>
-                    <!--end::Col-->
-                    <!--begin::Col-->
-                    <div class="col-lg-12 col-xl-12 col-xxl-12 mb-5 mb-xl-0">
-                        <!--begin::Chart widget 3-->
-                        <div class="card card-flush overflow-hidden h-md-100">
-                            <!--begin::Header-->
-                            <div class="card-header py-5">
-                                <!--begin::Title-->
-                                <h3 class="card-title align-items-start flex-column">
-                                    <span class="card-label fw-bold text-gray-900">Trend New Customer</span>
-                                    <span class="text-gray-500 mt-1 fw-semibold fs-6">All Customer</span>
-                                </h3>
-                                <!--end::Title-->
-                            </div>
-                            <!--end::Header-->
-                            <!--begin::Card body-->
-                            <div class="card-body d-flex justify-content-between flex-column pb-1 px-0">
-                                <!--begin::Statistics-->
-                                <div class="px-9 mb-5">
-                                    <!--begin::Statistics-->
-                                    <div class="d-flex mb-2">
-                                        <span class="fs-4 fw-semibold text-gray-500 me-1">$</span>
-                                        <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">14,094</span>
-                                    </div>
-                                    <!--end::Statistics-->
-                                    <!--begin::Description-->
-                                    <span class="fs-6 fw-semibold text-gray-500">Another $48,346 to Goal</span>
-                                    <!--end::Description-->
-                                </div>
-                                <!--end::Statistics-->
-                                <!--begin::Chart-->
-                                <div id="kt_charts_widget_3" class="min-h-auto ps-4 pe-6" style="height: 300px"></div>
-                                <!--end::Chart-->
-                            </div>
-                            <!--end::Card body-->
-                        </div>
-                        <!--end::Chart widget 3-->
                     </div>
                     <!--end::Col-->
                 </div>
@@ -782,6 +790,63 @@
             KTChartsWidget3.init()
         }));
 
+        var KTChartsWidget22 = function() {
+            var initChart = function(chartSelector, seriesData) {
+                var chartElement = document.querySelector(chartSelector);
+                if (chartElement) {
+                    var options = {
+                        series: seriesData,
+                        chart: {
+                            fontFamily: "inherit",
+                            type: "donut",
+                            height: 350,
+                            width: 350
+                        },
+                        plotOptions: {
+                            pie: {
+                                donut: {
+                                    size: "50%",
+                                    labels: {
+                                        value: {
+                                            fontSize: "10px"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        colors: [
+                            KTUtil.getCssVariableValue("--bs-success"),
+                            KTUtil.getCssVariableValue("--bs-primary"),
+                        ],
+                        stroke: {
+                            width: 0
+                        },
+                        labels: ["Present", "Illness", "Late", "Absent"], // Sesuai label attendance
+                        legend: {
+                            show: false
+                        },
+                        fill: {
+                            type: "solid"
+                        }
+                    };
+
+                    var chart = new ApexCharts(chartElement, options);
+                    chart.render();
+                }
+            };
+
+            return {
+                init: function() {
+                    initChart("#kt_chart_widgets_22_chart_1", [133, 75]); // contoh data attendance
+                }
+            };
+        }();
+
+        document.addEventListener("DOMContentLoaded", function() {
+            KTChartsWidget22.init();
+        });
+
+
         let topRetribusion = false;
         const topRetribusionContainer = document.querySelector('#segment-top-retribusion');
         if (!topRetribusion) {
@@ -796,24 +861,6 @@
                 .catch(error => {
                     topRetribusionContainer.innerHTML =
                         '<div class="alert alert-danger">Gagal memuat data Top Distribution.</div>';
-                    console.error('Error:', error);
-                });
-        }
-
-        let topFruit = false;
-        const topFruitContainer = document.querySelector('#segment-top-fruit');
-        if (!topFruit) {
-            fetch(
-                    "{{ route('crm.dashboard.top-distribution') }}"
-                ) // sesuaikan route dan parameternya
-                .then(response => response.text())
-                .then(html => {
-                    topFruitContainer.innerHTML = html;
-                    topFruit = true;
-                })
-                .catch(error => {
-                    topFruitContainer.innerHTML =
-                        '<div class="alert alert-danger">Gagal memuat data Top Fruit.</div>';
                     console.error('Error:', error);
                 });
         }
