@@ -23,18 +23,47 @@ class DashboardController extends Controller
 
     public function topDistribution(Request $request)
     {
-        $totalCustomer = Customer::query()
+        // Query 5 teratas
+        $top5 = DB::table('customer')
             ->leftJoin('reg_districts as B', 'customer.district', '=', 'B.id')
             ->select([
                 'customer.district',
                 'B.name',
-                DB::raw('COUNT(*) as total'),
+                DB::raw('COUNT(*) as total')
             ])
-            ->groupBy('customer.district', 'B.name')   // hindari ONLY_FULL_GROUP_BY error
-            ->limit(6)
-            ->orderBy('total', 'desc')
-            ->get();
+            ->groupBy('customer.district', 'B.name')
+            ->orderByDesc('total')
+            ->limit(5);
+
+        // Query total lainnya
+        $others = DB::table(DB::raw('(
+            SELECT `customer`.`district`, COUNT(*) as total
+            FROM `customer`
+            GROUP BY `customer`.`district`
+            ORDER BY total DESC
+            LIMIT 18446744073709551615 OFFSET 5
+        ) as sub'))
+            ->select([
+                DB::raw("'Other' as district"),
+                DB::raw("'Other' as name"),
+                DB::raw('SUM(total) as total')
+            ]);
+
+        // Gabungkan dengan UNION ALL
+        $totalCustomer = $top5->unionAll($others)->get();
         return view('crm::dashboard.top_distribution', compact('totalCustomer'));
+    }
+
+    public function genderDistribution()
+    {
+        $data = Customer::select('gender', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender')
+            ->get();
+            
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+        ]);
     }
 
     public function topTier()

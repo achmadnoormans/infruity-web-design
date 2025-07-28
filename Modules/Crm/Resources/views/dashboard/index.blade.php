@@ -322,7 +322,7 @@
                                         <!--begin::Chart-->
                                         <div id="kt_chart_widgets_22_chart_1" class="mx-auto mb-4"></div>
                                         <!--end::Chart-->
-                                        <!--begin::Labels-->
+                                        {{-- <!--begin::Labels-->
                                         <div class="mx-auto">
                                             <!--begin::Label-->
                                             <div class="d-flex align-items-center mb-2">
@@ -345,7 +345,7 @@
                                             </div>
                                             <!--end::Label-->
                                         </div>
-                                        <!--end::Labels-->
+                                        <!--end::Labels--> --}}
                                     </div>
                                     <!--end::Container-->
                                 </div>
@@ -790,12 +790,27 @@
             KTChartsWidget3.init()
         }));
 
-        var KTChartsWidget22 = function() {
-            var initChart = function(chartSelector, seriesData) {
-                var chartElement = document.querySelector(chartSelector);
+        let genderMapping = [];
+        let genderLabels = [];
+
+        fetch("{{ route('crm.dashboard.gender-distribution') }}")
+            .then(response => response.json())
+            .then(result => {
+                if (result.status && Array.isArray(result.data)) {
+                    genderMapping = result.data.map(item => item.total); // [jumlah data]
+                    genderLabels = result.data.map(item => item.gender); // [nama gender]
+                } else {
+                    console.error("Data tidak valid:", result);
+                }
+
+                console.log("genderMapping:", genderMapping);
+                console.log("genderLabels:", genderLabels);
+
+                // Render chart setelah data tersedia
+                var chartElement = document.querySelector("#kt_chart_widgets_22_chart_1");
                 if (chartElement) {
                     var options = {
-                        series: seriesData,
+                        series: genderMapping, // Data dari API
                         chart: {
                             fontFamily: "inherit",
                             type: "donut",
@@ -815,13 +830,14 @@
                             }
                         },
                         colors: [
-                            KTUtil.getCssVariableValue("--bs-success"),
                             KTUtil.getCssVariableValue("--bs-primary"),
+                            KTUtil.getCssVariableValue("--bs-success"),
+                            KTUtil.getCssVariableValue("--bs-info")
                         ],
                         stroke: {
                             width: 0
                         },
-                        labels: ["Present", "Illness", "Late", "Absent"], // Sesuai label attendance
+                        labels: genderLabels, // Label dari API
                         legend: {
                             show: false
                         },
@@ -833,18 +849,11 @@
                     var chart = new ApexCharts(chartElement, options);
                     chart.render();
                 }
-            };
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
 
-            return {
-                init: function() {
-                    initChart("#kt_chart_widgets_22_chart_1", [133, 75]); // contoh data attendance
-                }
-            };
-        }();
-
-        document.addEventListener("DOMContentLoaded", function() {
-            KTChartsWidget22.init();
-        });
 
 
         let topRetribusion = false;
