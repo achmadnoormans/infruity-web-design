@@ -488,7 +488,7 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="number" class="form-control" name="discount_transaction" value="${rowData.discount_transaction || ''}" placeholder="Masukkan diskon setiap transaksi" />
+                                        <input type="number" class="form-control" name="discount_transaction" value="${rowData.discount_transaction || ''}" placeholder="Diskon (Rp jika > 100, % jika ≤ 100)" />
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container">
@@ -500,9 +500,7 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="form-select select-product" name="free_product_id" style="width:100%;">
-                                            ${rowData.free_product_id ? `<option value="${rowData.free_product_id}" selected>${rowData.product.name}</option>` : '<option value="">Pilih Produk</option>'}
-                                        </select>
+                                        <select class="form-select select-product" multiple name="free_product_id[]" style="width:100%;"></select>
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container">
@@ -514,9 +512,12 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="form-select select-product" name="birthday_gift" id="birthday_gift">
-                                            ${rowData.birthday_gift ? `<option value="${rowData.birthday_gift}" selected>${rowData.birthday.name}</option>` : '<option value="">Pilih Produk</option>'}
-                                        </select>
+                                        <div class="form-check form-switch mt-3">
+                                            <input class="form-check-input" type="checkbox" name="birthday_gift" id="birthday_gift" ${rowData.birthday_gift == 1 ? 'checked' : ''} value="1">
+                                            <label class="form-check-label" for="birthday_gift">
+                                                Aktifkan Hadiah Ulang Tahun
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container align-items-center">
@@ -561,7 +562,9 @@
                 tr.addClass('shown');
 
                 // Aktifkan select2 setelah konten ditambahkan ke DOM
-                tr.next().find('.select-product').select2({
+                let select = tr.next().find('.select-product');
+
+                select.select2({
                     ajax: {
                         url: '/ajax/listProduct',
                         dataType: 'json',
@@ -584,6 +587,17 @@
                     placeholder: 'Pilih Produk',
                     minimumInputLength: 1
                 });
+
+                // 👇 Tambahkan ini untuk mengisi default value (selected)
+                let freeProducts = row.data().freeProduct || [];
+                console.log(freeProducts);
+                freeProducts.forEach(prod => {
+                    let option = new Option(prod.name, prod.id, true, true);
+                    select.append(option);
+                });
+
+                select.trigger('change');
+
             }
         });
 

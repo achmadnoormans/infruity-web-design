@@ -814,8 +814,8 @@
                         chart: {
                             fontFamily: "inherit",
                             type: "donut",
-                            height: 350,
-                            width: 350
+                            height: 250,
+                            width: 250
                         },
                         plotOptions: {
                             pie: {

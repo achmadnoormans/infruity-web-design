@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('level');
             $table->integer('exp');
             $table->string('icon')->nullable();
-            $table->integer('free_product_id')->nullable();
+            $table->string('free_product_id')->nullable();
             $table->integer('discount_transaction')->nullable();
             $table->integer('birthday_gift')->nullable();
             $table->integer('combo_promo')->nullable();
@@ -64,6 +64,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tier');
+        Schema::dropIfExists('crm_tier');
     }
 };

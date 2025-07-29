@@ -162,26 +162,37 @@ class TierController extends Controller
 
     public function saveDetail(Request $request, $id)
     {
+        // dd($request->all());
         $validated = $request->validate([
-            'discount_transaction' => 'nullable',
-            'free_product_id' => 'nullable|exists:products,id',
-            'birthday_gift' => 'nullable|exists:products,id',
-            'combo_promo' => 'nullable',
+            'discount_transaction' => 'nullable|numeric',
+            'free_product_id' => 'nullable|array',
+            'free_product_id.*' => 'exists:products,id',
+            'birthday_gift' => 'nullable|boolean',
+            'combo_promo' => 'nullable|boolean',
         ]);
         try {
             DB::beginTransaction();
+
             $tier = Tier::findOrFail($id);
             $tier->discount_transaction = $validated['discount_transaction'];
-            $tier->free_product_id = $validated['free_product_id'];
-            $tier->birthday_gift = $validated['birthday_gift'];
-            $tier->combo_promo = $validated['combo_promo'];
+            $tier->free_product_id = $validated['free_product_id'] ?? []; // simpan sebagai array
+            $tier->birthday_gift = $validated['birthday_gift'] ?? null;
+            $tier->combo_promo = $validated['combo_promo'] ?? null;
             $tier->save();
+
             DB::commit();
-            return response()->json(['message' => 'Detail berhasil disimpan.', 'data' => $tier], 200);
-        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'Detail berhasil disimpan.',
+                'data' => $tier
+            ], 200);
+        } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['error' => 'Gagal menyimpan detail: ' . $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Gagal menyimpan detail: ' . $e->getMessage()
+            ], 500);
         }
+
     }
 
     public function customerReport(Request $request)
@@ -191,9 +202,14 @@ class TierController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Tier::with('product', 'birthday')->get();
+        $data = Tier::all();
         return DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('freeProduct', function ($row) {
+                if (!empty($row->free_product_id) && is_array($row->free_product_id)) {
+                    return json_decode($row->freeProducts()->get());
+                }
+            })
             ->addColumn('action', function ($row) {
                 $name = e($row->name);
                 return '
@@ -234,8 +250,8 @@ class TierController extends Controller
                 // Mapping class badge berbeda per type_customer
                 $badgeClassMap = [
                     'reguler' => 'badge bg-secondary',
-                    'member'  => 'badge bg-primary',
-                    'mitra'   => 'badge bg-success',
+                    'member' => 'badge bg-primary',
+                    'mitra' => 'badge bg-success',
                 ];
 
                 $badgeClass = $badgeClassMap[$type] ?? 'badge bg-dark';

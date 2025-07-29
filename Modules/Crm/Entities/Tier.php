@@ -12,14 +12,22 @@ class Tier extends Model
 
     protected $table = 'crm_tier';
     protected $fillable = [];
+    protected $casts = [
+        'free_product_id' => 'array',
+    ];
 
-    public function product()
+    public function freeProducts()
     {
-        return $this->belongsTo(Product::class, 'free_product_id');
+        return Product::whereIn('id', $this->free_product_id);
     }
 
-    public function birthday()
-    {
-        return $this->belongsTo(Product::class, 'birthday_gift');
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(Product::class, 'free_product_id');
+    // }
+
+    // public function birthday()
+    // {
+    //     return $this->belongsTo(Product::class, 'birthday_gift');
+    // }
 }
