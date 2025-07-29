@@ -91,6 +91,7 @@
 
                 // Add Product
                 showAddModal: false,
+                showGiftModal: false,
                 addProduct: {
                     id: null,
                     name: '',
@@ -460,7 +461,8 @@
                         unit: this.addProduct.unit,
                         discount: discount > 100 ? discount : (discount / 100) * total_input,
                         discountPercent: this.addProduct.discountPercent,
-                        total_input: total_input
+                        total_input: total_input,
+                        typeProduct: 'product',
                     });
 
                     console.log('cart', this.cart);
@@ -787,9 +789,91 @@
                             console.error(err);
                             Swal.fire('Error', 'Terjadi kesalahan saat menyimpan.', 'error');
                         });
-                }
+                },
 
+                // Gift Modal
+                openGiftModal() {
+                    this.showGiftModal = true;
+                    setTimeout(() => {
+                        const modal = new bootstrap.Modal(document.getElementById('giftModal'));
+                        modal.show();
 
+                        // Init select2
+                        $('#select_gift').select2({
+                            placeholder: 'Pilih produk',
+                            dropdownParent: $('#giftModal'),
+                            ajax: {
+                                url: '/ajax/listProduct', // ganti sesuai route
+                                dataType: 'json',
+                                delay: 250,
+                                processResults: data => ({
+                                    results: data.map(item => ({
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                    }))
+                                })
+                            }
+                        }).on('select2:select', (e) => {
+                            const data = e.params.data;
+                            this.addProduct.id = data.id;
+                            this.addProduct.name = data.text;
+                            this.addProduct.unit = data.unit.abbreviation;
+                            this.addProduct.price = data.price;
+                            this.addProduct.hpp = data.hpp ?? 0;
+                            subtotal = this.addProduct.qty * this.addProduct.price;
+                            this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
+                                .total);
+                            this.updateAddTotalFromQty();
+                        });
+                    }, 0);
+                },
+                closeGiftModal() {
+                    this.showGiftModal = false;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('giftModal'));
+                    if (modal) modal.hide();
+                },
+                saveGiftToCart() {
+                    if (!this.addProduct.id) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produk belum dipilih',
+                            text: 'Silakan pilih produk terlebih dahulu.',
+                        });
+                        return;
+                    }
+
+                    const isExist = this.cart.some(item => item.id === this.addProduct.id);
+                    if (isExist) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produk sudah ditambahkan',
+                            text: 'Produk ini sudah ada di keranjang.',
+                        });
+                        return;
+                    }
+
+                    const discount = Number(this.addProduct.discount || 0);
+                    const total_input = this.addProduct.total;
+
+                    this.cart.push({
+                        id: this.addProduct.id,
+                        name: this.addProduct.name,
+                        price: 0,
+                        hpp: this.addProduct.hpp,
+                        qty: this.addProduct.qty,
+                        unit: this.addProduct.unit,
+                        discount: discount > 100 ? discount : (discount / 100) * total_input,
+                        discountPercent: this.addProduct.discountPercent,
+                        total_input: 0,
+                        typeProduct: 'gift', // Tambahkan tipe produk
+                    });
+
+                    console.log('cart', this.cart);
+                    this.resetAddForm();
+                },
             }
         }
     </script>
