@@ -20,7 +20,9 @@
                         id: item.id,
                         name: item.name,
                         address: item.address,
-                        whatsapp: item.whatsapp
+                        whatsapp: item.whatsapp,
+                        tier_id: item.tier_id,
+                        tier_name: item.tier_name,
                     }));
                     return {
                         results: [umum, ...results]
@@ -29,6 +31,13 @@
             },
             templateResult: formatCustomerOption, // render dropdown list
             templateSelection: formatCustomerSelection // render selected item
+        });
+
+        $('#customer_id').on('select2:select', function(e) {
+            const data = e.params.data;
+            const tierId = data.tier_id || ''; // Pastikan Anda mengirimkan tier_id dari server jika dibutuhkan
+
+            $('#tier_id').val(tierId); // Set ke input hidden
         });
 
         // Fungsi render untuk item di dropdown
@@ -43,12 +52,14 @@
 
             const whatsapp = customer.whatsapp || '-';
             const address = customer.address || '-';
+            const tier_name = customer.tier_name || '-';
 
             return $(`
                 <div style="font-size: 13px; line-height: 1.4;">
                     <strong>${name}</strong>
                     <span class="text-muted d-block fs-7">${whatsapp}</span>
                     <span class="text-muted d-block fs-7">${address}</span>
+                    <span class="badge badge-light-primary fs-7">${tier_name}</span>
                 </div>
             `);
         }
@@ -65,7 +76,8 @@
             }
 
             const whatsapp = customer.whatsapp || '-';
-            return `${name} (${whatsapp})`;
+            const tier_name = customer.tier_name || '-';
+            return `${name} (${whatsapp}) (${tier_name})`;
         }
 
         $('#customer_id').append(new Option('Pelanggan Umum', '0', true, true)).trigger('change');
@@ -801,9 +813,14 @@
                         // Init select2
                         $('#select_gift').select2({
                             placeholder: 'Pilih produk',
+                            language: {
+                                errorLoading: function() {
+                                    return "Tidak ada Hadiah yang tersedia.";
+                                }
+                            },
                             dropdownParent: $('#giftModal'),
                             ajax: {
-                                url: '/ajax/listProduct', // ganti sesuai route
+                                url: '/tier/get-gift/' + $('#tier_id').val(), // ganti sesuai route
                                 dataType: 'json',
                                 delay: 250,
                                 processResults: data => ({

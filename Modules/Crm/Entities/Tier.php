@@ -18,7 +18,7 @@ class Tier extends Model
 
     public function freeProducts()
     {
-        return Product::whereIn('id', $this->free_product_id);
+        return Product::whereIn('id', $this->free_product_id)->with('category', 'get_stock', 'unit');
     }
 
     // public function product()

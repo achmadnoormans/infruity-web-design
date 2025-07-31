@@ -104,6 +104,7 @@
                             <!--end::Editor-->
                         </div>
                     </div>
+                    <input type="hidden" name="tier_id" id="tier_id">
                     <div class="col-3 mt-8">
                         <button @click="addCustomer()"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
@@ -446,7 +447,7 @@
             {{-- Modal Add CCustomer --}}
             <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-fullscreen-sm-down">
                     <div class="modal-content" x-data="{ customerName: '', customerPhone: '', customerAddress: '' }">
                         <div class="modal-header bg-primary text-white">
                             <h5 class="modal-title" id="customerModalLabel">Tambah Customer</h5>

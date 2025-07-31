@@ -200,6 +200,14 @@ class TierController extends Controller
         return view('crm::report.customer');
     }
 
+    public function getGift($id)
+    {
+        $tier = Tier::findOrFail($id);
+        $freeProducts = $tier->freeProducts()->get();
+        
+        return response()->json($freeProducts);
+    }
+
     public function get_data(Request $request)
     {
         $data = Tier::all();
