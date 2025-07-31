@@ -33,4 +33,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('crm-dashboard/top-tier', [DashboardController::class, 'topTier'])->name('crm.dashboard.top-tier');
     Route::get('crm-dashboard/graphic-tier', [DashboardController::class, 'tierGraphic'])->name('crm.dashboard.tier-graphic');
     Route::get('crm-dashboard/gender-distribution', [DashboardController::class, 'genderDistribution'])->name('crm.dashboard.gender-distribution');
+    Route::get('crm-dashboard/customer-distribution', [DashboardController::class, 'customerGraphic'])->name('crm.dashboard.customer-distribution');
 });

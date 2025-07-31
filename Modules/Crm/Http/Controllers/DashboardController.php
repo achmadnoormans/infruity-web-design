@@ -95,6 +95,15 @@ class DashboardController extends Controller
             'data' => $tiers,
         ]);
     }
+
+    public function customerGraphic(Request $request)
+    {
+        $customer = Customer::getCustomerGraph();
+        return response()->json([
+            'status' => true,
+            'data' => $customer,
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      * @return Renderable

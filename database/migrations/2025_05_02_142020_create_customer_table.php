@@ -44,7 +44,7 @@ return new class extends Migration {
                 'address' => 'Jl. Merdeka No. 10, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-01 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -60,7 +60,7 @@ return new class extends Migration {
                 'address' => 'Jl. Sudirman No. 22, Bandung',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-02 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -76,7 +76,7 @@ return new class extends Migration {
                 'address' => 'Jl. Pahlawan No. 5, Surabaya',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-02 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -92,7 +92,7 @@ return new class extends Migration {
                 'address' => 'Jl. Kebon Jeruk No. 12, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-03 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -108,7 +108,7 @@ return new class extends Migration {
                 'address' => 'Jl. Merdeka No. 5, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-03 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -124,7 +124,7 @@ return new class extends Migration {
                 'address' => 'Jl. Kebon Jeruk No. 12, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-04 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -140,7 +140,7 @@ return new class extends Migration {
                 'address' => 'Jl. Merdeka No. 5, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-04 14:20:20',
                 'updated_at' => now(),
             ],
             [
@@ -156,7 +156,7 @@ return new class extends Migration {
                 'address' => 'Jl. Kebon Jeruk No. 12, Jakarta',
                 'created_by' => 1,
                 'updated_by' => 1,
-                'created_at' => now(),
+                'created_at' => '2025-07-04 14:20:20',
                 'updated_at' => now(),
             ]
         ]);
