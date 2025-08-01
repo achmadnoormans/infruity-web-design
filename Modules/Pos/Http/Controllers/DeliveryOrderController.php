@@ -87,7 +87,7 @@ class DeliveryOrderController extends Controller
     {
         $query = PosModel::with('customer', 'payment')->where('ongkir', '>', 0);
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
-            $query = $query->where('status', $request->status_filter);
+            $query = $query->where('ongkir_status', $request->status_filter);
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
@@ -144,17 +144,6 @@ class DeliveryOrderController extends Controller
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
-                                    <i class="fa fa-receipt"></i>
-                                </a>
-                            </li>
-                            
-                            <li>
-                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSampai(' . $item->id . ')">
-                                    <i class="bi bi-check"></i>
                                 </a>
                             </li>
                         </ul>

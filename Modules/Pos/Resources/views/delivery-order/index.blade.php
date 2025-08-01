@@ -36,7 +36,7 @@
                     <div class="w-100 mw-150px">
                         <!--begin::Select2-->
                         @php
-                            $category = ['draft', 'paid', 'debt', 'canceled'];
+                            $category = ['delivered', 'draft'];
                         @endphp
                         <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
                             data-placeholder="Status" data-kt-ecommerce-product-filter="status">

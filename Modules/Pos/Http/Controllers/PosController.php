@@ -221,6 +221,7 @@ class PosController extends Controller
             if ($totalPayment >= $total) {
                 $status = 'paid';
             }
+            $pos->ongkir_status = 'delivered';
             $pos->status = $status;
             $pos->save();
             DB::commit();
