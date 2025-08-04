@@ -274,6 +274,7 @@ class PosController extends Controller
             'status' => 'nullable|in:draft,paid,debt',
             'ongkir_date' => 'nullable|date',
             'ongkir_time' => 'nullable|date_format:H:i',
+            'note' => 'nullable',
         ]);
 
         try {
@@ -292,6 +293,7 @@ class PosController extends Controller
                 'ongkir_date' => $data['ongkir_date'] ?? null,
                 'ongkir_time' => $data['ongkir_time'] ?? null,
                 'status' => $data['status'] ?? 'draft',
+                'note' => $data['note'] ?? null,
                 'created_by' => $userId,
             ]);
             $pos->save();

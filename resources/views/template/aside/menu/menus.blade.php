@@ -505,7 +505,8 @@
 </div>
 <div class="menu-item">
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'crm-dashboard' ? 'active' : '' }}" href="{{ url('crm-dashboard') }}">
+    <a class="menu-link {{ Request::segment(1) == 'crm-dashboard' ? 'active' : '' }}"
+        href="{{ url('crm-dashboard') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
@@ -518,20 +519,8 @@
 </div>
 <div class="menu-item">
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'tier' ? 'active' : '' }}" href="{{ url('tier') }}">
-        <span class="menu-icon">
-            <i class="ki-duotone ki-security-user">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
-        </span>
-        <span class="menu-title">Tier</span>
-    </a>
-    <!--end:Menu link-->
-</div>
-<div class="menu-item">
-    <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'customer-report' ? 'active' : '' }}" href="{{ url('customer-report') }}">
+    <a class="menu-link {{ Request::segment(1) == 'customer-report' ? 'active' : '' }}"
+        href="{{ url('customer-report') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
@@ -558,6 +547,19 @@
     <!--end:Menu link-->
     <!--begin:Menu sub-->
     <div class="menu-sub menu-sub-accordion">
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ Request::segment(1) == 'tier' ? 'active' : '' }}" href="{{ url('tier') }}">
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-security-user">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                </span>
+                <span class="menu-title">Tier</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->

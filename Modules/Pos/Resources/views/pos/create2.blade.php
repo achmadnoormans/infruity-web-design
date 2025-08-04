@@ -199,9 +199,10 @@
                                                     </small>
                                                 </div>
                                             </div>
-                                            <div class="mb-2 pb-2">
-                                                <span class="fs-6 px-3 py-2">
-                                                    Total: Rp <span
+                                            <div class="mb-2">
+                                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
+                                                <span class="text-muted">
+                                                    Rp <span
                                                         x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
                                                         ></span>
                                                 </span>
@@ -228,9 +229,10 @@
                                                     </small>
                                                 </div>
                                             </div>
-                                            <div class="mb-2 pb-2">
-                                                <span class="fs-6 px-3 py-2">
-                                                    Total: Rp <span
+                                            <div class="mb-2">
+                                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
+                                                <span class="text-muted">
+                                                    Rp <span
                                                         x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
                                                         ></span>
                                                 </span>
@@ -285,6 +287,11 @@
                                         <label class="form-label mb-1"></label>
                                         <input type="time" class="form-control" name="ongkir_time">
                                     </div>
+                                </div>
+                                <!-- Input Diskon -->
+                                <div class="mb-3">
+                                    <label class="form-label mb-1">Note</label>
+                                    <textarea name="note" id="note" cols="30" rows="5" class="form-control"></textarea>
                                 </div>
 
                                 <!-- Total Setelah Diskon -->

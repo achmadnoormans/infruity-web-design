@@ -25,6 +25,7 @@ class PosModel extends Model
         'ongkir_date',
         'ongkir_time',
         'status',
+        'note',
         'created_by'
     ];
     protected $table = 'pos_transaction';

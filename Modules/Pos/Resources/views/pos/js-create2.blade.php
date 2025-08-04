@@ -53,16 +53,27 @@
             const whatsapp = customer.whatsapp || '-';
             const address = customer.address || '-';
             const tier_name = customer.tier_name || '-';
+            const tier_id = parseInt(customer.tier_id || 0);
+
+            // Tentukan kelas badge berdasarkan tier_id
+            const tierBadgeClass = {
+                1: 'primary',
+                2: 'warning',
+                3: 'success',
+                4: 'danger',
+                5: 'info'
+            } [tier_id] ?? 'secondary'; // default jika tidak ditemukan
 
             return $(`
                 <div style="font-size: 13px; line-height: 1.4;">
                     <strong>${name}</strong>
                     <span class="text-muted d-block fs-7">${whatsapp}</span>
                     <span class="text-muted d-block fs-7">${address}</span>
-                    <span class="badge badge-light-primary fs-7">${tier_name}</span>
+                    <span class="badge badge-light-${tierBadgeClass} fs-7">${tier_name}</span>
                 </div>
             `);
         }
+
 
 
         // Fungsi render untuk item terpilih
@@ -77,7 +88,7 @@
 
             const whatsapp = customer.whatsapp || '-';
             const tier_name = customer.tier_name || '-';
-            return `${name} (${whatsapp}) (${tier_name})`;
+            return `${name} (${tier_name})`;
         }
 
         $('#customer_id').append(new Option('Pelanggan Umum', '0', true, true)).trigger('change');
@@ -633,6 +644,7 @@
                     const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                     const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                     const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
+                    const note = document.querySelector('textarea[name="note"]').value;
 
                     const data = {
                         customer_id: customerId,
@@ -646,6 +658,7 @@
                         ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
                         status: 'draft',
+                        note: note,
                     };
 
                     // Simulasi kirim ke server
@@ -694,6 +707,7 @@
                     const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                     const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                     const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
+                    const note = document.querySelector('textarea[name="note"]').value;
 
                     const data = {
                         customer_id: customerId,
@@ -707,6 +721,7 @@
                         ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
                         status: 'debt',
+                        note: note,
                     };
 
                     // Simulasi kirim ke server

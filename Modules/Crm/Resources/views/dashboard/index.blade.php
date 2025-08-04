@@ -506,7 +506,8 @@
                                             show: !1
                                         },
                                         dataLabels: {
-                                            enabled: !0,
+                                            // enabled: !0,
+                                            enabled: false,
                                             offsetY: -28,
                                             style: {
                                                 fontSize: "13px",

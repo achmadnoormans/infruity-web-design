@@ -588,7 +588,7 @@
                         <div class="progress-bar">
                             <div class="progress-fill"
                                 style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
-                                data-percent="{{ $percent }}"></div>
+                                data-percent="{{ round($percent) }}"></div>
                         </div>
                     </div>
                 </div>

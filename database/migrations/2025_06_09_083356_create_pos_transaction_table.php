@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('return')->nullable();
             $table->integer('payment_method')->nullable();
             $table->enum('status', ['draft', 'paid', 'debt', 'canceled'])->default('draft');
+            $table->text('note')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -67,6 +68,7 @@ return new class extends Migration
 
         DB::table('pos_transaction')->insert([
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 1,
                 'date' => '2025-07-01',
                 'invoice_number' => 'INV202506001',
@@ -79,6 +81,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 2,
                 'date' => '2025-07-02',
                 'invoice_number' => 'INV202506002',
@@ -91,6 +94,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 3,
                 'date' => '2025-07-03',
                 'invoice_number' => 'INV202506003',
@@ -103,6 +107,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 4,
                 'date' => '2025-07-04',
                 'invoice_number' => 'INV202506004',
@@ -115,6 +120,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 5,
                 'date' => '2025-07-05',
                 'invoice_number' => 'INV202506005',
@@ -127,6 +133,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 6,
                 'date' => '2025-07-06',
                 'invoice_number' => 'INV202506006',
@@ -139,6 +146,7 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
+                'uuid' => Str::uuid(),
                 'customer_id' => 1,
                 'date' => '2025-07-06',
                 'invoice_number' => 'INV202506007',
