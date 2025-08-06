@@ -180,6 +180,21 @@
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-15">
+                                <label class="fs-6 fw-semibold mb-2">Color</label>
+                                <select name="style" id="style" class="form-control form-select">
+                                    <option value="badge-light-primary" data-badge="badge-light-primary">Primary</option>
+                                    <option value="badge-light-secondary" data-badge="badge-light-secondary">Secondary</option>
+                                    <option value="badge-light-success" data-badge="badge-light-success">Success</option>
+                                    <option value="badge-light-danger" data-badge="badge-light-danger">Danger</option>
+                                    <option value="badge-light-warning" data-badge="badge-light-warning">Warning</option>
+                                    <option value="badge-light-info" data-badge="badge-light-info">Info</option>
+                                    <option value="badge-light" data-badge="badge-light">Light</option>
+                                    <option value="badge-light-dark" data-badge="badge-light-dark">Dark</option>
+                                </select>
+                            </div>
+                            <!--end::Input group-->
                         </div>
                         <!--end::Scroll-->
                     </div>
@@ -260,6 +275,25 @@
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+
+            $('#style').select2({
+                templateResult: function(data) {
+                    if (!data.id) return data.text;
+
+                    const badgeClass = $(data.element).data('badge') || 'badge-light';
+                    return $('<span class="badge ' + badgeClass + '">' + data.text + '</span>');
+                },
+                templateSelection: function(data) {
+                    if (!data.id) return data.text;
+
+                    const badgeClass = $(data.element).data('badge') || 'badge-light';
+                    return $('<span class="badge ' + badgeClass + '">' + data.text + '</span>');
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                },
+                width: '100%' // agar mengikuti lebar
             });
 
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {

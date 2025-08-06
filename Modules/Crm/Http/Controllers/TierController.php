@@ -45,7 +45,8 @@ class TierController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:crm_tier,name',
             'level' => 'required|integer|unique:crm_tier,level',
-            'exp' => 'required|integer',
+            'exp' => 'required',
+            'style' => 'required|string|max:255',
         ]);
 
         // Simpan data ke database
@@ -54,7 +55,8 @@ class TierController extends Controller
             $tier = new Tier();
             $tier->name = $validated['name'];
             $tier->level = $validated['level'];
-            $tier->exp = $validated['exp'];
+            $tier->exp = preg_replace('/[^0-9]/', '', $validated['exp']);
+            $tier->style = $validated['style'];
             $tier->save();
             DB::commit();
         } catch (Exception $e) {

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('discount_transaction')->nullable();
             $table->integer('birthday_gift')->nullable();
             $table->integer('combo_promo')->nullable();
+            $table->string('style')->nullable(); // New column for style
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -32,6 +33,7 @@ return new class extends Migration
                 'name' => 'Bronze',
                 'level' => 1,
                 'exp' => 0,
+                'style' => 'badge-light-primary',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -39,6 +41,7 @@ return new class extends Migration
                 'name' => 'Silver',
                 'level' => 2,
                 'exp' => 50000,
+                'style' => 'badge-light-secondary',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -46,6 +49,7 @@ return new class extends Migration
                 'name' => 'Gold',
                 'level' => 3,
                 'exp' => 100000,
+                'style' => 'badge-light-warning',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -53,6 +57,7 @@ return new class extends Migration
                 'name' => 'Platinum',
                 'level' => 4,
                 'exp' => 150000,
+                'style' => 'badge-light-success',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

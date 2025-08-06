@@ -324,6 +324,7 @@ class CustomerController extends Controller
                 'whatsapp' => $item->whatsapp,
                 'tier_name' => $item->tier_name,
                 'tier_id' => $item->tier_id,
+                'tier_style' => $item->tier_style,
             ];
         }
 

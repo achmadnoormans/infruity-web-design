@@ -23,6 +23,7 @@
                         whatsapp: item.whatsapp,
                         tier_id: item.tier_id,
                         tier_name: item.tier_name,
+                        tier_style: item.tier_style || 'badge-light-secondary' // Ambil style dari data
                     }));
                     return {
                         results: [umum, ...results]
@@ -54,22 +55,14 @@
             const address = customer.address || '-';
             const tier_name = customer.tier_name || '-';
             const tier_id = parseInt(customer.tier_id || 0);
-
-            // Tentukan kelas badge berdasarkan tier_id
-            const tierBadgeClass = {
-                1: 'primary',
-                2: 'warning',
-                3: 'success',
-                4: 'danger',
-                5: 'info'
-            } [tier_id] ?? 'secondary'; // default jika tidak ditemukan
+            const tierBadgeClass = customer.tier_style || 'badge-light-secondary'; // Ambil style dari data
 
             return $(`
                 <div style="font-size: 13px; line-height: 1.4;">
                     <strong>${name}</strong>
                     <span class="text-muted d-block fs-7">${whatsapp}</span>
                     <span class="text-muted d-block fs-7">${address}</span>
-                    <span class="badge badge-light-${tierBadgeClass} fs-7">${tier_name}</span>
+                    <span class="badge ${tierBadgeClass} fs-7">${tier_name}</span>
                 </div>
             `);
         }
