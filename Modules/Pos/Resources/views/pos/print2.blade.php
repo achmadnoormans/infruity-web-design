@@ -566,6 +566,7 @@
                     </div>
                     @php
                         $currentExp = 0;
+                        $maxExp = 0;
                         if (isset($tier)) {
                             $currentExp = $tier->customer_exp;
                             $maxExp = $tier->max_exp ?? $tier->min_exp;
@@ -584,8 +585,8 @@
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
                         <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
-                            ({{ floatval($currentExp) ?? 0 }} /
-                            {{ $maxExp ?? 0 }})</p>
+                            ({{ toNumber(floatval($currentExp)) ?? 0 }} /
+                            {{ toNumber(floatval($maxExp)) ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"
                                 style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
