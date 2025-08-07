@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Crm\Entities\PointSchedule;
+use Modules\Crm\Entities\SettingExp;
 use Modules\Crm\Entities\PointFrequency;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,7 @@ class PointScheduleController extends Controller
     {
         $data['data'] = PointSchedule::first();
         $data['frequencies'] = PointFrequency::all();
+        $data['exp'] = SettingExp::first();
         return view('crm::point-schedule.index', $data);
     }
 
@@ -72,11 +74,18 @@ class PointScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $settingExp = PointSchedule::findOrFail($id);
-            $settingExp->start_date = $request->start_date;
-            $settingExp->end_date = $request->end_date;
-            $settingExp->frequency = $request->frequency;
-            $settingExp->break = $request->break;
+            $settingPoint = PointSchedule::findOrFail($id);
+            $settingPoint->start_date = $request->start_date;
+            $settingPoint->end_date = $request->end_date;
+            $settingPoint->frequency = $request->frequency;
+            $settingPoint->break = $request->break;
+            $settingPoint->updated_by = Auth::id();
+            $settingPoint->save();
+
+            $settingExp = SettingExp::findOrFail($id);
+            $settingExp->skala = $request->skala;
+            $settingExp->value = $request->value;
+            $settingExp->value_exp = $request->value * $request->skala;
             $settingExp->updated_by = Auth::id();
             $settingExp->save();
 

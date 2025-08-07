@@ -9,7 +9,7 @@
         @endif
         @csrf
         <!--begin::Main column-->
-        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10 mb-5">
             <div class="card card-flush py-4">
                 <!--begin::Card header-->
                 <div class="card-header">
@@ -73,6 +73,49 @@
                                 <!--end::Editor-->
                             </div>
                         </div>
+                    </div>
+                    <!--end::Billing address-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Order details-->
+        </div>
+        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+            <div class="card card-flush py-4">
+                <!--begin::Card body-->
+                <div class="card-body pt-0">
+                    <!--begin::Billing address-->
+                    <div class="d-flex flex-column gap-5 gap-md-7">
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Pilih Skala</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            @php
+                                $skalaOptions = [1000, 100, 10, 1, 0.1, 0.01, 0.001];
+                                $selectedSkala = old('skala', isset($exp->skala) ? $exp->skala : 1);
+                            @endphp
+                            <select name="skala" id="skala" class="form-control">
+                                @foreach ($skalaOptions as $option)
+                                    <option value="{{ $option }}" {{ $selectedSkala == $option ? 'selected' : '' }}>
+                                        {{ $option }}</option>
+                                @endforeach
+                            </select>
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Masukkan Angka</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="number" class="form-control" name="value"
+                                value="{{ old('value', isset($exp->value) ? $exp->value : '1') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
                     </div>
                     <!--end::Billing address-->
                 </div>
