@@ -565,6 +565,7 @@
                         <img src="{{ $assetPath }}" alt="icon" width="48">
                     </div>
                     @php
+                        $currentExp = 0;
                         if (isset($tier)) {
                             $currentExp = $tier->customer_exp;
                             $maxExp = $tier->max_exp ?? $tier->min_exp;

@@ -567,7 +567,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Point Schedule</span>
+                <span class="menu-title">Setting Scheme</span>
             </a>
             <!--end:Menu link-->
         </div>
