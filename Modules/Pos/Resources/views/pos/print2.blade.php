@@ -585,8 +585,8 @@
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
                         <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
-                            ({{ toNumber(floatval($currentExp)) ?? 0 }} /
-                            {{ toNumber(floatval($maxExp)) ?? 0 }})</p>
+                            ({{ tonumberround(floatval($currentExp)) ?? 0 }} /
+                            {{ tonumberround(floatval($maxExp)) ?? 0 }})</p>
                         <div class="progress-bar">
                             <div class="progress-fill"
                                 style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
