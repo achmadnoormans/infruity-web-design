@@ -573,7 +573,7 @@
         </div>
         <!--end:Menu item-->
         <!--begin:Menu item-->
-        <div class="menu-item">
+        {{-- <div class="menu-item">
             <!--begin:Menu link-->
             <a class="menu-link {{ Request::segment(1) == 'setting-exp' ? 'active' : '' }}"
                 href="{{ url('setting-exp') }}">
@@ -586,7 +586,7 @@
                 <span class="menu-title">Setting Exp</span>
             </a>
             <!--end:Menu link-->
-        </div>
+        </div> --}}
         <!--end:Menu item-->
     </div>
     <!--end:Menu sub-->
