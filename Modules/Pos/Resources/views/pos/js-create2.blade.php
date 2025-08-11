@@ -23,7 +23,8 @@
                         whatsapp: item.whatsapp,
                         tier_id: item.tier_id,
                         tier_name: item.tier_name,
-                        tier_style: item.tier_style || 'badge-light-secondary' // Ambil style dari data
+                        tier_style: item.tier_style || 'badge-light-secondary',
+                        minimalPurchase: item.minimal_purchase || 0
                     }));
                     return {
                         results: [umum, ...results]
@@ -104,6 +105,8 @@
                 editProductName: '',
                 editProductUnit: '',
                 editTitle: 'Edit Product',
+                minimalPurchase: 0,
+                isShowGiftButton: false,
 
                 // Add Product
                 showAddModal: false,
@@ -125,7 +128,16 @@
                 priceAnimation: false,
 
                 init() {
+                    const self = this; // simpan konteks Alpine
+                    $('#customer_id').on('select2:select', function(e) {
+                        const data = e.params.data;
+                        self.setMinimalPurchase(data.minimalPurchase || 0);
+                    });
+                },
 
+                setMinimalPurchase(value) {
+                    this.minimalPurchase = value;
+                    console.log('Minimal Purchase set to:', this.minimalPurchase);
                 },
 
                 formatRupiah(value) {
@@ -606,6 +618,7 @@
                         totalSetelahDiskon = this.subtotal - diskon;
                     }
 
+                    this.checkGiftButton(totalSetelahDiskon);
                     // Ongkir harus selalu ditambahkan
                     return Math.max(totalSetelahDiskon + ongkir, 0);
                 },
@@ -898,6 +911,15 @@
 
                     console.log('cart', this.cart);
                     this.resetAddForm();
+                },
+
+                checkGiftButton(total) {
+                    console.log('minimalPurchase', this.minimalPurchase, 'total', total);
+                    if (total > this.minimalPurchase) {
+                        this.isShowGiftButton = true;
+                    } else {
+                        this.isShowGiftButton = false;
+                    }
                 },
             }
         }

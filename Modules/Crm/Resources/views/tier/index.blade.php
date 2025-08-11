@@ -541,6 +541,18 @@
                                     <div class="col-md-3 text-md-text-start">
                                         <label class="fs-6 fw-semibold form-label mt-3">
                                             <span>
+                                                Minimal Pembelian
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="number" class="form-control" name="minimal_purchase" value="${rowData.minimal_purchase || ''}" placeholder="Minimal Pembelian" />
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
                                                 Hadiah Ulang Tahun
                                             </span>
                                         </label>

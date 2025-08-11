@@ -144,6 +144,7 @@ tier_range AS (
         name AS tier_name,
 		icon,
         exp AS min_exp,
+		minimal_purchase,
 		style,
         LEAD(exp) OVER (ORDER BY `level`) AS max_exp
     FROM crm_tier
@@ -157,6 +158,7 @@ SELECT
     ce.customer_exp,
     tr.min_exp,
     tr.max_exp,
+	tr.minimal_purchase,
 	ROUND(
         IF(tr.max_exp IS NOT NULL,
             (ce.customer_exp / tr.max_exp) * 100,

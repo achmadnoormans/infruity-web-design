@@ -325,6 +325,7 @@ class CustomerController extends Controller
                 'tier_name' => $item->tier_name,
                 'tier_id' => $item->tier_id,
                 'tier_style' => $item->tier_style,
+                'minimal_purchase' => $item->minimal_purchase ?? 0, // Pastikan minimal_purchase ada di data
             ];
         }
 

@@ -155,7 +155,7 @@
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
                             <i class="fa-solid fa-plus"></i> Add
                         </button>
-                        <button @click="openGiftModal()"
+                        <button @click="openGiftModal()" x-show="isShowGiftButton"
                             class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
                             <i class="ki-duotone ki-gift">
                                 <span class="path1"></span>
@@ -178,7 +178,9 @@
 
                         <div id="cart-items-container">
                             <template x-for="(item, index) in cart" :key="item.id">
-                                <div class="card mb-3 p-4 cart-item" :class="item.typeProduct === 'gift' ? 'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
+                                <div class="card mb-3 p-4 cart-item"
+                                    :class="item.typeProduct === 'gift' ?
+                                        'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
                                     <!-- Mobile Layout (Stack Vertically) -->
                                     <div class="d-block d-lg-none" @click="openEditModal(item)">
                                         <!-- Product Name & Price -->
@@ -271,6 +273,28 @@
                                     <input type="text" class="form-control text-end"
                                         :value="formatRupiah(diskonGlobal)" @input="updateDiskonGlobal">
                                 </div>
+
+                                <!-- Note -->
+                                <div x-data="{ showNote: false }" class="mb-3">
+                                    <!-- Tombol Toggle -->
+                                    <button type="button" class="btn btn-sm"
+                                        :class="showNote ? 'btn-danger' : 'btn-outline-primary'"
+                                        @click="showNote = !showNote">
+                                        <template x-if="!showNote">
+                                            <span><i class="fa fa-plus"></i> Tambah Catatan</span>
+                                        </template>
+                                        <template x-if="showNote">
+                                            <span><i class="fa fa-times"></i> Sembunyikan Catatan</span>
+                                        </template>
+                                    </button>
+
+                                    <!-- Input Note -->
+                                    <div x-show="showNote" x-transition class="mt-2">
+                                        <label class="form-label mb-1">Note</label>
+                                        <textarea name="note" id="note" cols="30" rows="5" class="form-control"></textarea>
+                                    </div>
+                                </div>
+                                
                                 <!-- Input Ongkir -->
                                 <div class="mb-3">
                                     <label class="form-label mb-1">Biaya Pengiriman</label>
@@ -287,11 +311,6 @@
                                         <label class="form-label mb-1"></label>
                                         <input type="time" class="form-control" name="ongkir_time">
                                     </div>
-                                </div>
-                                <!-- Input Diskon -->
-                                <div class="mb-3">
-                                    <label class="form-label mb-1">Note</label>
-                                    <textarea name="note" id="note" cols="30" rows="5" class="form-control"></textarea>
                                 </div>
 
                                 <!-- Total Setelah Diskon -->
