@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('combo_promo')->nullable();
             $table->string('style')->nullable(); // New column for style
             $table->integer('minimal_purchase')->nullable(); // New column for minimal purchase
+            $table->integer('max_claim')->nullable(); // New column for max claim
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -36,6 +37,7 @@ return new class extends Migration
                 'exp' => 0,
                 'style' => 'badge-light-primary',
                 'minimal_purchase' => 0,
+                'max_claim' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -45,6 +47,7 @@ return new class extends Migration
                 'exp' => 50000,
                 'style' => 'badge-light-secondary',
                 'minimal_purchase' => 100000,
+                'max_claim' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -54,6 +57,7 @@ return new class extends Migration
                 'exp' => 100000,
                 'style' => 'badge-light-warning',
                 'minimal_purchase' => 200000,
+                'max_claim' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -63,6 +67,7 @@ return new class extends Migration
                 'exp' => 150000,
                 'style' => 'badge-light-success',
                 'minimal_purchase' => 300000,
+                'max_claim' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

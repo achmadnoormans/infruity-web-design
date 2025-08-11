@@ -172,6 +172,7 @@ class TierController extends Controller
             'birthday_gift' => 'nullable|boolean',
             'combo_promo' => 'nullable|boolean',
             'minimal_purchase' => 'nullable|numeric',
+            'max_claim' => 'nullable|numeric',
         ]);
         try {
             DB::beginTransaction();
@@ -182,6 +183,7 @@ class TierController extends Controller
             $tier->birthday_gift = $validated['birthday_gift'] ?? null;
             $tier->combo_promo = $validated['combo_promo'] ?? null;
             $tier->minimal_purchase = $validated['minimal_purchase'] ?? null;
+            $tier->max_claim = $validated['max_claim'] ?? null;
             $tier->save();
 
             DB::commit();

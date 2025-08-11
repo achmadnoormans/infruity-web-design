@@ -185,7 +185,8 @@
                                 <label class="fs-6 fw-semibold mb-2">Color</label>
                                 <select name="style" id="style" class="form-control form-select">
                                     <option value="badge-light-primary" data-badge="badge-light-primary">Primary</option>
-                                    <option value="badge-light-secondary" data-badge="badge-light-secondary">Secondary</option>
+                                    <option value="badge-light-secondary" data-badge="badge-light-secondary">Secondary
+                                    </option>
                                     <option value="badge-light-success" data-badge="badge-light-success">Success</option>
                                     <option value="badge-light-danger" data-badge="badge-light-danger">Danger</option>
                                     <option value="badge-light-warning" data-badge="badge-light-warning">Warning</option>
@@ -546,7 +547,19 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="number" class="form-control" name="minimal_purchase" value="${rowData.minimal_purchase || ''}" placeholder="Minimal Pembelian" />
+                                        <input type="number" class="form-control format-number" name="minimal_purchase" value="${rowData.minimal_purchase || ''}" placeholder="Minimal Pembelian" />
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Maksimal Claim
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="number" class="form-control" name="max_claim" value="${rowData.max_claim || ''}" placeholder="Maksimal Claim" />
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container">
@@ -591,6 +604,7 @@
                     </form>
                 </div>
             `;
+
         }
 
         $('#transaction-table tbody').on('click', 'tr', function(e) {
@@ -644,6 +658,7 @@
 
                 select.trigger('change');
 
+                bindFormatNumber();
             }
         });
 
