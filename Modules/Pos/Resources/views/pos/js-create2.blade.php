@@ -111,6 +111,7 @@
                 // Add Product
                 showAddModal: false,
                 showGiftModal: false,
+                showParcelModal: false,
                 addProduct: {
                     id: null,
                     name: '',
@@ -920,6 +921,56 @@
                     } else {
                         this.isShowGiftButton = false;
                     }
+                },
+
+                // Parcel Modal
+                openParcelModal() {
+                    this.showParcelModal = true;
+                    setTimeout(() => {
+                        const modal = new bootstrap.Modal(document.getElementById('parcelModal'));
+                        modal.show();
+
+                        // Init select2
+                        $('#select_gift').select2({
+                            placeholder: 'Pilih produk',
+                            language: {
+                                errorLoading: function() {
+                                    return "Tidak ada Hadiah yang tersedia.";
+                                }
+                            },
+                            dropdownParent: $('#parcelModal'),
+                            ajax: {
+                                url: '/tier/get-gift/' + $('#tier_id').val(), // ganti sesuai route
+                                dataType: 'json',
+                                delay: 250,
+                                processResults: data => ({
+                                    results: data.map(item => ({
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                    }))
+                                })
+                            }
+                        }).on('select2:select', (e) => {
+                            const data = e.params.data;
+                            this.addProduct.id = data.id;
+                            this.addProduct.name = data.text;
+                            this.addProduct.unit = data.unit.abbreviation;
+                            this.addProduct.price = data.price;
+                            this.addProduct.hpp = data.hpp ?? 0;
+                            subtotal = this.addProduct.qty * this.addProduct.price;
+                            this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
+                                .total);
+                            this.updateAddTotalFromQty();
+                        });
+                    }, 0);
+                },
+                closeParcelModal() {
+                    this.showParcelModal = false;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('parcelModal'));
+                    if (modal) modal.hide();
                 },
             }
         }

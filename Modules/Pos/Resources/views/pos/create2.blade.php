@@ -153,400 +153,42 @@
                     <div>
                         <button @click="openAddModal()"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
-                            <i class="fa-solid fa-plus"></i> Add
-                        </button>
-                        <button @click="openGiftModal()" x-show="isShowGiftButton"
-                            class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
-                            <i class="ki-duotone ki-gift">
+                            <i class="ki-duotone ki-apple fs-2x">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
+                            </i>
+                        </button>
+                        <button @click="openParcelModal()"
+                            class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
+                            <i class="ki-duotone ki-purchase fs-2x">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
                             </i>
                         </button>
                     </div>
                 </div>
+                <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
+                    style="bottom: 60px; right: 25px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+                    <i class="ki-duotone ki-gift" style="font-size: 30px; color: green;">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                    </i>
+                </button>
                 {{-- <!-- Cart --> --}}
-                <div class="col-md-12" style="height: 200px; overflow-y: auto;">
-                    <div>
-                        <template x-if="cart.length === 0">
-                            <div class="text-center py-5">
-                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">Keranjang kosong.</p>
-                            </div>
-                        </template>
-
-                        <div id="cart-items-container">
-                            <template x-for="(item, index) in cart" :key="item.id">
-                                <div class="card mb-3 p-4 cart-item"
-                                    :class="item.typeProduct === 'gift' ?
-                                        'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
-                                    <!-- Mobile Layout (Stack Vertically) -->
-                                    <div class="d-block d-lg-none" @click="openEditModal(item)">
-                                        <!-- Product Name & Price -->
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="mb-2">
-                                                <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                                <small class="text-muted d-flex">
-                                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
-                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
-                                                </small>
-                                                <div x-show="item.discount > 0">
-                                                    <small class="text-muted">Diskon</small>
-                                                    <small class="text-muted" x-show="item.discountPercent > 0">
-                                                        <span x-text="item.discountPercent"></span>%
-                                                    </small>
-                                                    <small class="text-muted">
-                                                        (-<span x-text="item.discount.toLocaleString()"></span>)
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
-                                                <span class="text-muted">
-                                                    Rp <span
-                                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
-                                                        ></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Desktop Layout (Horizontal) -->
-                                    <div class="d-none d-lg-block" @click="openEditModal(item)">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="mb-2">
-                                                <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                                <small class="text-muted d-flex">
-                                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
-                                                    <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
-                                                </small>
-                                                <div x-show="item.discount > 0">
-                                                    <small class="text-muted">Diskon</small>
-                                                    <small class="text-muted" x-show="item.discountPercent > 0">
-                                                        <span x-text="item.discountPercent"></span>%
-                                                    </small>
-                                                    <small class="text-muted">
-                                                        (-<span x-text="item.discount.toLocaleString()"></span>)
-                                                    </small>
-                                                </div>
-                                            </div>
-                                            <div class="mb-2">
-                                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
-                                                <span class="text-muted">
-                                                    Rp <span
-                                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
-                                                        ></span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
+                @include('pos::pos.segment.cart')
             </div>
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
-                <div class="accordion mb-3" id="accordionTotal">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTotal">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTotal" aria-expanded="false" aria-controls="collapseTotal">
-                                Rincian Total
-                            </button>
-                        </h2>
-                        <div id="collapseTotal" class="accordion-collapse collapse" aria-labelledby="headingTotal"
-                            data-bs-parent="#accordionTotal">
-                            <div class="accordion-body">
-                                <!-- Subtotal -->
-                                <div class="mb-3 d-flex justify-content-between">
-                                    <span class="fw-semibold">Subtotal</span>
-                                    <span class="text-end">Rp <span x-text="formatRupiah(subtotal)"></span></span>
-                                </div>
-
-                                <!-- Input Diskon -->
-                                <div class="mb-3">
-                                    <label class="form-label mb-1">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                                    <input type="text" class="form-control text-end"
-                                        :value="formatRupiah(diskonGlobal)" @input="updateDiskonGlobal">
-                                </div>
-
-                                <!-- Note -->
-                                <div x-data="{ showNote: false }" class="mb-3">
-                                    <!-- Tombol Toggle -->
-                                    <button type="button" class="btn btn-sm"
-                                        :class="showNote ? 'btn-danger' : 'btn-outline-primary'"
-                                        @click="showNote = !showNote">
-                                        <template x-if="!showNote">
-                                            <span><i class="fa fa-plus"></i> Tambah Catatan</span>
-                                        </template>
-                                        <template x-if="showNote">
-                                            <span><i class="fa fa-times"></i> Sembunyikan Catatan</span>
-                                        </template>
-                                    </button>
-
-                                    <!-- Input Note -->
-                                    <div x-show="showNote" x-transition class="mt-2">
-                                        <label class="form-label mb-1">Note</label>
-                                        <textarea name="note" id="note" cols="30" rows="5" class="form-control"></textarea>
-                                    </div>
-                                </div>
-                                
-                                <!-- Input Ongkir -->
-                                <div class="mb-3">
-                                    <label class="form-label mb-1">Biaya Pengiriman</label>
-                                    <input type="text" class="form-control text-end"
-                                        :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
-                                </div>
-                                <!-- Input Ongkir -->
-                                <div class="mb-3 row">
-                                    <div class="col">
-                                        <label class="form-label mb-1">Jadwal</label>
-                                        <input type="date" class="form-control" name="ongkir_date">
-                                    </div>
-                                    <div class="col mt-1">
-                                        <label class="form-label mb-1"></label>
-                                        <input type="time" class="form-control" name="ongkir_time">
-                                    </div>
-                                </div>
-
-                                <!-- Total Setelah Diskon -->
-                                <div class="pt-2 border-top mt-3 d-flex justify-content-between">
-                                    <span class="fw-bold">Total Setelah Diskon</span>
-                                    <span class="fw-bold text-end">Rp <span
-                                            x-text="formatRupiah(totalHargaKeseluruhan)"></span></span>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-4 border-top pt-3">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <span>Total</span> <span x-text="totalProduk"></span>
-                        </div>
-                        <div class="fw-bold">
-                            <span>Rp</span>
-                            <span x-text="formatRupiah(totalHargaKeseluruhan)"></span>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col">
-                            <button class="btn btn-sm btn-outline btn-outline-primary btn-active-light-primary w-100"
-                                @click="saveTransaction()">Simpan</button>
-                        </div>
-                        <div class="col">
-                            <!-- Di elemen root Alpine.js, misalnya -->
-                            <div x-data="{ loading: false }">
-                                <button class="btn btn-sm btn-primary w-100"
-                                    @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
-                                    <template x-if="!loading">
-                                        <span>Bayar</span>
-                                    </template>
-                                    <template x-if="loading">
-                                        <span>
-                                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                                            Memproses...
-                                        </span>
-                                    </template>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('pos::pos.segment.ringkasan')
             </div>
 
-            {{-- Modal Add Product --}}
-            <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true"
-                x-show="showAddModal" style="display: none;">
-                <div class="modal-dialog modal-fullscreen-sm-down">
-                    <div class="modal-content" x-data>
-                        <div class="modal-header" style="background-color: #ff000d; color: #fff;">
-                            <h5 class="modal-title" style="color: #fff">Tambah Produk</h5>
-                            <button type="button" class="btn-close" @click="closeAddModal()"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Select Produk -->
-                            <div class="mb-3">
-                                <label class="form-label">Nama Produk</label>
-                                <select id="select_product" class="form-select"></select>
-                            </div>
-
-                            <!-- Satuan -->
-                            <div class="row">
-                                <div class="col-3 mb-3">
-                                    <label class="form-label">Satuan</label>
-                                    <input type="text" class="form-control" x-model="addProduct.unit" readonly>
-                                </div>
-
-                                <!-- Harga -->
-                                <div class="col-9 mb-3">
-                                    <label class="form-label">Harga</label>
-                                    <input type="text" class="form-control" x-model="formattedAddPrice"
-                                        @input="updateAddPriceFromFormatted" readonly>
-                                </div>
-                            </div>
-
-                            <!-- Quantity -->
-                            <div class="mb-3">
-                                <label class="form-label">Quantity</label>
-                                <input type="number" class="form-control" step="0.01" min="0"
-                                    x-model="addProduct.qty" @input="updateAddTotalFromQty">
-                            </div>
-
-                            <!-- Diskon -->
-                            <div class="mb-3">
-                                <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                                <input type="text" class="form-control"
-                                    :value="formatRupiah(addProduct.discountNominal || 0)" @input="updateDiscountValue">
-                            </div>
-
-
-                            <!-- Jumlah Harga -->
-                            <div class="mb-3">
-                                <label class="form-label">Jumlah Harga</label>
-                                <input type="text" class="form-control" x-model="addProduct.formattedAddTotalInput"
-                                    @input="updateQtyFromAddTotal">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="closeAddModal()">Tutup</button>
-                            <button class="btn btn-primary" @click="saveAddToCart()">Simpan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{-- Modal Edit --}}
-            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"
-                x-show="editModal" style="display: none;">
-                <div class="modal-dialog modal-fullscreen-sm-down">
-                    <div class="modal-content" x-data>
-                        <div class="modal-header" style="background-color: #ff000d; color: #fff;">
-                            <span class="fs-4 text-white fw-bold" x-text="editTitle"></span>
-                        </div>
-                        <div class="modal-body">
-                            <div x-show="editItem">
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Product</label>
-                                    <input type="text" class="form-control" x-model="editProductName" readonly>
-                                </div>
-                                <!-- Input Qty -->
-                                <div class="row mb-3">
-                                    <div class="col-4">
-                                        <label class="form-label">Satuan</label>
-                                        <input type="text" class="form-control" step="0.01" min="0"
-                                            x-model="editProductUnit" readonly>
-                                    </div>
-                                    <div class="col-8">
-                                        <label class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" step="0.01" min="0"
-                                            x-model="editQty" @input="updateTotalFromEditQty">
-                                    </div>
-                                </div>
-                                <!-- Input Mode Harga -->
-                                <div class="mb-3">
-                                    <label class="form-label">Harga Jual (Rp)</label>
-                                    <input type="text" class="form-control" x-model="editTotalFormatted"
-                                        @input="updateEditTotalFormatted" inputmode="numeric">
-                                </div>
-                                <!-- Diskon -->
-                                <div class="mb-3">
-                                    <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                                    <input type="number" class="form-control" x-model="editDiscount" min="0"
-                                        @input="updateEditDiscount">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger me-auto" @click="deleteFromCart()">Hapus Produk</button>
-                            <button class="btn btn-secondary" @click="closeEditModal()">Batal</button>
-                            <button class="btn btn-primary" @click="saveEditToCart()">Simpan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{-- Modal Add CCustomer --}}
-            <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-fullscreen-sm-down">
-                    <div class="modal-content" x-data="{ customerName: '', customerPhone: '', customerAddress: '' }">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title" id="customerModalLabel">Tambah Customer</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Nama</label>
-                                <input type="text" class="form-control" x-model="customerName"
-                                    placeholder="Nama customer">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">No WhatsApp</label>
-                                <input type="text" class="form-control" x-model="customerPhone"
-                                    placeholder="08xxxxxxxxxx">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Alamat</label>
-                                <textarea class="form-control" x-model="customerAddress" rows="2"></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button class="btn btn-primary" @click="saveCustomer()">Simpan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {{-- Modal Add Gift --}}
-            <div class="modal fade" id="giftModal" tabindex="-1" aria-labelledby="giftModalLabel" aria-hidden="true"
-                x-show="showGiftModal" style="display: none;">
-                <div class="modal-dialog modal-fullscreen-sm-down">
-                    <div class="modal-content" x-data>
-                        <div class="modal-header" style="background-color: #ff000d; color: #fff;">
-                            <h5 class="modal-title" style="color: #fff">Tambah Hadiah</h5>
-                            <button type="button" class="btn-close" @click="closeAddModal()"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Select Produk -->
-                            <div class="mb-3">
-                                <label class="form-label">Nama Produk</label>
-                                <select id="select_gift" class="form-select"></select>
-                            </div>
-
-                            <!-- Satuan -->
-                            <div class="row">
-                                <div class="col-3 mb-3">
-                                    <label class="form-label">Satuan</label>
-                                    <input type="text" class="form-control" x-model="addProduct.unit" readonly>
-                                </div>
-
-                                <!-- Harga -->
-                                <div class="col-9 mb-3">
-                                    <label class="form-label">Harga</label>
-                                    <input type="text" class="form-control" x-model="formattedAddPrice"
-                                        @input="updateAddPriceFromFormatted" readonly>
-                                </div>
-                            </div>
-
-                            <!-- Quantity -->
-                            <div class="mb-3">
-                                <label class="form-label">Quantity</label>
-                                <input type="number" class="form-control" step="0.01" min="0"
-                                    x-model="addProduct.qty">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" @click="closeGiftModal()">Tutup</button>
-                            <button class="btn btn-primary" @click="saveGiftToCart()">Simpan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @include('pos::pos.segment.modal-product')
+            @include('pos::pos.segment.modal-customer')
+            @include('pos::pos.segment.modal-gift')
+            @include('pos::pos.segment.modal-parcel')
         </div>
     </div>
     <!--end::Aside column-->
