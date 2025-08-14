@@ -39,7 +39,7 @@
                         <div class="border rounded p-3 mb-3">
                             <div class="row">
                                 <div class="col-9 mb-3">
-                                    <label class="form-label">Parcel</label>
+                                    <label class="form-label">Produk</label>
                                     <select class="form-select parcel-select" :data-index="index"></select>
                                 </div>
                                 <div class="col-3 mb-3">
@@ -57,7 +57,7 @@
                         </div>
                     </template>
 
-                    <button type="button" class="btn btn-primary mt-2" @click="addParcel()">+ Tambah Parcel</button>
+                    <button type="button" class="btn btn-primary mt-2" @click="addParcel()">+ Tambah Produk</button>
 
                     <template x-if="parcels.length > 0">
                         <div>
