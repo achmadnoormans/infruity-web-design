@@ -531,6 +531,20 @@
     </a>
     <!--end:Menu link-->
 </div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'deposito' ? 'active' : '' }}"
+        href="{{ url('deposito') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Deposito</span>
+    </a>
+    <!--end:Menu link-->
+</div>
 <div data-kt-menu-trigger="click"
     class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->

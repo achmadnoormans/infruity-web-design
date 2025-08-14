@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('style')->nullable(); // New column for style
             $table->integer('minimal_purchase')->nullable(); // New column for minimal purchase
             $table->integer('max_claim')->nullable(); // New column for max claim
+            $table->integer('voucher')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

@@ -7,6 +7,7 @@ use Modules\Crm\Http\Controllers\TierController;
 use Modules\Crm\Http\Controllers\SettingExpController;
 use Modules\Crm\Http\Controllers\PointScheduleController;
 use Modules\Crm\Http\Controllers\DashboardController;
+use Modules\Crm\Http\Controllers\DepositoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +26,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('tier/{id}/save-detail', [TierController::class, 'saveDetail'])->name('tier.save_detail');
     Route::get('tier/get-gift/{id}', [TierController::class, 'getGift'])->name('tier.get-gift');
     Route::resource('setting-exp', SettingExpController::class)->names('setting-exp')->except('show');
-    Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');
+    Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');    
+    Route::resource('deposito', DepositoController::class)->names('deposito')->except('show');
+    Route::get('deposito/data', [DepositoController::class, 'get_data'])->name('deposito.data');
     Route::get('customer-report', [TierController::class, 'customerReport'])->name('customer.report');
     Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
     Route::get('crm-dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
