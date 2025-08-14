@@ -9,7 +9,12 @@ class ProductionParcelDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'production_id',
+        'pos_id',
+        'product_id',
+        'quantity',
+    ];
     protected $table = 'production_parcel_detail';
 
     public function product()

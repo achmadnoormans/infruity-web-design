@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('production_parcel_detail', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('production_id');
+            $table->unsignedBigInteger('pos_id');
             $table->unsignedBigInteger('product_id');
             $table->decimal('quantity', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();

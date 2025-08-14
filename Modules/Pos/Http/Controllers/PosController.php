@@ -9,6 +9,7 @@ use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
 use Modules\Pos\Entities\Payment;
 use Modules\Crm\Entities\CustomerTier;
+use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Crm\Entities\SettingExp;
 use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
@@ -267,6 +268,7 @@ class PosController extends Controller
             'date' => 'required|date',
             'invoice_number' => 'nullable',
             'items' => 'required|array',
+            'parcel' => 'nullable|array',
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
             'ongkir' => 'required|numeric',
@@ -317,6 +319,20 @@ class PosController extends Controller
                 ]);
             }
 
+            if (isset($data['parcel'])) {
+                foreach ($data['parcel'] as $key => $value) {
+                    foreach ($value['data'] as $item) {
+                        ProductionParcelDetail::insert([
+                            'production_id' => $value['id'],
+                            'pos_id' => $key,
+                            'product_id' => $item['product'],
+                            'quantity' => $item['qty'] * $value['qty'],
+                        ]);
+                    }
+                }
+            }
+
+            // dd($request->all());
             DB::commit();
 
             return response()->json([

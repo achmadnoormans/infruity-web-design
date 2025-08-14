@@ -91,6 +91,7 @@
             return {
                 products: [],
                 cart: [],
+                parcel: [],
 
                 // edit product
                 editModal: false,
@@ -728,6 +729,7 @@
                         date: transactionDate,
                         invoice_number: invoiceNumber,
                         items: this.cart,
+                        parcel: this.parcel,
                         subtotal: this.subtotal,
                         discount: this.diskonGlobal,
                         ongkir: this.ongkirGlobal,
@@ -1100,14 +1102,42 @@
                 saveParcelToCart() {
                     const budget = document.getElementById('parcel_budget').value;
                     const qty = document.getElementById('parcel_qty').value;
-                    console.log('Saving parcel to cart:', this.parcels);
-                    this.parcels.forEach(item => {
-                        console.log("Produk ID:", item.product);
-                        console.log("Nama:", item.name);
-                        console.log("Unit:", item.unit.name);
-                        console.log("Harga Awal:", item.priceAwal);
-                        console.log("Qty:", item.qty);
-                    });
+                    const kemasan = $('#select_kemasan option:selected').text();
+                    const parcel = {
+                        id: 'parcel' + this.formatShortNumber(budget),
+                        name: kemasan + '-' + this.formatShortNumber(budget),
+                        price: parseInt(budget.replace(/\./g, ''), 10),
+                        hpp: 0,
+                        qty: qty,
+                        unit: 'Parcel',
+                        discount: 0,
+                        discountPercent: 0,
+                        total_input: 0,
+                        typeProduct: 'parcel',
+                    };
+                    const posParcel = {
+                        id: 'parcel' + this.formatShortNumber(budget),
+                        data: this.parcels,
+                    }
+
+                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    posAppInstance.cart.push(parcel);
+                    posAppInstance.parcel.push(posParcel);
+                    document.getElementById('parcel_budget').value = '';
+                    document.getElementById('parcel_qty').value = 1;
+                    document.getElementById('parcel_jasa').value = '';
+                    $('#select_kemasan').val(null).trigger('change');
+                    this.parcels = [];
+
+                    console.log("Cart sekarang:", posAppInstance.cart, posAppInstance.parcel);
+                    // console.log('Parcel:', this.parcels, 'Product', parcel);
+                    // this.parcels.forEach(item => {
+                    //     console.log("Produk ID:", item.product);
+                    //     console.log("Nama:", item.name);
+                    //     console.log("Unit:", item.unit.name);
+                    //     console.log("Harga Awal:", item.priceAwal);
+                    //     console.log("Qty:", item.qty);
+                    // });
                     // let budgetClean = parseInt(this.budgetParcel.replace(/[^0-9]/g, '')) || 0;
 
                     // posApp.cart.push({
@@ -1119,6 +1149,20 @@
 
                     // this.closeAddModal();
                 },
+
+                formatShortNumber(num) {
+                    num = parseInt(num.toString().replace(/\./g, '')) || 0; // hapus titik & jadi integer
+
+                    if (num >= 1_000_000_000) {
+                        return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+                    } else if (num >= 1_000_000) {
+                        return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+                    } else if (num >= 1_000) {
+                        return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+                    }
+                    return num.toString();
+                },
+
             }
         }
 
