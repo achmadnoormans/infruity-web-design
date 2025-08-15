@@ -956,12 +956,25 @@
 
                         // Init select2
                         $('#select_kemasan').select2({
-                            placeholder: 'Pilih produk',
+                            placeholder: 'Pilih kemasan',
+                            language: {
+                                errorLoading: function() {
+                                    return "Belum ada kemasan yang dibuat.";
+                                }
+                            },
                             dropdownParent: $('#parcelModal'),
                             ajax: {
                                 url: '/ajax/listProduct', // ganti sesuai route
                                 dataType: 'json',
                                 delay: 250,
+                                data: function(params) {
+                                    return {
+                                        search: params.term, // term dari select2 untuk pencarian
+                                        type: 'kemasan', // contoh ambil dari input lain
+                                        status: 'aktif', // contoh nilai statis
+                                        limit: 10 // contoh parameter tambahan
+                                    };
+                                },
                                 processResults: data => ({
                                     results: data.map(item => ({
                                         id: item.id,
@@ -1117,6 +1130,7 @@
                 saveParcelToCart() {
                     const budget = document.getElementById('parcel_budget').value;
                     const qty = document.getElementById('parcel_qty').value;
+                    const fee = document.getElementById('parcel_jasa').value;
                     const kemasan = $('#select_kemasan option:selected').text();
                     const parcel = {
                         id: 'parcel' + this.formatShortNumber(budget),
@@ -1132,6 +1146,11 @@
                     };
                     const posParcel = {
                         id: 'parcel' + this.formatShortNumber(budget),
+                        budget: budget,
+                        qty: qty,
+                        kemasan: kemasan,
+                        hpp: this.totalAll,
+                        fee: fee,
                         data: this.parcels,
                     }
 

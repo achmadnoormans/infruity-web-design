@@ -11,6 +11,7 @@ use Modules\Pos\Entities\Payment;
 use Modules\Crm\Entities\CustomerTier;
 use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Crm\Entities\SettingExp;
+use Modules\Master\Entities\Product;
 use Modules\Pos\Entities\SettingNota;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -304,27 +305,55 @@ class PosController extends Controller
             $transaksiId = $pos->id;
             $settingExp = SettingExp::first();
             foreach ($data['items'] as $item) {
-                PosDetailModel::insert([
-                    'pos_id' => $transaksiId,
-                    'product_id' => $item['id'],
-                    'price' => $item['price'],
-                    'quantity' => $item['qty'],
-                    'discount' => $item['discount'] ?? 0,
-                    'subtotal' => $item['total_input'],
-                    'exp' => $item['price'] - $item['hpp'],
-                    'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                    'created_by' => $userId,
-                ]);
+                if (is_numeric($item['id'])) {
+                    PosDetailModel::insert([
+                        'pos_id' => $transaksiId,
+                        'product_id' => $item['id'],
+                        'price' => $item['price'],
+                        'quantity' => $item['qty'],
+                        'discount' => $item['discount'] ?? 0,
+                        'subtotal' => $item['total_input'],
+                        'exp' => $item['price'] - $item['hpp'],
+                        'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'created_by' => $userId,
+                    ]);
+                }
             }
 
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $key => $value) {
+                    $parcel = $value;
+                    $productNameBase = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
+                    $product = new Product([
+                        'name' => Product::generateProductName($productNameBase),
+                        'description' => 'Generate parcel ' . $productNameBase . ' by System',
+                        'price' => preg_replace('/[^0-9]/', '', $parcel['budget']),
+                        'product_unit' => 3,
+                        'status' => 'no-receipt',
+                        'tipe' => 'parcel',
+                        'hpp' => preg_replace('/[^0-9]/', '', $parcel['hpp']),
+                        'fee' => preg_replace('/[^0-9]/', '', $parcel['fee']),
+                        'created_by' => $userId,
+                    ]);
+                    $product->save();
+                    PosDetailModel::insert([
+                        'pos_id' => $transaksiId,
+                        'product_id' => $product->id,
+                        'price' => $product->price,
+                        'quantity' => $parcel['qty'],
+                        'discount' => 0,
+                        'subtotal' => $product->price,
+                        'exp' => $product->price - $product->hpp,
+                        'exp_value' => ($product->price - $product->hpp) * $settingExp->value_exp,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'created_by' => $userId,
+                    ]);
                     foreach ($value['data'] as $item) {
                         ProductionParcelDetail::insert([
-                            'production_id' => $value['id'],
-                            'pos_id' => $key,
+                            'pos_id' => $transaksiId,
                             'product_id' => $item['product'],
                             'quantity' => $item['qty'] * $value['qty'],
                         ]);

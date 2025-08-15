@@ -476,8 +476,13 @@ class ProductController extends Controller
     {
         $search = $request->input('term', '');
         $query = Product::with('category', 'get_stock', 'unit')
-            ->where('name', 'like', '%' . $search . '%')
-            ->get();
+            ->where('name', 'like', '%' . $search . '%');
+
+        if ($request->type == 'kemasan') {
+            $query = $query->where('tipe', 'kemasan');
+        }
+
+        $query = $query->get();
 
         return response()->json($query);
     }

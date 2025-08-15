@@ -32,7 +32,7 @@ return new class extends Migration {
             $table->integer('hpp')->nullable();
             $table->date('hpp_date')->nullable();
             $table->integer('fee')->nullable();
-            $table->enum('tipe', ['product', 'kemasan'])->default('product');
+            $table->enum('tipe', ['product', 'kemasan', 'parcel'])->default('product');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -47,6 +47,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -59,6 +60,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -71,6 +73,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -83,6 +86,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -95,6 +99,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -107,6 +112,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => 1,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -119,6 +125,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => 1,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -131,6 +138,7 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'no-receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -143,11 +151,24 @@ return new class extends Migration {
                 'direct_stock' => null,
                 'status' => 'receipt',
                 'is_variant' => null,
+                'tipe' => 'product',
                 'hpp_date' => now(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-
+            [
+                'name' => 'Keranjang',
+                'description' => 'keranjang',
+                'price' => 0,
+                'category_id' => 1,
+                'direct_stock' => null,
+                'status' => 'no-receipt',
+                'is_variant' => null,
+                'tipe' => 'kemasan',
+                'hpp_date' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
