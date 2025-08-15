@@ -163,6 +163,23 @@
                     <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <!--begin::Label-->
+                    <label class="form-label required">Tipe</label>
+                    <!--end::Label-->
+                    <!--begin::Select2-->
+                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
+                        data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="tipe">
+                        <option value="product" {{ isset($data) && $data->tipe == 'product' ? 'selected' : '' }}>
+                            Product</option>
+                        <option value="kemasan" {{ isset($data) && $data->tipe == 'kemasan' ? 'selected' : '' }}>Kemasan
+                        </option>
+                    </select>
+                    <!--end::Select2-->
+                    <!--begin::Description-->
+                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
+                    <!--end::Description-->
+                    <!--end::Input group-->
                     <!--begin::Button-->
                     <a href="{{ url('category') }}" class="btn btn-light-primary btn-sm mb-10">
                         <i class="ki-outline ki-plus fs-2"></i>Create new category</a>
@@ -267,7 +284,7 @@
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
-                                @if (isset($data) && ($data->product_unit == 3 && $data->status == 'receipt')) 
+                                @if (isset($data) && ($data->product_unit == 3 && $data->status == 'receipt'))
                                     <!--begin::Input group-->
                                     <div class="mb-10 fv-row">
                                         <!--begin::Label-->

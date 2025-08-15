@@ -82,6 +82,7 @@ class ProductController extends Controller
             $product->sku = $request->sku ?? '';
             $product->barcode = $request->barcode ?? '';
             $product->status = $request->status ?? '';
+            $product->tipe = $request->tipe ?? 'product';
             $product->created_by = Auth::user()->id_user;
 
             if ($request->hasFile('avatar')) {
@@ -221,6 +222,7 @@ class ProductController extends Controller
             $product->sku = $request->sku ?? '';
             $product->barcode = $request->barcode ?? '';
             $product->status = $request->status ?? '';
+            $product->tipe = $request->tipe ?? 'product';
             $product->created_by = Auth::user()->id_user;
 
             if ($request->hasFile('avatar')) {
