@@ -547,7 +547,7 @@
                                         </label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="number" class="form-control format-number" name="minimal_purchase" value="${rowData.minimal_purchase || ''}" placeholder="Minimal Pembelian" />
+                                        <input type="text" class="form-control format-number" name="minimal_purchase" value="${rowData.minimal_purchase || ''}" placeholder="Minimal Pembelian" />
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container">
@@ -560,6 +560,18 @@
                                     </div>
                                     <div class="col-md-9">
                                         <input type="number" class="form-control" name="max_claim" value="${rowData.max_claim || ''}" placeholder="Maksimal Claim" />
+                                    </div>
+                                </div>
+                                <div class="row fv-row mb-7 fv-plugins-icon-container">
+                                    <div class="col-md-3 text-md-text-start">
+                                        <label class="fs-6 fw-semibold form-label mt-3">
+                                            <span>
+                                                Voucher
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control format-number" name="voucher" value="${rowData.voucher || ''}" placeholder="Voucher" />
                                     </div>
                                 </div>
                                 <div class="row fv-row mb-7 fv-plugins-icon-container">

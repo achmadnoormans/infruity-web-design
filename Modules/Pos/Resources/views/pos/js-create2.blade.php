@@ -24,7 +24,9 @@
                         tier_id: item.tier_id,
                         tier_name: item.tier_name,
                         tier_style: item.tier_style || 'badge-light-secondary',
-                        minimalPurchase: item.minimal_purchase || 0
+                        minimalPurchase: item.minimal_purchase || 0,
+                        voucher: item.voucher,
+                        discount: item.discount,
                     }));
                     return {
                         results: [umum, ...results]
@@ -107,7 +109,10 @@
                 editProductUnit: '',
                 editTitle: 'Edit Product',
                 minimalPurchase: 0,
+                voucher: 0,
                 isShowGiftButton: false,
+                diskonGlobal: 0,
+                ongkirGlobal: 0,
 
                 // Add Product
                 showAddModal: false,
@@ -141,12 +146,24 @@
                     $('#customer_id').on('select2:select', function(e) {
                         const data = e.params.data;
                         self.setMinimalPurchase(data.minimalPurchase || 0);
+                        self.setVoucher(data.voucher || 0);
+                        self.setDiscountGlobal(data.discount || 0);
                     });
                 },
 
                 setMinimalPurchase(value) {
                     this.minimalPurchase = value;
                     console.log('Minimal Purchase set to:', this.minimalPurchase);
+                },
+
+                setVoucher(value) {
+                    this.voucher = value;
+                    console.log('Voucher set to:', this.voucher);
+                },
+
+                setDiscountGlobal(value) {
+                    this.diskonGlobal = value;
+                    console.log('Discount Global set to:', this.diskonGlobal);
                 },
 
                 formatRupiah(value) {
@@ -606,8 +623,6 @@
                 },
 
                 // Method untuk rincian total
-                diskonGlobal: 0,
-                ongkirGlobal: 0,
                 get subtotal() {
                     return this.cart.reduce((sum, item) => {
                         const total = (item.total_input || (item.price * item.qty) - (item.discount || 0));

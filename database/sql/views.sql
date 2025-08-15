@@ -140,25 +140,21 @@ WITH customer_exp AS (
 ),
 tier_range AS (
     SELECT
-        id,
+        id AS tier_id,
         name AS tier_name,
 		icon,
         exp AS min_exp,
 		minimal_purchase,
-		style,
+		style AS tier_style,
+		voucher,
+		discount_transaction AS discount,
         LEAD(exp) OVER (ORDER BY `level`) AS max_exp
     FROM crm_tier
 )
 SELECT
     ce.customer_id,
-	tr.id AS tier_id,
-    tr.tier_name,
-	tr.icon,
-	tr.style AS tier_style,
     ce.customer_exp,
-    tr.min_exp,
-    tr.max_exp,
-	tr.minimal_purchase,
+	tr.*,
 	ROUND(
         IF(tr.max_exp IS NOT NULL,
             (ce.customer_exp / tr.max_exp) * 100,
