@@ -6,6 +6,8 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Crm\Entities\Deposito;
+use Modules\Crm\Entities\PointSchedule;
+use Modules\Crm\Entities\Tier;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +45,7 @@ class DepositoController extends Controller
         // dd($request->all());
         $validated = $request->validate([
             'customer_id' => 'required|exists:customer,id',
+            'tier_id' => 'required|exists:crm_tier,id',
             'date' => 'required|date',
             'deposito' => 'required',
         ]);
@@ -50,11 +53,22 @@ class DepositoController extends Controller
         // Simpan data ke database
         try {
             DB::beginTransaction();
+
+            $tier = Tier::findOrFail($validated['tier_id']);
+            $pointSchedule = PointSchedule::first();
+            // dd($tier, $pointSchedule);
+
             $deposito = new Deposito();
             $deposito->customer_id = $validated['customer_id'];
-            $deposito->date = $validated['date'];
+            $deposito->deposito_date = $validated['date'];
+            $deposito->tier_id = $validated['tier_id'];
+            $deposito->start_period = $pointSchedule->start_date;
+            $deposito->end_period = $pointSchedule->end_date;
+            $deposito->voucher = $tier->voucher;
+            $deposito->voucher_qty = $tier->deposito / $tier->voucher;
             $deposito->deposito = preg_replace('/[^0-9]/', '', $validated['deposito']);
             $deposito->save();
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -164,7 +178,7 @@ class DepositoController extends Controller
                 return $row->customer->name;
             })
             ->addColumn('date', function ($row) {
-                return '<span class="badge badge-light-success">' . date('d M Y', strtotime($row->date)) . '</span>';
+                return '<span class="badge badge-light-success">' . date('d M Y', strtotime($row->deposito_date)) . '</span>';
             })
             ->addColumn('deposito', function ($row) {
                 return 'Rp' . number_format($row->deposito, 0, ',', '.');

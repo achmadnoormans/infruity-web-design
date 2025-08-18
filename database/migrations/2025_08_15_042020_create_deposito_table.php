@@ -14,8 +14,14 @@ return new class extends Migration
         Schema::create('deposito', function (Blueprint $table) {
             $table->id();
             $table->integer('customer_id');
-            $table->date('date');
-            $table->integer('deposito');
+            $table->date('deposito_date');
+            $table->date('start_period');
+            $table->date('end_period');
+            $table->integer('voucher');
+            $table->integer('voucher_qty');
+            $table->unsignedBigInteger('tier_id');
+            $table->integer('exp');
+            $table->bigInteger('deposito');
             $table->timestamps();
         });
     }

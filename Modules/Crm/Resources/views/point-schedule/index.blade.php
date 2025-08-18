@@ -48,7 +48,7 @@
                         </div>
                         <!--end::Input group-->
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-5">
                                 <!--begin::Label-->
                                 <label class="form-label">Selesai setelah</label>
                                 <!--end::Label-->

@@ -13,6 +13,7 @@ use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Crm\Entities\SettingExp;
 use Modules\Master\Entities\Product;
 use Modules\Pos\Entities\SettingNota;
+use Modules\Crm\Entities\Deposito;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;

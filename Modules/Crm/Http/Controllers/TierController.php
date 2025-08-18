@@ -174,6 +174,7 @@ class TierController extends Controller
             'minimal_purchase' => 'nullable',
             'max_claim' => 'nullable|numeric',
             'voucher' => 'nullable',
+            'deposito' => 'nullable',
         ]);
         try {
             DB::beginTransaction();
@@ -186,6 +187,7 @@ class TierController extends Controller
             $tier->minimal_purchase = preg_replace('/[^0-9]/', '', $validated['minimal_purchase'] ?? null);
             $tier->max_claim = $validated['max_claim'] ?? null;
             $tier->voucher = preg_replace('/[^0-9]/', '', $validated['voucher'] ?? null);
+            $tier->deposito = preg_replace('/[^0-9]/', '', $validated['deposito'] ?? null);
             $tier->save();
 
             DB::commit();
@@ -200,7 +202,6 @@ class TierController extends Controller
                 'error' => 'Gagal menyimpan detail: ' . $e->getMessage()
             ], 500);
         }
-
     }
 
     public function customerReport(Request $request)
@@ -212,8 +213,16 @@ class TierController extends Controller
     {
         $tier = Tier::findOrFail($id);
         $freeProducts = $tier->freeProducts()->get();
-        
+
         return response()->json($freeProducts);
+    }
+
+    public function listTier(Request $request)
+    {
+        $search = $request->get('search');
+        $tier = Tier::where('name', 'like', '%' . $search . '%')->get();
+
+        return response()->json($tier);
     }
 
     public function get_data(Request $request)
