@@ -115,9 +115,11 @@
                     <template x-for="(item, index) in parcels" :key="index">
                         <div class="border rounded p-3 mb-3">
                             <div class="row">
-                                <div class="col-9 mb-3" x-for="(parcel, index) in parcels" :key="index">
+                                <div class="col-9 mb-3">
                                     <label class="form-label">Produk</label>
-                                    <select class="form-select parcel-select-edit" :data-index="index"></select>
+                                    <select class="form-select parcel-select-edit" :data-index="index">
+                                        <option :value="parcels[index].product" x-text="parcels[index].name"></option>
+                                    </select>
                                 </div>
                                 <div class="col-3 mb-3">
                                     <label class="form-label">Qty</label>

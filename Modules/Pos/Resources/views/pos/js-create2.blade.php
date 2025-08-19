@@ -1047,7 +1047,7 @@
                         let parcelFormInstance = Alpine.$data(modalEl);
                         parcelData.forEach((item, index) => {
                             const parcelItem = {
-                                product: item.id,
+                                product: item.product,
                                 name: item.name,
                                 unit: item.unit.abbreviation,
                                 priceAwal: item.price,
@@ -1059,24 +1059,6 @@
 
                             // push ke Alpine
                             parcelFormInstance.setParcel(parcelItem);
-
-                            // cari select yang sudah ada
-                            let selectEl = document.querySelector(
-                                `.parcel-select-edit[data-index="${index}"]`);
-                            if (selectEl) {
-                                // clear dulu biar gak dobel
-                                selectEl.innerHTML = "";
-
-                                // bikin option baru
-                                let option = document.createElement("option");
-                                option.value = item.id;
-                                option.textContent = item.name;
-
-                                // tandai selected
-                                option.selected = true;
-
-                                selectEl.appendChild(option);
-                            }
                         });
                     });
 
@@ -1214,6 +1196,38 @@
                 },
                 initSelect2() {
                     $('.parcel-select').select2({
+                        placeholder: 'Pilih Parcel',
+                        ajax: {
+                            url: '/ajax/listProduct',
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function(data) {
+                                return {
+                                    results: data.map(item => ({
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                    }))
+                                };
+                            },
+                            cache: true
+                        }
+                    }).on('select2:select', (e) => {
+                        let index = $(e.target).data('index');
+                        let data = e.params.data;
+                        this.parcels[index].product = data.id;
+                        this.parcels[index].name = data.text;
+                        this.parcels[index].unit = data.unit;
+                        this.parcels[index].priceAwal = data.price;
+                        this.parcels[index].hpp = data.hpp;
+                        this.parcels[index].price = data.price;
+                        this.parcels[index].priceFormatted = this.formatRupiah(data.price);
+                        this.parcels[index].qty = 1;
+                    });
+
+                    $('.parcel-select-edit').select2({
                         placeholder: 'Pilih Parcel',
                         ajax: {
                             url: '/ajax/listProduct',
