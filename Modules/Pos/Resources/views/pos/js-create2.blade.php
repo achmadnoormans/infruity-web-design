@@ -153,17 +153,17 @@
 
                 setMinimalPurchase(value) {
                     this.minimalPurchase = value;
-                    console.log('Minimal Purchase set to:', this.minimalPurchase);
+                    // console.log('Minimal Purchase set to:', this.minimalPurchase);
                 },
 
                 setVoucher(value) {
                     this.voucher = value;
-                    console.log('Voucher set to:', this.voucher);
+                    // console.log('Voucher set to:', this.voucher);
                 },
 
                 setDiscountGlobal(value) {
                     this.diskonGlobal = value;
-                    console.log('Discount Global set to:', this.diskonGlobal);
+                    // console.log('Discount Global set to:', this.diskonGlobal);
                 },
 
                 formatRupiah(value) {
@@ -250,7 +250,7 @@
 
                 // Edit Product Section
                 openEditModal(item) {
-                    console.log('Opening edit modal for item:', item);
+                    // console.log('Opening edit modal for item:', item);
                     this.editItem = {
                         ...item
                     }; // salin data item
@@ -295,7 +295,7 @@
                 },
                 calculateEditDiscountAmount() {
                     const val = parseFloat(this.editDiscount || 0);
-                    console.log('Discount:', val);
+                    // console.log('Discount:', val);
                     if (val <= 100) {
                         let qty = parseFloat(this.editQty || 0);
                         let originalPrice = parseFloat(this.editPrice || 0);
@@ -519,7 +519,7 @@
                         typeProduct: 'product',
                     });
 
-                    console.log('cart', this.cart);
+                    // console.log('cart', this.cart);
                     this.resetAddForm();
                 },
 
@@ -934,12 +934,12 @@
                         typeProduct: 'gift', // Tambahkan tipe produk
                     });
 
-                    console.log('cart', this.cart);
+                    // console.log('cart', this.cart);
                     this.resetAddForm();
                 },
 
                 checkGiftButton(total) {
-                    console.log('minimalPurchase', this.minimalPurchase, 'total', total);
+                    // console.log('minimalPurchase', this.minimalPurchase, 'total', total);
                     if (total > this.minimalPurchase) {
                         this.isShowGiftButton = true;
                     } else {
@@ -1005,9 +1005,15 @@
                     if (modal) modal.hide();
                 },
 
+                closeParcelEditModal() {
+                    this.showParcelEditModal = false;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('parcelEditModal'));
+                    if (modal) modal.hide();
+                },
+
                 saveParcelToCart(index) {
                     let item = this.parcels[index];
-                    console.log('Saving parcel to cart:', item);
+                    // console.log('Saving parcel to cart:', item);
                     if (!item.product) {
                         alert('Pilih parcel terlebih dahulu');
                         return;
@@ -1026,6 +1032,105 @@
                     this.removeParcel(index);
                 },
 
+                openEditParcelModal(item) {
+                    console.log('Opening edit parcel for item:', item);
+                    this.editItem = {
+                        ...item
+                    }; // salin data item
+                    const idx = this.parcel.findIndex(i => i.id === this.editItem.id);
+                    const parcelData = this.parcel[idx].data;
+                    console.log(parcelData, this.parcel[idx]);
+                    let modalEl = document.getElementById('parcelEditModal');
+
+                    Alpine.nextTick(() => {
+                        // ambil instance alpine di modal
+                        let parcelFormInstance = Alpine.$data(modalEl);
+                        parcelData.forEach((item, index) => {
+                            const parcelItem = {
+                                product: item.id,
+                                name: item.name,
+                                unit: item.unit.abbreviation,
+                                priceAwal: item.price,
+                                qty: item.qty || 1,
+                                price: item.price,
+                                priceFormatted: this.formatRupiah(item.price),
+                                hpp: item.hpp || 0
+                            };
+
+                            // push ke Alpine
+                            parcelFormInstance.setParcel(parcelItem);
+
+                            // cari select yang sudah ada
+                            let selectEl = document.querySelector(
+                                `.parcel-select-edit[data-index="${index}"]`);
+                            if (selectEl) {
+                                // clear dulu biar gak dobel
+                                selectEl.innerHTML = "";
+
+                                // bikin option baru
+                                let option = document.createElement("option");
+                                option.value = item.id;
+                                option.textContent = item.name;
+
+                                // tandai selected
+                                option.selected = true;
+
+                                selectEl.appendChild(option);
+                            }
+                        });
+                    });
+
+                    $('#parcel_edit_qty').val(item.qty || 1);
+                    $('#parcel_edit_budget').val(this.formatRupiah(item.price || 0));
+                    $('#select_edit_kemasan').select2({
+                        placeholder: 'Pilih kemasan',
+                        language: {
+                            errorLoading: function() {
+                                return "Belum ada kemasan yang dibuat.";
+                            }
+                        },
+                        dropdownParent: $('#parcelEditModal'),
+                        ajax: {
+                            url: '/ajax/listProduct', // ganti sesuai route
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term, // term dari select2 untuk pencarian
+                                    type: 'kemasan', // contoh ambil dari input lain
+                                    status: 'aktif', // contoh nilai statis
+                                    limit: 10 // contoh parameter tambahan
+                                };
+                            },
+                            processResults: data => ({
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name,
+                                    unit: item.unit,
+                                    price: item.price,
+                                    hpp: item.hpp,
+                                }))
+                            })
+                        }
+                    }).on('select2:select', (e) => {
+                        const data = e.params.data;
+                        this.addProduct.id = data.id;
+                        this.addProduct.name = data.text;
+                        this.addProduct.unit = data.unit.abbreviation;
+                        this.addProduct.price = data.price;
+                        this.addProduct.hpp = data.hpp ?? 0;
+                        subtotal = this.addProduct.qty * this.addProduct.price;
+                        this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
+                            .total);
+                        this.updateAddTotalFromQty();
+                    });
+                    this.editModal = true;
+
+                    setTimeout(() => {
+                        const modal = new bootstrap.Modal(document.getElementById('parcelEditModal'));
+                        modal.show();
+                    }, 0);
+                },
 
             }
         }
@@ -1039,11 +1144,24 @@
                 budgetParcel: '',
                 get totalAll() {
                     // kalau "Harga Jual" = budget per item, cukup jumlahkan price
-                    return this.parcels.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+                    const total = this.parcels.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+                    const biayaJasa = parseInt(document.getElementById('parcel_jasa').value.replace(/\./g, ''), 10) ||
+                        0;
+                    return total + biayaJasa;
 
                     // kalau maunya total = qty * hargaAsli per item, pakai ini:
                     // return this.parcels.reduce((sum, p) => sum + (Number(p.qty||0) * Number(p.priceAwal||0)), 0);
                 },
+
+                resetParcel() {
+                    this.parcels = [];
+                },
+                setParcel(item) {
+                    // this.parcels = []; // reset
+                    this.parcels.push(item); // masukkan data baru
+                    console.log('Parcel data set:', this.parcels);
+                },
+
                 addParcel() {
                     this.parcels.push({
                         product: '',
@@ -1132,9 +1250,10 @@
                     const qty = document.getElementById('parcel_qty').value;
                     const fee = document.getElementById('parcel_jasa').value;
                     const kemasan = $('#select_kemasan option:selected').text();
+                    const kemasanId = $('#select_kemasan option:selected').val();
                     const parcel = {
-                        id: 'parcel' + this.formatShortNumber(budget),
-                        name: kemasan + '-' + this.formatShortNumber(budget),
+                        id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                        name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
                         price: parseInt(budget.replace(/\./g, ''), 10),
                         hpp: 0,
                         qty: qty,
@@ -1145,13 +1264,14 @@
                         typeProduct: 'parcel',
                     };
                     const posParcel = {
-                        id: 'parcel' + this.formatShortNumber(budget),
+                        id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                         budget: budget,
                         qty: qty,
                         kemasan: kemasan,
                         hpp: this.totalAll,
                         fee: fee,
                         data: this.parcels,
+                        type: 'parcel',
                     }
 
                     let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
@@ -1163,7 +1283,7 @@
                     $('#select_kemasan').val(null).trigger('change');
                     this.parcels = [];
 
-                    console.log("Cart sekarang:", posAppInstance.cart, posAppInstance.parcel);
+                    // console.log("Cart sekarang:", posAppInstance.cart, posAppInstance.parcel);
                     // console.log('Parcel:', this.parcels, 'Product', parcel);
                     // this.parcels.forEach(item => {
                     //     console.log("Produk ID:", item.product);

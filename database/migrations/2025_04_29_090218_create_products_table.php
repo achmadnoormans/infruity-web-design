@@ -169,6 +169,19 @@ return new class extends Migration {
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Kardus',
+                'description' => 'kardus',
+                'price' => 0,
+                'category_id' => 1,
+                'direct_stock' => null,
+                'status' => 'no-receipt',
+                'is_variant' => null,
+                'tipe' => 'kemasan',
+                'hpp_date' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 
