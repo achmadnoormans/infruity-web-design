@@ -1039,17 +1039,19 @@
                     }; // salin data item
                     const idx = this.parcel.findIndex(i => i.id === this.editItem.id);
                     const parcelData = this.parcel[idx].data;
-                    console.log(parcelData, this.parcel[idx]);
+                    // console.log(parcelData, this.parcel[idx]);
                     let modalEl = document.getElementById('parcelEditModal');
+                    let parcelFormInstance = Alpine.$data(modalEl);
 
                     Alpine.nextTick(() => {
                         // ambil instance alpine di modal
-                        let parcelFormInstance = Alpine.$data(modalEl);
+                        // let parcelFormInstance = Alpine.$data(modalEl);
+                        parcelFormInstance.resetParcel();
                         parcelData.forEach((item, index) => {
                             const parcelItem = {
                                 product: item.product,
                                 name: item.name,
-                                unit: item.unit.abbreviation,
+                                // unit: item.unit.abbreviation,
                                 priceAwal: item.price,
                                 qty: item.qty || 1,
                                 price: item.price,
@@ -1060,10 +1062,12 @@
                             // push ke Alpine
                             parcelFormInstance.setParcel(parcelItem);
                         });
+                        parcelFormInstance.setParcelId(item.id);
                     });
 
                     $('#parcel_edit_qty').val(item.qty || 1);
                     $('#parcel_edit_budget').val(this.formatRupiah(item.price || 0));
+                    $('#parcel_edit_jasa').val(this.formatRupiah(item.fee || 0));
                     $('#select_edit_kemasan').select2({
                         placeholder: 'Pilih kemasan',
                         language: {
@@ -1106,6 +1110,12 @@
                             .total);
                         this.updateAddTotalFromQty();
                     });
+                    if (item.kemasanId) {
+                        let option = new Option(item.kemasanName, item.kemasanId, true, true);
+                        $('#select_edit_kemasan')
+                            .append(option)
+                            .trigger('change');
+                    }
                     this.editModal = true;
 
                     setTimeout(() => {
@@ -1121,6 +1131,7 @@
             return {
                 parcels: [],
                 totalAll: 0,
+                parcelId: 0,
                 cart: [],
                 qtyParcel: 1,
                 budgetParcel: '',
@@ -1135,13 +1146,17 @@
                     // return this.parcels.reduce((sum, p) => sum + (Number(p.qty||0) * Number(p.priceAwal||0)), 0);
                 },
 
+                setParcelId(id) {
+                    this.parcelId = id;
+                },
+
                 resetParcel() {
                     this.parcels = [];
                 },
                 setParcel(item) {
                     // this.parcels = []; // reset
                     this.parcels.push(item); // masukkan data baru
-                    console.log('Parcel data set:', this.parcels);
+                    // console.log('Parcel data set:', this.parcels);
                 },
 
                 addParcel() {
@@ -1269,12 +1284,15 @@
                         id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                         name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
                         price: parseInt(budget.replace(/\./g, ''), 10),
+                        fee: parseInt(fee.replace(/\./g, ''), 10) || 0,
                         hpp: 0,
                         qty: qty,
                         unit: 'Parcel',
                         discount: 0,
                         discountPercent: 0,
                         total_input: 0,
+                        kemasanId: kemasanId,
+                        kemasanName: kemasan,
                         typeProduct: 'parcel',
                     };
                     const posParcel = {
@@ -1316,6 +1334,77 @@
                     // });
 
                     // this.closeAddModal();
+                },
+
+                editParcelToCart(parcelId) {
+                    console.log(parcelId);
+                    const budget = document.getElementById('parcel_edit_budget').value;
+                    const qty = document.getElementById('parcel_edit_qty').value;
+                    const fee = document.getElementById('parcel_edit_jasa').value;
+                    const kemasan = $('#select_edit_kemasan option:selected').text();
+                    const kemasanId = $('#select_edit_kemasan option:selected').val();
+
+                    const parcel = {
+                        id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                        name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
+                        price: parseInt(budget.replace(/\./g, ''), 10),
+                        fee: parseInt(fee.replace(/\./g, ''), 10) || 0,
+                        hpp: 0,
+                        qty: qty,
+                        unit: 'Parcel',
+                        discount: 0,
+                        discountPercent: 0,
+                        total_input: 0,
+                        typeProduct: 'parcel',
+                    };
+
+                    const posParcel = {
+                        id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                        budget: budget,
+                        qty: qty,
+                        kemasan: kemasan,
+                        hpp: this.totalAll,
+                        fee: fee,
+                        data: this.parcels, // isi produk dalam parcel
+                        type: 'parcel',
+                    };
+
+                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+
+                    // cari index berdasarkan parcelId
+                    let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);
+                    let idxParcel = posAppInstance.parcel.findIndex(p => p.id === parcelId);
+
+                    if (idxCart !== -1) {
+                        posAppInstance.cart.splice(idxCart, 1, parcel);
+                    }
+                    if (idxParcel !== -1) {
+                        posAppInstance.parcel.splice(idxParcel, 1, posParcel);
+                    }
+
+                    // kalau mau reset form setelah edit
+                    document.getElementById('parcel_budget').value = '';
+                    document.getElementById('parcel_qty').value = 1;
+                    document.getElementById('parcel_jasa').value = '';
+                    $('#select_kemasan').val(null).trigger('change');
+                    this.parcels = [];
+                },
+
+                deleteParcel(parcelId) {
+                    if (!parcelId) return;
+
+                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);
+                    let idxParcel = posAppInstance.parcel.findIndex(p => p.id === parcelId);
+                    if (idxCart !== -1) {
+                        posAppInstance.cart.splice(idxCart, 1);
+                    }
+                    if (idxParcel !== -1) {
+                        posAppInstance.parcel.splice(idxParcel, 1);
+                    }
+                    this.showParcelEditModal = false;
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('parcelEditModal'));
+                    if (modal) modal.hide();
                 },
 
                 formatShortNumber(num) {

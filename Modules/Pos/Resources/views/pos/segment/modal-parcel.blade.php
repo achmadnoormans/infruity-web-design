@@ -79,7 +79,7 @@
 <div class="modal fade" id="parcelEditModal" tabindex="-1" aria-labelledby="parcelModalLabel" aria-hidden="true"
     x-show="showParcelModal" style="display: none;" x-data="parcelForm()">
     <div class="modal-dialog modal-fullscreen-sm-down">
-        <div class="modal-content" x-data>
+        <div class="modal-content">
             <div class="modal-header" style="background-color: #ff000d; color: #fff;">
                 <h5 class="modal-title" style="color: #fff">Edit Parcel</h5>
                 <button type="button" class="btn-close" @click="closeAddModal()"></button>
@@ -118,7 +118,7 @@
                                 <div class="col-9 mb-3">
                                     <label class="form-label">Produk</label>
                                     <select class="form-select parcel-select-edit" :data-index="index">
-                                        <option :value="parcels[index].product" x-text="parcels[index].name"></option>
+                                        <option :value="item.product" x-text="item.name"></option>
                                     </select>
                                 </div>
                                 <div class="col-3 mb-3">
@@ -148,8 +148,9 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-danger me-auto" @click="deleteParcel(parcelId)">Hapus Parcel</button>
                 <button class="btn btn-secondary" @click="closeParcelEditModal()">Tutup</button>
-                <button class="btn btn-primary" @click="saveParcelToCart()">Simpan</button>
+                <button class="btn btn-primary" @click="editParcelToCart(parcelId)">Simpan</button>
             </div>
         </div>
     </div>
