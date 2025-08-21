@@ -185,6 +185,7 @@ class PosController extends Controller
             // 'account_id' => 'required|exists:account,id',
             'payment_id' => 'required|exists:payment_method,id',
             'total_payment' => 'required|numeric|min:1',
+            'customer_id' => 'nullable|exists:customer,id',
         ]);
 
         try {
@@ -205,11 +206,19 @@ class PosController extends Controller
             // dd($payment);
             $payment->save();
 
+            $deposito = Deposito::where('customer_id', $data['customer_id'])->first();
+            $voucher = $deposito->voucher ?? 0;
+            PosModel::where("id", $data['transaction_id'])->update([
+                'voucher' => $voucher,
+                'voucher_qty' => 1,
+                'deposito_id' => $deposito->id ?? null,
+            ]);
+
             $totalPayment = Payment::where('pos_id', $data['transaction_id'])
                 ->sum('total');
 
             $pos = PosModel::findOrFail($data['transaction_id']);
-            $total = $pos->total;
+            $total = $pos->total - $pos->voucher;
             $pos->paid = $totalPayment;
             if ($totalPayment > $total) {
                 $lastPayment = Payment::findOrFail($payment->id);
@@ -385,6 +394,8 @@ class PosController extends Controller
         $data['alpinejs'] = true;
         $data['data'] = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['deposito'] = Deposito::where('customer_id', $data['data']->customer_id)->first();
         // dd($data);
         return view('pos::pos.payment', $data);
     }

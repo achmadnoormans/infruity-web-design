@@ -53,7 +53,7 @@
 
         function posApp() {
             return {
-                totalDue: {{ $data->total - $data->paid }}, // Ganti dengan nilai dari data.total misalnya dari backend
+                totalDue: {{ ($data->total - $data->paid) - ($deposito->voucher ?? 0) }}, // Ganti dengan nilai dari data.total misalnya dari backend
                 totalPayment: {{ $data->total - $data->paid }},
                 paymentDifference: 0,
                 loading: false,

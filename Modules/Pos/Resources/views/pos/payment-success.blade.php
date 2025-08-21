@@ -21,6 +21,10 @@
                     <strong>Total Dibayarkan:</strong>
                     <span class="text-muted">{{ toNumber($data->total ?? 0) }}</span>
                 </div>
+                <div class="d-flex justify-content-between py-1 border-bottom">
+                    <strong>Voucher:</strong>
+                    <span class="text-muted">-{{ toNumber($data->pos->voucher ?? 0) }}</span>
+                </div>
                 @if (isset($data->return) && $data->return > 0)
                     <div class="d-flex justify-content-between py-1">
                         <strong>Kembalian:</strong>

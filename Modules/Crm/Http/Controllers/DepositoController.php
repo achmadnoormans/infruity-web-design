@@ -66,6 +66,7 @@ class DepositoController extends Controller
             $deposito->end_period = $pointSchedule->end_date;
             $deposito->voucher = $tier->voucher;
             $deposito->voucher_qty = $tier->deposito / $tier->voucher;
+            $deposito->exp = $tier->exp;
             $deposito->deposito = preg_replace('/[^0-9]/', '', $validated['deposito']);
             $deposito->save();
 

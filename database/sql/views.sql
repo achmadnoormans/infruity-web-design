@@ -132,11 +132,18 @@ GROUP BY
 DROP VIEW IF EXISTS vw_customer_tier;
 CREATE OR REPLACE VIEW vw_customer_tier AS
 WITH customer_exp AS (
-    SELECT SUM(A.exp_value) AS customer_exp, B.customer_id
-    FROM pos_transaction_detail AS A
-    JOIN pos_transaction AS B ON A.pos_id = B.id
-	WHERE B.status = 'paid'
-    GROUP BY B.customer_id
+    SELECT customer_id, SUM(customer_exp) AS customer_exp 
+	FROM (
+				SELECT SUM(A.exp_value) AS customer_exp, B.customer_id
+					FROM pos_transaction_detail AS A
+					JOIN pos_transaction AS B ON A.pos_id = B.id
+				WHERE B.status = 'paid'
+					GROUP BY B.customer_id
+				UNION
+					SELECT SUM(exp), customer_id FROM deposito
+					GROUP BY customer_id
+		) AS Q
+		GROUP BY Q.customer_id
 ),
 tier_range AS (
     SELECT

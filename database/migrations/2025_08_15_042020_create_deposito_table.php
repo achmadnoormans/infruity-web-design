@@ -24,6 +24,22 @@ return new class extends Migration
             $table->bigInteger('deposito');
             $table->timestamps();
         });
+
+        DB::table('deposito')->insert([
+            [
+                'customer_id' => 1,
+                'voucher' => 100000,
+                'voucher_qty' => 100,
+                'tier_id' => 4,
+                'exp' => 150000,
+                'deposito_date' => now(),
+                'start_period' => now(),
+                'end_period' => now()->addDays(90),
+                'deposito' => 10000000,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 
     /**
