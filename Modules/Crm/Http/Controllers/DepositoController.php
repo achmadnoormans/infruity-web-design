@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Crm\Entities\Deposito;
 use Modules\Crm\Entities\PointSchedule;
 use Modules\Crm\Entities\Tier;
+use Modules\Crm\Entities\CustomerDeposito;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,15 @@ class DepositoController extends Controller
     public function index()
     {
         return view('crm::deposito.index');
+    }
+
+    /**
+     * Display a listing of the resource.
+     * @return Renderable
+     */
+    public function customer_deposito()
+    {
+        return view('crm::deposito.customer-deposito');
     }
 
     /**
@@ -206,6 +216,51 @@ class DepositoController extends Controller
                 </div>';
             })
             ->rawColumns(['name', 'date', 'action'])
+            ->make(true);
+    }
+    public function customer_deposito_get_data(Request $request)
+    {
+        $data = CustomerDeposito::with('customer')->select(
+            'customer_id',
+            DB::raw('SUM(deposito) as deposito'),
+            DB::raw('SUM(voucher_qty) as voucher_qty'),
+            DB::raw('SUM(total_used_voucher) as voucher_used'),
+            DB::raw('SUM(nominal_using_voucher) as nominal_used'),
+            DB::raw('SUM(quantity) as voucher_remaining')
+        )
+            ->groupBy('customer_id')
+            ->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($row) {
+                return $row->customer->name;
+            })
+            ->addColumn('deposito', function ($row) {
+                $html = '<span class="badge badge-light-success">';
+                $html .= 'Rp' . number_format($row->deposito, 0, ',', '.');
+                $html .= '</span><br>';
+                $html .= '<span class="badge badge-light-danger">';
+                $html .= 'Rp' . number_format($row->nominal_used, 0, ',', '.');
+                $html .= '</span><br>';
+                return $html;
+            })
+            ->addColumn('voucher_qty', function ($row) {
+                $html = '<span class="badge badge-light-success">';
+                $html .= $row->voucher_qty;
+                $html .= '</span><br>';
+                $html .= '<span class="badge badge-light-danger">';
+                $html .= $row->voucher_used;
+                $html .= '</span><br>';
+                return $html;
+            })
+            ->addColumn('action', function ($item) {
+                return '
+                    <a href="' . url('product-stock') . '/' . $item->id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                ';
+            })
+            ->rawColumns(['name', 'deposito', 'voucher_qty', 'action'])
             ->make(true);
     }
 }

@@ -187,3 +187,43 @@ SELECT
 FROM customer c
 JOIN pos_transaction t ON t.customer_id = c.id
 GROUP BY c.id, c.name, c.type;
+
+-- View Deposito
+DROP VIEW IF EXISTS vw_customer_deposito;
+CREATE VIEW vw_customer_deposito AS
+SELECT
+	A.*,
+	B.voucher AS nominal_using_voucher,
+	B.voucher_qty AS total_used_voucher,
+	( A.voucher_qty - B.voucher_qty ) AS quantity,
+	( A.deposito - B.voucher ) AS nominal_remaining 
+FROM
+	`deposito` AS A
+	LEFT JOIN ( 
+		SELECT 
+			customer_id, deposito_id, SUM( voucher ) AS voucher, SUM( voucher_qty ) AS voucher_qty 
+		FROM 
+			pos_transaction 
+		GROUP BY 
+			customer_id, deposito_id 
+	) AS B ON A.id = B.deposito_id;
+
+DROP VIEW IF EXISTS vw_customer_deposito_tansaction;
+CREATE VIEW vw_customer_deposito_tansaction AS
+SELECT
+	* 
+FROM
+	( 
+		SELECT 
+			customer_id, deposito_date, deposito, voucher_qty 
+		FROM 
+			deposito 
+		UNION 
+		SELECT 
+			customer_id, date, voucher, voucher_qty 
+		FROM 
+			pos_transaction 
+		WHERE voucher > 0 
+	) Q
+ORDER BY
+	deposito_date;

@@ -531,19 +531,48 @@
     </a>
     <!--end:Menu link-->
 </div>
-<div class="menu-item">
+<div data-kt-menu-trigger="click"
+    class="menu-item {{ in_array(Request::segment(1), ['deposito', 'deposito']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'deposito' ? 'active' : '' }}"
-        href="{{ url('deposito') }}">
+    <span class="menu-link">
         <span class="menu-icon">
-            <i class="ki-duotone ki-security-user">
+            <i class="ki-duotone ki-basket fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </span>
         <span class="menu-title">Deposito</span>
-    </a>
+        <span class="menu-arrow"></span>
+    </span>
     <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ Request::segment(1) == 'deposito' ? 'active' : '' }}" href="{{ url('deposito') }}">
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-security-user">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                </span>
+                <span class="menu-title">Create Deposito</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'customer-deposito' ? 'active' : '' }}" href="{{ url('customer-deposito') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Customer Deposito</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+    </div>
+    <!--end:Menu sub-->
 </div>
 <div data-kt-menu-trigger="click"
     class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
