@@ -220,7 +220,7 @@ FROM
 			deposito 
 		UNION 
 		SELECT 
-			customer_id, date, voucher, voucher_qty 
+			customer_id, date, -voucher, -voucher_qty 
 		FROM 
 			pos_transaction 
 		WHERE voucher > 0 

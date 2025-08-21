@@ -30,7 +30,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('deposito', DepositoController::class)->names('deposito')->except('show');
     Route::get('deposito/data', [DepositoController::class, 'get_data'])->name('deposito.data');
     Route::get('customer-deposito', [DepositoController::class, 'customer_deposito'])->name('customer-deposito');
+    Route::get('customer-deposito/show/{id}', [DepositoController::class, 'show'])->name('customer-deposito.show');
     Route::get('customer-deposito/data', [DepositoController::class, 'customer_deposito_get_data'])->name('customer-deposito.data');
+    Route::get('customer-deposito/transaction/data', [DepositoController::class, 'customer_deposito_transaction_get_data'])->name('customer-deposito.transaction.data');
     Route::get('customer-report', [TierController::class, 'customerReport'])->name('customer.report');
     Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
     Route::get('crm-dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');

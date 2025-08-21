@@ -9,6 +9,8 @@ use Modules\Crm\Entities\Deposito;
 use Modules\Crm\Entities\PointSchedule;
 use Modules\Crm\Entities\Tier;
 use Modules\Crm\Entities\CustomerDeposito;
+use Modules\Master\Entities\Customer;
+use Modules\Crm\Entities\DepositoTransaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -103,7 +105,8 @@ class DepositoController extends Controller
      */
     public function show($id)
     {
-        return view('crm::show');
+        $data['customer'] = Customer::find($id);
+        return view('crm::deposito.show', $data);
     }
 
     /**
@@ -255,12 +258,59 @@ class DepositoController extends Controller
             })
             ->addColumn('action', function ($item) {
                 return '
-                    <a href="' . url('product-stock') . '/' . $item->id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                    <a href="' . url('customer-deposito/show') . '/' . $item->customer_id . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
                         <i class="fa fa-eye"></i>
                     </a>
                 ';
             })
             ->rawColumns(['name', 'deposito', 'voucher_qty', 'action'])
+            ->make(true);
+    }
+
+    public function customer_deposito_transaction_get_data(Request $request)
+    {
+        $query = DepositoTransaction::with(['customer', 'deposito'])
+            ->where('customer_id', $request->customer_id);
+        $data = $query->get();
+        $totalVoucher = $query->sum('voucher_qty');
+        $totalRemaining = $query->sum('deposito');
+        return DataTables::of($data)
+            ->with([
+                'total_voucher' => $totalVoucher,
+                'total_remaining' => $totalRemaining,
+            ])
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $html = '
+                    <div class="d-flex align-items-center">';
+                $html .= '<div class="ms-5">
+                            <a href="#" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                               data-kt-ecommerce-product-filter="product_name">
+                                ' . e($item->customer->name) . '
+                            </a>
+                        </div>
+                    </div>
+                ';
+                return $html;
+            })
+            ->addColumn('nominal', function ($item) {
+                if ($item->deposito > 0) {
+                    return '<span class="badge badge-light-success">' . tonumber($item->deposito) . '</span>';
+                } else {
+                    return '<span class="badge badge-light-danger">' . tonumber($item->deposito) . '</span>';
+                }
+            })
+            ->addColumn('voucher_qty', function ($item) {
+                if ($item->voucher > 0) {
+                    return '<span class="badge badge-light-success">' . $item->voucher_qty . '</span>';
+                } else {
+                    return '<span class="badge badge-light-danger">' . $item->voucher_qty . '</span>';
+                }
+            })
+            ->addColumn('date', function ($item) {
+                return dateEnglish($item->deposito_date);
+            })
+            ->rawColumns(['name', 'nominal', 'voucher_qty', 'date'])
             ->make(true);
     }
 }
