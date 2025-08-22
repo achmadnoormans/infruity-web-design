@@ -26,6 +26,7 @@
                 <div class="mb-3">
                     <label class="form-label">Pilih Kemasan</label>
                     <select id="select_kemasan" class="form-select"></select>
+                    <input type="hidden" id="kemasan_price" name="kemasan_price">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Biaya Jasa</label>
@@ -103,6 +104,7 @@
                 <div class="mb-3">
                     <label class="form-label">Pilih Kemasan</label>
                     <select id="select_edit_kemasan" class="form-select"></select>
+                    <input type="hidden" id="kemasan_edit_price" name="kemasan_price">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Biaya Jasa</label>

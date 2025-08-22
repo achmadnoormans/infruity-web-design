@@ -987,14 +987,7 @@
                             }
                         }).on('select2:select', (e) => {
                             const data = e.params.data;
-                            this.addProduct.id = data.id;
-                            this.addProduct.name = data.text;
-                            this.addProduct.unit = data.unit.abbreviation;
-                            this.addProduct.price = data.price;
-                            this.addProduct.hpp = data.hpp ?? 0;
-                            subtotal = this.addProduct.qty * this.addProduct.price;
-                            this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
-                                .total);
+                            $('#kemasan_price').val(data.price);
                             this.updateAddTotalFromQty();
                         });
                     }, 0);
@@ -1068,6 +1061,7 @@
                     $('#parcel_edit_qty').val(item.qty || 1);
                     $('#parcel_edit_budget').val(this.formatRupiah(item.price || 0));
                     $('#parcel_edit_jasa').val(this.formatRupiah(item.fee || 0));
+                    $('#parcel_jasa').val(this.formatRupiah(item.fee || 0));
                     $('#select_edit_kemasan').select2({
                         placeholder: 'Pilih kemasan',
                         language: {
@@ -1140,7 +1134,10 @@
                     const total = this.parcels.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
                     const biayaJasa = parseInt(document.getElementById('parcel_jasa').value.replace(/\./g, ''), 10) ||
                         0;
-                    return total + biayaJasa;
+                    const kemasanPrice = parseInt(document.getElementById('kemasan_price').value.replace(/\./g, ''),
+                        10) ||
+                        0;
+                    return total + biayaJasa + kemasanPrice;
 
                     // kalau maunya total = qty * hargaAsli per item, pakai ini:
                     // return this.parcels.reduce((sum, p) => sum + (Number(p.qty||0) * Number(p.priceAwal||0)), 0);

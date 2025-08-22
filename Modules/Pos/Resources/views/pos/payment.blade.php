@@ -19,7 +19,11 @@
             <div class="d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
                     <span class="">Voucher</span>
-                    <span class="fw-bolder">-{{ toNumber($deposito->voucher ?? 0) }}</span>
+                    <span class="fw-bolder mb-3">-{{ toNumber($deposito->voucher ?? 0) }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
+                    <span class="">Sisa Voucher</span>
+                    <span class="fw-bolder mb-3">{{ $deposito->quantity ?? 0 }} (Voucher)</span>
                 </div>
             </div>
         </div>

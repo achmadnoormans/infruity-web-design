@@ -15,6 +15,7 @@ use Modules\Master\Entities\Product;
 use Modules\Pos\Entities\SettingNota;
 use Modules\Crm\Entities\Deposito;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Crm\Entities\CustomerDeposito;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -395,7 +396,7 @@ class PosController extends Controller
         $data['data'] = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
-        $data['deposito'] = Deposito::where('customer_id', $data['data']->customer_id)->first();
+        $data['deposito'] = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
         // dd($data);
         return view('pos::pos.payment', $data);
     }

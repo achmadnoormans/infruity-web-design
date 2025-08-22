@@ -153,10 +153,7 @@
                     <div>
                         <button @click="openAddModal()"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
-                            <i class="ki-duotone ki-apple fs-2x">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
+                            <i class="fa fa-plus"></i>
                         </button>
                         <button @click="openParcelModal()"
                             class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
