@@ -15,18 +15,20 @@
                 </div>
             </div>
         </div>
-        <div class="card card-body mb-5 bg-light-success rounded-3">
-            <div class="d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
-                    <span class="">Voucher</span>
-                    <span class="fw-bolder mb-3">-{{ toNumber($deposito->voucher ?? 0) }}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
-                    <span class="">Sisa Voucher</span>
-                    <span class="fw-bolder mb-3">{{ $deposito->quantity ?? 0 }} (Voucher)</span>
+        @if (isset($deposito))
+            <div class="card card-body mb-5 bg-light-success rounded-3">
+                <div class="d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
+                        <span class="">Voucher</span>
+                        <span class="fw-bolder mb-3">-{{ toNumber($deposito->voucher ?? 0) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
+                        <span class="">Sisa Voucher</span>
+                        <span class="fw-bolder mb-3">{{ $deposito->quantity ?? 0 }} (Voucher)</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
         <div class="card card-body mb-3 mt-3">
             <div class="d-flex flex-column gap-10 mb-3">
                 <div class="fv-row">

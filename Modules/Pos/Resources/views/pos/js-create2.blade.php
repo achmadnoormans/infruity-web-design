@@ -751,7 +751,7 @@
                         ongkir_date: ongkirDate,
                         ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
-                        status: 'debt',
+                        status: 'temp',
                         note: note,
                     };
 
@@ -777,6 +777,7 @@
                             // });
                             // console.log(res);
                             // this.resetPOS(); // Reset cart dsb.
+                            if (typeof doneCallback === 'function') doneCallback();
                             window.location.href = `/pos/payment/${res.transaksi_id}`;
                         })
                         .catch(err => {
@@ -1135,7 +1136,7 @@
                     const biayaJasa = parseInt(document.getElementById('parcel_jasa').value.replace(/\./g, ''), 10) ||
                         0;
                     const kemasanPrice = parseInt(document.getElementById('kemasan_price').value.replace(/\./g, ''),
-                        10) ||
+                            10) ||
                         0;
                     return total + biayaJasa + kemasanPrice;
 

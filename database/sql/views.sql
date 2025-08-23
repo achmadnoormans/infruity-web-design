@@ -195,8 +195,8 @@ SELECT
 	A.*,
 	B.voucher AS nominal_using_voucher,
 	B.voucher_qty AS total_used_voucher,
-	( A.voucher_qty - B.voucher_qty ) AS quantity,
-	( A.deposito - B.voucher ) AS nominal_remaining 
+	( A.voucher_qty - COALESCE ( B.voucher_qty, 0 ) ) AS quantity,
+	( A.deposito - COALESCE ( B.voucher, 0 ) ) AS nominal_remaining
 FROM
 	`deposito` AS A
 	LEFT JOIN ( 

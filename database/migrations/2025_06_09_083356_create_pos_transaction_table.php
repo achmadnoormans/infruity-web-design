@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('paid')->nullable();
             $table->integer('return')->nullable();
             $table->integer('payment_method')->nullable();
-            $table->enum('status', ['draft', 'paid', 'debt', 'canceled'])->default('draft');
+            $table->enum('status', ['draft', 'paid', 'debt', 'temp', 'canceled'])->default('draft');
             $table->text('note')->nullable();
             $table->integer('voucher')->nullable()->default(0);
             $table->integer('voucher_qty')->nullable()->default(0);

@@ -417,6 +417,7 @@ class PosController extends Controller
         $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['deposito'] = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
         // dd($data);
         return view('pos::pos.print2', $data);
     }

@@ -718,11 +718,21 @@
                         <span class="total-value">-{{ tonumberround($data->voucher) }}</span>
                     </div>
                 @endif
+                @if (isset($deposito))
+                    <div class="total-line">
+                        <span class="total-label">Voucher</span>
+                        <span class="total-value">-{{ tonumberround($deposito->voucher) }}</span>
+                    </div>
+                @endif
             </div>
             <div class="totals-section">
                 <div class="grand-total">
                     <span class="grand-total-label">Total ({{ count($detail) }} Produk)</span>
-                    <span class="grand-total-value">{{ tonumberround($data->total - $data->voucher) }}</span>
+                    @if (isset($deposito))
+                        <span class="grand-total-value">{{ tonumberround($data->total - $deposito->voucher) }}</span>
+                    @else
+                        <span class="grand-total-value">{{ tonumberround($data->total - $data->voucher) }}</span>
+                    @endif
                 </div>
             </div>
 

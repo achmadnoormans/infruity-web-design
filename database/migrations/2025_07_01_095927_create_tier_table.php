@@ -34,7 +34,7 @@ return new class extends Migration
 
         DB::table('crm_tier')->insert([
             [
-                'name' => 'Bronze',
+                'name' => 'No Tier',
                 'level' => 1,
                 'exp' => 0,
                 'style' => 'badge-light-primary',
@@ -46,8 +46,20 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Silver',
+                'name' => 'Bronze',
                 'level' => 2,
+                'exp' => 25000,
+                'style' => 'badge-light-primary',
+                'minimal_purchase' => 0,
+                'max_claim' => 1,
+                'deposito' => 0,
+                'voucher' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Silver',
+                'level' => 3,
                 'exp' => 50000,
                 'style' => 'badge-light-secondary',
                 'minimal_purchase' => 100000,
@@ -59,7 +71,7 @@ return new class extends Migration
             ],
             [
                 'name' => 'Gold',
-                'level' => 3,
+                'level' => 4,
                 'exp' => 100000,
                 'style' => 'badge-light-warning',
                 'minimal_purchase' => 200000,
@@ -71,7 +83,7 @@ return new class extends Migration
             ],
             [
                 'name' => 'Platinum',
-                'level' => 4,
+                'level' => 5,
                 'exp' => 150000,
                 'style' => 'badge-light-success',
                 'minimal_purchase' => 300000,
