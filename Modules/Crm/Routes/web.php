@@ -47,4 +47,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('tier/list-tier', [TierController::class, 'listTier'])->name('tier.list-tier');
+    Route::get('campaign/get-near-event', [CampaignController::class, 'get_near_campaign'])->name('campaign.get-near-event');
 });

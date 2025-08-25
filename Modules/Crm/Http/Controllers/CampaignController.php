@@ -44,7 +44,7 @@ class CampaignController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date or_equal',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'type_promo' => 'required|string',
             'value_promo' => 'required'
         ]);
@@ -110,7 +110,7 @@ class CampaignController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date or_equal',
+            'end_date' => 'required|date|after_or_equal:start_date',
             'type_promo' => 'required|string',
             'value_promo' => 'required'
         ]);
@@ -168,9 +168,31 @@ class CampaignController extends Controller
         }
     }
 
+    public function get_near_campaign()
+    {
+        $today = date('Y-m-d');
+        $campaign = Campaign::where('start_date', '<=', $today)
+            ->where('end_date', '>=', $today)
+            ->where('status', 'active')
+            ->orderBy('end_date', 'asc')
+            ->first();
+
+        if ($campaign) {
+            return response()->json([
+                'success' => true,
+                'data' => $campaign
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada campaign yang sedang berlangsung.'
+            ], 404);
+        }
+    }
+
     public function get_data(Request $request)
     {
-        $data = Campaign::all();
+        $data = Campaign::where('start_date', '>=', date('Y-m-d'))->orWhere('end_date', '>=', date('Y-m-d'))->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('value', function ($row) {

@@ -24,6 +24,20 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        DB::table('crm_campaign')->insert([
+            [
+                'name' => 'Hari Kemerdekaan',
+                'start_date' => now(),
+                'end_date' => now()->addDays(1),
+                'frequency' => 1,
+                'status' => 'active',
+                'type_promo' => 'discount',
+                'value' => 10,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 
     /**
