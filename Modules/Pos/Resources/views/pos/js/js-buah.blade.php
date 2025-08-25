@@ -1041,6 +1041,20 @@
             },
 
             // For Edit
+
+            formatShortNumber(num) {
+                num = parseInt(num.toString().replace(/\./g, '')) || 0; // hapus titik & jadi integer
+
+                if (num >= 1_000_000_000) {
+                    return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+                } else if (num >= 1_000_000) {
+                    return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+                } else if (num >= 1_000) {
+                    return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return num.toString();
+            },
+            
             loadExistingData(data, detail) {
                 // Load existing cart items
                 detail.map(item => {
@@ -1054,12 +1068,31 @@
                         discount: item.discount || 0,
                         discountPercent: item.discountPercent || 0,
                         total_input: (item.price * item.quantity) - (item.discount || 0),
-                        typeProduct: item.typeProduct || 'product',
+                        typeProduct: item.type || 'product',
                     };
 
                     this.cart.push(obj);
+                    if (item.type == 'parcel') {
+                        const parcels = {
+                            id: 'parcel' + item.product_id + this.formatShortNumber(item.price),
+                            name: 'Parcel ' + item.name + '-' + this.formatShortNumber(item.price),
+                            price: parseInt(item.price, 10),
+                            fee: parseInt(item.fee, 10) || 0,
+                            hpp: 0,
+                            qty: item.quantity,
+                            unit: 'Parcel',
+                            discount: 0,
+                            discountPercent: 0,
+                            total_input: 0,
+                            kemasanId: item.product_id,
+                            kemasanName: item.name,
+                            typeProduct: 'parcel',
+                        };
+
+                        this.parcel.push(parcels);
+                    }
                 });
-                
+
             },
         }
     }
