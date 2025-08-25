@@ -1058,8 +1058,9 @@
             loadExistingData(data, detail) {
                 // Load existing cart items
                 detail.map(item => {
+                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item.price) : item.product_id;
                     const obj = {
-                        id: item.product_id,
+                        id: id,
                         name: item.product.name,
                         price: item.price,
                         hpp: item.hpp || 0,
@@ -1074,7 +1075,7 @@
                     this.cart.push(obj);
                     if (item.type == 'parcel') {
                         const parcels = {
-                            id: 'parcel' + item.product_id + this.formatShortNumber(item.price),
+                            id: id,
                             name: 'Parcel ' + item.name + '-' + this.formatShortNumber(item.price),
                             price: parseInt(item.price, 10),
                             fee: parseInt(item.fee, 10) || 0,
