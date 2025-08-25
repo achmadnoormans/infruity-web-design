@@ -46,6 +46,8 @@ class PosController extends Controller
     public function create()
     {
         $data['alpinejs'] = true;
+        $data['data'] = null;
+        $data['detail'] = null;
         $data['invoice_number'] = PosModel::getOrderNumber();
         return view('pos::pos.create2', $data);
     }
@@ -136,7 +138,11 @@ class PosController extends Controller
      */
     public function edit($id)
     {
-        return view('pos::edit');
+        $data['alpinejs'] = true;
+        $data['data'] = PosModel::with('customer')->findOrFail($id);
+        $data['detail'] = PosDetailModel::with('product', 'product.unit')->where('pos_id', $id)->get();
+        $data['invoice_number'] = $data['data']->invoice_number;
+        return view('pos::pos.create2', $data);
     }
 
     /**
@@ -285,7 +291,7 @@ class PosController extends Controller
             'discount' => 'required|numeric',
             'ongkir' => 'required|numeric',
             'total' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,debt',
+            'status' => 'nullable|in:draft,paid,debt,temp',
             'ongkir_date' => 'nullable|date',
             'ongkir_time' => 'nullable|date_format:H:i',
             'note' => 'nullable',
@@ -324,10 +330,12 @@ class PosController extends Controller
                         'quantity' => $item['qty'],
                         'discount' => $item['discount'] ?? 0,
                         'subtotal' => $item['total_input'],
+                        'hpp' => $item['hpp'] ?? 0,
                         'exp' => $item['price'] - $item['hpp'],
                         'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
                         'created_at' => now(),
                         'updated_at' => now(),
+                        'type' => 'product',
                         'created_by' => $userId,
                     ]);
                 }
@@ -356,10 +364,12 @@ class PosController extends Controller
                         'quantity' => $parcel['qty'],
                         'discount' => 0,
                         'subtotal' => $product->price,
+                        'hpp' => $product->hpp,
                         'exp' => $product->price - $product->hpp,
                         'exp_value' => ($product->price - $product->hpp) * $settingExp->value_exp,
                         'created_at' => now(),
                         'updated_at' => now(),
+                        'type' => 'parcel',
                         'created_by' => $userId,
                     ]);
                     foreach ($value['data'] as $item) {
@@ -541,6 +551,11 @@ class PosController extends Controller
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                             </li>
                             <li>

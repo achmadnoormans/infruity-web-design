@@ -48,6 +48,8 @@ return new class extends Migration
             $table->integer('subtotal');
             $table->integer('exp');
             $table->decimal('exp_value');
+            $table->integer('hpp')->nullable()->default(0);
+            $table->enum('type', ['product', 'parcel'])->default('product');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
