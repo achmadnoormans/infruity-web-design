@@ -9,10 +9,7 @@ class Campaign extends Model
 {
     use HasFactory;
 
+    protected $table = 'crm_campaign';
     protected $fillable = [];
     
-    protected static function newFactory()
-    {
-        return \Modules\Crm\Database\factories\CampaignFactory::new();
-    }
 }

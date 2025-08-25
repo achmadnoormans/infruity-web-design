@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('crm_campaign', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('frequency'); // Frequency in days
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('type_promo', ['discount', 'price'])->default('discount');
+            $table->integer('value')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

@@ -614,6 +614,16 @@
             </a>
             <!--end:Menu link-->
         </div>
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'campaign' ? 'active' : '' }}" href="{{ url('campaign') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Campaign</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
         <!--end:Menu item-->
         <!--begin:Menu item-->
         {{-- <div class="menu-item">
