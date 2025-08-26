@@ -85,6 +85,33 @@
         const tier_name = customer.tier_name || '-';
         return `${name} (${tier_name})`;
     }
+    $url = '{{ Request::segment(3) }}';
+    var data = @json($data ?? null);
+    console.log(data);
+    if ($url === 'edit' && data) {
+        // Data yang sesuai struktur Select2
+        let selectedCustomer = {
+            id: data.customer_id,
+            name: data.customer.name,
+            address: data.customer.address || '-',
+            whatsapp: data.customer.whatsapp || '-',
+            tier_id: data.customer.customer_tier.tier_id || '',
+            tier_name: data.customer.customer_tier.tier_name || '-',
+            tier_style: data.customer.customer_tier.tier_style || 'badge-light-secondary'
+        };
 
-    $('#customer_id').append(new Option('Pelanggan Umum', '0', true, true)).trigger('change');
+        // Trigger langsung ke select2
+        $('#customer_id').select2('trigger', 'select', {
+            data: selectedCustomer
+        });
+    } else {
+        $('#customer_id').select2('trigger', 'select', {
+            data: {
+                id: '0',
+                name: 'Pelanggan Umum',
+                address: '-',
+                whatsapp: '-'
+            }
+        });
+    }
 </script>

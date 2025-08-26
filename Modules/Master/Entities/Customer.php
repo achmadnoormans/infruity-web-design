@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use DB;
 use App\Models\User;
+use Modules\Crm\Entities\CustomerTier;
 
 class Customer extends Model
 {
@@ -46,6 +47,11 @@ class Customer extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by', 'id_user');
+    }
+
+    public function customerTier()
+    {
+        return $this->belongsTo(CustomerTier::class, 'id', 'customer_id');
     }
 
     public static function getCustomerGraph()
