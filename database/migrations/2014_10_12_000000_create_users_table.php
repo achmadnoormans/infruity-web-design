@@ -33,7 +33,7 @@ class CreateUsersTable extends Migration
             array(
                 'nm_user' => 'MOCH IRSYADUL ANAM',
                 'nickname' => 'irsyad',
-                'username' => 'irsyad7798@gmail.com',
+                'username' => 'irsyaad',
                 'email' => 'irsyad7798@gmail.com',
                 'password' => '$2y$10$wzqj/2.YIrD7bBbCb.ndhuoDktih2.bulhQQmpi6j5mXxQHdeFf.q',
                 'telp' => '08674514312331',

@@ -67,9 +67,10 @@
                     this.loadExistingData(data, detail);
                     console.log(url, data, detail);
                     this._loaded = true;
-                }
 
-                console.log('cart =>', this.cart);
+                    console.log('cart =>', this.cart);
+                    console.log('parcel =>', this.parcel);
+                }
             },
 
             setMinimalPurchase(value) {
@@ -1054,11 +1055,12 @@
                 }
                 return num.toString();
             },
-            
+
             loadExistingData(data, detail) {
                 // Load existing cart items
                 detail.map(item => {
-                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item.price) : item.product_id;
+                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
+                        .price) : item.product_id;
                     const obj = {
                         id: id,
                         name: item.product.name,
@@ -1076,18 +1078,13 @@
                     if (item.type == 'parcel') {
                         const parcels = {
                             id: id,
-                            name: 'Parcel ' + item.name + '-' + this.formatShortNumber(item.price),
-                            price: parseInt(item.price, 10),
-                            fee: parseInt(item.fee, 10) || 0,
-                            hpp: 0,
+                            budget: parseInt(item.price, 10),
                             qty: item.quantity,
-                            unit: 'Parcel',
-                            discount: 0,
-                            discountPercent: 0,
-                            total_input: 0,
-                            kemasanId: item.product_id,
-                            kemasanName: item.name,
-                            typeProduct: 'parcel',
+                            kemasan: item.product_id,
+                            hpp: item.hpp || 0,
+                            fee: parseInt(item.fee, 10) || 0,
+                            data: item.production_parcel_details,
+                            type: 'parcel',
                         };
 
                         this.parcel.push(parcels);
