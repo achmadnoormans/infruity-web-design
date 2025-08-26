@@ -42,6 +42,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pos_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('parcel_id')->nullable();
             $table->decimal('quantity', 10, 2);
             $table->integer('price');
             $table->integer('discount');

@@ -140,7 +140,7 @@ class PosController extends Controller
     {
         $data['alpinejs'] = true;
         $data['data'] = PosModel::with('customer')->findOrFail($id);
-        $data['detail'] = PosDetailModel::with('product', 'product.unit', 'product.productionParcelDetails')->where('pos_id', $id)->get();
+        $data['detail'] = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
     }
@@ -359,6 +359,7 @@ class PosController extends Controller
                     $product->save();
                     PosDetailModel::insert([
                         'pos_id' => $transaksiId,
+                        'parcel_id' => $parcel['kemasanId'],
                         'product_id' => $product->id,
                         'price' => $product->price,
                         'quantity' => $parcel['qty'],

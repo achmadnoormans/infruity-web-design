@@ -31,7 +31,7 @@
             setParcel(item) {
                 // this.parcels = []; // reset
                 this.parcels.push(item); // masukkan data baru
-                // console.log('Parcel data set:', this.parcels);
+                console.log('Parcel data set:', this.parcels);
             },
 
             addParcel() {
@@ -175,6 +175,7 @@
                     budget: budget,
                     qty: qty,
                     kemasan: kemasan,
+                    kemasanId: kemasanId,
                     hpp: this.totalAll,
                     fee: fee,
                     data: this.parcels,

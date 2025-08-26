@@ -68,8 +68,8 @@
                     console.log(url, data, detail);
                     this._loaded = true;
 
-                    console.log('cart =>', this.cart);
-                    console.log('parcel =>', this.parcel);
+                    // console.log('cart =>', this.cart);
+                    // console.log('parcel =>', this.parcel);
                 }
             },
 
@@ -955,7 +955,7 @@
                 }; // salin data item
                 const idx = this.parcel.findIndex(i => i.id === this.editItem.id);
                 const parcelData = this.parcel[idx].data;
-                // console.log(parcelData, this.parcel[idx]);
+                console.log('parcel Data', parcelData, 'item', item);
                 let modalEl = document.getElementById('parcelEditModal');
                 let parcelFormInstance = Alpine.$data(modalEl);
 
@@ -1070,20 +1070,40 @@
                         unit: item.product.unit.abbreviation,
                         discount: item.discount || 0,
                         discountPercent: item.discountPercent || 0,
+                        fee: item.product.fee || 0,
+                        kemasanId: item.parcel ? item.parcel.id : null,
+                        kemasanName: item.parcel ? item.parcel.name : null,
                         total_input: (item.price * item.quantity) - (item.discount || 0),
                         typeProduct: item.type || 'product',
                     };
-
                     this.cart.push(obj);
+
                     if (item.type == 'parcel') {
+                        let percelDatas = [];
+                        let data = item.product.production_parcel_details;
+                        data.forEach(item => {
+                            const parcelData = {
+                                product: item.product_id,
+                                name: item.product.name ?? 'unknown',
+                                unit: item.product.product_unit ?? 1,
+                                priceAwal: item.product.price ?? 0,
+                                hpp: item.product.hpp ?? 0,
+                                price: item.product.price ?? 12,
+                                priceFormatted: this.formatRupiah(item.product.price ?? 1),
+                                qty: item.quantity,
+                            };
+                            percelDatas.push(parcelData);
+                        });
+
                         const parcels = {
                             id: id,
                             budget: parseInt(item.price, 10),
                             qty: item.quantity,
-                            kemasan: item.product_id,
+                            kemasan: item.parcel.name,
+                            kemasanId: item.parcel.id,
                             hpp: item.hpp || 0,
                             fee: parseInt(item.fee, 10) || 0,
-                            data: item.production_parcel_details,
+                            data: percelDatas,
                             type: 'parcel',
                         };
 
