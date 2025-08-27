@@ -26,7 +26,17 @@ return new class extends Migration
         Schema::create('crm_point_frequency', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('value');
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('crm_point_decrement', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('exp');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -35,30 +45,35 @@ return new class extends Migration
         DB::table('crm_point_frequency')->insert([
             [
                 'name' => '3 Months',
+                'value' => 3,
                 'description' => 'Every 3 months',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => '6 Months',
+                'value' => 6,
                 'description' => 'Every 6 months',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => '9 Months',
+                'value' => 9,
                 'description' => 'Every 9 months',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => '1 Year',
+                'value' => 12,
                 'description' => 'Every year',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Custom',
+                'value' => 0,
                 'description' => 'Custom period',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -69,7 +84,7 @@ return new class extends Migration
             [
                 'start_date' => now(),
                 'end_date' => now()->addDays(90),
-                'frequency' => 1,
+                'frequency' => 3,
                 'break' => 2, // 1 for date
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -84,5 +99,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('crm_point_schedule');
         Schema::dropIfExists('crm_point_frequency');
+        Schema::dropIfExists('crm_point_decrement');
     }
 };

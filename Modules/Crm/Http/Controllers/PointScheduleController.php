@@ -5,11 +5,14 @@ namespace Modules\Crm\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Crm\Entities\CustomerTier;
+use Modules\Crm\Entities\PointDecrement;
 use Modules\Crm\Entities\PointSchedule;
 use Modules\Crm\Entities\SettingExp;
 use Modules\Crm\Entities\PointFrequency;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Modules\Crm\Entities\Tier;
 
 class PointScheduleController extends Controller
 {
@@ -88,6 +91,23 @@ class PointScheduleController extends Controller
             $settingExp->value_exp = $request->value * $request->skala;
             $settingExp->updated_by = Auth::id();
             $settingExp->save();
+
+            $customerTier = CustomerTier::where('tier_level', '>', 1)->get();
+            $tier = Tier::all()->pluck('exp', 'level')->toArray();
+
+            foreach ($customerTier as $key => $value) {
+                $customerId = $value->customer_id;
+                $tierLevel = $value->tier_level;
+                $newLevel = $tierLevel - 1;
+                $decrementPoint = $value->customer_exp - $tier[$newLevel];
+
+                PointDecrement::insert([
+                    'customer_id' => $customerId,
+                    'exp' => $decrementPoint,
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]);
+            }
 
             DB::commit();
 

@@ -39,7 +39,7 @@
                             <!--begin::Editor-->
                             <select name="frequency" id="frequency" class="form-control">
                                 @foreach ($frequencies as $item)
-                                    <option value="{{ $item->id }}"
+                                    <option value="{{ $item->value }}"
                                         {{ old('frequency', isset($data->frequency) ? $data->frequency : '') == $item->id ? 'selected' : '' }}>
                                         {{ $item->name }}</option>
                                 @endforeach
@@ -80,7 +80,7 @@
             </div>
             <!--end::Order details-->
         </div>
-        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
+        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10 mb-10">
             <div class="card card-flush py-4">
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
@@ -147,18 +147,20 @@
             const breakSelect = document.getElementById('break');
 
             function updateEndDate() {
+                console.log('updateEndDate');
                 const startDateStr = startDateInput.value;
                 const frequencyMonths = parseInt(frequencySelect.value);
                 const breakVal = breakSelect.value;
 
-                if (breakVal === '1') {
-                    endDateInput.value = '';
+                if (breakVal === '2') {
+                    // endDateInput.value = '';
                     endDateInput.readOnly = true;
-                    return;
+                    // return;
                 } else {
                     endDateInput.readOnly = false;
                 }
 
+                console.log(startDateStr, frequencyMonths, breakVal);
                 if (!startDateStr || isNaN(frequencyMonths)) {
                     endDateInput.value = '';
                     return;
@@ -167,6 +169,7 @@
                 const startDate = new Date(startDateStr);
                 const endDate = new Date(startDate);
                 endDate.setMonth(endDate.getMonth() + frequencyMonths);
+                console.log(endDate);
 
                 // Format YYYY-MM-DD
                 const yyyy = endDate.getFullYear();

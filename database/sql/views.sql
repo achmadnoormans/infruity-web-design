@@ -142,12 +142,16 @@ WITH customer_exp AS (
 				UNION
 					SELECT SUM(exp), customer_id FROM deposito
 					GROUP BY customer_id
+				UNION
+					SELECT -SUM(exp), customer_id FROM crm_point_decrement
+					GROUP BY customer_id
 		) AS Q
 		GROUP BY Q.customer_id
 ),
 tier_range AS (
     SELECT
         id AS tier_id,
+		level AS tier_level,
         name AS tier_name,
 		icon,
         exp AS min_exp,
