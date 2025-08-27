@@ -140,7 +140,7 @@
                 </div>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body mb-3">
             <div class="row">
                 <div class="col-9">
                     <button type="button" class="btn btn-primary w-100" :disabled="loading" @click="submitPayment()">
@@ -158,6 +158,16 @@
                     <a href="{{ route('pos.printDraftPayment', $data->id) }}" class="btn btn-success w-100">
                         <i class="fa-solid fa-print"></i>
                     </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning rounded-pill w-100 mb-2">
+                        <i class="bi bi-arrow-left"></i> Kembali / Edit Lagi
+                    </a>
+
                 </div>
             </div>
         </div>

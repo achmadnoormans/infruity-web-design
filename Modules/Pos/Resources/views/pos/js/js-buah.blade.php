@@ -603,6 +603,7 @@
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
+                    parcel: this.parcel,
                     subtotal: this.subtotal,
                     discount: this.diskonGlobal,
                     ongkir: this.ongkirGlobal,
@@ -673,7 +674,7 @@
                     ongkir_date: ongkirDate,
                     ongkir_time: ongkirTime,
                     total: this.totalHargaKeseluruhan,
-                    status: 'temp',
+                    status: 'draft',
                     note: note,
                 };
 
@@ -1111,6 +1112,11 @@
                     }
                 });
 
+                this.diskonGlobal = data.discount;
+                this.ongkirGlobal = data.ongkir;
+                $('#note').val(data.note);
+                $('#ongkir_date').val(data.ongkir_date);
+                $('#ongkir_time').val(data.ongkir_time);
             },
         }
     }

@@ -293,7 +293,7 @@ class PosController extends Controller
             'total' => 'required|numeric',
             'status' => 'nullable|in:draft,paid,debt,temp',
             'ongkir_date' => 'nullable|date',
-            'ongkir_time' => 'nullable|date_format:H:i',
+            'ongkir_time' => 'nullable',
             'note' => 'nullable',
         ]);
 
@@ -303,8 +303,15 @@ class PosController extends Controller
             $cek = PosModel::where('invoice_number', $data['invoice_number'])->first();
             if ($cek) {
                 $pos = PosModel::find($cek->id);
+                $posDetail = PosDetailModel::where('pos_id', $cek->id);
+                $posDetail = $posDetail->where('parcel_id', '!=', null)->get();
+                foreach ($posDetail as $key => $value) {
+                    $productId = $value->product_id;
+                    $product = Product::find($productId);
+                    $product->delete();
+                }
+                PosDetailModel::where('pos_id', $cek->id)->delete();
                 $pos->delete();
-                $posDetail = PosDetailModel::where('pos_id', $cek->id)->delete();
             }
             // Simpan ke tabel transaksi (buat dulu kalau belum ada)
             $pos = new PosModel([
@@ -555,17 +562,22 @@ class PosController extends Controller
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                $html .= '                        
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                            </li>
+                            </li>';
+                if (in_array($item->status, ['temp', 'draft'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
@@ -575,13 +587,17 @@ class PosController extends Controller
                                 <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
                                     <i class="fa fa-receipt"></i>
                                 </a>
-                            </li>
-                            
+                            </li>';
+                if (!in_array($item->status, ['paid', 'debt'])) {
+                    $html .= '                       
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+
+                $html .= '           
                         </ul>
                     </div>
                     ';

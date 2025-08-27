@@ -91,8 +91,8 @@
     if ($url === 'edit' && data) {
         // Data yang sesuai struktur Select2
         let selectedCustomer = {
-            id: data.customer_id,
-            name: data.customer.name,
+            id: data.customer_id || 0,
+            name: data.customer.name || 'Pelanggan Umum',
             address: data.customer.address || '-',
             whatsapp: data.customer.whatsapp || '-',
             tier_id: data.customer.customer_tier.tier_id || '',

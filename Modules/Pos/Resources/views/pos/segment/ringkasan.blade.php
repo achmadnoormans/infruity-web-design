@@ -52,11 +52,11 @@
                 <div class="mb-3 row">
                     <div class="col">
                         <label class="form-label mb-1">Jadwal</label>
-                        <input type="date" class="form-control" name="ongkir_date">
+                        <input type="date" class="form-control" name="ongkir_date" id="ongkir_date">
                     </div>
                     <div class="col mt-1">
                         <label class="form-label mb-1"></label>
-                        <input type="time" class="form-control" name="ongkir_time">
+                        <input type="time" class="form-control" name="ongkir_time" id="ongkir_time">
                     </div>
                 </div>
 
