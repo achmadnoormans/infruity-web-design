@@ -164,7 +164,7 @@
                         </button>
                     </div>
                 </div>
-                <button @click="openGiftModal()"  class="btn rounded-circle position-fixed"
+                <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
                     style="bottom: 60px; right: 25px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
                     <i class="ki-duotone ki-gift" style="font-size: 30px; color: green;">
                         <span class="path1"></span>
