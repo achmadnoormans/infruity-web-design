@@ -74,7 +74,7 @@
         <div class="page d-flex flex-row flex-column-fluid">
             @include('template.aside')
             <!--begin::Wrapper-->
-            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper" style="padding-bottom: 10px;">
+            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper" style="padding-bottom: 50px;">
                 @include('template.header')
                 <!--begin::Content-->
                 <div class="content d-flex flex-column flex-column-fluid main-content pb-5 pb-md-0" id="kt_content">

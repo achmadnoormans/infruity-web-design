@@ -87,7 +87,7 @@
     </style>
 
     <!--begin::Aside column-->
-    <div class="w-100 flex-lg-row-auto mb-7 me-7 me-lg-10" x-data="posApp()" x-init="init()">
+    <div class="w-100 flex-lg-row-auto me-7 me-lg-10" x-data="posApp()" x-init="init()">
         <div class="card card-body mb-3">
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
@@ -164,7 +164,7 @@
                         </button>
                     </div>
                 </div>
-                <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
+                <button @click="openGiftModal()"  class="btn rounded-circle position-fixed"
                     style="bottom: 60px; right: 25px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
                     <i class="ki-duotone ki-gift" style="font-size: 30px; color: green;">
                         <span class="path1"></span>

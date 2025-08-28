@@ -864,7 +864,8 @@
 
             checkGiftButton(total) {
                 // console.log('minimalPurchase', this.minimalPurchase, 'total', total);
-                if (total > this.minimalPurchase) {
+                const customerId = document.getElementById('customer_id').value;
+                if (total > this.minimalPurchase && customerId != 0) {
                     this.isShowGiftButton = true;
                 } else {
                     this.isShowGiftButton = false;
