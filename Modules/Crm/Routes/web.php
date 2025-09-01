@@ -21,7 +21,7 @@ use Modules\Crm\Http\Controllers\CampaignController;
 |
 */
 
-Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
     Route::resource('tier', TierController::class)->names('tier')->except('show');
     Route::get('tier/data', [TierController::class, 'get_data'])->name('tier.data');
     Route::post('tier/{id}/save-detail', [TierController::class, 'saveDetail'])->name('tier.save_detail');
@@ -29,6 +29,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('setting-exp', SettingExpController::class)->names('setting-exp')->except('show');
     Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');    
     Route::resource('deposito', DepositoController::class)->names('deposito')->except('show');
+    Route::get('deposito/data', [DepositoController::class, 'get_data'])->name('deposito.data');
     Route::resource('campaign', CampaignController::class)->names('campaign')->except('show');
     Route::get('campaign/data', [CampaignController::class, 'get_data'])->name('campaign.data');
     Route::get('customer-deposito', [DepositoController::class, 'customer_deposito'])->name('customer-deposito');

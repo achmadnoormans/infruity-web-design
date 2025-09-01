@@ -8,12 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoleMenu extends Model
 {
-    protected $table = "role_menu";
+    protected $table = 'role_menu';
     protected $primaryKey = 'id_rm';
+    protected $fillable = ['id_role', 'permission'];
 
     public function role()
     {
-        return $this->belongsTo('App\Models\Role', 'id_role', 'id_role');
+        return $this->belongsTo(Role::class, 'id_role', 'id_role');
+    }
+
+    public function permissionDetail()
+    {
+        return $this->belongsTo(Permission::class, 'permission', 'name');
     }
 
     public static function checkAccess($permission)

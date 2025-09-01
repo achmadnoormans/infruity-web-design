@@ -28,6 +28,62 @@ return new class extends Migration
             ),
             array(
                 'id_user' => 2,
+                'id_role' => 2,
+            ),
+            array(
+                'id_user' => 3,
+                'id_role' => 3,
+            ),
+            array(
+                'id_user' => 4,
+                'id_role' => 4,
+            ),
+            array(
+                'id_user' => 5,
+                'id_role' => 5,
+            ),
+            array(
+                'id_user' => 6,
+                'id_role' => 6,
+            ),
+            array(
+                'id_user' => 7,
+                'id_role' => 7,
+            ),
+            array(
+                'id_user' => 8,
+                'id_role' => 8,
+            ),
+            array(
+                'id_user' => 9,
+                'id_role' => 9,
+            ),
+            array(
+                'id_user' => 10,
+                'id_role' => 10,
+            ),
+            array(
+                'id_user' => 11,
+                'id_role' => 11,
+            ),
+            array(
+                'id_user' => 12,
+                'id_role' => 12,
+            ),
+            array(
+                'id_user' => 13,
+                'id_role' => 13,
+            ),
+            array(
+                'id_user' => 14,
+                'id_role' => 14,
+            ),
+            array(
+                'id_user' => 15,
+                'id_role' => 15,
+            ),
+            array(
+                'id_user' => 16,
                 'id_role' => 1,
             ),
         ));

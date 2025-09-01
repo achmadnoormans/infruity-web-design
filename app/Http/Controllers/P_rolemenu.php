@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use Exception;
-Use Response;
+use Exception;
+use Response;
 use App\Models\RoleMenu;
 use DB;
 use Validator;
@@ -19,10 +19,10 @@ use App\Models\Module;
 class P_rolemenu extends Controller
 {
     /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         $data["data"] = RoleMenu::with('role')->paginate(10);
@@ -64,25 +64,30 @@ class P_rolemenu extends Controller
         abort(404);
     }
 
-    public function update(UserRequest $request, $id)
+    public function update(Request $request, $id_role)
     {
         try {
             // save to user
             DB::beginTransaction();
-            $user = User::findOrFail($id);
-            $user->username = $request->email;
-            $user->email = $request->email;
-            $user->nm_user = $request->full_name;
-            $user->password = Hash::make($request->password);
-            $user->save();
-            // add roles
-            $role = RoleUser::findOrFail($request->id_ru);
-            $role->id_role = $request->id_role ?? 99;
-            $role->save();
+            $role = Role::findOrFail($id_role);
 
+            // hapus semua izin lama
+            RoleMenu::where('id_role', $id_role)->delete();
+
+            // simpan yang baru
+            if ($request->permissions) {
+                foreach ($request->permissions as $perm) {
+                    RoleMenu::create([
+                        'id_role' => $id_role,
+                        'permission' => $perm,
+                    ]);
+                }
+            }
             DB::commit();
+            return redirect()->route('role.index')->with('success', 'Akses role berhasil diperbarui');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Data User Gagal Disimpan');
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Data User Gagal Disimpan' . $e->getMessage());
         }
 
         return redirect('user')->with('success', 'Data User Disimpan');
