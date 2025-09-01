@@ -44,8 +44,8 @@
          <!--end::Aside toggle-->
      </div>
      <!--end::Brand-->
-     @if (Request::segment(1) != 'pos')
+     {{-- @if (Request::segment(1) != 'pos')
          @include('template.toolbar')
-     @endif
+     @endif --}}
  </div>
  <!--end::Header-->

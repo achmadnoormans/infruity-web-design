@@ -323,7 +323,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $product = Product::findOrFail($id);
-            $product->price = $request->price;
+            $product->price = preg_replace('/[^0-9]/', '', $request->price);
             $product->save();
             DB::commit();
             return response()->json([

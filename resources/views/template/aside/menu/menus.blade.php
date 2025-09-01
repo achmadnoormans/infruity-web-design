@@ -25,7 +25,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Products</span>
+        <span class="menu-title">Produk</span>
         <span class="menu-arrow"></span>
     </span>
     <!--end:Menu link-->
@@ -38,7 +38,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Products List</span>
+                <span class="menu-title">Daftar Produk</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -50,7 +50,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Create Product</span>
+                <span class="menu-title">Tambah Produk</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -68,7 +68,7 @@
                 <span class="path1"></span>
             </i>
         </span>
-        <span class="menu-title">Category</span>
+        <span class="menu-title">Kategori</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -84,7 +84,7 @@
                 <span class="path5"></span>
             </i>
         </span>
-        <span class="menu-title">Product Unit</span>
+        <span class="menu-title">Satuan Produk</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -95,7 +95,7 @@
             <i class="ki-duotone ki-handcart">
             </i>
         </span>
-        <span class="menu-title">Suppliers</span>
+        <span class="menu-title">Supplier</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -109,7 +109,7 @@
                 <span class="path3"></span>
             </i>
         </span>
-        <span class="menu-title">Stock Location</span>
+        <span class="menu-title">Lokasi Stock</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -154,7 +154,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Staff List</span>
+                <span class="menu-title">Daftar Staff</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -166,7 +166,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Create Staff</span>
+                <span class="menu-title">Tambah Staff</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -184,7 +184,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Customer</span>
+        <span class="menu-title">Pelanggan</span>
         <span class="menu-arrow"></span>
     </span>
     <!--end:Menu link-->
@@ -197,7 +197,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Customer List</span>
+                <span class="menu-title">Daftar Pelanggan</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -210,7 +210,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Create Customer</span>
+                <span class="menu-title">Tambah Pelanggan</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -225,7 +225,7 @@
             <i class="ki-duotone ki-home">
             </i>
         </span>
-        <span class="menu-title">Departments</span>
+        <span class="menu-title">Departemen</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -238,7 +238,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Position</span>
+        <span class="menu-title">Posisi</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -252,7 +252,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Stock Out Type</span>
+        <span class="menu-title">Tipe Stock Out</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -265,7 +265,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Branch</span>
+        <span class="menu-title">Cabang</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -278,7 +278,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Payment Method</span>
+        <span class="menu-title">Metode Pembayaran</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -291,7 +291,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Account</span>
+        <span class="menu-title">Akun</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -335,7 +335,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Stock</span>
+        <span class="menu-title">Stok</span>
         <span class="menu-arrow"></span>
     </span>
     <!--end:Menu link-->
@@ -348,7 +348,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Report Stock</span>
+                <span class="menu-title">Laporan Stok</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -372,7 +372,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Stock Opname</span>
+                <span class="menu-title">Laporan Stock Opname</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -390,7 +390,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Wholesale</span>
+        <span class="menu-title">Kulak</span>
     </a>
     <!--end:Menu link-->
     <!--begin:Menu link-->
@@ -412,7 +412,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Production</span>
+        <span class="menu-title">Produksi</span>
     </a>
     <!--end:Menu link--> --}}
 </div>
@@ -427,7 +427,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Production</span>
+        <span class="menu-title">Produksi</span>
         <span class="menu-arrow"></span>
     </span>
     <!--end:Menu link-->
@@ -440,7 +440,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Create Receipt</span>
+                <span class="menu-title">Buat Resep</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -453,7 +453,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Production (Stock)</span>
+                <span class="menu-title">Produksi (Stok)</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -465,7 +465,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Production (Parcel)</span>
+                <span class="menu-title">Produksi (Parcel)</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -549,7 +549,7 @@
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Customer</span>
+        <span class="menu-title">Pelanggan</span>
     </a>
     <!--end:Menu link-->
 </div>
@@ -578,7 +578,7 @@
                         <span class="path2"></span>
                     </i>
                 </span>
-                <span class="menu-title">Create Deposito</span>
+                <span class="menu-title">Buat Deposito</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -589,7 +589,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Customer Deposito</span>
+                <span class="menu-title">Deposito Pelanggan</span>
             </a>
             <!--end:Menu link-->
         </div>
@@ -642,7 +642,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Campaign</span>
+                <span class="menu-title">Event</span>
             </a>
             <!--end:Menu link-->
         </div>

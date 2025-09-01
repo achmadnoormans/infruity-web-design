@@ -16,7 +16,7 @@
                 <div class="card-header">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2>Thumbnail</h2>
+                        <h2>Gambar</h2>
                     </div>
                     <!--end::Card title-->
                 </div>
@@ -65,8 +65,8 @@
                     </div>
                     <!--end::Image input-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7">Set the product thumbnail image. Only *.png, *.jpg and *.jpeg image files
-                        are accepted</div>
+                    <div class="text-muted fs-7">Tentukan gambar produk. Hanya berkas gambar dengan ekstensi *.png,
+                        *.jpg, dan *.jpeg yang diterima.</div>
                     <!--end::Description-->
                 </div>
                 <!--end::Card body-->
@@ -101,7 +101,7 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7">Set the product status.</div>
+                    <div class="text-muted fs-7">Set Status Produk.</div>
                     <!--end::Description-->
                     <!--begin::Datepicker-->
                     <div class="d-none mt-10">
@@ -121,7 +121,7 @@
                 <div class="card-header">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2>Product Details</h2>
+                        <h2>Detail Produk</h2>
                     </div>
                     <!--end::Card title-->
                 </div>
@@ -130,7 +130,7 @@
                 <div class="card-body pt-0">
                     <!--begin::Input group-->
                     <!--begin::Label-->
-                    <label class="form-label required">Product Unit</label>
+                    <label class="form-label required">Satuan Produk</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
@@ -144,12 +144,12 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
+                    <div class="text-muted fs-7 mb-7">Tambah satuan produk.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Input group-->
                     <!--begin::Label-->
-                    <label class="form-label">Product Category</label>
+                    <label class="form-label">Kategori Produk</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-placeholder="Select an option" data-allow-clear="true"
@@ -160,7 +160,7 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
+                    <div class="text-muted fs-7 mb-7">Tambah produk ke dalam kategori.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Input group-->
@@ -177,12 +177,12 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7 mb-7">Add product to a unit.</div>
+                    <div class="text-muted fs-7 mb-7">Tambah produk ke dalam unit.</div>
                     <!--end::Description-->
                     <!--end::Input group-->
                     <!--begin::Button-->
                     <a href="{{ url('category') }}" class="btn btn-light-primary btn-sm mb-10">
-                        <i class="ki-outline ki-plus fs-2"></i>Create new category</a>
+                        <i class="ki-outline ki-plus fs-2"></i>Tambah Kategori</a>
                     <!--end::Button-->
                 </div>
                 <!--end::Card body-->
@@ -198,13 +198,13 @@
                 <!--begin:::Tab item-->
                 <li class="nav-item">
                     <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
-                        href="#kt_ecommerce_add_product_general">General</a>
+                        href="#kt_ecommerce_add_product_general">Umum</a>
                 </li>
                 <!--end:::Tab item-->
                 <!--begin:::Tab item-->
                 <li class="nav-item">
                     <a class="nav-link text-active-primary pb-4" data-bs-toggle="tab"
-                        href="#kt_ecommerce_add_product_advanced">Advanced</a>
+                        href="#kt_ecommerce_add_product_advanced">Lanjutan</a>
                 </li>
                 <!--end:::Tab item-->
             </ul>
@@ -219,7 +219,7 @@
                             <!--begin::Card header-->
                             <div class="card-header">
                                 <div class="card-title">
-                                    <h2>General</h2>
+                                    <h2>Umum</h2>
                                 </div>
                             </div>
                             <!--end::Card header-->
@@ -228,14 +228,14 @@
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="required form-label">Product Name</label>
+                                    <label class="required form-label">Nama Produk</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="product_name" class="form-control mb-2"
-                                        placeholder="Product name" value="{{ $data->name ?? old('product_name') }}" />
+                                        placeholder="Nama Produk" value="{{ $data->name ?? old('product_name') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">A product name is required and recommended to be unique.
+                                    <div class="text-muted fs-7">Nama produk diperlukan dan disarankan untuk unik.
                                     </div>
                                     <!--end::Description-->
                                 </div>
@@ -243,14 +243,14 @@
                                 <!--begin::Input group-->
                                 <div>
                                     <!--begin::Label-->
-                                    <label class="form-label">Description</label>
+                                    <label class="form-label">Deskripsi</label>
                                     <!--end::Label-->
                                     <!--begin::Editor-->
                                     <textarea name="description" class="form-control" id="description_input" cols="30" rows="10">{{ $data->description ?? old('description') }}</textarea>
 
                                     <!--end::Editor-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Set a description to the product for better visibility.
+                                    <div class="text-muted fs-7">Tentukan deskripsi produk
                                     </div>
                                     <!--end::Description-->
                                 </div>
@@ -264,7 +264,7 @@
                             <!--begin::Card header-->
                             <div class="card-header">
                                 <div class="card-title">
-                                    <h2>Pricing</h2>
+                                    <h2>Harga</h2>
                                 </div>
                             </div>
                             <!--end::Card header-->
@@ -273,14 +273,14 @@
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="required form-label">Base Price</label>
+                                    <label class="required form-label">Harga Jual</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
                                     <input type="text" name="price" class="form-control format-number mb-2"
                                         placeholder="Product price" value="{{ $data->price ?? old('price') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Set the product price.</div>
+                                    <div class="text-muted fs-7">Tentukan harga produk.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
@@ -295,7 +295,7 @@
                                             placeholder="Product fee" value="{{ $data->fee ?? old('fee') }}" />
                                         <!--end::Input-->
                                         <!--begin::Description-->
-                                        <div class="text-muted fs-7">Set the product fee.</div>
+                                        <div class="text-muted fs-7">Tentukan fee produk.</div>
                                         <!--end::Description-->
                                     </div>
                                     <!--end::Input group-->
@@ -310,7 +310,7 @@
                                         placeholder="Limit Stock" value="{{ $data->limit ?? old('limit') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
+                                    <div class="text-muted fs-7">Masukkan limit stok produk.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
@@ -345,7 +345,7 @@
                                         placeholder="SKU Number" value="{{ $data->sku ?? old('sku') }}" />
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Enter the product SKU.</div>
+                                    <div class="text-muted fs-7">Masukkan SKU produk.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
@@ -395,9 +395,9 @@
                                     <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="variant_table">
                                         <thead>
                                             <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                                <th class="min-w-200px">Product</th>
-                                                <th class="min-w-100px">Price</th>
-                                                <th class="min-w-100px text-end">Actions</th>
+                                                <th class="min-w-200px">Produk</th>
+                                                <th class="min-w-100px">Harga</th>
+                                                <th class="min-w-100px text-end">Opsi</th>
                                             </tr>
                                         </thead>
                                         <tbody id="kt_ecommerce_edit_order_selected_products_body">
@@ -406,13 +406,13 @@
                                                     <tr>
                                                         <td>
                                                             <input type="text" name="variant_name[]"
-                                                                class="form-control mb-2" placeholder="Product name"
+                                                                class="form-control mb-2" placeholder="Nama Produk"
                                                                 value="{{ $item->name }}" />
                                                         </td>
                                                         <td>
                                                             <input type="text" name="variant_price[]"
                                                                 class="form-control format-number mb-2"
-                                                                placeholder="Product price"
+                                                                placeholder="Harga Produk"
                                                                 value="{{ $item->price }}" />
                                                         </td>
                                                         <td class="text-end">
@@ -446,8 +446,8 @@
                 <!--end::Button-->
                 <!--begin::Button-->
                 <button type="submit" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
-                    <span class="indicator-label">Save Changes</span>
-                    <span class="indicator-progress">Please wait...
+                    <span class="indicator-label">Simpan Perubahan</span>
+                    <span class="indicator-progress">Mohon ditunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
                 <!--end::Button-->
@@ -470,7 +470,7 @@
                             <input type="text" name="product_name" id="variant_name" class="form-control variant">
                         </div>
                         <div class="mb-3">
-                            <label>Harga</label>
+                            <label>Harga Produk</label>
                             <input type="number" name="price" id="variant_price"
                                 class="form-control format-number variant">
                         </div>
@@ -534,7 +534,7 @@
                     <select name="variant[id][]" class="form-select mb-2 select2_product"></select>
                 </td>
                 <td>
-                    <input type="text" name="variant[price][]" class="form-control format-number mb-2" placeholder="Product price" />
+                    <input type="text" name="variant[price][]" class="form-control format-number mb-2" placeholder="Harga Produk" />
                 </td>                    
                 <td class="text-end">
                     <button type="button" class="btn btn-icon btn-danger remove_variant">
