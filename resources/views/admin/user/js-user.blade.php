@@ -23,19 +23,19 @@
                     targets: -1 // Disable sorting for action column
                 }, ],
                 ajax: {
-                    url: "{{ route('roles.data') }}",
+                    url: "{{ route('user.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
                 columns: [
                     {
-                        data: 'nm_role',
-                        name: 'nm_role'
+                        data: 'nm_user',
+                        name: 'nm_user'
                     },
                     {
-                        data: 'description',
-                        name: 'description'
+                        data: 'role',
+                        name: 'role'
                     },
                     {
                         data: 'action',
@@ -147,6 +147,7 @@
         }
 
         function deleteProduct(id) {
+            console.log(id);
             Swal.fire({
                 title: 'Apakah Anda yakin?',
                 text: 'Data yang dihapus tidak bisa dikembalikan!',
@@ -162,7 +163,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/roles/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/user/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
@@ -194,23 +195,17 @@
 
         function editProduct(id) {
             $.ajax({
-                url: `/roles/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
+                url: `/user/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
                     // Isi form dengan data produk yang ada
-                    $('input[name="date"]').val(response.date);
-                    $('input[name="deposito"]').val(response.deposito);
-                    $('select[name="customer_id"]').append(
-                        $('<option>', {
-                            value: response.customer_id,
-                            text: response.customer.name
-                        })
-                    ).val(response.customer_id).trigger('change');
+                    $('input[name="full_name"]').val(response.nm_user);
+                    $('input[name="email"]').val(response.email);
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', `/roles/${id}`); // URL untuk update produk
+                    form.attr('action', `/user/${id}`); // URL untuk update produk
                     form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
                     form.append(
                         '<input type="hidden" name="_method" value="PUT">'

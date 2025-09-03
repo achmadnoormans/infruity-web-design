@@ -44,7 +44,7 @@
                                 </div>
                             </th> --}}
                             <th class="text-start ">Nama</th>
-                            <th class="text-start min-w-100px">Keterangan</th>
+                            <th class="text-start min-w-100px">Role</th>
                             <th class=""></th>
                         </tr>
                     </thead>
@@ -67,7 +67,7 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Tambah Role</h2>
+                        <h2 class="fw-bold">Tambah User</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -87,21 +87,44 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-5">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Nama</label>
+                                <label class="fs-6 fw-semibold mb-2">Nama Lengkap</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" name="name" id="name" class="form-control form-control" placeholder="Nama">
+                                <input type="text" name="full_name" id="full_name" class="form-control form-control">
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
                             <!--begin::Input group-->
                             <div class="fv-row mb-5">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Keterangan</label>
+                                <label class="fs-6 fw-semibold mb-2">email</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <input type="text" class="form-control form-control" placeholder=""
-                                    name="description" readonly />
+                                <input type="text" name="email" id="email" class="form-control form-control">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-5">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Password</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="password" name="password" id="password" class="form-control form-control">
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-5">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Role</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select name="id_role" id="id_role" class="form-control form-control">
+                                    @foreach ($role as $item)
+                                        <option value="{{ $item->id_role }}">{{ $item->nm_role }}</option>
+                                    @endforeach
+                                </select>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
@@ -128,5 +151,5 @@
             </div>
         </div>
     </div>
-    @include('admin.role.js-role')
+    @include('admin.user.js-user')
 @endsection

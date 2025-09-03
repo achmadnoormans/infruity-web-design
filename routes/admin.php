@@ -15,12 +15,13 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
 	Route::post('/change-password', 'DashboardController@save_change_password')->name('save_change_password');
 	Route::get('/list-permohonan', 'DashboardController@list_permohonan')->name('admin.module');
 	Route::resource('layanan', LayananController::class);
-	Route::resource('user', UserController::class);
+	Route::resource('user', UserController::class)->names('user')->except('show');
 	Route::resource('role-menu', P_rolemenu::class);
-	Route::get('roles', [P_role::class, 'index'])->name('role.index');
-	Route::get('roles/data', [P_role::class, 'get_data'])->name('roles.data');
-    Route::get('roles/show/{id}', [P_role::class, 'show'])->name('roles.show');
+	Route::resource('roles', P_role::class)->names('roles')->except('show');
+    Route::get('roles/detail/{id}', [P_role::class, 'show'])->name('roles.show');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
+	Route::get('roles/data', [P_role::class, 'get_data'])->name('roles.data');
+	Route::get('user/data', [UserController::class, 'get_data'])->name('user.data');
 });
