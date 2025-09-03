@@ -84,7 +84,7 @@ class P_rolemenu extends Controller
                 }
             }
             DB::commit();
-            return redirect()->route('role.index')->with('success', 'Akses role berhasil diperbarui');
+            return redirect()->route('roles.index')->with('success', 'Akses role berhasil diperbarui');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Data User Gagal Disimpan' . $e->getMessage());

@@ -19,6 +19,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
 	Route::resource('role-menu', P_rolemenu::class);
 	Route::resource('roles', P_role::class)->names('roles')->except('show');
     Route::get('roles/detail/{id}', [P_role::class, 'show'])->name('roles.show');
+    Route::post('roles/duplicate/{id}', [P_role::class, 'duplicate'])->name('roles.duplicate');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');

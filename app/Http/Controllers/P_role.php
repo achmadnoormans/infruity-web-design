@@ -86,10 +86,22 @@ class P_role extends Controller
             ->map(fn($route) => $route->getName())
             ->filter() // hanya route yang punya name
             ->reject(fn($name) => Str::contains($name, [
-                'data', 'ajax', 'debug', 'livewire', 'ignition', 'csrf-cookie', 'dashboard', 'landing',
-                'change-password', 'save_change_password',
-                'login', 'logout', 'register', 'forgot-password', 'reset-password',
-                ]))
+                'data',
+                'ajax',
+                'debug',
+                'livewire',
+                'ignition',
+                'csrf-cookie',
+                'dashboard',
+                'landing',
+                'change-password',
+                'save_change_password',
+                'login',
+                'logout',
+                'register',
+                'forgot-password',
+                'reset-password',
+            ]))
             ->values();
 
         // group by prefix
@@ -167,6 +179,39 @@ class P_role extends Controller
         return redirect("role")->with('success', 'Data role dihapus');
     }
 
+    public function duplicate($id)
+    {
+        try {
+            DB::beginTransaction();
+            $role = Role::findOrFail($id);
+            $newRole = new Role();
+            $newRole->nm_role = $role->nm_role . " copy";
+            $newRole->id_creator = Auth::user()->id_user;
+            $newRole->save();
+
+            $roleMenu = RoleMenu::where('id_role', $id)->get();
+            foreach ($roleMenu as $key => $value) {
+                RoleMenu::create([
+                    'id_role' => $newRole->id_role,
+                    'permission' => $value->permission,
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diduplicate.'
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Data masih digunakan di table lain' . $e->getMessage(),
+            ]);
+        }
+
+    }
+
 
     public function get_data(Request $request)
     {
@@ -193,6 +238,11 @@ class P_role extends Controller
                             <li>
                                 <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id_role . ')">
                                     <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="duplicateProduct(' . $row->id_role . ')">
+                                    <i class="fa fa-paste"></i>
                                 </a>
                             </li>
                             <li>

@@ -28,8 +28,7 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'nm_role',
                         name: 'nm_role'
                     },
@@ -185,6 +184,52 @@
                                 title: 'Gagal',
                                 text: xhr.responseJSON?.message ||
                                     'Terjadi kesalahan saat menghapus data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function duplicateProduct(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin Menduplikasi data?',
+                text: 'Pastikan Data yang diduplikasi sesuai!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, duplikasi!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/roles/duplicate/${id}`, // Ganti dengan URL yang sesuai
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil diduplikasi.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // Reload DataTable setelah berhasil menghapus data
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat menduplikasi data.'
                             });
                         }
                     });
