@@ -164,7 +164,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-12">
-                    <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning rounded-pill w-100 mb-2">
+                    <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning w-100 mb-2">
                         <i class="bi bi-arrow-left"></i> Kembali / Edit Lagi
                     </a>
 

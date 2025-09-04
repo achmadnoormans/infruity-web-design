@@ -309,7 +309,7 @@ class CustomerController extends Controller
         $search = $request->get('search');
 
         $customer = Customer::where('name', 'like', '%' . $search . '%')
-            ->join('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
+            ->leftjoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
             ->orWhere('whatsapp', 'like', '%' . $search . '%')
             ->select('*')
             ->limit(10)

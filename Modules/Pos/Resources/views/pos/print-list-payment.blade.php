@@ -23,6 +23,10 @@
                         <strong>Total Dibayarkan:</strong>
                         <span class="text-muted">{{ toNumber($data->total ?? 0) }}</span>
                     </div>
+                    <div class="d-flex justify-content-between py-1 border-bottom">
+                        <strong>Voucher:</strong>
+                        <span class="text-muted">{{ toNumber($data->pos->voucher ?? 0) }}</span>
+                    </div>
                     @if (isset($data->return) && $data->return > 0)
                         <div class="d-flex justify-content-between py-1">
                             <strong>Kembalian:</strong>
@@ -32,7 +36,7 @@
                         <div class="d-flex justify-content-between py-1">
                             <strong>Kurang:</strong>
                             <span
-                                class="text-muted">{{ toNumber(($data->pos->total ?? 0) - ($data->pos->paid ?? 0)) }}</span>
+                                class="text-muted">{{ toNumber(($data->pos->total ?? 0) - ($data->pos->paid ?? 0) - ($data->pos->voucher ?? 0)) }}</span>
                         </div>
                     @endif
                 </div>
@@ -40,10 +44,21 @@
                 <a href="{{ url('pos/printNota') . '/' . $data->id }}" class="btn btn-primary rounded-pill w-100">
                     <i class="fa fa-print"></i> Cetak Struk
                 </a>
+                @php
+                    $url = isset($data->uuid)
+                        ? url('/cek-nota/' . $data->uuid)
+                        : url('/cek-nota/draft/' . $data->pos->uuid);
+                    $message = urlencode("Halo, berikut bukti transaksi Anda:\n{$url}");
+                    $phone = '6281230607050';
+                    $waUrl = "https://wa.me/{$phone}?text={$message}";
+                @endphp
+                <a href="{{ $waUrl }}" class="btn btn-success rounded-pill w-100 mt-2">
+                    <i class="fa fa-comment"></i> Kirim ke WhatsApp
+                </a>
             </div>
         </div>
     @endforeach
-    <a href="{{ route('pos.index') }}" class="btn btn-success rounded-pill w-100 mb-2">
+    <a href="{{ route('pos.index') }}" class="btn btn-warning rounded-pill w-100 mb-2">
         <i class="bi bi-arrow-left"></i> Kembali
     </a>
 @endsection

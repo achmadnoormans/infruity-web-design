@@ -533,7 +533,7 @@ class PosController extends Controller
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
                 $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
-                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total_due) . '</span>';
+                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total_due - ($item->voucher ?? 0)) . '</span>';
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;

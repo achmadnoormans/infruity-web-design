@@ -38,11 +38,22 @@
                 @endif
             </div>
 
-            <a href="{{ route('pos.create') }}" class="btn btn-success rounded-pill w-100 mb-2">
+            <a href="{{ route('pos.create') }}" class="btn btn-warning rounded-pill w-100 mb-2">
                 <i class="bi bi-arrow-left"></i> Transaksi Baru
             </a>
             <a href="{{ url('pos/printNota') . '/' . $data->id }}" class="btn btn-primary rounded-pill w-100">
                 <i class="fa fa-print"></i> Cetak Struk
+            </a>
+            @php
+                $url = isset($data->uuid)
+                    ? url('/cek-nota/' . $data->uuid)
+                    : url('/cek-nota/draft/' . $data->pos->uuid);
+                $message = urlencode("Halo, berikut bukti transaksi Anda:\n{$url}");
+                $phone = '6281230607050';
+                $waUrl = "https://wa.me/{$phone}?text={$message}";
+            @endphp
+            <a href="{{ $waUrl }}" class="btn btn-success rounded-pill w-100 mt-2">
+                <i class="fa fa-comment"></i> Kirim ke WhatsApp
             </a>
         </div>
     </div>
