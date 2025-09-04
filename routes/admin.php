@@ -14,7 +14,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
 	Route::get('/change-password', 'DashboardController@change_password')->name('change-password');
 	Route::post('/change-password', 'DashboardController@save_change_password')->name('save_change_password');
 	Route::get('/list-permohonan', 'DashboardController@list_permohonan')->name('admin.module');
-	Route::resource('layanan', LayananController::class);
+	// Route::resource('layanan', LayananController::class);
 	Route::resource('user', UserController::class)->names('user')->except('show');
 	Route::resource('role-menu', P_rolemenu::class);
 	Route::resource('roles', P_role::class)->names('roles')->except('show');

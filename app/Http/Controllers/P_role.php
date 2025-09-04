@@ -121,8 +121,11 @@ class P_role extends Controller
      */
     public function edit($id)
     {
-        $data["data"] = Role::findOrFail($id);
-        return view("role", $data);
+        if (class_exists(\Debugbar::class)) {
+            \Debugbar::disable();
+        }
+        $role = Role::with('roleMenu')->findOrFail($id);
+        return response()->json($role);
     }
 
     /**
@@ -132,27 +135,33 @@ class P_role extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(RoleRequest $request, $id)
+    public function update(Request $request, $id)
     {
         try {
-
             // save to user
             DB::beginTransaction();
 
             $role = Role::findOrFail($id);
-            $role->nm_role = $request->nm_role;
-            $role->id_creator = Auth::user()->id_user;
+            $role->nm_role = $request->name;
+            $role->description = $request->description;
 
             if (strtolower($role->nm_role) == "administrator") {
                 return redirect()->back()->with('error', 'Akses Terbatas');
             }
             $role->save();
-            DB::commit();
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Data role Gagal Disimpan');
-        }
 
-        return redirect("role")->with('success', 'Data role Disimpan');
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diduplicate.'
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Data masih digunakan di table lain' . $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -164,19 +173,24 @@ class P_role extends Controller
     public function destroy($id)
     {
         try {
-
+            DB::beginTransaction();
             $role = Role::findOrFail($id);
             if (strtolower($role->nm_role) == "administrator") {
                 return redirect()->back()->with('error', 'Akses Terbatas');
             }
             $role->delete();
-
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
         } catch (Exception $e) {
-
-            return redirect()->back()->with('error', 'Data masih digunakan di table lain');
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Data masih digunakan di table lain' . $e->getMessage(),
+            ]);
         }
-
-        return redirect("role")->with('success', 'Data role dihapus');
     }
 
     public function duplicate($id)
@@ -186,6 +200,7 @@ class P_role extends Controller
             $role = Role::findOrFail($id);
             $newRole = new Role();
             $newRole->nm_role = $role->nm_role . " copy";
+            $newRole->description = $role->description;
             $newRole->id_creator = Auth::user()->id_user;
             $newRole->save();
 

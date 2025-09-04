@@ -10,7 +10,7 @@ class Role extends Model
 {
     protected $table = 'role';
     protected $primaryKey = 'id_role';
-    public $incrementing = false; // karena bukan auto increment
+    // public $incrementing = false; // karena bukan auto increment
     protected $fillable = ['nm_role', 'description', 'id_creator'];
 
     public function roleMenu()

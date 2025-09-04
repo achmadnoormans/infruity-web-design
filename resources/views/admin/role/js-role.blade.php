@@ -244,14 +244,8 @@
                 success: function(response) {
                     console.log(response);
                     // Isi form dengan data produk yang ada
-                    $('input[name="date"]').val(response.date);
-                    $('input[name="deposito"]').val(response.deposito);
-                    $('select[name="customer_id"]').append(
-                        $('<option>', {
-                            value: response.customer_id,
-                            text: response.customer.name
-                        })
-                    ).val(response.customer_id).trigger('change');
+                    $('input[name="name"]').val(response.nm_role);
+                    $('input[name="description"]').val(response.description);
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');

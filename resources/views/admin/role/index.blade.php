@@ -101,7 +101,7 @@
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control" placeholder=""
-                                    name="description" readonly />
+                                    name="description" />
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
