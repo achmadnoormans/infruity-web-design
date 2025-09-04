@@ -37,7 +37,7 @@
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
 
                             <th class="min-w-200px">Product</th>
-                            <th class="text-end min-w-100px">Price</th>
+                            <th class="text-end min-w-100px">Harga</th>
                             <th class="text-end min-w-70px">Satuan</th>
                             <th class="text-end min-w-70px"></th>
                         </tr>

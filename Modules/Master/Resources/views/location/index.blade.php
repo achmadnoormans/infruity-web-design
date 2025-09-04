@@ -5,23 +5,25 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Location" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Lokasi" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                <div class="card-toolbar ms-auto">
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer"><i class="fa fa-plus"></i>Add Location</button>
+                        data-bs-target="#kt_modal_add_customer">
+                        <i class="fa fa-plus"></i>
+                    </button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -33,9 +35,9 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="location-table">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th class="text-end">Actions</th>
+                            <th>Nama Lokasi</th>
+                            <th>Alamat</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -57,7 +59,7 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Add a Stock Location</h2>
+                        <h2 class="fw-bold">Tambah Lokasi</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -76,7 +78,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Name</label>
+                                <label class="required fs-6 fw-semibold mb-2">Nama Lokasi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder="" name="name"
@@ -87,7 +89,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Address</label>
+                                <label class="required fs-6 fw-semibold mb-2">Alamat</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder="" name="address"
@@ -98,7 +100,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Description</label>
+                                <label class="fs-6 fw-semibold mb-2">Deskripsi</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder=""
@@ -113,11 +115,11 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Discard</button>
+                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Batal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
-                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-label">Simpan</span>
                             <span class="indicator-progress">Please wait...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
@@ -174,12 +176,12 @@
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
                 e.preventDefault(); // Mencegah form reset langsung
                 Swal.fire({
-                    text: "Are you sure you would like to cancel?",
+                    text: "Apakah Anda yakin ingin membatalkan?",
                     icon: "warning",
                     showCancelButton: !0,
                     buttonsStyling: !1,
-                    confirmButtonText: "Yes, cancel it!",
-                    cancelButtonText: "No, return",
+                    confirmButtonText: "Ya, Batalkan!",
+                    cancelButtonText: "Tidak, Kembali",
                     customClass: {
                         confirmButton: "btn btn-primary",
                         cancelButton: "btn btn-active-light"

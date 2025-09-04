@@ -579,24 +579,32 @@ class ProductController extends Controller
                 $deleteUrl = route('products.destroy', $row->id);
                 $name = e($row->name);
 
-                return '
+                $html = '
                 <div class="dropstart">
                     <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
                         <i class="bi bi-three-dots-vertical"></i>
                     </button>
-                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                if (check_access('products.edit')) {
+                    $html .= '
                         <li>
                             <a class="dropdown-item text-primary d-flex justify-content-center" href="' . $editUrl . '" title="Edit">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                        </li>
+                        </li>';
+                }
+                if (check_access('products.delete')) {
+                    $html .= '
                         <li>
                             <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
                                 <i class="bi bi-trash"></i>
                             </a>
-                        </li>
+                        </li>';
+                }
+                $html .= '
                     </ul>
                 </div>';
+                return $html;
             })
             ->rawColumns(['name', 'action', 'price', 'status'])
             ->make(true);

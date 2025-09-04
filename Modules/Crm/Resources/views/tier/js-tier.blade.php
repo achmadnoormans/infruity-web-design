@@ -78,12 +78,12 @@
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
                 e.preventDefault(); // Mencegah form reset langsung
                 Swal.fire({
-                    text: "Are you sure you would like to cancel?",
+                    text: "Apakah Anda yakin ingin membatalkan?",
                     icon: "warning",
                     showCancelButton: !0,
                     buttonsStyling: !1,
-                    confirmButtonText: "Yes, cancel it!",
-                    cancelButtonText: "No, return",
+                    confirmButtonText: "Ya, Batalkan!",
+                    cancelButtonText: "Tidak, Kembali",
                     customClass: {
                         confirmButton: "btn btn-primary",
                         cancelButton: "btn btn-active-light"

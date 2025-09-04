@@ -32,7 +32,7 @@
                         <!--end::Select2-->
                     </div>
                     <!--begin::Add customer-->
-                    <a href="{{ url(path: 'customers/create') }}" class="btn btn-primary">Add Customer</a>
+                    <a href="{{ url(path: 'customers/create') }}" class="btn btn-primary">Tambahkan Customer</a>
                     <!--end::Add customer-->
                 </div>
                 <!--end::Card toolbar-->

@@ -115,11 +115,11 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Discard</button>
+                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Batal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
-                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-label">Simpan</span>
                             <span class="indicator-progress">Please wait...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
@@ -188,12 +188,12 @@
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
                 e.preventDefault(); // Mencegah form reset langsung
                 Swal.fire({
-                    text: "Are you sure you would like to cancel?",
+                    text: "Apakah Anda yakin ingin membatalkan?",
                     icon: "warning",
                     showCancelButton: !0,
                     buttonsStyling: !1,
-                    confirmButtonText: "Yes, cancel it!",
-                    cancelButtonText: "No, return",
+                    confirmButtonText: "Ya, Batalkan!",
+                    cancelButtonText: "Tidak, Kembali",
                     customClass: {
                         confirmButton: "btn btn-primary",
                         cancelButton: "btn btn-active-light"

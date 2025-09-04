@@ -95,11 +95,11 @@
                     <div class="col-9">
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Select Customer</label>
+                            <label class="required form-label">Pilih Pelanggan</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <select class="form-select" id="customer_id" name="customer_id">
-                                <option value="">Select Customer</option>
+                                <option value="">Pilih Pelanggan</option>
                             </select>
                             <!--end::Editor-->
                         </div>
