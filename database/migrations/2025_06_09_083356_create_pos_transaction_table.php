@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -61,7 +62,7 @@ return new class extends Migration
             $table->string('uuid');
             $table->string('nota_number')->nullable();
             $table->unsignedBigInteger('pos_id');
-            $table->integer('total');            
+            $table->integer('total');
             $table->integer('remaining')->nullable()->default(0);
             $table->integer('return')->nullable()->default(0);
             $table->integer('payment_method');
@@ -72,245 +73,78 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // DB::table('pos_transaction')->insert([
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 1,
-        //         'date' => '2025-07-01',
-        //         'invoice_number' => 'INV202506001',
-        //         'total' => 20000,
-        //         'paid' => 30000,
-        //         'return' => 10000,
-        //         'payment_method' => 1,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 2,
-        //         'date' => '2025-07-02',
-        //         'invoice_number' => 'INV202506002',
-        //         'total' => 160000,
-        //         'paid' => 200000,
-        //         'return' => 40000,
-        //         'payment_method' => 2,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 3,
-        //         'date' => '2025-07-03',
-        //         'invoice_number' => 'INV202506003',
-        //         'total' => 50000,
-        //         'paid' => 50000,
-        //         'return' => 0,
-        //         'payment_method' => 1,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 4,
-        //         'date' => '2025-07-04',
-        //         'invoice_number' => 'INV202506004',
-        //         'total' => 75000,
-        //         'paid' => 80000,
-        //         'return' => 5000,
-        //         'payment_method' => 2,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 5,
-        //         'date' => '2025-07-05',
-        //         'invoice_number' => 'INV202506005',
-        //         'total' => 120000,
-        //         'paid' => 120000,
-        //         'return' => 0,
-        //         'payment_method' => 1,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 6,
-        //         'date' => '2025-07-06',
-        //         'invoice_number' => 'INV202506006',
-        //         'total' => 90000,
-        //         'paid' => 100000,
-        //         'return' => 10000,
-        //         'payment_method' => 2,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'uuid' => Str::uuid(),
-        //         'customer_id' => 1,
-        //         'date' => '2025-07-06',
-        //         'invoice_number' => 'INV202506007',
-        //         'total' => 90000,
-        //         'paid' => 100000,
-        //         'return' => 10000,
-        //         'payment_method' => 2,
-        //         'status' => 'paid',
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ]);
+        $transactions = [];
+        $details = [];
+        $payments = [];
 
-        // DB::table('pos_transaction_detail')->insert([
-        //     [
-        //         'pos_id' => 1,
-        //         'product_id' => 1,
-        //         'quantity' => 2,
-        //         'price' => 10000,
-        //         'subtotal' => 20000,
-        //         'discount' => 500,
-        //         'exp_value' => 2000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 1,
-        //         'product_id' => 2,
-        //         'quantity' => 1,
-        //         'price' => 8000,
-        //         'subtotal' => 8000,
-        //         'discount' => 200,
-        //         'exp_value' => 1600,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 3,
-        //         'quantity' => 3,
-        //         'price' => 40000,
-        //         'subtotal' => 120000,
-        //         'discount' => 1000,
-        //         'exp_value' => 24000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 4,
-        //         'quantity' => 2,
-        //         'price' => 20000,
-        //         'subtotal' => 40000,
-        //         'discount' => 5000,
-        //         'exp_value' => 8000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 3,
-        //         'product_id' => 1,
-        //         'quantity' => 1,
-        //         'price' => 50000,
-        //         'subtotal' => 50000,
-        //         'discount' => 0,
-        //         'exp_value' => 10000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 4,
-        //         'product_id' => 2,
-        //         'quantity' => 5,
-        //         'price' => 15000,
-        //         'subtotal' => 75000,
-        //         'discount' => 2500,
-        //         'exp_value' => 15000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 5,
-        //         'product_id' => 3,
-        //         'quantity' => 2,
-        //         'price' => 60000,
-        //         'subtotal' => 120000,
-        //         'discount' => 0,
-        //         'exp_value' => 24000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 6,
-        //         'product_id' => 4,
-        //         'quantity' => 3,
-        //         'price' => 30000,
-        //         'subtotal' => 90000,
-        //         'discount' => 3000,
-        //         'exp_value' => 18000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 3,
-        //         'quantity' => 3,
-        //         'price' => 40000,
-        //         'subtotal' => 120000,
-        //         'discount' => 3000,
-        //         'exp_value' => 24000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 1,
-        //         'quantity' => 4,
-        //         'price' => 40000,
-        //         'subtotal' => 160000,
-        //         'discount' => 5000,
-        //         'exp_value' => 32000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 3,
-        //         'quantity' => 3,
-        //         'price' => 40000,
-        //         'subtotal' => 120000,
-        //         'discount' => 3000,
-        //         'exp_value' => 24000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 2,
-        //         'product_id' => 1,
-        //         'quantity' => 4,
-        //         'price' => 40000,
-        //         'subtotal' => 160000,
-        //         'discount' => 5000,
-        //         'exp_value' => 32000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'pos_id' => 7,
-        //         'product_id' => 1,
-        //         'quantity' => 4,
-        //         'price' => 40000,
-        //         'subtotal' => 160000,
-        //         'discount' => 5000,
-        //         'exp_value' => 32000,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ]);
+        for ($i = 1; $i <= 25; $i++) {
+            $date = '2025-07-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+
+            // Buat detail transaksi (2–3 item per transaksi)
+            $itemCount = rand(2, 3);
+            $total = 0;
+            for ($j = 1; $j <= $itemCount; $j++) {
+                $qty = rand(1, 5);
+                $price = rand(10000, 50000);
+                $hpp = rand((int)($price * 0.5), $price);
+                $subtotal = $qty * $price;
+                $discount = rand(0, 5000);
+                $subtotalAfterDiscount = $subtotal - $discount;
+
+                $total += $subtotalAfterDiscount;
+
+                $details[] = [
+                    'pos_id' => $i,
+                    'product_id' => rand(1, 10),
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'hpp' => $hpp,
+                    'subtotal' => $subtotalAfterDiscount,
+                    'discount' => $discount,
+                    'exp_value' => $subtotalAfterDiscount * 0.2,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            // Buat transaksi utama
+            $paid = $total + rand(0, 20000); // bisa lebih besar dari total
+            $return = max(0, $paid - $total);
+
+            $transactions[] = [
+                'uuid' => Str::uuid(),
+                'customer_id' => rand(1, 6),
+                'date' => $date,
+                'invoice_number' => 'INV202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'total' => $total,
+                'paid' => $paid,
+                'return' => 0,
+                'payment_method' => rand(1, 2),
+                'status' => 'paid',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            // Buat pembayaran
+            $payments[] = [
+                'uuid' => Str::uuid(),
+                'nota_number' => 'NOTA-202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'pos_id' => $i,
+                'total' => $total,
+                'remaining' => 0,
+                'return' => 0,
+                'payment_method' => rand(1, 2),
+                'branch_id' => 1,
+                'date' => $date,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // Insert data
+        DB::table('pos_transaction')->insert($transactions);
+        DB::table('pos_transaction_detail')->insert($details);
+        DB::table('pos_payment')->insert($payments);
     }
 
     /**
