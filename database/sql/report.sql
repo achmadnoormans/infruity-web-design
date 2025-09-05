@@ -1,6 +1,7 @@
 DROP VIEW IF EXISTS vw_customer_transaction;
 CREATE VIEW vw_customer_transaction AS
 SELECT
+	A.id AS pos_id,
 	A.created_at,
 	A.customer_id,
 	COALESCE(A.total,0) AS total,
