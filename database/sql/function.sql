@@ -10,8 +10,10 @@ CREATE PROCEDURE get_customer_report ( IN start_date DATE, IN end_date DATE ) BE
 			JOIN pos_transaction B ON A.pos_id = B.id 
 		GROUP BY
 			B.customer_id 
-		) SELECT
+		) 
+		SELECT
 		t.customer_id,
+		C.name,
 		( SELECT COUNT(*) FROM pos_transaction WHERE customer_id = t.customer_id ) AS total_transaction,
 		t.total_omset,
 		h.hpp,
@@ -30,6 +32,7 @@ CREATE PROCEDURE get_customer_report ( IN start_date DATE, IN end_date DATE ) BE
 		) AS prosentase_profit 
 	FROM
 		transaksi t
-		JOIN hpp h ON t.customer_id = h.customer_id;
+		JOIN hpp h ON t.customer_id = h.customer_id
+		JOIN customer AS C ON t.customer_id = C.id;
 	
 END;

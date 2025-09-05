@@ -784,3 +784,17 @@
     </a>
     <!--end:Menu link-->
 </div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'report-customer-transaction' ? 'active' : '' }}"
+        href="{{ url('report-customer-transaction') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Penjualan Per Pelanggan</span>
+    </a>
+    <!--end:Menu link-->
+</div>

@@ -19,6 +19,11 @@ class ReportController extends Controller
         return view('report::customer-transaction');
     }
 
+    public function customer_transaction(Request $request)
+    {
+        return view('report::customer-transaction-rep');
+    }
+
     public function get_data_transaction(Request $request)
     {
         $data = CustomerTransaction::query();
@@ -78,63 +83,42 @@ class ReportController extends Controller
             ->make(true);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function get_data_customer_transaction(Request $request)
     {
-        return view('report::create');
-    }
+        $dr_tgl = date('Y-01-01');
+        $sp_tgl = date('Y-12-31');
+        $data = CustomerTransaction::getAllCustomerTransaction($dr_tgl, $sp_tgl);
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('report::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('report::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->editColumn('total_omset', function ($row) {
+                return number_format($row->total_omset, 0, ',', '.');
+            })
+            ->editColumn('profit', function ($row) {
+                return number_format($row->profit, 0, ',', '.');
+            })
+            ->editColumn('prosentase_omset', function ($row) {
+                return number_format($row->prosentase_omset, 0, ',', '.') . ' %';
+            })
+            ->editColumn('prosentase_profit', function ($row) {
+                return number_format($row->prosentase_profit, 0, ',', '.') . ' %';
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>';
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }
