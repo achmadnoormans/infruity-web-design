@@ -709,7 +709,7 @@ class ProductController extends Controller
                 }
             })
             ->addColumn('date', function ($item) {
-                return dateindo($item->date);
+                return \Carbon\Carbon::parse($item->date)->format('d M y H:i:s');
             })
             ->rawColumns(['name', 'quantity'])
             ->make(true);

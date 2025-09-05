@@ -79,6 +79,11 @@ return new class extends Migration
 
         for ($i = 1; $i <= 25; $i++) {
             $date = '2025-07-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+            $hour   = str_pad(rand(0, 23), 2, '0', STR_PAD_LEFT);
+            $minute = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
+            $second = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
+            // gabungkan jadi timestamp penuh
+            $timestamp = $date . ' ' . $hour . ':' . $minute . ':' . $second;
 
             // Buat detail transaksi (2–3 item per transaksi)
             $itemCount = rand(2, 3);
@@ -102,8 +107,8 @@ return new class extends Migration
                     'subtotal' => $subtotalAfterDiscount,
                     'discount' => $discount,
                     'exp_value' => $subtotalAfterDiscount * 0.2,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
                 ];
             }
 
@@ -121,8 +126,8 @@ return new class extends Migration
                 'return' => 0,
                 'payment_method' => rand(1, 2),
                 'status' => 'paid',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
             ];
 
             // Buat pembayaran
@@ -136,8 +141,8 @@ return new class extends Migration
                 'payment_method' => rand(1, 2),
                 'branch_id' => 1,
                 'date' => $date,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
             ];
         }
 

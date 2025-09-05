@@ -23,7 +23,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody class="fw-semibold text-gray-600"></tbody>
+                    <tbody></tbody>
                 </table>
                 <!--end::Table-->
             </div>

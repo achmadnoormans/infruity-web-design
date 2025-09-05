@@ -763,67 +763,24 @@
         <!--end:Menu sub-->
     </div>
 @endif
-@if (check_access('point-schedule.index') || check_access('setting-exp.index'))
-    <div data-kt-menu-trigger="click"
-        class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
-        <!--begin:Menu link-->
-        <span class="menu-link">
-            <span class="menu-icon">
-                <i class="ki-duotone ki-basket fs-2">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-            </span>
-            <span class="menu-title">Laporan</span>
-            <span class="menu-arrow"></span>
-        </span>
-        <!--end:Menu link-->
-        <!--begin:Menu sub-->
-        <div class="menu-sub menu-sub-accordion">
-            @if (check_access('tier.index'))
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link {{ Request::segment(1) == 'report-transaction' ? 'active' : '' }}"
-                        href="{{ url('report-transaction') }}">
-                        <span class="menu-icon">
-                            <i class="ki-duotone ki-security-user">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </span>
-                        <span class="menu-title">Transaksi Penjualan</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-            @endif
-            @if (check_access('point-schedule.index'))
-                <!--begin:Menu item-->
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'point-schedule' ? 'active' : '' }}"
-                        href="{{ url('point-schedule') }}">
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Penjualan Per Pelanggan</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-            @endif
-            @if (check_access('campaign.index'))
-                <div class="menu-item">
-                    <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'campaign' ? 'active' : '' }}" href="{{ url('campaign') }}">
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Penjualan Per-Chanel</span>
-                    </a>
-                    <!--end:Menu link-->
-                </div>
-            @endif
-            <!--end:Menu item-->
-        </div>
-        <!--end:Menu sub-->
+<div class="menu-item pt-5">
+    <!--begin:Menu content-->
+    <div class="menu-content">
+        <span class="menu-heading fw-bold text-uppercase fs-7">Laporan</span>
     </div>
-@endif
+    <!--end:Menu content-->
+</div>
+<div class="menu-item">
+    <!--begin:Menu link-->
+    <a class="menu-link {{ Request::segment(1) == 'report-transaction' ? 'active' : '' }}"
+        href="{{ url('report-transaction') }}">
+        <span class="menu-icon">
+            <i class="ki-duotone ki-security-user">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </span>
+        <span class="menu-title">Transaksi Penjualan</span>
+    </a>
+    <!--end:Menu link-->
+</div>

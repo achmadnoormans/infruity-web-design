@@ -25,7 +25,6 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
     Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
     Route::get('product-stock/{id}/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
     Route::get('product-stock/available-stock', [ProductController::class, 'get_data_available'])->name('ajax.stock-available');
-    Route::get('product-stock-data-show', [ProductController::class, 'get_data_stock_show'])->name('product-stock-data-show');
 
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');
     Route::get('wholesale/{id}/show', [WholesaleController::class, 'show'])->name('wholesale-show');
@@ -86,6 +85,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
+    Route::get('product-stock-data-show', [ProductController::class, 'get_data_stock_show'])->name('product-stock-data-show');
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');
     Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data');

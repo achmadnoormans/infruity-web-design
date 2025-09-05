@@ -23,7 +23,8 @@ FROM
 		product_id,
 		quantity,
 		avg_price,
-		date,
+		-- date,
+		created_at AS date,
 		`code` AS reff 
 	FROM
 		stock_in UNION ALL-- 	STOCK OUT
@@ -31,7 +32,8 @@ FROM
 		product_id,
 		- quantity,
 		avg_price,
-		date,
+		-- date,
+		created_at,
 		`code` 
 	FROM
 		stock_out UNION ALL-- 	WHOLESALE
@@ -39,7 +41,8 @@ FROM
 		product_id,
 		quantity,
 		price,
-		wholesale.order_date,
+		-- wholesale.order_date,
+		wholesale.created_at,
 		'wholelsale' AS reff 
 	FROM
 		wholesale_product
@@ -51,7 +54,8 @@ FROM
 		product_id,
 		- quantity,
 		avg_price,
-		date,
+		-- date,
+		created_at,
 		'stock-out' 
 	FROM
 		stock_out_transaction UNION ALL-- 	STOCK OPNAME
@@ -59,7 +63,8 @@ FROM
 		product_id,
 		difference,
 		avg_price,
-		date,
+		-- date,
+		created_at,
 		'stock-opname' 
 	FROM
 		stock_opname UNION ALL-- 	PRODUCTION (PRODUCT RESEP)(+)
@@ -67,7 +72,8 @@ FROM
 		product_id,
 		quantity,
 		NULL,
-		production_date,
+		-- production_date,
+		created_at,
 		'production' 
 	FROM
 		production UNION ALL-- DETAIL PRODUCTION (-)
@@ -75,7 +81,8 @@ FROM
 		production_detail.product_id,
 		- production_detail.quantity,
 		NULL,
-		production.production_date,
+		-- production.production_date,
+		production.created_at,
 		'production-detail' 
 	FROM
 		production_detail
@@ -84,7 +91,8 @@ FROM
 		pos_transaction_detail.product_id,
 		- pos_transaction_detail.quantity,
 		pos_transaction_detail.price,
-		pos_transaction.date,
+		-- pos_transaction.date,
+		pos_transaction.created_at,
 		'pos' 
 	FROM
 		pos_transaction_detail
@@ -117,7 +125,8 @@ SELECT
     COALESCE(SUM(B.quantity), 0) AS stock_available,
     AVG(B.avg_price) AS avg_hpp,
     CASE
-        WHEN COALESCE(SUM(B.quantity), 0) = 0 THEN 'danger'
+        WHEN COALESCE(SUM(B.quantity), 0) < 0 THEN 'danger'
+        WHEN COALESCE(SUM(B.quantity), 0) = 0 THEN ''
         WHEN COALESCE(SUM(B.quantity), 0) <= A.limit THEN 'warning'
         ELSE 'success'
     END AS stock_status

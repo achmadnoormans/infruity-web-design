@@ -31,6 +31,31 @@ class ReportController extends Controller
             ->editColumn('total', function ($row) {
                 return number_format($row->total, 0, ',', '.');
             })
+            ->editColumn('gender', function ($row) {
+                if ($row->gender == 'male') {
+                    return '<span class="badge badge-light-primary">Laki-laki</span>';
+                } else {
+                    return '<span class="badge badge-light-success">Perempuan</span>';
+                }
+            })
+            ->editColumn('branch_name', function ($row) {
+                switch ($row->branch_id) {
+                    case 1:
+                        return '<span class="badge badge-light-primary">' . $row->branch_name . '</span>';
+                        break;
+                    case 2:
+                        return '<span class="badge badge-light-success">' . $row->branch_name . '</span>';
+                        break;
+                    case 3:
+                        return '<span class="badge badge-light-warning">' . $row->branch_name . '</span>';
+                        break;
+                    case 4:
+                        return '<span class="badge badge-light-info">' . $row->branch_name . '</span>';
+                        break;
+                    default:
+                        return '<span class="badge badge-light-danger">Other</span>';
+                }
+            })
             ->editColumn('profit', function ($row) {
                 return number_format($row->profit, 0, ',', '.');
             })
@@ -49,7 +74,7 @@ class ReportController extends Controller
                         </ul>
                     </div>';
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'gender', 'branch_name'])
             ->make(true);
     }
 
