@@ -23,21 +23,15 @@ use Modules\Crm\Http\Controllers\CampaignController;
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
     Route::resource('tier', TierController::class)->names('tier')->except('show');
-    Route::get('tier/data', [TierController::class, 'get_data'])->name('tier.data');
     Route::post('tier/{id}/save-detail', [TierController::class, 'saveDetail'])->name('tier.save_detail');
     Route::get('tier/get-gift/{id}', [TierController::class, 'getGift'])->name('tier.get-gift');
     Route::resource('setting-exp', SettingExpController::class)->names('setting-exp')->except('show');
     Route::resource('point-schedule', PointScheduleController::class)->names('point-schedule')->except('show');    
     Route::resource('deposito', DepositoController::class)->names('deposito')->except('show');
-    Route::get('deposito/data', [DepositoController::class, 'get_data'])->name('deposito.data');
     Route::resource('campaign', CampaignController::class)->names('campaign')->except('show');
-    Route::get('campaign/data', [CampaignController::class, 'get_data'])->name('campaign.data');
     Route::get('customer-deposito', [DepositoController::class, 'customer_deposito'])->name('customer-deposito');
     Route::get('customer-deposito/show/{id}', [DepositoController::class, 'show'])->name('customer-deposito.show');
-    Route::get('customer-deposito/data', [DepositoController::class, 'customer_deposito_get_data'])->name('customer-deposito.data');
-    Route::get('customer-deposito/transaction/data', [DepositoController::class, 'customer_deposito_transaction_get_data'])->name('customer-deposito.transaction.data');
     Route::get('customer-report', [TierController::class, 'customerReport'])->name('customer.report');
-    Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
     Route::get('crm-dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
     Route::get('crm-dashboard/top-distribution', [DashboardController::class, 'topDistribution'])->name('crm.dashboard.top-distribution');
     Route::get('crm-dashboard/top-tier', [DashboardController::class, 'topTier'])->name('crm.dashboard.top-tier');
@@ -47,6 +41,12 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
+    Route::get('tier/data', [TierController::class, 'get_data'])->name('tier.data');
+    Route::get('deposito/data', [DepositoController::class, 'get_data'])->name('deposito.data');
+    Route::get('campaign/data', [CampaignController::class, 'get_data'])->name('campaign.data');
+    Route::get('customer-deposito/data', [DepositoController::class, 'customer_deposito_get_data'])->name('customer-deposito.data');
+    Route::get('customer-deposito/transaction/data', [DepositoController::class, 'customer_deposito_transaction_get_data'])->name('customer-deposito.transaction.data');
+    Route::get('customer-report/data', [TierController::class, 'customerReportData'])->name('customer.report.data');
     Route::get('tier/list-tier', [TierController::class, 'listTier'])->name('tier.list-tier');
     Route::get('campaign/get-near-event', [CampaignController::class, 'get_near_campaign'])->name('campaign.get-near-event');
 });
