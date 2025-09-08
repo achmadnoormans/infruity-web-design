@@ -78,7 +78,8 @@
                                                 data-kt-ecommerce-edit-order-filter="product"
                                                 data-kt-ecommerce-edit-order-id="{{ $item->product->id }}">
                                                 <!--begin::Thumbnail-->
-                                                <a href="{{ url('products/' . $item->product->id) }}" class="symbol symbol-50px">
+                                                <a href="{{ url('products/' . $item->product->id) }}"
+                                                    class="symbol symbol-50px">
                                                     <span class="symbol-label"
                                                         style="background-image:url({{ asset('storage/' . $item->product->image) }});"></span>
                                                 </a>
@@ -111,13 +112,14 @@
                                         <div class="d-flex align-items-center" data-kt-ecommerce-edit-order-filter="product"
                                             data-kt-ecommerce-edit-order-id="{{ $product->id }}">
                                             <!--begin::Thumbnail-->
-                                            <a href="#" class="symbol symbol-50px">
+                                            <a href="javascript:void(0)" class="symbol symbol-50px">
                                                 <span class="symbol-label" style="background-image:url('');"></span>
                                             </a>
                                             <!--end::Thumbnail-->
                                             <div class="ms-5">
                                                 <!--begin::Title-->
-                                                <a href="#" class="text-danger text-hover-primary fs-5 fw-bold">Produk
+                                                <a href="javascript:void(0)"
+                                                    class="text-danger text-hover-primary fs-5 fw-bold">Produk
                                                     Buang</a>
                                                 <!--end::Title-->
                                             </div>
@@ -126,6 +128,19 @@
                                     <td class="text-end pe-5" data-order="42">
                                         <input type="number" step="0.01" min="0"
                                             class="form-control form-control-solid text-end quantity-input" name="buang"
+                                            value="" placeholder="0" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center" data-kt-ecommerce-edit-order-filter="product"
+                                            data-kt-ecommerce-edit-order-id="{{ $product->id }}">
+                                            <select id="select_product" class="form-select" name="product_transfer_id"></select>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-5" data-order="42">
+                                        <input type="number" step="0.01" min="0"
+                                            class="form-control form-control-solid text-end quantity-input" name="value_transfer"
                                             value="" placeholder="0" />
                                     </td>
                                 </tr>
@@ -188,6 +203,24 @@
             inputs.forEach(input => {
                 input.addEventListener('input', updateStock);
             });
+
+            $('#select_product').select2({
+                placeholder: 'TransferProduct',
+                ajax: {
+                    url: '/ajax/listProduct', // ganti sesuai route
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name,
+                            unit: item.unit,
+                            price: item.price,
+                            hpp: item.hpp,
+                        }))
+                    })
+                }
+            })
         });
 
         $("form").submit(function() {

@@ -23,38 +23,24 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // DB::table('wholesale')->insert([
-        //     [
-        //         'supplier_id' => 1,
-        //         'order_number' => 'PO' . date('Ym') . '001',
-        //         'order_date' => date('2025-05-01'),
-        //         'status' => 'posting',
-        //         'created_by' => 1,
-        //         'updated_by' => 1,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'supplier_id' => 2,
-        //         'order_number' => 'PO' . date('Ym') . '002',
-        //         'order_date' => date('2025-05-02'),
-        //         'status' => 'posting',
-        //         'created_by' => 1,
-        //         'updated_by' => 1,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'supplier_id' => 3,
-        //         'order_number' => 'PO' . date('Ym') . '003',
-        //         'order_date' => date('2025-05-03'),
-        //         'status' => 'posting',
-        //         'created_by' => 2,
-        //         'updated_by' => 2,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ]);
+        $data = [];
+
+        for ($i = 1; $i <= 25; $i++) {
+            $supplierId = rand(1, 3);
+
+            $data[] = [
+                'supplier_id' => $supplierId,
+                'order_number' => 'PO' . date('Ym') . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'order_date' => "2025-05-" . str_pad($i, 2, '0', STR_PAD_LEFT),
+                'status' => 'posting',
+                'created_by' => 1, // contoh: sama dengan supplier_id
+                'updated_by' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        DB::table('wholesale')->insert($data);
     }
 
     /**

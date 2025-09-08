@@ -26,73 +26,41 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // DB::table('wholesale_product')->insert([
-        //     [
-        //         'wholesale_id' => 1,
-        //         'product_id' => 1,
-        //         'quantity' => 10,
-        //         'price' => 1000,
-        //         'total_price' => 10000,
-        //         'supplier_id' => 1,
-        //         'status' => 'processing',
-        //         'created_by' => 1,
-        //         'updated_by' => 1,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'wholesale_id' => 1,
-        //         'product_id' => 1,
-        //         'quantity' => 5,
-        //         'price' => 1000,
-        //         'total_price' => 5000,
-        //         'supplier_id' => 1,
-        //         'status' => 'processing',
-        //         'created_by' => 1,
-        //         'updated_by' => 1,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'wholesale_id' => 2,
-        //         'product_id' => 1,
-        //         'quantity' => 20,
-        //         'price' => 1000,
-        //         'total_price' => 20000,
-        //         'supplier_id' => 1,
-        //         'status' => 'processing',
-        //         'created_by' => 2,
-        //         'updated_by' => 2,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'wholesale_id' => 3,
-        //         'product_id' => 1,
-        //         'quantity' => 15,
-        //         'price' => 1000,
-        //         'total_price' => 15000,
-        //         'supplier_id' => 1,
-        //         'status' => 'complete',
-        //         'created_by' => 2,
-        //         'updated_by' => 2,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        //     [
-        //         'wholesale_id' => 3,
-        //         'product_id' => 5,
-        //         'quantity' => 8,
-        //         'price' => 1000,
-        //         'total_price' => 8000,
-        //         'supplier_id' => 1,
-        //         'status' => 'complete',
-        //         'created_by' => 1,
-        //         'updated_by' => 1,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ],
-        // ]);
+        $data = [];
+
+        // Ambil semua id wholesale
+        $wholesaleIds = DB::table('wholesale')->pluck('id');
+
+        foreach ($wholesaleIds as $wholesaleId) {
+            // Set supplier_id sesuai dengan wholesale
+            $supplierId = DB::table('wholesale')->where('id', $wholesaleId)->value('supplier_id');
+
+            // Random jumlah item per wholesale (1-5 produk misalnya)
+            $numProducts = rand(1, 5);
+
+            for ($i = 1; $i <= $numProducts; $i++) {
+                $productId = rand(1, 10); // anggap product_id max 10
+                $quantity = rand(5, 20);
+                $price = rand(500, 2000);
+                $totalPrice = $quantity * $price;
+
+                $data[] = [
+                    'wholesale_id' => $wholesaleId,
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'total_price' => $totalPrice,
+                    'supplier_id' => $supplierId,
+                    'status' => rand(0, 1) ? 'processing' : 'complete',
+                    'created_by' => $supplierId,
+                    'updated_by' => $supplierId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        DB::table('wholesale_product')->insert($data);
     }
 
     /**

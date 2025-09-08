@@ -110,7 +110,7 @@ class SortirController extends Controller
             DB::beginTransaction();
             $product = DB::table('product_stock')->where('id', $request->product_id)->first();
             $quantity = $product->stock_available;
-            $hpp = $product->hpp;
+            $hpp = $product->hpp ?? 0;
 
             if (isset($request->quantity)) {
                 foreach ($request->quantity as $key => $value) {
@@ -165,6 +165,29 @@ class SortirController extends Controller
                 $buang->quantity = $request->buang ?? 0;
                 $buang->created_by = Auth::user()->id_user;
                 $buang->save();
+            }
+
+            if (isset($request->product_transfer_id) && $request->value_transfer > 0) {
+                // dd('masuk', $hpp);
+                $transfer = new StockOut();
+                $transfer->code = 'transfer';
+                $transfer->reference_id = $request->product_id;
+                $transfer->date = date('Y-m-d');
+                $transfer->product_id = $request->product_id;
+                $transfer->quantity = $request->value_transfer ?? 0;
+                $transfer->avg_price = $hpp;
+                $transfer->created_by = Auth::user()->id_user;
+                $transfer->save();
+
+                $stockIn = new StockIn();
+                $stockIn->code = 'transfer';
+                $stockIn->reference_id = $request->product_id;
+                $stockIn->date = date('Y-m-d');
+                $stockIn->product_id = $request->product_transfer_id;
+                $stockIn->quantity = $request->value_transfer ?? 0;
+                $stockIn->avg_price = $hpp;
+                $stockIn->created_by = Auth::user()->id_user;
+                $stockIn->save();
             }
             // dd($stockIn, $stockOut);
             DB::commit();
