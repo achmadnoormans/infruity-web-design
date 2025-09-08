@@ -51,11 +51,12 @@
                         @input="updateQtyFromAddTotal">
                 </div>
 
+                <hr>
                 <div id="receiptContainer"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" @click="closeAddModal()">Tutup</button>
-                <button class="btn btn-primary" @click="saveAddToCart()">Simpan</button>
+                <button class="btn btn-secondary" @click="closeJusModal()">Tutup</button>
+                <button class="btn btn-primary" @click="saveJusToCart()">Simpan</button>
             </div>
         </div>
     </div>

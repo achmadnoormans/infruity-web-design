@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        @if (isset($deposito))
+        @if (isset($deposito) && ($data->total >= $deposito->voucher))
             <div class="card card-body mb-5 bg-light-success rounded-3">
                 <div class="d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">

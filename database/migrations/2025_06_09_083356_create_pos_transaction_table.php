@@ -44,6 +44,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pos_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('parcel_id')->nullable();
+            $table->unsignedBigInteger('production_id')->nullable();
             $table->decimal('quantity', 10, 2);
             $table->decimal('price', 15, 2);
             $table->decimal('discount', 15, 2);

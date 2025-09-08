@@ -17,6 +17,8 @@ use Modules\Crm\Entities\Deposito;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Crm\Entities\CustomerDeposito;
 use Illuminate\Support\Str;
+use Modules\Transaction\Entities\Production;
+use Modules\Transaction\Entities\ProductionDetail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -287,6 +289,7 @@ class PosController extends Controller
             'invoice_number' => 'nullable',
             'items' => 'required|array',
             'parcel' => 'nullable|array',
+            'jus' => 'nullable|array',
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
             'ongkir' => 'required|numeric',
@@ -394,6 +397,47 @@ class PosController extends Controller
                             'quantity' => $item['qty'] * $value['qty'],
                         ]);
                     }
+                }
+            }
+
+            if (isset($data['jus'])) {
+                foreach ($data['jus'] as $key => $value) {
+                    $production = new Production([
+                        'production_number' => Production::getOrderNumber(),
+                        'product_id' => $value['productId'],
+                        'production_date' => now(),
+                        'status' => 'complete',
+                        'created_by' => Auth::user()->id_user,
+                        'quantity' => $value['qty'],
+                        'staff_id' => Auth::user()->id_user,
+                    ]);
+                    $production->save();
+                    if (isset($value['product_receipt_id'])) {
+                        foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
+                            $productionDetail = new ProductionDetail([
+                                'production_id' => $production->id,
+                                'product_id' => $productReceiptId,
+                                'quantity' => $value['product_receipt_qty'][$key],
+                            ]);
+                            $productionDetail->save();
+                        }
+                    }
+
+                    PosDetailModel::insert([
+                        'pos_id' => $transaksiId,
+                        'product_id' => $value['productId'],
+                        'price' => $value['price'],
+                        'quantity' => $value['qty'],
+                        'discount' => $value['discount'],
+                        'subtotal' => $value['price'] * $value['qty'],
+                        'hpp' => $value['hpp'],
+                        'exp' => $value['price'] - $value['hpp'],
+                        'exp_value' => ($value['price'] - $value['hpp']) * $settingExp->value_exp,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'type' => 'product',
+                        'created_by' => $userId,
+                    ]);
                 }
             }
 

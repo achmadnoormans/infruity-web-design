@@ -4,6 +4,7 @@
             products: [],
             cart: [],
             parcel: [],
+            jus: [],
 
             // edit product
             editModal: false,
@@ -605,6 +606,7 @@
                     invoice_number: invoiceNumber,
                     items: this.cart,
                     parcel: this.parcel,
+                    jus: this.jus,
                     subtotal: this.subtotal,
                     discount: this.diskonGlobal,
                     ongkir: this.ongkirGlobal,
@@ -669,6 +671,7 @@
                     invoice_number: invoiceNumber,
                     items: this.cart,
                     parcel: this.parcel,
+                    jus: this.jus,
                     subtotal: this.subtotal,
                     discount: this.diskonGlobal,
                     ongkir: this.ongkirGlobal,
@@ -1182,8 +1185,9 @@
                 const container = $('#receiptContainer');
                 container.empty(); // bersihkan biar ga dobel
 
-                data.forEach(item => {
-                    let row = `
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        let row = `
                         <div class="row receipt-row mb-2">
                             <div class="col-9 mb-3">
                                 <label class="form-label">Nama Produk</label>
@@ -1197,8 +1201,18 @@
                             </div>
                         </div>
                     `;
+                        container.append(row);
+                    });
+                } else {
+                    let row = `
+                            <div class="row receipt-row mb-2">
+                                <div class="col-12 mb-3 text-center text-muted">
+                                    <em>Tidak ada bahan</em>
+                                </div>
+                            </div>
+                        `;
                     container.append(row);
-                });
+                }
 
                 // aktifkan select2 di semua select yang baru dibuat
                 container.find('.receipt-select').each(function() {
@@ -1235,6 +1249,80 @@
                         $(this).append(option).trigger('change');
                     }
                 });
+            },
+
+            saveJusToCart() {
+                if (!this.addProduct.id) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Produk belum dipilih',
+                        text: 'Silakan pilih produk terlebih dahulu.',
+                    });
+                    return;
+                }
+
+                const isExist = this.cart.some(item => item.id === this.addProduct.id);
+                if (isExist) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Produk sudah ditambahkan',
+                        text: 'Produk ini sudah ada di keranjang.',
+                    });
+                    return;
+                }
+
+                const discount = Number(this.addProduct.discount || 0);
+                const total_input = this.addProduct.total;
+                let receiptProducts = $("select[name='receipt_product_id[]']")
+                    .map(function() {
+                        return $(this).val();
+                    })
+                    .get();
+                let receiptProductsQty = $("input[name='receipt_qty[]']")
+                    .map(function() {
+                        return $(this).val();
+                    })
+                    .get();
+
+                this.cart.push({
+                    id: 'jus' + this.addProduct.id,
+                    name: this.addProduct.name,
+                    price: this.addProduct.price,
+                    hpp: this.addProduct.hpp,
+                    qty: this.addProduct.qty,
+                    unit: this.addProduct.unit,
+                    discount: discount > 100 ? discount : (discount / 100) * total_input,
+                    discountPercent: this.addProduct.discountPercent,
+                    total_input: total_input,
+                    data: {
+                        products: receiptProducts,
+                        productsQty: receiptProductsQty
+                    },
+                    typeProduct: 'jus',
+                });
+
+                this.jus.push({
+                    id: 'jus' + this.addProduct.id,
+                    productId: this.addProduct.id,
+                    price: this.addProduct.price,
+                    hpp: this.addProduct.hpp,
+                    qty: this.addProduct.qty,
+                    unit: this.addProduct.unit,
+                    discount: discount > 100 ? discount : (discount / 100) * total_input,
+                    discountPercent: this.addProduct.discountPercent,
+                    total_input: total_input,
+                    product_receipt_id: receiptProducts,
+                    product_receipt_qty: receiptProductsQty,
+                    type: 'jus',
+                });
+
+                console.log('cart', this.cart);
+                this.resetAddForm();
+            },
+            closeJusModal() {
+                this.showAddModal = false;
+                const modal = bootstrap.Modal.getInstance(document.getElementById('jusModal'));
+                if (modal) modal.hide();
             },
         }
     }
