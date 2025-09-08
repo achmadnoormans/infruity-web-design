@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
 use Modules\Transaction\Entities\ProductStock;
+use Modules\Transaction\Entities\Receipt;
+use Modules\Transaction\Entities\ProductReceipt;
 use Modules\Transaction\Entities\ProductionParcelDetail;
 use DB;
 
@@ -48,6 +50,11 @@ class Product extends Model
     public function receipt()
     {
         return $this->belongsTo('Modules\Transaction\Entities\Receipt', 'product_id', 'id');
+    }
+
+    public function productReceipt()
+    {
+        return $this->hasMany(ProductReceipt::class, 'product_id', 'id');
     }
 
     public function productionParcelDetails()

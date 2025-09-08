@@ -475,11 +475,15 @@ class ProductController extends Controller
     public function listProduct(Request $request)
     {
         $search = $request->input('term', '');
-        $query = Product::with('category', 'get_stock', 'unit')
+        $query = Product::with('category', 'get_stock', 'unit', 'productReceipt', 'productReceipt.ingredients')
             ->where('name', 'like', '%' . $search . '%');
 
         if ($request->type == 'kemasan') {
             $query = $query->where('tipe', 'kemasan');
+        }
+
+        if ($request->has('jenis')) {
+            $query = $query->where('status', $request->jenis);
         }
 
         $query = $query->get();

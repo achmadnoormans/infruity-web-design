@@ -150,21 +150,42 @@
                         <span class="fs-5 fw-bold d-flex">Produk yang dijual</span>
                         <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
                     </div>
-                    <div>
-                        <button @click="openAddModal()"
-                            class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+                    <div class="btn-group">
+                        <button type="button"
+                            class="btn btn-outline btn-outline-dashed btn-outline-primary dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-plus"></i>
                         </button>
-                        <button @click="openParcelModal()"
-                            class="btn btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
-                            <i class="ki-duotone ki-purchase fs-2x">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" @click="openAddModal()">
+                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Buah
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" @click="openParcelModal()">
+                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Parcel
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" @click="openJusModal()">
+                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Jus
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" @click="openGiftModal()" x-show="isShowGiftButton">
+                                    <i class="ki-duotone ki-gift" >
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i> Hadiah
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
+                {{-- <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
                     style="bottom: 60px; right: 25px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
                     <i class="ki-duotone ki-gift" style="font-size: 30px; color: green;">
                         <span class="path1"></span>
@@ -172,7 +193,7 @@
                         <span class="path3"></span>
                         <span class="path4"></span>
                     </i>
-                </button>
+                </button> --}}
                 {{-- <!-- Cart --> --}}
                 @include('pos::pos.segment.cart')
             </div>
@@ -186,6 +207,7 @@
             @include('pos::pos.segment.modal-customer')
             @include('pos::pos.segment.modal-gift')
             @include('pos::pos.segment.modal-parcel')
+            @include('pos::pos.segment.modal-jus')
         </div>
     </div>
     <!--end::Aside column-->

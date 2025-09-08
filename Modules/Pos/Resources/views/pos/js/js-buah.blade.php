@@ -28,6 +28,7 @@
             showAddModal: false,
             showGiftModal: false,
             showParcelModal: false,
+            showJusModal: false,
             addProduct: {
                 id: null,
                 name: '',
@@ -1118,6 +1119,122 @@
                 $('#note').val(data.note);
                 $('#ongkir_date').val(data.ongkir_date);
                 $('#ongkir_time').val(data.ongkir_time);
+            },
+
+            // Open Jus
+            openJusModal() {
+                this.showJusModal = true;
+                setTimeout(() => {
+                    const modal = new bootstrap.Modal(document.getElementById('jusModal'));
+                    modal.show();
+
+                    // Init select2
+                    $('#select_jus').select2({
+                        placeholder: 'Pilih Jus',
+                        language: {
+                            errorLoading: function() {
+                                return "Belum ada kemasan yang dibuat.";
+                            }
+                        },
+                        dropdownParent: $('#jusModal'),
+                        ajax: {
+                            url: '/ajax/listProduct', // ganti sesuai route
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term, // term dari select2 untuk pencarian
+                                    jenis: 'receipt', // contoh ambil dari input lain
+                                    limit: 10 // contoh parameter tambahan
+                                };
+                            },
+                            processResults: data => ({
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name,
+                                    unit: item.unit,
+                                    receipt: item.product_receipt,
+                                    price: item.price,
+                                    hpp: item.hpp,
+                                }))
+                            })
+                        }
+                    }).on('select2:select', (e) => {
+                        const data = e.params.data;
+                        this.addProduct.id = data.id;
+                        this.addProduct.name = data.text;
+                        this.addProduct.unit = data.unit.abbreviation;
+                        this.addProduct.price = data.price;
+                        this.addProduct.hpp = data.hpp ?? 0;
+                        subtotal = this.addProduct.qty * this.addProduct.price;
+                        this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
+                            .total);
+                        this.addProduct.receipt = data.receipt;
+                        this.updateAddTotalFromQty();
+                        this.loadReceipt(data.receipt);
+                    });
+                }, 0);
+            },
+
+            loadReceipt(data) {
+                console.log('receipt', data);
+
+                const container = $('#receiptContainer');
+                container.empty(); // bersihkan biar ga dobel
+
+                data.forEach(item => {
+                    let row = `
+                        <div class="row receipt-row mb-2">
+                            <div class="col-9 mb-3">
+                                <label class="form-label">Nama Produk</label>
+                                <select name="receipt_product_id[]" class="form-select receipt-select" data-selected-id="${item.ingredients.id}" data-selected-text="${item.ingredients.name}">
+                                </select>
+                            </div>
+
+                            <div class="col-3 mb-3">
+                                <label class="form-label">Qty</label>
+                                <input type="number" name="receipt_qty[]" class="form-control" value="${item.quantity ?? 1}">
+                            </div>
+                        </div>
+                    `;
+                    container.append(row);
+                });
+
+                // aktifkan select2 di semua select yang baru dibuat
+                container.find('.receipt-select').each(function() {
+                    const selectedId = $(this).data('selected-id');
+                    const selectedText = $(this).data('selected-text');
+
+                    $(this).select2({
+                        placeholder: 'Pilih Produk',
+                        dropdownParent: $('#jusModal'),
+                        ajax: {
+                            url: '/ajax/listProduct',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term,
+                                    limit: 10
+                                };
+                            },
+                            processResults: data => ({
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name,
+                                    unit: item.unit,
+                                    price: item.price
+                                }))
+                            })
+                        }
+                    });
+
+                    // set value awal dari item receipt
+                    if (selectedId) {
+                        let option = new Option(selectedText, selectedId, true, true);
+                        $(this).append(option).trigger('change');
+                    }
+                });
             },
         }
     }
