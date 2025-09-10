@@ -683,11 +683,15 @@ class ProductController extends Controller
 
     public function get_data_stock_show(Request $request)
     {
+        $child = ProductChild::where('parent_id', $request->product_id)
+            ->pluck('product_id')
+            ->toArray();
         $query = DB::table('transaction_stock')
             ->join('products', 'transaction_stock.product_id', '=', 'products.id')
             ->join('product_units', 'products.product_unit', '=', 'product_units.id')
             ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit')
             ->where('transaction_stock.product_id', $request->product_id)
+            ->orWhereIn('transaction_stock.product_id', $child)
             ->orderBy('transaction_stock.date', 'asc');
         $data = $query->get();
         return DataTables::of($data)
@@ -712,9 +716,9 @@ class ProductController extends Controller
                     return '<span class="badge badge-light-danger">' . $product->quantity . ' ' . $product->unit . '</span>';
                 }
             })
-            ->addColumn('date', function ($item) {
-                return \Carbon\Carbon::parse($item->date)->format('d M y H:i:s');
-            })
+            // ->addColumn('date', function ($item) {
+            //     return \Carbon\Carbon::parse($item->date)->format('d M y H:i:s');
+            // })
             ->rawColumns(['name', 'quantity'])
             ->make(true);
     }

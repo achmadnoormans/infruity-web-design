@@ -70,8 +70,7 @@
                                 </tr>
                             </thead>
                             <tbody class="fw-semibold text-gray-600">
-                                @foreach ($productChild as $item)
-                                    {{-- {{ dd($product) }} --}}
+                                {{-- @foreach ($productChild as $item)
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center"
@@ -106,7 +105,7 @@
                                                 name="quantity[{{ $item->product->id }}]" value="" placeholder="0" />
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endforeach --}}
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center" data-kt-ecommerce-edit-order-filter="product"

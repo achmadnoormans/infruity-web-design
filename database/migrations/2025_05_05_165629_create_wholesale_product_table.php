@@ -39,7 +39,10 @@ return new class extends Migration {
             $numProducts = rand(1, 5);
 
             for ($i = 1; $i <= $numProducts; $i++) {
-                $productId = rand(1, 10); // anggap product_id max 10
+                $ids = range(1, 10);          // [1,2,3,...,10]
+                $exclude = [6, 7];            // yang mau dikecualikan
+                $available = array_diff($ids, $exclude);
+                $productId = $available[array_rand($available)];
                 $quantity = rand(5, 20);
                 $price = rand(500, 2000);
                 $totalPrice = $quantity * $price;

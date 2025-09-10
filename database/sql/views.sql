@@ -117,8 +117,9 @@ GROUP BY
 ORDER BY 
     stock_available DESC;
 
-DROP VIEW IF EXISTS product_stock;
-CREATE VIEW product_stock AS
+-- Product Stock
+-- DROP VIEW IF EXISTS product_stock;
+-- CREATE VIEW product_stock AS
 SELECT
     A.*,
     C.abbreviation AS unit,
@@ -136,6 +137,43 @@ FROM
         LEFT JOIN product_units AS C ON C.id = A.product_unit
 GROUP BY
     A.id, C.abbreviation;
+
+DROP VIEW IF EXISTS product_stock;
+CREATE VIEW product_stock AS
+WITH parent_ts AS (
+    SELECT product_id,
+           SUM(quantity) AS parent_stock,
+           AVG(avg_price) AS avg_hpp
+    FROM transaction_stock
+    GROUP BY product_id
+),
+child_agg AS (
+    SELECT pc.parent_id,
+           -- hitung hanya jumlah OUT (konsumsi) sebagai bilangan positif
+           SUM(CASE WHEN ts.quantity < 0 THEN -ts.quantity ELSE ts.quantity END) AS child_consumed,
+           GROUP_CONCAT(p.name) AS child
+    FROM product_child pc
+    LEFT JOIN transaction_stock ts ON pc.product_id = ts.product_id
+    JOIN products p ON p.id = pc.product_id
+    GROUP BY pc.parent_id
+)
+SELECT
+    A.*,
+    C.abbreviation AS unit,
+    COALESCE(parent_ts.parent_stock, 0) - COALESCE(child_agg.child_consumed, 0) AS stock_available,
+    COALESCE(child_agg.child_consumed, 0) AS child_avail,
+    COALESCE(parent_ts.avg_hpp, 0) AS avg_hpp,
+    child_agg.child,
+    CASE
+        WHEN COALESCE(parent_ts.parent_stock, 0) < 0 THEN 'danger'
+        WHEN COALESCE(parent_ts.parent_stock, 0) = 0 THEN ''
+        WHEN COALESCE(parent_ts.parent_stock, 0) <= A.limit THEN 'warning'
+        ELSE 'success'
+    END AS stock_status
+FROM products A
+LEFT JOIN product_units C ON C.id = A.product_unit
+LEFT JOIN parent_ts ON parent_ts.product_id = A.id
+LEFT JOIN child_agg ON child_agg.parent_id = A.id;
 
 -- View for Customer Tier
 DROP VIEW IF EXISTS vw_customer_tier;

@@ -62,7 +62,7 @@ class SortirController extends Controller
     {
         // dd($id);
         $data['product'] = DB::table('sortir_view')->where('id', $id)->first();
-        $data['productChild'] = ProductChild::with('product')->where('parent_id', $data['product']->id)->get();
+        // $data['productChild'] = ProductChild::with('product')->where('parent_id', $data['product']->id)->get();
         // dd($data);
         return view('transaction::sortir.show', $data);
     }
@@ -228,7 +228,7 @@ class SortirController extends Controller
             ->addColumn('action', function ($item) {
                 return '
                     <a href="' . route('sortir.show', $item->id) . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
-                        <i class="fa fa-eye"></i>
+                        <i class="fa fa-pencil"></i>
                     </a>
                 ';
             })

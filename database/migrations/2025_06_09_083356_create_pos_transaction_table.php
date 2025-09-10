@@ -74,83 +74,83 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        $transactions = [];
-        $details = [];
-        $payments = [];
+        // $transactions = [];
+        // $details = [];
+        // $payments = [];
 
-        for ($i = 1; $i <= 25; $i++) {
-            $date = '2025-07-' . str_pad($i, 2, '0', STR_PAD_LEFT);
-            $hour   = str_pad(rand(0, 23), 2, '0', STR_PAD_LEFT);
-            $minute = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
-            $second = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
-            // gabungkan jadi timestamp penuh
-            $timestamp = $date . ' ' . $hour . ':' . $minute . ':' . $second;
+        // for ($i = 1; $i <= 25; $i++) {
+        //     $date = '2025-07-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+        //     $hour   = str_pad(rand(0, 23), 2, '0', STR_PAD_LEFT);
+        //     $minute = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
+        //     $second = str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT);
+        //     // gabungkan jadi timestamp penuh
+        //     $timestamp = $date . ' ' . $hour . ':' . $minute . ':' . $second;
 
-            // Buat detail transaksi (2–3 item per transaksi)
-            $itemCount = rand(2, 3);
-            $total = 0;
-            for ($j = 1; $j <= $itemCount; $j++) {
-                $qty = rand(1, 5);
-                $price = rand(10000, 50000);
-                $hpp = rand((int)($price * 0.5), $price);
-                $subtotal = $qty * $price;
-                $discount = rand(0, 5000);
-                $subtotalAfterDiscount = $subtotal - $discount;
+        //     // Buat detail transaksi (2–3 item per transaksi)
+        //     $itemCount = rand(2, 3);
+        //     $total = 0;
+        //     for ($j = 1; $j <= $itemCount; $j++) {
+        //         $qty = rand(1, 5);
+        //         $price = rand(10000, 50000);
+        //         $hpp = rand((int)($price * 0.5), $price);
+        //         $subtotal = $qty * $price;
+        //         $discount = rand(0, 5000);
+        //         $subtotalAfterDiscount = $subtotal - $discount;
 
-                $total += $subtotalAfterDiscount;
+        //         $total += $subtotalAfterDiscount;
 
-                $details[] = [
-                    'pos_id' => $i,
-                    'product_id' => rand(1, 10),
-                    'quantity' => $qty,
-                    'price' => $price,
-                    'hpp' => $hpp,
-                    'subtotal' => $subtotalAfterDiscount,
-                    'discount' => $discount,
-                    'exp_value' => $subtotalAfterDiscount * 0.2,
-                    'created_at' => $timestamp,
-                    'updated_at' => $timestamp,
-                ];
-            }
+        //         $details[] = [
+        //             'pos_id' => $i,
+        //             'product_id' => rand(1, 10),
+        //             'quantity' => $qty,
+        //             'price' => $price,
+        //             'hpp' => $hpp,
+        //             'subtotal' => $subtotalAfterDiscount,
+        //             'discount' => $discount,
+        //             'exp_value' => $subtotalAfterDiscount * 0.2,
+        //             'created_at' => $timestamp,
+        //             'updated_at' => $timestamp,
+        //         ];
+        //     }
 
-            // Buat transaksi utama
-            $paid = $total + rand(0, 20000); // bisa lebih besar dari total
-            $return = max(0, $paid - $total);
+        //     // Buat transaksi utama
+        //     $paid = $total + rand(0, 20000); // bisa lebih besar dari total
+        //     $return = max(0, $paid - $total);
 
-            $transactions[] = [
-                'uuid' => Str::uuid(),
-                'customer_id' => rand(1, 6),
-                'date' => $date,
-                'invoice_number' => 'INV202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
-                'total' => $total,
-                'paid' => $paid,
-                'return' => 0,
-                'payment_method' => rand(1, 2),
-                'status' => 'paid',
-                'created_at' => $timestamp,
-                'updated_at' => $timestamp,
-            ];
+        //     $transactions[] = [
+        //         'uuid' => Str::uuid(),
+        //         'customer_id' => rand(1, 6),
+        //         'date' => $date,
+        //         'invoice_number' => 'INV202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
+        //         'total' => $total,
+        //         'paid' => $paid,
+        //         'return' => 0,
+        //         'payment_method' => rand(1, 2),
+        //         'status' => 'paid',
+        //         'created_at' => $timestamp,
+        //         'updated_at' => $timestamp,
+        //     ];
 
-            // Buat pembayaran
-            $payments[] = [
-                'uuid' => Str::uuid(),
-                'nota_number' => 'NOTA-202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
-                'pos_id' => $i,
-                'total' => $total,
-                'remaining' => 0,
-                'return' => 0,
-                'payment_method' => rand(1, 2),
-                'branch_id' => 1,
-                'date' => $date,
-                'created_at' => $timestamp,
-                'updated_at' => $timestamp,
-            ];
-        }
+        //     // Buat pembayaran
+        //     $payments[] = [
+        //         'uuid' => Str::uuid(),
+        //         'nota_number' => 'NOTA-202507' . str_pad($i, 3, '0', STR_PAD_LEFT),
+        //         'pos_id' => $i,
+        //         'total' => $total,
+        //         'remaining' => 0,
+        //         'return' => 0,
+        //         'payment_method' => rand(1, 2),
+        //         'branch_id' => 1,
+        //         'date' => $date,
+        //         'created_at' => $timestamp,
+        //         'updated_at' => $timestamp,
+        //     ];
+        // }
 
-        // Insert data
-        DB::table('pos_transaction')->insert($transactions);
-        DB::table('pos_transaction_detail')->insert($details);
-        DB::table('pos_payment')->insert($payments);
+        // // Insert data
+        // DB::table('pos_transaction')->insert($transactions);
+        // DB::table('pos_transaction_detail')->insert($details);
+        // DB::table('pos_payment')->insert($payments);
     }
 
     /**
