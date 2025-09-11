@@ -25,7 +25,7 @@ use Modules\Master\Http\Controllers\AccountController;
 |
 */
 
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     // Route::get('/products', function () {
     //     return view('Master::products.index'); // di view ini kamu panggil @livewire('product-table')
     // });

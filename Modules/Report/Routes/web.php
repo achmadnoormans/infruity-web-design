@@ -15,7 +15,7 @@ use Modules\Report\Http\Controllers\ReportController;
 |
 */
 
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('report-transaction', [ReportController::class, 'index'])->name('report-transaction');
     Route::get('report-customer-transaction', [ReportController::class, 'customer_transaction'])->name('report-customer-transaction');
 });

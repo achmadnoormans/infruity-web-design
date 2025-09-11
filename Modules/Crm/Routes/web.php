@@ -21,7 +21,7 @@ use Modules\Crm\Http\Controllers\CampaignController;
 |
 */
 
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('tier', TierController::class)->names('tier')->except('show');
     Route::post('tier/{id}/save-detail', [TierController::class, 'saveDetail'])->name('tier.save_detail');
     Route::get('tier/get-gift/{id}', [TierController::class, 'getGift'])->name('tier.get-gift');

@@ -8,7 +8,7 @@ use Modules\Crm\Http\Controllers\DashboardController;
 use App\Http\Controllers\P_role;
 
 
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('/', [DashboardController::class, 'index'])->name('crm.dashboard');
 	// Route::get('/dashboard', 'DashboardController@index')->name('admin.module');
 	Route::get('/change-password', 'DashboardController@change_password')->name('change-password');

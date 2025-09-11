@@ -82,35 +82,12 @@ class P_role extends Controller
         $role = Role::with('roleMenu')->findOrFail($id);
 
         // ambil semua nama route
-        $routes = collect(Route::getRoutes())
-            ->map(fn($route) => $route->getName())
-            ->filter() // hanya route yang punya name
-            ->reject(fn($name) => Str::contains($name, [
-                'data',
-                'ajax',
-                'debug',
-                'livewire',
-                'ignition',
-                'csrf-cookie',
-                'dashboard',
-                'landing',
-                'change-password',
-                'save_change_password',
-                'login',
-                'logout',
-                'register',
-                'forgot-password',
-                'reset-password',
-            ]))
-            ->values();
-
-        // group by prefix
-        $groupedRoutes = $routes->groupBy(fn($name) => Str::before($name, '.'));
+        $permissions = config('constant.permissions');
 
         // ambil permission role yang aktif
         $rolePermissions = $role->roleMenu->pluck('permission')->toArray();
 
-        return view('admin.role.edit', compact('role', 'groupedRoutes', 'rolePermissions'));
+        return view('admin.role.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     /**

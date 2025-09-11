@@ -16,7 +16,7 @@ use Modules\Master\Http\Controllers\CustomerController;
 |
 */
 
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role']], function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('pos', PosController::class)->names('pos')->except('show');
     Route::get('pos/show/{id}', [PosController::class, 'show'])->name('pos.show');
     Route::post('pos/submitTransaction', [PosController::class, 'store'])->name('pos-submit');

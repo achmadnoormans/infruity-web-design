@@ -8,22 +8,22 @@
             @csrf
             @method('PUT')
 
-            @foreach ($groupedRoutes as $prefix => $routes)
+            @foreach ($permissions as $prefix => $routes)
                 <div class="card mb-3">
                     <div class="card-header p-5">
-                        <h3>{{ ucfirst($prefix) }}</h3>
+                        <h3>{{ ucfirst($routes['label']) }}</h3>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            @foreach ($routes as $route)
+                            @foreach ($routes['actions'] as $key => $route)
                                 @php
-                                    $method = Str::after($route, $prefix . '.');
+                                    $method = $prefix . '.' . $key;
                                 @endphp
                                 <div class="col-md-3">
                                     <label>
-                                        <input type="checkbox" name="permissions[]" value="{{ $route }}"
-                                            {{ in_array($route, $rolePermissions) ? 'checked' : '' }}>
-                                        {{ $method }}
+                                        <input type="checkbox" name="permissions[]" value="{{ $method }}"
+                                            {{ in_array($method, $rolePermissions) ? 'checked' : '' }}>
+                                        {{ $route }}
                                     </label>
                                 </div>
                             @endforeach
