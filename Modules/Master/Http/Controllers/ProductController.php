@@ -630,22 +630,32 @@ class ProductController extends Controller
             ->addColumn('name', function ($product) {
                 $html = '
                     <div class="d-flex align-items-center">';
-                // if (isset($product->image)) {
+
+                // kalau mau pakai image, bisa aktifkan lagi
+                // if ($product->image) {
                 //     $url = asset('storage/' . $product->image);
                 //     $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
                 // } else {
                 //     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
-                //             <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
-                //         </a>';
+                //                 <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
+                //             </a>';
                 // }
+    
                 $html .= '<div class="ms-5">
-                            <a href="' . url('products/') . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
-                               data-kt-ecommerce-product-filter="product_name">
-                                ' . e($product->name) . '
-                            </a>
-                        </div>
-                    </div>
-                ';
+                <a href="' . url('products/' . $product->id . '/show') . '" 
+                   class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                   data-kt-ecommerce-product-filter="product_name">'
+                    . e($product->name) . '
+                </a>
+                <br>';
+
+                if (!empty($product->child)) {
+                    $childs = explode(',', $product->child);
+                    $html .= '<span>' . implode('<br>', array_map('trim', $childs)) . '</span>';
+                }
+
+                $html .= '</div></div>';
+
                 return $html;
             })
             ->addColumn('price', function ($product) {

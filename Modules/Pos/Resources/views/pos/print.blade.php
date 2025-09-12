@@ -622,7 +622,7 @@
                         if (data.url) {
                             const message = encodeURIComponent(
                                 `Halo, berikut bukti transaksi Anda:\n${data.url}`);
-                            const phone = '6281230607050'; // Ganti dengan nomor tujuan
+                            const phone = '{{$data->customer->whatsapp}}'; // Ganti dengan nomor tujuan
                             const waUrl = `https://wa.me/${phone}?text=${message}`;
                             window.open(waUrl, '_blank');
                         } else {

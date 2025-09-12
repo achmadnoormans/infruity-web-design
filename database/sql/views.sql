@@ -173,7 +173,8 @@ SELECT
 FROM products A
 LEFT JOIN product_units C ON C.id = A.product_unit
 LEFT JOIN parent_ts ON parent_ts.product_id = A.id
-LEFT JOIN child_agg ON child_agg.parent_id = A.id;
+LEFT JOIN child_agg ON child_agg.parent_id = A.id
+WHERE A.is_variant IS NULL;
 
 -- View for Customer Tier
 DROP VIEW IF EXISTS vw_customer_tier;

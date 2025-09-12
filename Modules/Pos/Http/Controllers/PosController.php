@@ -129,6 +129,7 @@ class PosController extends Controller
     {
         $data['data'] = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['parcelDetail'] = ProductionParcelDetail::with('product')->where('pos_id', $id)->get();
         // dd($data);
         return view('pos::pos.receipt', $data);
     }
@@ -621,12 +622,15 @@ class PosController extends Controller
                                 </a>
                             </li>';
                 }
-                $html .= '
+                if (!in_array($item->status, ['paid'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
                                     <i class="fa fa-receipt"></i>

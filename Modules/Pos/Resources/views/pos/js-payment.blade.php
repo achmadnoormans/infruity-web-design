@@ -53,7 +53,10 @@
 
         function posApp() {
             return {
-                totalDue: {{ ($data->total - $data->paid) >= ($deposito->voucher ?? 0) ? (($data->total - $data->paid) - $deposito->voucher) : ($data->total - $data->paid) }}, // Ganti dengan nilai dari data.total misalnya dari backend
+                @php
+                    $voucher = $deposito->voucher ?? 0;
+                @endphp
+                totalDue: {{ $data->total - $data->paid >= ($voucher ?? 0) ? $data->total - $data->paid - $voucher : $data->total - $data->paid }}, // Ganti dengan nilai dari data.total misalnya dari backend
                 totalPayment: {{ $data->total - $data->paid }},
                 paymentDifference: 0,
                 loading: false,
@@ -130,7 +133,7 @@
                             if (res.success) {
                                 console.log(res);
                                 window.location.href = '/pos/payment-notification/' + res.payment
-                                .id; // redirect jika perlu
+                                    .id; // redirect jika perlu
                             } else {
                                 Swal.fire("Gagal", res.message, "error");
                             }

@@ -345,6 +345,15 @@
                                 <td class="item-price">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
                                 <td class="item-price">Rp {{ number_format($itemTotal, 0, ',', '.') }}</td>
                             </tr>
+                            @isset($parcelDetail)
+                                @foreach ($parcelDetail as $parcel)
+                                    @if ($parcel->production_id == $item->product_id)
+                                        <tr style="border: none">
+                                            <td colspan="4" style="border: none">{{ $parcel->product->name ?? '-' }} {{ $parcel->quantity }} {{ $parcel->product->unit->abbreviation ?? '-' }}</td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            @endisset
                         @endforeach
                     </tbody>
                 </table>
