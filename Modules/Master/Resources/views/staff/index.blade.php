@@ -5,34 +5,25 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Staff" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Staff" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="w-100 mw-150px">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
-                            <option></option>
-                            <option value="all">All</option>
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
-                        </select>
-                        <!--end::Select2-->
-                    </div>
-                    <!--begin::Add staff-->
-                    <a href="{{ url(path: 'staff/create') }}" class="btn btn-primary">Add Staff</a>
-                    <!--end::Add staff-->
+                <div class="card-toolbar ms-auto">
+                    <!--begin::Add product-->
+                    <a href="{{ url('staff/create') }}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                    <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
             </div>
