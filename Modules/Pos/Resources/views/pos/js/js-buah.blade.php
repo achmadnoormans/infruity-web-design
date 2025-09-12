@@ -736,13 +736,8 @@
                 const phone = document.querySelector('[x-model="customerPhone"]').value;
                 const address = document.querySelector('[x-model="customerAddress"]').value;
 
-                // if (!name || !phone || !address) {
-                //     Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
-                //     return;
-                // }
-
-                if (!name) {
-                    Swal.fire('Lengkapi data', 'Minimal Isi nama.', 'warning');
+                if (!name || !phone || !address) {
+                    Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
                     return;
                 }
 
@@ -762,11 +757,25 @@
                     .then(res => {
                         if (res.success) {
                             modal.hide();
-                            // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
+                            console.log(res);
 
-                            // Tambahkan ke Select2
-                            const option = new Option(res.customer.name, res.customer.id, true, true);
+                            const c = res.customer;
+
+                            // Buat <option> baru dengan atribut tambahan
+                            const option = new Option(c.name, c.id, true, true);
+                            $(option).attr({
+                                'data-name': c.name,
+                                'data-address': c.address,
+                                'data-whatsapp': c.phone,
+                                'data-tier_id': c.tier_id || '',
+                                'data-tier_name': c.tier_name || '-',
+                                'data-tier_style': c.tier_style || 'badge-light-secondary'
+                            });
+
+                            // Tambahkan ke select2
                             $('#customer_id').append(option).trigger('change');
+
+                            // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
                         } else {
                             Swal.fire('Gagal', res.message ?? 'Gagal menyimpan customer.', 'error');
                         }

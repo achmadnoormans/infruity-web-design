@@ -238,19 +238,33 @@ class CustomerController extends Controller
             'address' => 'nullable|string|max:500',
         ]);
 
-        $customer = Customer::create([
-            'name' => $validated['name'],
-            'whatsapp' => $validated['phone'],
-            'address' => $validated['address'],
-        ]);
+        try {
+            DB::beginTransaction();
+            $customer = new Customer();
+            $customer->name = $request->name;
+            $customer->code = Customer::getCustomerNumber();
+            $customer->address = $request->address;
+            $customer->whatsapp = $request->phone;
+            $customer->created_by = Auth::user()->id_user;
+            $customer->save();
+            DB::commit();
 
-        return response()->json([
-            'success' => true,
-            'customer' => [
-                'id' => $customer->id,
-                'name' => $customer->name
-            ]
-        ]);
+            return response()->json([
+                'success' => true,
+                'customer' => [
+                    'id' => $customer->id,
+                    'name' => $customer->name
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan data: ' . $e->getMessage()
+            ], 500);
+        }
+
+
     }
 
     public function get_data(Request $request)
