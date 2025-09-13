@@ -770,31 +770,79 @@
     </div>
     <!--end:Menu content-->
 </div>
-<div class="menu-item">
+<div data-kt-menu-trigger="click"
+    class="menu-item {{ in_array(Request::segment(1), ['report-branch-transaction', 'report-branch-product', 'report-customer-transaction', 'report-customer-product', 'report-transaction']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'report-transaction' ? 'active' : '' }}"
-        href="{{ url('report-transaction') }}">
+    <span class="menu-link">
         <span class="menu-icon">
-            <i class="ki-duotone ki-security-user">
+            <i class="ki-duotone ki-basket fs-2">
                 <span class="path1"></span>
                 <span class="path2"></span>
             </i>
         </span>
-        <span class="menu-title">Transaksi Penjualan</span>
-    </a>
+        <span class="menu-title">Laporan Penjualan</span>
+        <span class="menu-arrow"></span>
+    </span>
     <!--end:Menu link-->
-</div>
-<div class="menu-item">
-    <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'report-customer-transaction' ? 'active' : '' }}"
-        href="{{ url('report-customer-transaction') }}">
-        <span class="menu-icon">
-            <i class="ki-duotone ki-security-user">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
-        </span>
-        <span class="menu-title">Penjualan Per Pelanggan</span>
-    </a>
-    <!--end:Menu link-->
+    <!--begin:Menu sub-->
+    <div class="menu-sub menu-sub-accordion">
+        <!--begin:Menu item-->
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}" href="{{ url('report-transaction') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Transaksi Penjualan</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+        <!--end:Menu item-->
+        @if (check_access('report.customer.transaction'))
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link {{ $link == 'report-customer-transaction' ? 'active' : '' }}"
+                    href="{{ url('report-customer-transaction') }}">
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Penjualan Per Pelanggan</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+            <!--end:Menu item-->
+        @endif
+        @if (check_access('report.branch.transaction'))
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link {{ $link == 'report-branch-transaction' ? 'active' : '' }}"
+                    href="{{ url('report-branch-transaction') }}">
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Penjualan Per Cabang</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+            <!--end:Menu item-->
+        @endif
+        @if (check_access('report.branch.product'))
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link {{ $link == 'report-branch-product' ? 'active' : '' }}"
+                    href="{{ url('report-branch-product') }}">
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Produk Per Cabang</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+            <!--end:Menu item-->
+        @endif
+    </div>
+    <!--end:Menu sub-->
 </div>

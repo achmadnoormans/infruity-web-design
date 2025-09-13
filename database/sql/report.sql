@@ -35,3 +35,4 @@ FROM
 	LEFT JOIN reg_regencies AS kabupaten ON kabupaten.id = C.city
 	LEFT JOIN reg_districts AS kecamatan ON kecamatan.id = C.district
 	LEFT JOIN reg_villages AS kelurahan ON kelurahan.id = C.village
+	ORDER BY A.created_at DESC

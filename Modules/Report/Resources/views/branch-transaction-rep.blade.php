@@ -10,16 +10,12 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="transaction-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7">
-                            <th class="text-start min-w-150px">Tanggal dan Waktu</th>
-                            <th class="text-start min-w-150px">Nama Pelanggan</th>
-                            <th class="text-start min-w-50px">Jenis Kelamin</th>
-                            <th class="text-start min-w-50px">Usia</th>
-                            <th class="text-start min-w-150px">Kota / Kab</th>
-                            <th class="text-start min-w-150px">Kecamatan</th>
-                            <th class="text-start min-w-150px">Kelurahan</th>
-                            <th class="text-start min-w-150px">Chanel</th>
-                            <th class="text-start min-w-150px">Total Belanja (Rp)</th>
-                            <th class="text-start min-w-150px">Margin (Rp)</th>
+                            <th class="text-start min-w-150px">Channel</th>
+                            <th class="text-start min-w-50px">Transaksi</th>
+                            <th class="text-start min-w-50px">Omset</th>
+                            <th class="text-start min-w-150px">Margin</th>
+                            <th class="text-start min-w-150px">Kontribusi Omset</th>
+                            <th class="text-start min-w-150px">Kontribusi Margin</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -55,50 +51,35 @@
                     targets: -1 // Disable sorting for action column
                 }, ],
                 ajax: {
-                    url: "{{ route('report-transaction.data') }}",
+                    url: "{{ route('report-branch-transaction.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [{
-                        data: 'created_at',
-                        name: 'created_at'
-                    },
+                columns: [
                     {
                         data: 'name',
                         name: 'name'
                     },
                     {
-                        data: 'gender',
-                        name: 'gender'
+                        data: 'total_transaction',
+                        name: 'total_transaction'
                     },
                     {
-                        data: 'age',
-                        name: 'age'
-                    },
-                    {
-                        data: 'city_name',
-                        name: 'city_name'
-                    },
-                    {
-                        data: 'district_name',
-                        name: 'district_name'
-                    },
-                    {
-                        data: 'village_name',
-                        name: 'village_name'
-                    },
-                    {
-                        data: 'branch_name',
-                        name: 'branch_name'
-                    },
-                    {
-                        data: 'total',
-                        name: 'total'
+                        data: 'total_omset',
+                        name: 'total_omset'
                     },
                     {
                         data: 'profit',
                         name: 'profit'
+                    },
+                    {
+                        data: 'prosentase_omset',
+                        name: 'prosentase_omset'
+                    },
+                    {
+                        data: 'prosentase_profit',
+                        name: 'prosentase_profit'
                     },
                     {
                         data: 'action',
@@ -108,7 +89,7 @@
                     },
                 ],
                 order: [
-                    [0, 'desc']
+                    [4, 'desc']
                 ]
             });
             // Search manual lewat input
@@ -125,13 +106,7 @@
             } else {
                 console.error('DataTable tidak terinisialisasi.');
             }
-        }
-
-      
-
- 
-
-        
+        }        
         $("#date").flatpickr({
             altInput: !0,
             altFormat: "d F, Y",
