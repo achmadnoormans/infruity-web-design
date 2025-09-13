@@ -67,7 +67,7 @@
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
                     this.loadExistingData(data, detail);
-                    console.log(url, data, detail);
+                    // console.log('loadExisting', url, data, detail);
                     this._loaded = true;
 
                     // console.log('cart =>', this.cart);
@@ -558,7 +558,7 @@
                 const ongkir = this.ongkirGlobal;
 
                 let totalSetelahDiskon = 0;
-                if (diskon <= 100) {
+                if (diskon > 0 && diskon <= 100) {
                     // Diskon persen
                     totalSetelahDiskon = this.subtotal - (this.subtotal * (diskon / 100));
                 } else {
@@ -1127,7 +1127,8 @@
                 });
 
                 this.diskonGlobal = data.discount;
-                this.ongkirGlobal = data.ongkir;
+                this.ongkirGlobal = parseFloat(data.ongkir || 0);
+
                 $('#note').val(data.note);
                 $('#ongkir_date').val(data.ongkir_date);
                 $('#ongkir_time').val(data.ongkir_time);
@@ -1206,7 +1207,12 @@
 
                             <div class="col-3 mb-3">
                                 <label class="form-label">Qty</label>
-                                <input type="number" name="receipt_qty[]" class="form-control" value="${item.quantity ?? 1}">
+                                <input type="number" name="receipt_qty[]" class="form-control" value="${item.quantity ?? 1}" readonly>
+                            </div>
+                        </div>
+                        <div class="row receipt-row mb-2">
+                            <div class="col-12 mb-3 text-center text-muted">
+                                <em>Quantity akan dihitung otomatis berdasarkan Jumlah yang akan dibeli</em>
                             </div>
                         </div>
                     `;
@@ -1270,7 +1276,8 @@
                     return;
                 }
 
-                const isExist = this.cart.some(item => item.id === this.addProduct.id);
+                existId = 'jus' + this.addProduct.id;
+                const isExist = this.cart.some(item => item.id === existId);
                 if (isExist) {
                     Swal.fire({
                         icon: 'warning',
@@ -1326,6 +1333,9 @@
                 });
 
                 console.log('cart', this.cart);
+                const container = $('#receiptContainer');
+                container.empty(); // bersihkan biar ga dobel
+                $('#select_jus').val(null).trigger('change');
                 this.resetAddForm();
             },
             closeJusModal() {

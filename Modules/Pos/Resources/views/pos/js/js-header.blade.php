@@ -2,7 +2,6 @@
     loadCustomer();
 
     function loadCustomer() {
-        console.log('loadCustomer');
         $('#customer_id').select2({
             placeholder: 'Pilih pelanggan',
             ajax: {
