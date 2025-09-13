@@ -444,7 +444,7 @@
                     <span class="path2"></span>
                 </i>
             </span>
-            <span class="menu-title">Kulak</span>
+            <span class="menu-title">Pembelian</span>
         </a>
         <!--end:Menu link-->
     @endif
