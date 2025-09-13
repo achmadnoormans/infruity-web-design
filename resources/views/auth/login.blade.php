@@ -107,10 +107,17 @@ License: For each use you must have a valid license purchased only from above li
                                 <!--end::Email-->
                             </div>
                             <!--end::Input group=-->
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-3 position-relative">
                                 <!--begin::Password-->
                                 <input type="password" placeholder="Password" name="password" autocomplete="off"
-                                    class="form-control bg-transparent" />
+                                    class="form-control bg-transparent" id="password" />
+
+                                <!--begin::Toggle Button-->
+                                <span class="btn btn-sm btn-icon position-absolute top-50 end-0 translate-middle-y me-3"
+                                    onclick="togglePassword()" style="cursor: pointer;">
+                                    <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                                </span>
+                                <!--end::Toggle Button-->
                                 <!--end::Password-->
                             </div>
                             <!--end::Input group=-->
@@ -195,6 +202,20 @@ License: For each use you must have a valid license purchased only from above li
                 `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
             );
         });
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            }
+        }
     </script>
     <!--begin::Global Javascript Bundle(mandatory for all pages)-->
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>

@@ -58,39 +58,39 @@
                         </div>
                     </div>
                     <!--end::Menu item-->
-                    <!--begin::Menu separator-->
+                    {{-- <!--begin::Menu separator-->
                     <div class="separator my-2"></div>
                     <!--end::Menu separator-->
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
                         <a href="account/overview.html" class="menu-link px-5">My Profile</a>
                     </div>
-                    <!--end::Menu item-->
+                    <!--end::Menu item--> --}}
                     <!--begin::Menu item-->
-                    <div class="menu-item px-5">
+                    {{-- <div class="menu-item px-5">
                         <a href="apps/projects/list.html" class="menu-link px-5">
                             <span class="menu-text">My Projects</span>
                             <span class="menu-badge">
                                 <span class="badge badge-light-danger badge-circle fw-bold fs-7">3</span>
                             </span>
                         </a>
-                    </div>
+                    </div> --}}
                     {{-- <!--end::Menu item-->
                     @include('template.aside.user.subscribetion')
                     <!--begin::Menu item--> --}}
-                    <div class="menu-item px-5">
+                    {{-- <div class="menu-item px-5">
                         <a href="account/statements.html" class="menu-link px-5">My Statements</a>
                     </div>
                     <!--end::Menu item-->
-                    <!--begin::Menu separator-->
+                    <!--begin::Menu separator--> --}}
                     <div class="separator my-2"></div>
                     <!--end::Menu separator-->
                     {{-- @include('template.aside.user.language') --}}
-                    <!--begin::Menu item-->
+                    {{-- <!--begin::Menu item-->
                     <div class="menu-item px-5 my-1">
                         <a href="account/settings.html" class="menu-link px-5">Account Settings</a>
                     </div>
-                    <!--end::Menu item-->
+                    <!--end::Menu item--> --}}
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
                         <a href="{{ url('auth/logout') }}" class="menu-link px-5">Sign Out</a>
