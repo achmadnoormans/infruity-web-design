@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Report\Entities\CustomerTransaction;
 use Modules\Report\Entities\BranchTransaction;
+use Modules\Report\Entities\CustomerProduct;
 use Modules\Report\Entities\BranchProduct;
 
 class ReportController extends Controller
@@ -34,6 +35,10 @@ class ReportController extends Controller
     public function branch_product(Request $request)
     {
         return view('report::branch-product-rep');
+    }
+    public function customer_product(Request $request)
+    {
+        return view('report::product-customer-transaction-rep');
     }
 
     public function get_data_transaction(Request $request)
@@ -218,6 +223,61 @@ class ReportController extends Controller
                     </div>';
             })
             ->rawColumns(['action', 'branch'])
+            ->make(true);
+    }
+
+    public function get_data_customer_product(Request $request)
+    {
+        $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
+        $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
+        $data = CustomerProduct::getAllCustomerProduct($dr_tgl, $sp_tgl);
+        return DataTables::of($data)
+            ->editColumn('nama', function ($row) {
+                return $row->nama ?? 'Pelanggan Umum';
+            })
+            ->editColumn('branch', function ($row) {
+                switch ($row->branch_id) {
+                    case 1:
+                        return '<span class="badge badge-light-primary">' . $row->branch . '</span>';
+                        break;
+                    case 2:
+                        return '<span class="badge badge-light-success">' . $row->branch . '</span>';
+                        break;
+                    case 3:
+                        return '<span class="badge badge-light-warning">' . $row->branch . '</span>';
+                        break;
+                    case 4:
+                        return '<span class="badge badge-light-info">' . $row->branch . '</span>';
+                        break;
+                    default:
+                        return '<span class="badge badge-light-danger">Belum Terdaftar</span>';
+                }
+            })
+            ->editColumn('gender', function ($row) {
+                if ($row->gender == 'male') {
+                    return '<span class="badge badge-light-primary">Laki-laki</span>';
+                } else if ($row->gender == 'female') {
+                    return '<span class="badge badge-light-success">Perempuan</span>';
+                } else {
+                    return '<span class="badge badge-light-danger">-</span>';
+                }
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>';
+            })
+            ->rawColumns(['action', 'branch', 'gender'])
             ->make(true);
     }
 }

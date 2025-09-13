@@ -837,7 +837,22 @@
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
-                    <span class="menu-title">Produk Per Cabang</span>
+                    <span class="menu-title">Laporan Penjualan Per-Channel (Based on Produk & Qty)</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+            <!--end:Menu item-->
+        @endif
+        @if (check_access('report.customer.product'))
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link {{ $link == 'report-customer-product' ? 'active' : '' }}"
+                    href="{{ url('report-customer-product') }}">
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Laporan Transaksi Penjualan (Based on Produk & Qty)</span>
                 </a>
                 <!--end:Menu link-->
             </div>

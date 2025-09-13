@@ -110,3 +110,38 @@ BEGIN
 	ORDER BY
 		B.branch_id;
 END;
+
+-- Report Transaction Branch - Product - Customer
+DROP PROCEDURE IF EXISTS get_customer_product_transaction;
+CREATE PROCEDURE get_customer_product_transaction(IN start_date DATE, IN end_date DATE)
+BEGIN
+	SELECT
+		A.created_at,
+		C.NAME AS nama,
+		C.gender,
+		TIMESTAMPDIFF(
+			YEAR,
+			C.birth_of_date,
+		CURDATE()) AS age,
+		kabupaten.NAME AS city_name,
+		kecamatan.NAME AS district_name,
+		kelurahan.NAME AS village_name,
+		D.id AS branch_id,
+		D.NAME AS branch,
+		P.NAME AS product,
+		B.quantity,
+		PC.abbreviation 
+	FROM
+		pos_transaction AS A
+		JOIN pos_transaction_detail AS B ON A.id = B.pos_id
+		LEFT JOIN products AS P ON B.product_id = P.id
+		LEFT JOIN product_units AS PC ON P.product_unit = PC.id
+		LEFT JOIN pos_payment AS pp ON pp.pos_id = A.id
+		LEFT JOIN customer AS C ON A.customer_id = C.id
+		LEFT JOIN branch AS D ON D.id = pp.branch_id
+		LEFT JOIN reg_regencies AS kabupaten ON kabupaten.id = C.city
+		LEFT JOIN reg_districts AS kecamatan ON kecamatan.id = C.district
+		LEFT JOIN reg_villages AS kelurahan ON kelurahan.id = C.village 
+	WHERE
+		A.date BETWEEN start_date AND end_date;
+END;
