@@ -163,6 +163,7 @@ class SortirController extends Controller
                 $buang->date = date('Y-m-d');
                 $buang->product_id = $request->product_id;
                 $buang->quantity = $request->buang ?? 0;
+                $buang->avg_price = $hpp;
                 $buang->created_by = Auth::user()->id_user;
                 $buang->save();
             }

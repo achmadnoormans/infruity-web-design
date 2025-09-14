@@ -35,4 +35,24 @@ FROM
 	LEFT JOIN reg_regencies AS kabupaten ON kabupaten.id = C.city
 	LEFT JOIN reg_districts AS kecamatan ON kecamatan.id = C.district
 	LEFT JOIN reg_villages AS kelurahan ON kelurahan.id = C.village
-	ORDER BY A.created_at DESC
+	ORDER BY A.created_at DESC;
+
+DROP VIEW IF EXISTS vw_product_buang;
+CREATE VIEW vw_product_buang AS
+SELECT
+	A.product_id AS id,
+	B.name,
+	C.id AS unit_id,
+	C.abbreviation AS satuan,
+	SUM( A.quantity ) AS quantity,
+	AVG( A.avg_price ) AS hpp,
+	(
+	SUM( A.quantity ) * AVG( A.avg_price )) AS total_hpp 
+FROM
+	stock_out AS A
+	JOIN products AS B ON A.product_id = B.id
+	JOIN product_units AS C ON B.product_unit = C.id 
+GROUP BY
+	A.product_id 
+ORDER BY
+	SUM( A.quantity ) DESC

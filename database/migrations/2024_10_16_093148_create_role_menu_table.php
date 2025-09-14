@@ -4,6 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -40,32 +43,21 @@ return new class extends Migration {
             $table->softDeletes();
         });
 
-        \DB::table('role_menu')->insert(array(
-            [
-                'id_role' => 2,
-                'permission' => 'products.index',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'id_role' => 2,
-                'permission' => 'products.create',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'id_role' => 2,
-                'permission' => 'products.edit',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'id_role' => 2,
-                'permission' => 'products.destroy',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-        ));
+        $roles = DB::table('role')->get();
+        $permission = config('constant.permissions');
+        $data = [];
+        foreach ($roles as $key => $role) {
+            foreach ($permission as $prefix => $routes) {
+                foreach ($routes['actions'] as $key => $route) {
+                    $method = $prefix . '.' . $key;
+                    $data[] = [
+                        'id_role' => $role->id_role,
+                        'permission' => $method,
+                    ];
+                }
+            }
+        }
+        DB::table('role_menu')->insert($data);
     }
 
     /**

@@ -10,6 +10,7 @@ use Modules\Report\Entities\CustomerTransaction;
 use Modules\Report\Entities\BranchTransaction;
 use Modules\Report\Entities\CustomerProduct;
 use Modules\Report\Entities\BranchProduct;
+use Modules\Report\Entities\ProductBuang;
 
 class ReportController extends Controller
 {
@@ -39,6 +40,10 @@ class ReportController extends Controller
     public function customer_product(Request $request)
     {
         return view('report::product-customer-transaction-rep');
+    }
+    public function product_buang(Request $request)
+    {
+        return view('report::product-buang');
     }
 
     public function get_data_transaction(Request $request)
@@ -278,6 +283,58 @@ class ReportController extends Controller
                     </div>';
             })
             ->rawColumns(['action', 'branch', 'gender'])
+            ->make(true);
+    }
+
+    public function get_data_barang_buang(Request $request)
+    {
+        $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
+        $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
+        $data = ProductBuang::all();
+        return DataTables::of($data)
+            ->editColumn('satuan', function ($row) {
+                switch ($row->unit_id) {
+                    case 1:
+                        return '<span class="badge badge-light-primary">' . $row->satuan . '</span>';
+                        break;
+                    case 2:
+                        return '<span class="badge badge-light-success">' . $row->satuan . '</span>';
+                        break;
+                    case 3:
+                        return '<span class="badge badge-light-warning">' . $row->satuan . '</span>';
+                        break;
+                    case 4:
+                        return '<span class="badge badge-light-info">' . $row->satuan . '</span>';
+                        break;
+                    default:
+                        return '<span class="badge badge-light-danger">' . $row->satuan . '</span>';
+                }
+            })
+            ->editColumn('quantity', function ($row) {
+                return number_format($row->quantity, 2);
+            })
+            ->editColumn('hpp', function ($row) {
+                return number_format($row->hpp, 2);
+            })
+            ->editColumn('total_hpp', function ($row) {
+                return number_format($row->total_hpp, 2);
+            })
+            ->addColumn('action', function ($row) {
+                return '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                            <li>
+                                <a class="dropdown-item" href="javascript:void(0)">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>';
+            })
+            ->rawColumns(['action', 'satuan'])
             ->make(true);
     }
 }

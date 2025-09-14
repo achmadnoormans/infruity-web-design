@@ -112,6 +112,7 @@ FROM
     products AS A
     LEFT JOIN transaction_stock AS B ON A.id = B.product_id
     LEFT JOIN product_units AS C ON A.product_unit = C.id
+	WHERE A.is_variant IS NULL
 GROUP BY
     A.id, B.product_id, C.abbreviation
 ORDER BY 

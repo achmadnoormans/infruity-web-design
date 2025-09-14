@@ -78,7 +78,7 @@
 
                 ],
                 order: [
-                    [2, 'asc']
+                    [2, 'desc']
                 ] // Order by quantity column (index 1) in descending order
             });
             // Search manual lewat input
