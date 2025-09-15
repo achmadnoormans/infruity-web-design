@@ -649,10 +649,10 @@ class ProductController extends Controller
                 </a>
                 <br>';
 
-                if (!empty($product->child)) {
-                    $childs = explode(',', $product->child);
-                    $html .= '<span>' . implode('<br>', array_map('trim', $childs)) . '</span>';
-                }
+                // if (!empty($product->child)) {
+                //     $childs = explode(',', $product->child);
+                //     $html .= '<span>' . implode('<br>', array_map('trim', $childs)) . '</span>';
+                // }
 
                 $html .= '</div></div>';
 

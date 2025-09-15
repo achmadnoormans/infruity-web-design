@@ -148,9 +148,9 @@ return new class extends Migration
         }
 
         // Insert data
-        // DB::table('pos_transaction')->insert($transactions);
-        // DB::table('pos_transaction_detail')->insert($details);
-        // DB::table('pos_payment')->insert($payments);
+        DB::table('pos_transaction')->insert($transactions);
+        DB::table('pos_transaction_detail')->insert($details);
+        DB::table('pos_payment')->insert($payments);
     }
 
     /**
