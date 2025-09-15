@@ -584,14 +584,16 @@
                     @endphp
                     <div class="customer-details">
                         <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
-                        <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
-                            ({{ tonumberround(floatval($currentExp)) ?? 0 }} /
-                            {{ tonumberround(floatval($maxExp)) ?? 0 }})</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill"
-                                style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
-                                data-percent="{{ round($percent) }}"></div>
-                        </div>
+                        @isset($tier->tier_name)
+                            <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
+                                ({{ tonumberround(floatval($currentExp)) ?? 0 }} /
+                                {{ tonumberround(floatval($maxExp)) ?? 0 }})</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
+                                    data-percent="{{ round($percent) }}"></div>
+                            </div>
+                        @endisset
                     </div>
                 </div>
             </div>
@@ -818,7 +820,7 @@
             const url = "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}";
             const message = encodeURIComponent(
                 `Halo, berikut bukti transaksi Anda:\n${url}`);
-            const phone = '{{$data->customer->whatsapp ?? ''}}'; // Ganti dengan nomor tujuan
+            const phone = '{{ $data->customer->whatsapp ?? '' }}'; // Ganti dengan nomor tujuan
             const waUrl = `https://wa.me/${phone}?text=${message}`;
             window.open(waUrl, '_blank');
         }
