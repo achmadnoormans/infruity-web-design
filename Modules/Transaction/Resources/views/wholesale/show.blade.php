@@ -15,7 +15,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Order Details</h2>
+                        <h2>Detail Pembelian</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -25,7 +25,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Order ID</label>
+                            <label class="form-label">Pembelian ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <div class="fw-bold fs-3">#{{ isset($data) ? $data->order_number : '14364' }}</div>
@@ -35,14 +35,14 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Order Date</label>
+                            <label class="required form-label">Tanggal Pembelian</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
                                 class="form-control mb-2" value="{{ old('order_date') ?? date('Y-m-d') }}" disabled/>
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the date of the order to process.</div>
+                            <div class="text-muted fs-7">Atur tanggal pembelian</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
@@ -60,7 +60,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Detail Products</h2>
+                        <h2>Detail Produk</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -70,7 +70,7 @@
                         <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
-                            <label class="form-label">Add products to this order</label>
+                            <label class="form-label">Produk yang dibeli</label>
                             <!--end::Label-->
                             <!--begin::Selected products-->
                             <div class="table table-responsive">
@@ -78,16 +78,15 @@
                                     id="kt_ecommerce_edit_order_selected_products_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-200px">Product</th>
-                                            <th class="min-w-100px">Price</th>
+                                            <th class="min-w-200px">Produk</th>
+                                            <th class="min-w-100px">Harga</th>
                                             <th class="min-w-100px">Total</th>
                                             <th class="min-w-100px text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
                                         <tr class="text-muted text-center">
-                                            <td colspan="6">Select one or more products from the list below by ticking
-                                                the
+                                            <td colspan="6">Pilih satu atau lebih produk dari daftar di bawah ini dengan menandai
                                                 checkbox.</td>
                                         </tr>
                                     </tbody>
@@ -117,7 +116,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Wholesale Note</h2>
+                        <h2>Catatan Pembelian</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -126,7 +125,7 @@
                     <!--begin::Billing address-->
                     <div class="d-flex flex-column gap-5 gap-md-7">
                         <textarea name="description" id="description" class="form-control form-control-solid" rows="5"
-                            placeholder="Enter your notes here...">{{ isset($data) ? $data->description : '' }}</textarea>
+                            placeholder="Masukkan catatan pembelian...">{{ isset($data) ? $data->description : '' }}</textarea>
                     </div>
                     <!--end::Billing address-->
                 </div>
@@ -185,7 +184,7 @@
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
-                    class="btn btn-light me-5">Back</a>
+                    class="btn btn-light me-5">Kembali</a>
                 <!--end::Button-->
             </div>
         </div>
@@ -223,9 +222,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="inputPrice" class="form-label">Price</label>
+                            <label for="inputPrice" class="form-label">Harga</label>
                             <input type="number" class="form-control format-number" id="inputPriceEdit" name="price"
-                                placeholder="Enter price" min="0">
+                                placeholder="Masukkan harga" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->

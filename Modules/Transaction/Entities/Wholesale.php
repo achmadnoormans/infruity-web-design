@@ -32,6 +32,7 @@ class Wholesale extends Model
     {
         return DB::table('view_wholesale')
             ->select('*')
+            ->orderBy('order_date', 'desc')
             ->get();
     }
     public function createdBy()

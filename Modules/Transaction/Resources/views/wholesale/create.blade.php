@@ -15,7 +15,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Order Details</h2>
+                        <h2>Detail Pembelian</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -25,7 +25,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Order ID</label>
+                            <label class="form-label">ID Pembelian</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <div class="fw-bold fs-3">#{{ isset($data) ? $data->order_number : '14364' }}</div>
@@ -35,7 +35,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Order Date</label>
+                            <label class="required form-label">Tanggal Pembelian</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input id="kt_ecommerce_edit_order_date" name="order_date" placeholder="Select a date"
@@ -59,7 +59,7 @@
             <div class="card card-flush py-4">
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Select Products</h2>
+                        <h2>Pilih Produk</h2>
                     </div>
                 </div>
                 <!--begin::Card body-->
@@ -82,8 +82,8 @@
                             <thead>
                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                     {{-- <th class="w-25px pe-2"></th> --}}
-                                    <th class="min-w-200px">Product</th>
-                                    <th class="min-w-100px text-end pe-5">Qty Remaining</th>
+                                    <th class="min-w-200px">Produk</th>
+                                    <th class="min-w-100px text-end pe-5">Qty tersisa</th>
                                 </tr>
                             </thead>
                             <tbody class="fw-semibold text-gray-600">
@@ -101,7 +101,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Preview Products</h2>
+                        <h2>Preview Produk</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -111,7 +111,7 @@
                         <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
-                            <label class="form-label">Add products to this order</label>
+                            <label class="form-label">Tambah Produk ke Pembelian</label>
                             <!--end::Label-->
                             <!--begin::Selected products-->
                             <div class="table table-responsive">
@@ -119,16 +119,15 @@
                                     id="kt_ecommerce_edit_order_selected_products_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-200px">Product</th>
-                                            <th class="min-w-100px">Price</th>
+                                            <th class="min-w-200px">Produk</th>
+                                            <th class="min-w-100px">Harga</th>
                                             <th class="min-w-100px">Total</th>
                                             <th class="min-w-100px text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
                                         <tr class="text-muted text-center">
-                                            <td colspan="6">Select one or more products from the list below by ticking
-                                                the
+                                            <td colspan="6">Pilih satu atau lebih produk dari daftar di bawah dengan menandai
                                                 checkbox.</td>
                                         </tr>
                                     </tbody>
@@ -139,7 +138,7 @@
                             <div id="selected-products-hidden"></div>
                             <!--begin::Selected products-->
                             <!--begin::Total price-->
-                            <div class="fw-bold fs-4">Total Belanja:
+                            <div class="fw-bold fs-4">Total Pembelian:
                                 <span id="totalSemuaProduk">0.00</span>
                             </div>
                             <!--end::Total price-->
@@ -158,7 +157,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Wholesale Note</h2>
+                        <h2>Catatan Pembelian</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -167,7 +166,7 @@
                     <!--begin::Billing address-->
                     <div class="d-flex flex-column gap-5 gap-md-7">
                         <textarea name="description" id="description" class="form-control form-control-solid" rows="5"
-                            placeholder="Enter your notes here...">{{ isset($data) ? $data->description : '' }}</textarea>
+                            placeholder="Masukkan catatan Anda di sini...">{{ isset($data) ? $data->description : '' }}</textarea>
                     </div>
                     <!--end::Billing address-->
                 </div>
@@ -180,7 +179,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalInputQtyLabel">Input Product Details</h5>
+                            <h5 class="modal-title" id="modalInputQtyLabel">Input Produk</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -190,7 +189,7 @@
                             <div class="mb-3">
                                 <label for="inputSupplier" class="form-label">Supplier</label>
                                 <select id="inputSupplier" class="form-select" data-control="select2">
-                                    <option selected disabled>Choose supplier</option>
+                                    <option selected disabled>Pilih Supplier</option>
                                     @foreach ($suppliers as $supplier)
                                         <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                     @endforeach
@@ -200,19 +199,19 @@
                             <div class="mb-3">
                                 <label for="inputQuantity" class="form-label">Quantity</label>
                                 <input type="number" class="form-control" id="inputQuantity"
-                                    placeholder="Enter quantity" min="1">
+                                    placeholder="Masukkan jumlah pembelian" min="1">
                             </div>
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Beli</label>
                                 <input type="text" class="form-control format-number" id="inputPrice"
-                                    placeholder="Enter price" min="0">
+                                    placeholder="Masukkan harga" min="0">
                             </div>
 
                             <div class="mb-3">
                                 <label for="inputPrice" class="form-label">Harga Jual</label>
                                 <input type="text" class="form-control format-number" id="inputSellPrice"
-                                    placeholder="Enter price" min="0">
+                                    placeholder="Masukkan harga" min="0">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -264,7 +263,7 @@
                             <label for="inputSupplier" class="form-label">Supplier</label>
                             <select id="inputSupplierEdit" class="form-select" data-control="select2"
                                 name="supplier_id">
-                                <option value="">Choose supplier</option>
+                                <option value="">Pilih Supplier</option>
                                 @foreach ($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
@@ -274,20 +273,20 @@
                         <div class="mb-3">
                             <label for="inputQuantity" class="form-label">Quantity</label>
                             <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
-                                placeholder="Enter quantity" min="1" name="qty">
+                                placeholder="Masukkan jumlah pembelian" min="1" name="qty">
                         </div>
 
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Price</label>
                             <input type="number" class="form-control format-number" id="inputPriceEdit" name="price"
-                                placeholder="Enter price" min="0">
+                                placeholder="Masukkan harga" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
                         <button type="reset" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Discard</button>
+                            class="btn btn-light me-3">Batal</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">

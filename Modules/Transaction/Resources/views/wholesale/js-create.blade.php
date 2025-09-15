@@ -46,7 +46,10 @@
                         name: 'qty_remaining',
                         className: 'text-end pe-5'
                     }
-                ]
+                ],
+                language: {
+                    emptyTable: "Tidak ada produk yang dipilih."
+                }
             });
 
             $('#search').on('keyup', function() {
