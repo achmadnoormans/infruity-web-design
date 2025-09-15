@@ -536,34 +536,36 @@
             <!-- Customer Profile -->
             <div class="customer-section">
                 <div class="customer-info">
-                    <div class="avatar">
-                        @php
-                            $assetPath = asset('images/icon/bronze-icon.png');
-                            // if (isset($tier->tier_name)) {
-                            //     switch ($tier->tier_name) {
-                            //         case 'Bronze':
-                            //             $assetPath = asset('images/icon/bronze-icon.png');
-                            //             break;
-                            //         case 'Silver':
-                            //             $assetPath = asset('images/icon/silver-icon.png');
-                            //             break;
-                            //         case 'Gold':
-                            //             $assetPath = asset('images/icon/gold-icon.png');
-                            //             break;
-                            //         case 'Platinum':
-                            //             $assetPath = asset('images/icon/platinum-icon.png');
-                            //             break;
-                            //         default:
-                            //             $assetPath = asset('images/icon/bronze-icon.png');
-                            //             break;
-                            //     }
-                            // }
-                            if (isset($tier->icon)) {
-                                $assetPath = asset('storage/' . $tier->icon);
-                            }
-                        @endphp
-                        <img src="{{ $assetPath }}" alt="icon" width="48">
-                    </div>
+                    @isset($tier->tier_name)
+                        <div class="avatar">
+                            @php
+                                $assetPath = asset('images/icon/bronze-icon.png');
+                                // if (isset($tier->tier_name)) {
+                                //     switch ($tier->tier_name) {
+                                //         case 'Bronze':
+                                //             $assetPath = asset('images/icon/bronze-icon.png');
+                                //             break;
+                                //         case 'Silver':
+                                //             $assetPath = asset('images/icon/silver-icon.png');
+                                //             break;
+                                //         case 'Gold':
+                                //             $assetPath = asset('images/icon/gold-icon.png');
+                                //             break;
+                                //         case 'Platinum':
+                                //             $assetPath = asset('images/icon/platinum-icon.png');
+                                //             break;
+                                //         default:
+                                //             $assetPath = asset('images/icon/bronze-icon.png');
+                                //             break;
+                                //     }
+                                // }
+                                if (isset($tier->icon)) {
+                                    $assetPath = asset('storage/' . $tier->icon);
+                                }
+                            @endphp
+                            <img src="{{ $assetPath }}" alt="icon" width="48">
+                        </div>
+                    @endisset
                     @php
                         $currentExp = 0;
                         $maxExp = 0;
@@ -583,7 +585,7 @@
                         };
                     @endphp
                     <div class="customer-details">
-                        <h2 class="customer-name">{{ $data->customer->name ?? 'Umum' }}</h2>
+                        <h2 class="customer-name">{{ $data->customer->name ?? 'Pelanggan Umum' }}</h2>
                         @isset($tier->tier_name)
                             <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
                                 ({{ tonumberround(floatval($currentExp)) ?? 0 }} /
