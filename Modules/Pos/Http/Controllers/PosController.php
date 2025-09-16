@@ -171,6 +171,8 @@ class PosController extends Controller
             $pos = PosModel::findOrFail($id);
             $pos->delete();
             PosDetailModel::where('pos_id', $id)->delete();
+            Payment::where('pos_id', $id)->delete();
+            
             DB::commit();
             return response()->json([
                 'success' => true,
