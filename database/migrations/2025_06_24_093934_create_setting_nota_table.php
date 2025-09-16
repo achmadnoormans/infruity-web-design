@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('brand_name')->nullable();
             $table->string('brand_address')->nullable();
             $table->string('brand_social_media')->nullable();
+            $table->string('brand_phone')->nullable();
+            $table->string('brand_greeting')->nullable();
+            $table->string('note')->nullable();
             $table->boolean('is_using_cashier')->default(false);
             $table->boolean('is_using_customer')->default(false);
             $table->boolean('is_using_date')->default(false);
@@ -34,6 +37,9 @@ return new class extends Migration
                 'brand_name' => 'in!fruity',
                 'brand_address' => 'Jl. Raya No. 1, Jakarta',
                 'brand_social_media' => 'https://www.instagram.com/infruity',
+                'brand_phone' => '(021) 12345678',
+                'brand_greeting' => 'Pesan & Kirim Jadi Lebih Mudah!',
+                'note' => 'Ada kritik, saran, atau ingin tahu info lebih lengkap?',
                 'is_using_cashier' => true,
                 'is_using_customer' => true,
                 'is_using_date' => true,

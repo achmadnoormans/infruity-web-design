@@ -764,14 +764,11 @@
             <div class="footer">
                 <div class="footer-content">
                     <div class="contact-info">
-                        <h3 class="footer-title">Pesan & Kirim Jadi Lebih Mudah!</h3>
-                        <p class="footer-text">
-                            Ada kritik, saran, atau ingin tahu<br>
-                            info lebih lengkap?
-                        </p>
+                        <h3 class="footer-title">{{ $setting->brand_greeting }}</h3>
+                        <p class="footer-text">{{ $setting->note }}</p>
                         <p class="contact-details">
-                            0812-3060-7050 (WA/SMS)<br>
-                            Instagram: @In!Fruity
+                            {{ $setting->brand_phone }} (WA/SMS)<br>
+                            Instagram: {{ $setting->brand_social_media }}
                         </p>
                     </div>
                     <div class="qr-code" id="qrcode"></div>

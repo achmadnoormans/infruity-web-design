@@ -95,7 +95,7 @@
                         <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
-                            <label class="form-label">Address</label>
+                            <label class="form-label">Alamat</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <input type="text" class="form-control mb-2" name="brand_address"
@@ -113,6 +113,42 @@
                             <input type="text" class="form-control mb-2" name="brand_social_media"
                                 placeholder="Ex : @infruity"
                                 value="{{ $data->brand_social_media ?? old('brand_social_media') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">No. Telepon</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="brand_phone"
+                                placeholder="Ex : (021) 12345678"
+                                value="{{ $data->brand_phone ?? old('brand_phone') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Header Pesan</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="brand_greeting"
+                                placeholder="Ex : Selamat datang di Infruity"
+                                value="{{ $data->brand_greeting ?? old('brand_greeting') }}">
+                            <!--end::Editor-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div>
+                            <!--begin::Label-->
+                            <label class="form-label">Catatan</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <input type="text" class="form-control mb-2" name="note"
+                                placeholder="Ex : Selamat datang di Infruity"
+                                value="{{ $data->note ?? old('note') }}">
                             <!--end::Editor-->
                         </div>
                         <!--end::Input group-->
@@ -172,7 +208,7 @@
                             <!--end::Description-->
                         </div>
                         <!--end::Input group--> --}}
-                        <!--begin::Input group-->
+                        {{-- <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
                             <label class="form-label">Footer</label>
@@ -185,7 +221,7 @@
                             <input type="hidden" name="footer" id="footer_input">
                             <!--end::Description-->
                         </div>
-                        <!--end::Input group-->
+                        <!--end::Input group--> --}}
                     </div>
                     <!--end::Billing address-->
                 </div>

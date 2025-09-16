@@ -81,6 +81,9 @@ class SettingNotaController extends Controller
             $settingNota->brand_name = $request->brand_name;
             $settingNota->brand_address = $request->brand_address;
             $settingNota->brand_social_media = $request->brand_social_media;
+            $settingNota->brand_phone = $request->brand_phone;
+            $settingNota->brand_greeting = $request->brand_greeting;
+            $settingNota->note = $request->note;
             $settingNota->is_using_cashier = $request->is_using_cashier ? true : false;
             $settingNota->is_using_customer = $request->is_using_customer ? true : false;
             $settingNota->is_using_date = $request->is_using_date ? true : false;
