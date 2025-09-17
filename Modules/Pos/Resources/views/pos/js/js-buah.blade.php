@@ -636,7 +636,9 @@
                             text: 'Transaksi berhasil disimpan!',
                         });
                         // this.resetPOS(); // Reset cart dsb.
-                        window.location.href = '/pos';
+                        // window.location.href = '/pos';
+                        redirectToHome();
+                        
                     })
                     .catch(err => {
                         Swal.fire({
@@ -705,7 +707,8 @@
                         // console.log(res);
                         // this.resetPOS(); // Reset cart dsb.
                         if (typeof doneCallback === 'function') doneCallback();
-                        window.location.href = `/pos/payment/${res.transaksi_id}`;
+                        // window.location.href = `/pos/payment/${res.transaksi_id}`;
+                        redirectToPayment(res.transaksi_id);
                     })
                     .catch(err => {
                         Swal.fire({
