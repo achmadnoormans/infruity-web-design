@@ -39,7 +39,7 @@
                 <!-- Diskon -->
                 <div class="mb-3">
                     <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                    <input type="text" class="form-control" :value="formatRupiah(addProduct.discountNominal || 0)"
+                    <input type="text" class="form-control" inputmode="numeric" :value="formatRupiah(addProduct.discountNominal || 0)"
                         @input="updateDiscountValue">
                 </div>
 
@@ -47,7 +47,7 @@
                 <!-- Jumlah Harga -->
                 <div class="mb-3">
                     <label class="form-label">Jumlah Harga</label>
-                    <input type="text" class="form-control" x-model="addProduct.formattedAddTotalInput"
+                    <input type="text" class="form-control" inputmode="numeric" x-model="addProduct.formattedAddTotalInput"
                         @input="updateQtyFromAddTotal">
                 </div>
             </div>
