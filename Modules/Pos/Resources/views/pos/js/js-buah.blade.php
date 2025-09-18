@@ -946,7 +946,7 @@
                             processResults: data => ({
                                 results: data.map(item => ({
                                     id: item.id,
-                                    text: item.name,
+                                    text: item.name + ' ( ' + this.formatRupiah(item.price) + ' ) ',
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
