@@ -22,10 +22,13 @@ class PosModel extends Model
         'total',
         'discount',
         'ongkir',
+        'ongkir_discount',
         'ongkir_date',
         'ongkir_time',
         'status',
         'note',
+        'courier_id',
+        'ongkir_address',
         'created_by'
     ];
     protected $table = 'pos_transaction';

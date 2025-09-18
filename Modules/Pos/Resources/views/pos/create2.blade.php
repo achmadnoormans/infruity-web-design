@@ -173,13 +173,9 @@
                                 </button>
                             </li>
                             <li>
-                                <button class="dropdown-item" @click="openGiftModal()" x-show="isShowGiftButton">
-                                    <i class="ki-duotone ki-gift" >
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                        <span class="path4"></span>
-                                    </i> Hadiah
+                                <button class="dropdown-item" @click="openGiftModal()" {{-- x-show="isShowGiftButton" --}}>
+                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i>
+                                    <span class="text-success">Hadiah</span>
                                 </button>
                             </li>
                         </ul>

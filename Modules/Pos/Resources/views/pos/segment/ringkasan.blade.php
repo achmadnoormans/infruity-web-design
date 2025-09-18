@@ -42,21 +42,52 @@
                     </div>
                 </div>
 
-                <!-- Input Ongkir -->
-                <div class="mb-3">
-                    <label class="form-label mb-1">Biaya Pengiriman</label>
-                    <input type="text" class="form-control text-end" :value="formatRupiah(ongkirGlobal)"
-                        @input="updateOngkirGlobal">
-                </div>
-                <!-- Input Ongkir -->
-                <div class="mb-3 row">
-                    <div class="col">
-                        <label class="form-label mb-1">Jadwal</label>
-                        <input type="date" class="form-control" name="ongkir_date" id="ongkir_date">
-                    </div>
-                    <div class="col mt-1">
-                        <label class="form-label mb-1"></label>
-                        <input type="time" class="form-control" name="ongkir_time" id="ongkir_time">
+                <div x-data="{ showOngkir: false }" class="mb-3">
+                    <!-- Tombol Toggle -->
+                    <button type="button" class="btn btn-sm" :class="showOngkir ? 'btn-danger' : 'btn-outline-primary'"
+                        @click="showOngkir = !showOngkir">
+                        <template x-if="!showOngkir">
+                            <span><i class="fa fa-plus"></i> Tambah Ongkir</span>
+                        </template>
+                        <template x-if="showOngkir">
+                            <span><i class="fa fa-times"></i> Sembunyikan Ongkir</span>
+                        </template>
+                    </button>
+
+                    <!-- Input Note -->
+                    <div x-show="showOngkir" x-transition class="mt-2">
+                        <!-- Input Ongkir -->
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Biaya Pengiriman</label>
+                            <input type="text" class="form-control text-end" inputmode="numeric"
+                                :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Diskon Ongkir (Rp jika > 100, % jika ≤ 100)</label>
+                            <input type="text" class="form-control text-end" inputmode="numeric"
+                                :value="formatRupiah(diskonOngkir)" @input="updateDiskonOngkir">
+                        </div>
+                        <!-- Input Ongkir -->
+                        <div class="mb-3 row">
+                            <div class="col">
+                                <label class="form-label mb-1">Jadwal</label>
+                                <input type="date" class="form-control" name="ongkir_date" id="ongkir_date">
+                            </div>
+                            <div class="col mt-1">
+                                <label class="form-label mb-1"></label>
+                                <input type="time" class="form-control" name="ongkir_time" id="ongkir_time">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Pilih Kurir</label>
+                            <select class="form-control" name="courier_id" id="courier_id">
+                                <option value="">Pilih Kurir</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Alamat Pengiriman</label>
+                            <textarea name="ongkir_address" id="ongkir_address" cols="30" rows="5" class="form-control"></textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -89,8 +120,8 @@
         <div class="col">
             <!-- Di elemen root Alpine.js, misalnya -->
             <div x-data="{ loading: false }">
-                <button class="btn btn-sm btn-primary w-100" @click="loading = true; goToPayment(() => loading = false)"
-                    :disabled="loading">
+                <button class="btn btn-sm btn-primary w-100"
+                    @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
                     <template x-if="!loading">
                         <span>Bayar</span>
                     </template>

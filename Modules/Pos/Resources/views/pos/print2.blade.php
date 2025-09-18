@@ -642,6 +642,9 @@
 
             <!-- Items -->
             <div class="items-section">
+                @php
+                    $total = 0;
+                @endphp
                 @isset($detail)
                     {{-- {{ dd($detail) }} --}}
                     @foreach ($detail as $item)
@@ -655,8 +658,17 @@
                                         {{ tonumberround($item->price) }} x
                                         {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
                                     </span>
+                                    @php
+                                        $subTotal =
+                                            isset($item->discount) && $item->discount > 0
+                                                ? $item->subtotal + $item->discount
+                                                : $item->subtotal;
+                                    @endphp
                                     <span class="item-total">Rp
-                                        {{ isset($item->discount) && $item->discount > 0 ? tonumberround($item->subtotal + $item->discount) : tonumberround($item->subtotal) }}</span>
+                                        {{ tonumberround($subTotal) }}</span>
+                                    @php
+                                        $total += $subTotal;
+                                    @endphp
                                 </div>
                                 <div class="discount">
                                     @isset($item->discount)
@@ -665,6 +677,9 @@
                                                 ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
                                             </span>
                                             <span>- {{ tonumberround($item->discount) }}</span>
+                                            @php
+                                                $total -= $item->discount;
+                                            @endphp
                                         @endif
                                     @endisset
                                 </div>
@@ -691,12 +706,13 @@
             <!-- Totals -->
             @php
                 $discount = $data->discount;
-                $subtotal = $data->total;
+                $ongkir_discount = $data->ongkir_discount;
+                $subtotal = $total;
                 if ($discount <= 100) {
-                    $discount = ($discount / 100) * $data->total;
-                    $subtotal = $subtotal + $discount;
-                } else {
-                    $subtotal = $subtotal + $discount;
+                    $discount = ($discount / 100) * $subtotal;
+                }
+                if ($ongkir_discount <= 100) {
+                    $ongkir_discount = ($ongkir_discount / 100) * $data->ongkir;
                 }
             @endphp
             <div class="totals-section">
@@ -707,26 +723,47 @@
                 @if ($discount > 0)
                     <div class="total-line discount-line">
                         <span class="total-label">Diskon</span>
-                        <span class="total-value">{{ tonumberround($discount) }}</span>
+                        <span class="total-value">-{{ tonumberround($discount) }}</span>
                     </div>
+                    @php
+                        $subtotal -= $discount;
+                    @endphp
                 @endif
                 @if ($data->ongkir > 0)
                     <div class="total-line">
                         <span class="total-label">Biaya Pengiriman</span>
                         <span class="total-value">{{ tonumberround($data->ongkir) }}</span>
                     </div>
+                    @php
+                        $subtotal += $data->ongkir;
+                    @endphp
+                @endif
+                @if ($ongkir_discount > 0)
+                    <div class="total-line discount-line">
+                        <span class="total-label">Diskon Ongkir</span>
+                        <span class="total-value">-{{ tonumberround($ongkir_discount) }}</span>
+                    </div>
+                    @php
+                        $subtotal -= $ongkir_discount;
+                    @endphp
                 @endif
                 @if ($data->voucher > 0)
                     <div class="total-line">
                         <span class="total-label">Voucher</span>
                         <span class="total-value">-{{ tonumberround($data->voucher) }}</span>
                     </div>
+                    @php
+                        $subtotal -= $data->voucher;
+                    @endphp
                 @endif
                 @if (isset($deposito))
                     <div class="total-line">
                         <span class="total-label">Voucher</span>
                         <span class="total-value">-{{ tonumberround($deposito->voucher) }}</span>
                     </div>
+                    @php
+                        $subtotal -= $deposito->voucher;
+                    @endphp
                 @endif
             </div>
             <div class="totals-section">

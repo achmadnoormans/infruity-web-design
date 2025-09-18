@@ -24,6 +24,7 @@
             isShowGiftButton: false,
             diskonGlobal: 0,
             ongkirGlobal: 0,
+            diskonOngkir: 0,
 
             // Add Product
             showAddModal: false,
@@ -556,8 +557,10 @@
             get totalHargaKeseluruhan() {
                 const diskon = this.diskonGlobal;
                 const ongkir = this.ongkirGlobal;
+                const diskonOngkir = this.diskonOngkir;
 
                 let totalSetelahDiskon = 0;
+                let totalOngkir = 0;
                 if (diskon > 0 && diskon <= 100) {
                     // Diskon persen
                     totalSetelahDiskon = this.subtotal - (this.subtotal * (diskon / 100));
@@ -566,9 +569,17 @@
                     totalSetelahDiskon = this.subtotal - diskon;
                 }
 
+                if (diskonOngkir > 0 && diskonOngkir <= 100) {
+                    // Diskon persen
+                    totalOngkir = ongkir - (ongkir * (diskonOngkir / 100));
+                } else {
+                    // Diskon nominal
+                    totalOngkir = ongkir - diskonOngkir;
+                }
+
                 this.checkGiftButton(totalSetelahDiskon);
                 // Ongkir harus selalu ditambahkan
-                return Math.max(totalSetelahDiskon + ongkir, 0);
+                return Math.max(totalSetelahDiskon + totalOngkir, 0);
             },
             updateDiskonGlobal(e) {
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
@@ -577,6 +588,10 @@
             updateOngkirGlobal(e) {
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.ongkirGlobal = val;
+            },
+            updateDiskonOngkir(e) {
+                const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                this.diskonOngkir = val;
             },
             formatRupiah(number) {
                 number = parseFloat(number || 0);
@@ -599,6 +614,9 @@
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
+                const courierId = document.querySelector('select[name="courier_id"]').value;                
+                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                
 
                 const data = {
                     customer_id: customerId,
@@ -610,11 +628,14 @@
                     subtotal: this.subtotal,
                     discount: this.diskonGlobal,
                     ongkir: this.ongkirGlobal,
+                    discount_ongkir: this.diskonOngkir,
                     ongkir_date: ongkirDate,
                     ongkir_time: ongkirTime,
                     total: this.totalHargaKeseluruhan,
                     status: 'draft',
                     note: note,
+                    courier_id: courierId,
+                    ongkir_address: ongkirAddress,
                 };
 
                 // Simulasi kirim ke server
@@ -630,11 +651,11 @@
                     })
                     .then(res => res.json())
                     .then(res => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Transaksi berhasil disimpan!',
-                        });
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: 'Berhasil',
+                        //     text: 'Transaksi berhasil disimpan!',
+                        // });
                         // this.resetPOS(); // Reset cart dsb.
                         // window.location.href = '/pos';
                         redirectToHome();
@@ -666,6 +687,8 @@
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
+                const courierId = document.querySelector('select[name="courier_id"]').value;
+                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
 
                 const data = {
                     customer_id: customerId,
@@ -677,11 +700,14 @@
                     subtotal: this.subtotal,
                     discount: this.diskonGlobal,
                     ongkir: this.ongkirGlobal,
+                    discount_ongkir: this.diskonOngkir,
                     ongkir_date: ongkirDate,
                     ongkir_time: ongkirTime,
                     total: this.totalHargaKeseluruhan,
                     status: 'draft',
                     note: note,
+                    courier_id: courierId,
+                    ongkir_address: ongkirAddress,
                 };
 
                 // Simulasi kirim ke server
@@ -806,7 +832,8 @@
                         },
                         dropdownParent: $('#giftModal'),
                         ajax: {
-                            url: '/tier/get-gift/' + $('#tier_id').val(), // ganti sesuai route
+                            // url: '/tier/get-gift/' + $('#tier_id').val(), // ganti sesuai route
+                            url: '/ajax/listProduct', // ganti sesuai route
                             dataType: 'json',
                             delay: 250,
                             processResults: data => ({

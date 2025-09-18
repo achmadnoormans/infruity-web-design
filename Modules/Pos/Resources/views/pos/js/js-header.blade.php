@@ -117,48 +117,18 @@
     }
 </script>
 <script>
-    // Variabel penanda (flag) untuk mengizinkan navigasi.
-    let isNavigationAllowed = false;
-    const allowedPath = '/pos/payment/';
-
-    /**
-     * FUNGSI BARU: Gunakan fungsi ini untuk pindah ke halaman pembayaran.
-     * Ini akan memastikan flag diatur dengan benar sebelum navigasi.
-     */
-    function redirectToPayment(transaksiId) {
-        console.log('Navigasi ke halaman pembayaran diizinkan...');
-        // 1. Atur flag untuk MENGIZINKAN navigasi
-        isNavigationAllowed = true;
-
-        // 2. Lakukan navigasi
-        window.location.href = `/pos/payment/${transaksiId}`;
-    }
-
-    function redirectToHome(transaksiId) {
-        console.log('Navigasi ke halaman pembayaran diizinkan...');
-        // 1. Atur flag untuk MENGIZINKAN navigasi
-        isNavigationAllowed = true;
-
-        // 2. Lakukan navigasi
-        window.location.href = `/pos`;
-    }
-
-    // Event listener untuk klik tautan biasa (jika masih ada)
-    document.addEventListener('click', function(event) {
-        const link = event.target.closest('a');
-        if (link) {
-            const destinationUrl = new URL(link.href);
-            if (destinationUrl.pathname.startsWith(allowedPath)) {
-                isNavigationAllowed = true;
-            }
+    $('#courier_id').select2({
+        placeholder: 'Pilih produk',
+        ajax: {
+            url: '/staff/get-staff', // ganti sesuai route
+            dataType: 'json',
+            delay: 250,
+            processResults: data => ({
+                results: data.map(item => ({
+                    id: item.id,
+                    text: item.name,
+                }))
+            })
         }
-    });
-
-    // Event listener utama yang mencegah pengguna meninggalkan halaman.
-    window.addEventListener('beforeunload', function(event) {
-        if (!isNavigationAllowed) {
-            event.preventDefault();
-            event.returnValue = '';
-        }
-    });
+    })
 </script>

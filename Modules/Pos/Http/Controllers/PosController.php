@@ -296,11 +296,14 @@ class PosController extends Controller
             'subtotal' => 'required|numeric',
             'discount' => 'required|numeric',
             'ongkir' => 'required|numeric',
+            'discount_ongkir' => 'required|numeric',
             'total' => 'required|numeric',
             'status' => 'nullable|in:draft,paid,debt,temp',
             'ongkir_date' => 'nullable|date',
             'ongkir_time' => 'nullable',
             'note' => 'nullable',
+            'courier_id' => 'nullable',
+            'ongkir_address' => 'nullable',
         ]);
 
         try {
@@ -329,11 +332,14 @@ class PosController extends Controller
                 'total' => $data['total'],
                 'discount' => $data['discount'],
                 'ongkir' => $data['ongkir'],
+                'ongkir_discount' => $data['discount_ongkir'] ?? 0,
                 'ongkir_date' => $data['ongkir_date'] ?? null,
                 'ongkir_time' => $data['ongkir_time'] ?? null,
                 'status' => $data['status'] ?? 'draft',
                 'note' => $data['note'] ?? null,
                 'created_by' => $userId,
+                'courier_id' => $data['courier_id'] ?? null,
+                'ongkir_address' => $data['ongkir_address'] ?? null,
             ]);
             $pos->save();
 

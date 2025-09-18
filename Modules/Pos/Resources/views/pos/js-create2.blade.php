@@ -1,4 +1,5 @@
 @section('script')
+    @include('pos::pos.js.js-allowed')
     @include('pos::pos.js.js-header')
     @include('pos::pos.js.js-buah')
     @include('pos::pos.js.js-parcel')

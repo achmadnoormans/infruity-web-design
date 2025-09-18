@@ -22,10 +22,13 @@ return new class extends Migration
             $table->decimal('total', 15, 2)->nullable();
             $table->decimal('discount', 15, 2)->nullable();
             $table->decimal('ongkir', 15, 2)->nullable()->default(0);
+            $table->decimal('ongkir_discount', 15, 2)->nullable()->default(0);
             $table->enum('ongkir_status', ['draft', 'delivered'])->default('draft');
             $table->date('ongkir_date')->nullable();
             $table->time('ongkir_time')->nullable();
             $table->timestamp('delivered_at')->nullable();
+            $table->text('ongkir_address')->nullable();
+            $table->integer('courier_id')->nullable();
             $table->decimal('paid', 15, 2)->nullable();
             $table->decimal('return', 15, 2)->nullable();
             $table->integer('payment_method')->nullable();
