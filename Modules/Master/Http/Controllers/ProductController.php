@@ -240,12 +240,13 @@ class ProductController extends Controller
                     if (is_numeric($value)) {
                         $variant = Product::find($value);
                         $variant->is_variant = 1;
+                        $variant->price = $request->variant['price'][$key] ?? 0;
                         $variant->save();
                     } else {
                         $variant = new Product();
                         $variant->parent_id = $productId;
                         $variant->name = $value;
-                        $variant->price = $request->variant['price'][$key];
+                        $variant->price = $request->variant['price'][$key] ?? 0;
                         $variant->category_id = $product->category_id;
                         $variant->product_unit = $product->product_unit;
                         $variant->stock = $product->stock;

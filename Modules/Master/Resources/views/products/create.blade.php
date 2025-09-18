@@ -413,6 +413,7 @@
                                                             <input type="text" name="variant_price[]"
                                                                 class="form-control format-number mb-2"
                                                                 placeholder="Harga Produk"
+                                                                inputmode="numeric"
                                                                 value="{{ $item->price }}" />
                                                         </td>
                                                         <td class="text-end">
@@ -534,7 +535,7 @@
                     <select name="variant[id][]" class="form-select mb-2 select2_product"></select>
                 </td>
                 <td>
-                    <input type="text" name="variant[price][]" class="form-control format-number mb-2" placeholder="Harga Produk" />
+                    <input type="text" inputmode="numeric" name="variant[price][]" class="form-control format-number mb-2" placeholder="Harga Produk" />
                 </td>                    
                 <td class="text-end">
                     <button type="button" class="btn btn-icon btn-danger remove_variant">
