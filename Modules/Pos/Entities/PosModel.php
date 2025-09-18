@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
 use Modules\Master\Entities\PaymentMethod;
+use Modules\Master\Entities\Staff;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
@@ -82,6 +83,11 @@ class PosModel extends Model
     public function payment()
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method');
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(Staff::class, 'courier_id');
     }
 
     public function user()

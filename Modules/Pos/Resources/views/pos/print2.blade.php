@@ -797,6 +797,13 @@
                     @endif
                 </div>
             @endif
+            @if (isset($data->courier_id))
+                <div class="totals-section" style="line-height: 14px">
+                    <span class="label" style="font-size: 14px;">Barang akan dikirimkan ke :
+                        <br>{{ $data->ongkir_address ?? '-' }} <br>oleh :
+                        {{ $data->courier->name ?? '-' }}</span>
+                </div>
+            @endif
             <!-- Footer -->
             <div class="footer">
                 <div class="footer-content">
