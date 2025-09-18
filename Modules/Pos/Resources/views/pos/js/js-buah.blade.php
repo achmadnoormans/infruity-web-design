@@ -417,6 +417,14 @@
                     });
                     return;
                 }
+                if (!this.addProduct.price) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Harga produk belum diisi',
+                        text: 'Silakan isi harga produk terlebih dahulu.',
+                    });
+                    return;
+                }
 
                 const isExist = this.cart.some(item => item.id === this.addProduct.id);
                 if (isExist) {
@@ -1237,7 +1245,7 @@
 
                             <div class="col-3 mb-3">
                                 <label class="form-label">Qty</label>
-                                <input type="number" name="receipt_qty[]" class="form-control" value="${item.quantity ?? 1}" readonly>
+                                <input type="number" name="receipt_qty[]" class="form-control" value="${item.quantity ?? 1}">
                             </div>
                         </div>
                         <div class="row receipt-row mb-2">
