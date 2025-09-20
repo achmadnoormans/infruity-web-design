@@ -118,7 +118,7 @@
 </script>
 <script>
     $('#courier_id').select2({
-        placeholder: 'Pilih produk',
+        placeholder: 'Pilih Kurir',
         ajax: {
             url: '/staff/get-staff', // ganti sesuai route
             dataType: 'json',

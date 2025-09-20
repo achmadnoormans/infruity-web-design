@@ -65,7 +65,7 @@
 
         .invoice-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            /* grid-template-columns: 1fr 1fr; */
             gap: 10px;
             font-size: 14px;
         }
@@ -269,10 +269,10 @@
     <div class="receipt-container">
         <!-- Header -->
         <div class="receipt-header">
-            <div class="store-name">in!fruity</div>
+            <div class="store-name">{{ $setting->brand_name ?? 'in!fruity' }}</div>
             <div class="store-info">
-                Jl. Merdeka No. 123, Surabaya<br>
-                Telp: (031) 123-4567
+                {{ $setting->brand_address ?? 'Jl. Merdeka No. 123, Surabaya' }}<br>
+                Telp: {{ $setting->brand_phone ?? '(031) 123-4567' }}
             </div>
         </div>
 
@@ -283,7 +283,7 @@
                 <div class="section-title">Informasi Transaksi</div>
                 <div class="invoice-info">
                     <div class="info-item">
-                        <span class="info-label">No. Invoice:</span>
+                        <span class="info-label">No:</span>
                         <span
                             class="info-value">#{{ $data->invoice_number ?? 'INV-' . str_pad($data->id, 6, '0', STR_PAD_LEFT) }}</span>
                     </div>
@@ -342,14 +342,16 @@
                             <tr>
                                 <td class="item-name">{{ $item->product->name ?? '-' }}</td>
                                 <td class="item-qty">{{ $item->quantity }}</td>
-                                <td class="item-price">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
-                                <td class="item-price">Rp {{ number_format($itemTotal, 0, ',', '.') }}</td>
+                                <td class="item-price">{{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td class="item-price">{{ number_format($itemTotal, 0, ',', '.') }}</td>
                             </tr>
                             @isset($parcelDetail)
                                 @foreach ($parcelDetail as $parcel)
                                     @if ($parcel->production_id == $item->product_id)
                                         <tr style="border: none">
-                                            <td colspan="4" style="border: none">{{ $parcel->product->name ?? '-' }} {{ $parcel->quantity }} {{ $parcel->product->unit->abbreviation ?? '-' }}</td>
+                                            <td colspan="4" style="border: none">{{ $parcel->product->name ?? '-' }}
+                                                {{ $parcel->quantity }} {{ $parcel->product->unit->abbreviation ?? '-' }}
+                                            </td>
                                         </tr>
                                     @endif
                                 @endforeach
@@ -360,23 +362,49 @@
             </div>
 
             <!-- Summary -->
+            @php
+                $discount = $data->discount;
+                $ongkir_discount = $data->ongkir_discount;
+                if ($discount <= 100) {
+                    $discount = ($discount / 100) * $subtotal;
+                }
+                if ($ongkir_discount <= 100) {
+                    $ongkir_discount = ($ongkir_discount / 100) * $data->ongkir;
+                }
+            @endphp
             <div class="summary">
                 <div class="summary-row">
                     <span class="summary-label">Subtotal:</span>
                     <span class="summary-value">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                 </div>
-                @if ($data->tax_amount && $data->tax_amount > 0)
-                    <div class="summary-row">
-                        <span class="summary-label">Pajak:</span>
-                        <span class="summary-value">Rp {{ number_format($data->tax_amount ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                @endif
-                @if ($data->discount_amount && $data->discount_amount > 0)
+                @if ($discount > 0)
                     <div class="summary-row">
                         <span class="summary-label">Diskon:</span>
                         <span class="summary-value">-Rp
-                            {{ number_format($data->discount_amount ?? 0, 0, ',', '.') }}</span>
+                            {{ number_format($discount ?? 0, 0, ',', '.') }}</span>
                     </div>
+                    @php
+                        $subtotal -= $discount;
+                    @endphp
+                @endif
+                @if ($data->ongkir && $data->ongkir > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">Ongkir:</span>
+                        <span class="summary-value">Rp {{ number_format($data->ongkir, 0, ',', '.') }}</span>
+                    </div>
+                    @php
+                        $subtotal += $data->ongkir;
+                    @endphp
+                @endif
+                @if ($ongkir_discount > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">Diskon Ongkir:</span>
+                        <span class="summary-value">-Rp
+                            {{ number_format($ongkir_discount ?? 0, 0, ',', '.') }}</span>
+                    </div>
+                    @php
+                        $subtotal -= $ongkir_discount;
+                    @endphp
                 @endif
                 <div class="summary-row total-row">
                     <span class="summary-label">TOTAL:</span>
@@ -385,51 +413,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- <!-- Footer -->
-        <div class="receipt-footer">
-            <div class="thank-you">Terima kasih atas kunjungan Anda!</div>
-            <div>Barang yang sudah dibeli tidak dapat dikembalikan</div>
-            <div>Simpan struk ini sebagai bukti pembelian</div>
-        </div> --}}
-
-        <!-- Payment Form -->
-
-        @include('template.notif')
-        {{-- <form action="{{ route('receipt.payment', $data->id) }}" method="POST" style="padding: 20px;">
-            @csrf
-            <div class="section-title">Pembayaran</div>
-
-            <div style="margin-bottom: 10px;">
-                <label for="payment_method" style="display: block; font-weight: 500;">Metode Pembayaran</label>
-                <select name="payment_method" id="payment_method" required style="width: 100%; padding: 8px;"
-                    class="form-control">
-                    <option value="">-- Pilih --</option>
-                    <option value="cash">Cash</option>
-                    <option value="transfer">Transfer</option>
-                    <option value="qris">QRIS</option>
-                    <option value="ewallet">E-Wallet</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label for="paid_amount_display" style="display: block; font-weight: 500;">Nominal Dibayarkan</label>
-                <input type="text" id="paid_amount_display" class="form-control" style="width: 100%; padding: 8px;"
-                    required>
-
-                <!-- Ini hidden input yang menyimpan nilai asli -->
-                <input type="hidden" name="paid_amount" id="paid_amount">
-            </div>
-
-            <div style="margin-bottom: 10px;">
-                <label for="change_amount" style="display: block; font-weight: 500;">Kembalian</label>
-                <input type="text" id="change_amount" class="form-control" readonly
-                    style="width: 100%; padding: 8px; background: #e9ecef;">
-            </div>
-
-            <button type="submit" class="print-button">💾 Simpan Pembayaran</button>
-        </form> --}}
-
     </div>
 
     {{-- <button class="print-button" onclick="window.print()">🖨️ Cetak Receipt</button> --}}

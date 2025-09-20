@@ -1,7 +1,7 @@
 @section('script')
     <script type="text/javascript">
         $('#payment_id').select2({
-            placeholder: 'Select a payment',
+            placeholder: 'Pilih Pembayaran',
             ajax: {
                 url: '{{ route('ajax.getPaymentMethod') }}',
                 dataType: 'json',
@@ -21,7 +21,7 @@
         });
 
         $('#branch_id').select2({
-            placeholder: 'Select a branch',
+            placeholder: 'Pilih Cabang',
             ajax: {
                 url: '{{ route('ajax.getBranch') }}',
                 dataType: 'json',

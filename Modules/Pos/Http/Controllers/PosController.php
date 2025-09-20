@@ -130,6 +130,7 @@ class PosController extends Controller
         $data['data'] = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['parcelDetail'] = ProductionParcelDetail::with('product')->where('pos_id', $id)->get();
+        $data['setting'] = SettingNota::first();
         // dd($data);
         return view('pos::pos.receipt', $data);
     }
