@@ -19,6 +19,8 @@ class Payment extends Model
         'date',
         'total',
         'payment_method',
+        'payment_method_id',
+        'payment_amount',
         'branch_id',
         'created_by',
     ];

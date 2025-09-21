@@ -60,11 +60,44 @@
                 totalPayment: {{ $data->total - $data->paid }},
                 paymentDifference: 0,
                 loading: false,
+                paymentMethods: [],
 
-                init() {
+                async init() {
                     this.totalPayment = this.totalDue;
                     this.paymentDifference = 0;
 
+                    try {
+                        let res = await fetch("{{ route('ajax.getPaymentMethod') }}");
+                        let data = await res.json();
+                        this.paymentMethods = data; // pastikan server return array JSON [{id:1, name:'Cash'}, ...]
+                    } catch (e) {
+                        console.error("Gagal ambil payment methods:", e);
+                    }
+
+                    if (this.payments.length > 0) {
+                        this.payments[0].amount = this.totalDue;
+                    }
+
+                    this.payments.forEach((p, i) => {
+                        this.formatAmount(i);
+                    });
+                },
+
+                payments: [{
+                    payment_id: '',
+                    payment_name: '',
+                    amount: this.totalPayment,
+                }],
+                addPayment() {
+                    this.payments.push({
+                        payment_id: '',
+                        payment_name: '',
+                        amount: ''
+                    });
+                },
+
+                removePayment(index) {
+                    this.payments.splice(index, 1);
                 },
 
                 get formattedTotalPayment() {
@@ -74,6 +107,48 @@
                     const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
                     this.totalPayment = Number(raw || 0);
                     this.paymentDifference = this.totalPayment - this.totalDue;
+
+                    // update payment pertama jika ada
+                    if (this.payments.length > 0) {
+                        this.payments[0].amount = this.totalPayment;
+                    }
+                },
+
+                formatAmount(index) {
+                    let val = (this.payments[index].amount || '').toString().replace(/\D/g, "");
+                    let num = parseInt(val) || 0;
+                    this.payments[index].amount = num.toLocaleString('id-ID');
+                },
+
+                get totalPayment() {
+                    return this.payments.reduce((sum, p) => {
+                        let val = parseInt((p.amount || '').toString().replace(/\D/g, "")) || 0;
+                        return sum + val;
+                    }, 0);
+                },
+
+                get paymentStatus() {
+                    if (this.totalPayment > this.totalDue) {
+                        return {
+                            status: 'Lebih Bayar',
+                            selisih: this.totalPayment - this.totalDue
+                        };
+                    } else if (this.totalPayment < this.totalDue) {
+                        return {
+                            status: 'Kurang Bayar',
+                            selisih: this.totalDue - this.totalPayment
+                        };
+                    }
+                    return {
+                        status: 'Pembayaran pas ✔ ',
+                        selisih: 0
+                    };
+                },
+
+                setPaymentName(index) {
+                    const selectedId = this.payments[index].payment_id;
+                    const method = this.paymentMethods.find(m => m.id == selectedId);
+                    this.payments[index].payment_name = method ? method.name : '';
                 },
 
                 updatePayment(e) {
@@ -101,11 +176,11 @@
                 },
 
                 submitPayment() {
-                    this.loading = true; // mulai loading
+                    // this.loading = true; // mulai loading
 
                     const payload = {
                         date: document.querySelector('[name="date"]').value,
-                        payment_id: document.querySelector('[name="payment_id"]').value,
+                        payments: this.payments,
                         // account_id: document.querySelector('[name="account_id"]').value,
                         total_payment: this.totalPayment,
                         branch_id: document.querySelector('[name="branch_id"]').value,
@@ -113,7 +188,8 @@
                         transaction_id: '{{ $data->id ?? '' }}'
                     };
 
-                    if (!payload.payment_id || !payload.branch_id || !payload.date || !payload.total_payment) {
+                    console.log(payload);
+                    if (!payload.payments || !payload.branch_id || !payload.date || !payload.total_payment) {
                         Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
                         this.loading = false; // hentikan loading jika validasi gagal
                         return;

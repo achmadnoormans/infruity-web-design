@@ -69,7 +69,9 @@ return new class extends Migration
             $table->decimal('total', 15, 2);
             $table->decimal('remaining', 15, 2)->nullable()->default(0);
             $table->decimal('return', 15, 2)->nullable()->default(0);
-            $table->integer('payment_method');
+            $table->string('payment_method')->nullable();
+            $table->string('payment_method_id')->nullable();
+            $table->string('payment_amount')->nullable();
             $table->integer('branch_id')->nullable();
             $table->date('date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

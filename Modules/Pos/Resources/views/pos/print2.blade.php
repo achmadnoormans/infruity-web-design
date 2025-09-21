@@ -781,9 +781,30 @@
             @if (isset($payment))
                 <div class="payment-section">
                     <div class="payment-line">
-                        <span class="payment-label">Bayar</span>
-                        <span class="payment-value">Rp {{ tonumberround($payment->total) }}</span>
+                        <span class="payment-label"><b>Bayar</b></span>
+                        <span class="payment-value"><b>Rp {{ tonumberround($payment->total) }}</b></span>
                     </div>
+                    @php
+                        $methods = json_decode($payment->payment_method, true);
+                        $amounts = json_decode($payment->payment_amount, true);
+
+                        // gabungkan jadi list
+                        $list_payment = [];
+                        if (is_array($methods) && is_array($amounts)) {
+                            foreach ($methods as $i => $method) {
+                                $list_payment[] = [
+                                    'payment_method' => $method,
+                                    'payment_amount' => $amounts[$i] ?? null, // antisipasi mismatch
+                                ];
+                            }
+                        }
+                    @endphp
+                    @foreach ($list_payment as $key => $item)
+                        <div class="payment-line" style="margin-top: -10px">
+                            <span class="payment-label"> {{ $key + 1 }}. {{ ucwords($item['payment_method']) }}</span>
+                            <span class="payment-value">Rp {{ $item['payment_amount'] }}</span>
+                        </div>
+                    @endforeach
                     @if (isset($payment->return) && $payment->return > 0)
                         <div class="payment-line">
                             <span class="payment-label">Kembali</span>

@@ -173,7 +173,7 @@ class PosController extends Controller
             $pos->delete();
             PosDetailModel::where('pos_id', $id)->delete();
             Payment::where('pos_id', $id)->delete();
-            
+
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -196,7 +196,8 @@ class PosController extends Controller
             'transaction_id' => 'required|exists:pos_transaction,id',
             'branch_id' => 'required|exists:branch,id',
             // 'account_id' => 'required|exists:account,id',
-            'payment_id' => 'required|exists:payment_method,id',
+            // 'payment_id' => 'required|exists:payment_method,id',
+            'payments' => 'required|array',
             'total_payment' => 'required|numeric|min:1',
             'customer_id' => 'nullable',
         ]);
@@ -205,6 +206,10 @@ class PosController extends Controller
             DB::beginTransaction();
 
             // Simpan ke tabel pembayaran
+            $paymentNames = collect($data['payments'])->pluck('payment_name')->toArray();
+            $paymentIds   = collect($data['payments'])->pluck('payment_id')->toArray();
+            $paymentAmounts = collect($data['payments'])->pluck('amount')->toArray();
+
             $payment = new Payment([
                 'uuid' => Str::uuid(),
                 'date' => $data['date'],
@@ -212,7 +217,9 @@ class PosController extends Controller
                 'pos_id' => $data['transaction_id'],
                 'branch_id' => $data['branch_id'],
                 // 'account_id' => $data['account_id'],
-                'payment_method' => $data['payment_id'],
+                'payment_method' => json_encode($paymentNames),
+                'payment_method_id' => json_encode($paymentIds),
+                'payment_amount' => json_encode($paymentAmounts),
                 'total' => $data['total_payment'],
                 'created_by' => Auth::user()->id_user,
             ]);

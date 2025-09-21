@@ -13,7 +13,13 @@
                 <div class="text-start w-100 mb-4">
                     <div class="d-flex justify-content-between py-1 border-bottom">
                         <strong>Metode Pembayaran:</strong>
-                        <span class="text-muted">{{ strtoupper($data->paymentMethod->name) ?? '-' }}</span>
+                        <span class="text-muted">
+                            @foreach (json_decode($data->payment_method) as $method)
+                                {{ strtoupper($method) }} @if (!$loop->last)
+                                    ,
+                                @endif
+                            @endforeach
+                        </span>
                     </div>
                     <div class="d-flex justify-content-between py-1 border-bottom">
                         <strong>Total Tagihan:</strong>

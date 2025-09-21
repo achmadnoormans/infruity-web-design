@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        @if (isset($deposito) && ($data->total >= $deposito->voucher))
+        @if (isset($deposito) && $data->total >= $deposito->voucher)
             <div class="card card-body mb-5 bg-light-success rounded-3">
                 <div class="d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
@@ -36,42 +36,41 @@
                     <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}">
                 </div>
             </div>
-            <div class="d-flex flex-column gap-10 mb-3">
-                <!--begin::Input group-->
-                <div class="row">
+            <template x-for="(payment, index) in payments" :key="index">
+                <div class="row align-items-end mb-2">
                     <div class="col">
                         <div class="fv-row">
-                            <!--begin::Label-->
                             <label class="required form-label">Tipe Pembayaran</label>
-                            <select class="form-select" id="payment_id" name="payment_id">
-                                <option value="">Select Payment</option>
+                            <select class="form-select" x-model="payment.payment_id" @change="setPaymentName(index)">
+                                <option value="">Pilih Metode</option>
+                                <template x-for="method in paymentMethods" :key="method.id">
+                                    <option :value="method.id" x-text="method.name"></option>
+                                </template>
                             </select>
-                            <!--end::Editor-->
+
                         </div>
                     </div>
-                    {{-- <div class="col">
+                    <div class="col">
                         <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Acc. Kas</label>
-                            @php
-                                $accounts = [
-                                    '1' => 'Kas',
-                                    '2' => 'Bank',
-                                ];
-                            @endphp
-                            <select class="form-select" id="account_id" name="account_id">
-                                <option value="">Select Kas</option>
-                                @foreach ($accounts as $key => $account)
-                                    <option value="{{ $key }}">{{ $account }}</option>
-                                @endforeach
-                            </select>
-                            <!--end::Editor-->
+                            <label class="required form-label">Jumlah Pembayaran</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp.</span>
+                                <input type="text" class="form-control" x-model="payment.amount"
+                                    @input="formatAmount(index)">
+                            </div>
                         </div>
-                    </div> --}}
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-danger" @click="removePayment(index)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </div>
-                <!--end::Input group-->
-            </div>
-            <div class="d-flex flex-column mb-2">
+            </template>
+            <button type="button" class="btn btn-sm btn-primary mt-2" @click="addPayment()">
+                + Tambah Pembayaran
+            </button>
+            {{-- <div class="d-flex flex-column mb-2">
                 <div class="fv-row mb-2">
                     <label class="required form-label">Jumlah Pembayaran</label>
                     <div class="input-group">
@@ -88,6 +87,13 @@
                         Uang Kembalian Rp. <span x-text="formatRupiah(paymentDifference)"></span>
                     </small>
                 </div>
+            </div> --}}
+            <div class="text-end mt-3">
+                <span x-text="paymentStatus.status" class="text-primary"></span>
+                <template x-if="paymentStatus.selisih > 0">
+                    <span class="text-primary">(Rp <span
+                            x-text="paymentStatus.selisih.toLocaleString('id-ID')"></span>)</span>
+                </template>
             </div>
             <div class="d-flex flex-column">
                 <div class="fv-row mb-2">
