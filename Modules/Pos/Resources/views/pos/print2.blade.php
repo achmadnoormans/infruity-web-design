@@ -659,7 +659,10 @@
                                         {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
                                     </span>
                                     @php
-                                        $subTotal = $item->price * $item->quantity;
+                                        $subTotal =
+                                            isset($item->discount) && $item->discount > 0
+                                                ? $item->subtotal + $item->discount
+                                                : $item->subtotal;
                                     @endphp
                                     <span class="item-total">Rp
                                         {{ tonumberround($subTotal) }}</span>
@@ -671,14 +674,11 @@
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
                                             <span>Diskon
-                                                ({{ tonumberround($item->discount) }} per item)
+                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
                                             </span>
+                                            <span>- {{ tonumberround($item->discount) }}</span>
                                             @php
-                                                $discount = $item->discount * $item->quantity;
-                                            @endphp
-                                            <span>- {{ tonumberround($discount) }}</span>
-                                            @php
-                                                $total -= $discount;
+                                                $total -= $item->discount;
                                             @endphp
                                         @endif
                                     @endisset
@@ -801,8 +801,7 @@
                     @endphp
                     @foreach ($list_payment as $key => $item)
                         <div class="payment-line" style="margin-top: -10px">
-                            <span class="payment-label"> {{ $key + 1 }}.
-                                {{ ucwords($item['payment_method']) }}</span>
+                            <span class="payment-label"> {{ $key + 1 }}. {{ ucwords($item['payment_method']) }}</span>
                             <span class="payment-value">Rp {{ $item['payment_amount'] }}</span>
                         </div>
                     @endforeach
