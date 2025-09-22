@@ -336,7 +336,10 @@
                         @php $subtotal = 0; @endphp
                         @foreach ($detail as $item)
                             @php
-                                $itemTotal = $item->quantity * $item->price;
+                                $itemTotal =
+                                    isset($item->discount) && $item->discount > 0
+                                        ? $item->subtotal + $item->discount * $item->quantity
+                                        : $item->subtotal;
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>
@@ -348,9 +351,14 @@
                             @if ($item->discount && $item->discount > 0)
                                 <tr>
                                     <td colspan="2">Diskon</td>
-                                    <td style="text-align: right">{{ number_format($item->discount, 0, ',', '.') }}</td>
-                                    <td style="text-align: right">{{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
+                                    <td style="text-align: right">{{ number_format($item->discount, 0, ',', '.') }}
+                                    </td>
+                                    <td style="text-align: right">
+                                        {{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
                                 </tr>
+                                @php
+                                    $subtotal -= $item->discount * $item->quantity;
+                                @endphp
                             @endif
                             @isset($parcelDetail)
                                 @foreach ($parcelDetail as $parcel)
