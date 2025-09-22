@@ -344,7 +344,7 @@
                 const qty = parseFloat(this.addProduct.qty) || 0;
                 const price = parseFloat(this.addProduct.price) || 0;
                 const discount = parseFloat(this.addProduct.discount) || 0;
-                this.addProduct.total = (qty * price) - discount;
+                this.addProduct.total = qty * (price - discount);
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct.total);
             },
             updateQtyFromAddTotal(e) {
