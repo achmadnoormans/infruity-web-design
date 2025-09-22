@@ -1198,7 +1198,7 @@
                         fee: item.product.fee || 0,
                         kemasanId: item.parcel ? item.parcel.id : null,
                         kemasanName: item.parcel ? item.parcel.name : null,
-                        total_input: (item.price * item.quantity) - (item.discount || 0),
+                        total_input: item.subtotal || 0,
                         typeProduct: item.type || 'product',
                     };
                     this.cart.push(obj);
