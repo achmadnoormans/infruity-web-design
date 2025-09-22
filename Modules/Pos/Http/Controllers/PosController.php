@@ -207,7 +207,7 @@ class PosController extends Controller
 
             // Simpan ke tabel pembayaran
             $paymentNames = collect($data['payments'])->pluck('payment_name')->toArray();
-            $paymentIds   = collect($data['payments'])->pluck('payment_id')->toArray();
+            $paymentIds = collect($data['payments'])->pluck('payment_id')->toArray();
             $paymentAmounts = collect($data['payments'])->pluck('amount')->toArray();
 
             $payment = new Payment([
@@ -306,7 +306,8 @@ class PosController extends Controller
             'ongkir' => 'required|numeric',
             'discount_ongkir' => 'required|numeric',
             'total' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,debt,temp',
+            'status' => 'nullable|in:draft,paid,debt,temp,pending',
+            'process_status' => 'nullable|in:none,pending,done',
             'ongkir_date' => 'nullable|date',
             'ongkir_time' => 'nullable',
             'note' => 'nullable',
@@ -344,6 +345,7 @@ class PosController extends Controller
                 'ongkir_date' => $data['ongkir_date'] ?? null,
                 'ongkir_time' => $data['ongkir_time'] ?? null,
                 'status' => $data['status'] ?? 'draft',
+                'process_status' => $data['process_status'] ?? 'none',
                 'note' => $data['note'] ?? null,
                 'created_by' => $userId,
                 'courier_id' => $data['courier_id'] ?? null,
@@ -589,9 +591,9 @@ class PosController extends Controller
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
+                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
                 } else {
-                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
                 $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
                 $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total_due - ($item->voucher ?? 0)) . '</span>';

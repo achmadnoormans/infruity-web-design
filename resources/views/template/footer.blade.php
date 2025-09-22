@@ -26,14 +26,14 @@
 </div>
 <!--end::Footer-->
 <!-- Mobile Bottom Navigation -->
-<style>
+{{-- <style>
     .mobile-footer a:hover {
         color: #0d6efd !important;
         /* Bootstrap primary */
     }
-</style>
+</style> --}}
 
-<div class="mobile-footer d-flex d-md-none justify-content-around align-items-center bg-dark border-top py-2 position-fixed w-100 bottom-0 shadow"
+{{-- <div class="mobile-footer d-flex d-md-none justify-content-around align-items-center bg-dark border-top py-2 position-fixed w-100 bottom-0 shadow"
     style="z-index: 999;">
     <a href="{{ url('products') }}" class="text-center text-white">
         <i class="ki-duotone ki-home text-white"></i><br>
@@ -65,4 +65,4 @@
         <br>
         <small>Profil</small>
     </a>
-</div>
+</div> --}}

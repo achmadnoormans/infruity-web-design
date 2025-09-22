@@ -84,11 +84,6 @@
                         </div>
                         <!--end::Toolbar-->
                     </div>
-                    <!--begin::Add product-->
-                    <a href="{{ url('pos/create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                    <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
             </div>

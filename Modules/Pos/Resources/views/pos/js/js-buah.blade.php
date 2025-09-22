@@ -678,6 +678,78 @@
                         console.error(err);
                     });
             },
+            // Save Order Book
+            saveToOrderBook() {
+                if (this.cart.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Keranjang kosong',
+                        text: 'Silakan tambahkan produk terlebih dahulu!',
+                    });
+                    return;
+                }
+                const customerId = document.querySelector('select[name="customer_id"]').value;
+                const transactionDate = document.querySelector('input[name="date"]').value;
+                const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
+                const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
+                const note = document.querySelector('textarea[name="note"]').value;
+                const courierId = document.querySelector('select[name="courier_id"]').value;                
+                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                
+
+                const data = {
+                    customer_id: customerId,
+                    date: transactionDate,
+                    invoice_number: invoiceNumber,
+                    items: this.cart,
+                    parcel: this.parcel,
+                    jus: this.jus,
+                    subtotal: this.subtotal,
+                    discount: this.diskonGlobal,
+                    ongkir: this.ongkirGlobal,
+                    discount_ongkir: this.diskonOngkir,
+                    ongkir_date: ongkirDate,
+                    ongkir_time: ongkirTime,
+                    total: this.totalHargaKeseluruhan,
+                    process_status: 'pending',
+                    note: note,
+                    courier_id: courierId,
+                    ongkir_address: ongkirAddress,
+                };
+
+                // Simulasi kirim ke server
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                fetch('/pos/save-transaction', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: 'Berhasil',
+                        //     text: 'Transaksi berhasil disimpan!',
+                        // });
+                        // this.resetPOS(); // Reset cart dsb.
+                        // window.location.href = '/pos';
+                        redirectToHome();
+                        
+                    })
+                    .catch(err => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Gagal menyimpan transaksi.',
+                        });
+                        console.error(err);
+                    });
+            },
             // Pembayaran 
             goToPayment(doneCallback) {
                 if (this.cart.length === 0) {
@@ -773,8 +845,8 @@
                 const phone = document.querySelector('[x-model="customerPhone"]').value;
                 const address = document.querySelector('[x-model="customerAddress"]').value;
 
-                if (!name || !phone || !address) {
-                    Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
+                if (!name || !phone) {
+                    Swal.fire('Lengkapi data', 'Nama dan nomor telepon wajib diisi.', 'warning');
                     return;
                 }
 

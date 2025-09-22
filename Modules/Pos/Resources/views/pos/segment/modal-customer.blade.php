@@ -8,11 +8,11 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Nama</label>
+                    <label class="form-label required">Nama</label>
                     <input type="text" class="form-control" x-model="customerName" placeholder="Nama customer">
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">No WhatsApp</label>
+                    <label class="form-label required">No WhatsApp</label>
                     <input type="text" class="form-control" x-model="customerPhone" placeholder="08xxxxxxxxxx">
                 </div>
                 <div class="mb-3">

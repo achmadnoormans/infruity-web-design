@@ -90,30 +90,54 @@
     var data = @json($data ?? null);
     console.log(data);
     if ($url === 'edit' && data) {
-        // Data yang sesuai struktur Select2
-        let selectedCustomer = {
+        let c = {
             id: data.customer_id || 0,
-            name: data.customer.name || 'Pelanggan Umum',
-            address: data.customer.address || '-',
-            whatsapp: data.customer.whatsapp || '-',
-            tier_id: data.customer.customer_tier.tier_id || '',
-            tier_name: data.customer.customer_tier.tier_name || '-',
-            tier_style: data.customer.customer_tier.tier_style || 'badge-light-secondary'
+            name: data.customer?.name || 'Pelanggan Umum',
+            address: data.customer?.address || '-',
+            phone: data.customer?.whatsapp || '-',
+            tier_id: data.customer?.customer_tier?.tier_id || '',
+            tier_name: data.customer?.customer_tier?.tier_name || '-',
+            tier_style: data.customer?.customer_tier?.tier_style || 'badge-light-secondary'
         };
 
-        // Trigger langsung ke select2
-        $('#customer_id').select2('trigger', 'select', {
-            data: selectedCustomer
+        // Buat option baru
+        let option = new Option(c.name, c.id, true, true);
+
+        // Tambahkan atribut data-*
+        $(option).attr({
+            'data-name': c.name,
+            'data-address': c.address,
+            'data-whatsapp': c.phone,
+            'data-tier_id': c.tier_id,
+            'data-tier_name': c.tier_name,
+            'data-tier_style': c.tier_style
         });
+
+        // Append ke select2 + set value
+        $('#customer_id').append(option).val(c.id).trigger('change');
     } else {
-        $('#customer_id').select2('trigger', 'select', {
-            data: {
-                id: '0',
-                name: 'Pelanggan Umum',
-                address: '-',
-                whatsapp: '-'
-            }
+        let c = {
+            id: 0,
+            name: 'Pelanggan Umum',
+            address: '-',
+            phone: '-',
+            tier_id: '',
+            tier_name: '-',
+            tier_style: 'badge-light-secondary'
+        };
+
+        let option = new Option(c.name, c.id, true, true);
+
+        $(option).attr({
+            'data-name': c.name,
+            'data-address': c.address,
+            'data-whatsapp': c.phone,
+            'data-tier_id': c.tier_id,
+            'data-tier_name': c.tier_name,
+            'data-tier_style': c.tier_style
         });
+
+        $('#customer_id').append(option).val(c.id).trigger('change');
     }
 </script>
 <script>

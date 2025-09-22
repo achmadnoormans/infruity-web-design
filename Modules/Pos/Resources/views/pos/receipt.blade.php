@@ -267,14 +267,14 @@
 
 <body>
     <div class="receipt-container">
-        <!-- Header -->
+        {{-- <!-- Header -->
         <div class="receipt-header">
             <div class="store-name">{{ $setting->brand_name ?? 'in!fruity' }}</div>
             <div class="store-info">
                 {{ $setting->brand_address ?? 'Jl. Merdeka No. 123, Surabaya' }}<br>
                 Telp: {{ $setting->brand_phone ?? '(031) 123-4567' }}
             </div>
-        </div>
+        </div> --}}
 
         <!-- Body -->
         <div class="receipt-body">
@@ -412,6 +412,18 @@
                         {{ number_format($data->total_amount ?? $subtotal, 0, ',', '.') }}</span>
                 </div>
             </div>
+            @if ($data->ongkir)
+                <div class="section" style="margin-top: 20px">
+                    <div class="section-title">Informasi Pengiriman</div>
+                    <div class="customer-info">
+                        <div class="customer-name"></div>
+                        <div class="customer-details">
+                            Pesanan dikirim oleh : {{ $data->courier->name ?? '-' }}<br>
+                            ke : {{ $data->ongkir_address ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
