@@ -328,8 +328,8 @@
                         <tr>
                             <th>Item</th>
                             <th>Qty</th>
-                            <th>Harga</th>
-                            <th>Total</th>
+                            <th style="text-align: right">Harga</th>
+                            <th style="text-align: right">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -345,6 +345,13 @@
                                 <td class="item-price">{{ number_format($item->price, 0, ',', '.') }}</td>
                                 <td class="item-price">{{ number_format($itemTotal, 0, ',', '.') }}</td>
                             </tr>
+                            @if ($item->discount && $item->discount > 0)
+                                <tr>
+                                    <td colspan="2">Diskon</td>
+                                    <td style="text-align: right">{{ number_format($item->discount, 0, ',', '.') }}</td>
+                                    <td style="text-align: right">{{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
+                                </tr>
+                            @endif
                             @isset($parcelDetail)
                                 @foreach ($parcelDetail as $parcel)
                                     @if ($parcel->production_id == $item->product_id)

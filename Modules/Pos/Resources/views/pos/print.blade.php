@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
+    <meta name="keywords" content="buah, umkm, pasar" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
+    <meta property="og:url" content="https://infruity.com" />
+    <meta property="og:site_name" content="Infruity" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="canonical" href="https://infruity.com" />
+    <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.10/dist/easy.qrcode.min.js"></script>
-
-    <title>Receipt - Invoice #12345</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,179 +28,445 @@
         }
 
         body {
-            font-family: 'Roboto';
-            background-color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            /* font-family: 'Roboto'; */
+            background-color: #f3f4f6;
             padding: 20px;
-            line-height: 1.3;
-            color: #5f5d5d;
+            line-height: 1.5;
         }
 
-        .receipt-container {
-            max-width: 300px;
-            margin: 0 auto;
-            background: white;
-            border: 1px solid #000;
-        }
-
-        .receipt-header {
-            text-align: center;
-            padding: 15px 10px;
-            border-bottom: 1px dashed #000;
-        }
-
-        .store-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-
-        }
-
-        .store-info {
-            display: block;
-            /* Biar setiap .store-info tampil di baris baru */
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .receipt-body {
-            padding: 15px 10px;
-        }
-
-        .section {
-            margin-bottom: 15px;
-        }
-
-        .section-divider {
-            border-bottom: 1px dashed #000;
-            margin: 10px 0;
-        }
-
-        .info-row {
+        .container {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 3px;
-            font-size: 12px;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 40px);
         }
 
-        .info-label {
-            font-weight: normal;
+        .receipt {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
         }
 
-        .info-value {
-            font-weight: normal;
+        /* Header */
+        .header {
+            /* background: linear-gradient(135deg, #2563eb, #1d4ed8); */
+            /* color: white; */
+            text-align: center;
+            padding: 24px;
         }
 
+        .brand-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .tagline {
+            /* color: #bfdbfe; */
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* Customer Section */
         .customer-section {
-            margin: 15px 0;
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .customer-title {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .customer-name {
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 3px;
+        .avatar {
+            width: 48px;
+            height: 48px;
+            /* background: #2563eb; */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .star-icon {
+            width: 24px;
+            height: 24px;
+            color: white;
         }
 
         .customer-details {
-            font-size: 11px;
+            flex: 1;
         }
 
-        .items-header {
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0 8px 0;
-
+        .customer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            /* margin-bottom: 4px; */
         }
 
-        .items-table {
+        .level-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
             width: 100%;
-            font-size: 11px;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: visible;
+            position: relative;
         }
 
-        .items-table-header {
-            border-bottom: 1px solid #000;
-            padding-bottom: 3px;
-            margin-bottom: 5px;
+        .progress-fill {
+            width: var(--progress);
+            height: 100%;
+            /* background: linear-gradient(90deg, #f97316, #eab308, #22c55e, #16a34a);             */
+            /* background: var(--fill-color); */
+            background: #16a34a;
+            border-radius: 8px;
+            position: relative;
+            transition: width 0.3s ease;
         }
 
-        .table-row {
+        /* .progress-fill::before {
+            content: attr(data-percent) '%';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        } */
+
+        /* .progress-fill::before {
+            content: attr(data-percent) '%';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        } */
+
+        .progress-fill::before {
+            content: attr(data-percent) '%';
+            position: absolute;
+            top: 50%;
+            transform: translate({{ request()->mode == 2 ? '-50%' : '50%' }}, -50%);
+            left: {{ request()->mode == 2 ? '0' : 'auto' }};
+            right: {{ request()->mode == 2 ? 'auto' : '0' }};
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        /* Receipt Details */
+        .receipt-details {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item:nth-child(even) {
+            text-align: right;
+        }
+
+        .label {
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
+        .value {
+            /* font-weight: 500; */
+            font-size: 14px;
+            /* color: #1f2937; */
+            color: #6b7280;
+        }
+
+        /* Status */
+        .status-section {
+            padding: 16px 24px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge-danger {
+            display: inline-block;
+            background: #f56969;
+            color: #850505;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Items */
+        .items-section {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .item {
+            margin-bottom: 20px;
+        }
+
+        .item:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 3px;
+            align-items: flex-start;
+            /* margin-bottom: 4px; */
         }
 
         .item-name {
-            flex: 1;
-            padding-right: 5px;
-        }
-
-        .item-qty {
-            width: 70px;
-            text-align: center;
-        }
-
-        .item-price {
-            width: 60px;
-            text-align: right;
+            font-weight: 500;
+            color: #1f2937;
         }
 
         .item-total {
-            width: 70px;
+            /* font-weight: 500; */
+            color: #6b7280;
+        }
+
+        .item-price {
+            font-size: 14px;
+            color: #6b7280;
+            /* margin-bottom: 4px; */
+        }
+
+        .discount {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            /* color: #dc2626; */
+            color: #6b7280;
+        }
+
+        /* Totals */
+        .totals-section {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            /* margin-bottom: 8px; */
+            font-size: 14px;
+        }
+
+        .total-label {
+            color: #6b7280;
+        }
+
+        .total-value {
+            /* font-weight: 500; */
+            color: #6b7280;
+        }
+
+        .discount-line .total-value {
+            color: #dc2626;
+        }
+
+        .grand-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* padding-top: 12px; */
+            /* border-top: 1px solid #e5e7eb; */
+            /* margin-top: 8px; */
+        }
+
+        .grand-total-label {
+            font-weight: 600;
+            font-size: 18px;
+            color: #1f2937;
+        }
+
+        .grand-total-value {
+            font-weight: 700;
+            font-size: 18px;
+            /* color: #16a34a; */
+            color: #1f2937;
+        }
+
+        /* Payment */
+        .payment-section {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .payment-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .payment-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .payment-label {
+            color: #6b7280;
+        }
+
+        .payment-value {
+            /* font-weight: 500; */
+            color: #6b7280;
+        }
+
+        /* Footer */
+        .footer {
+            background: #f9fafb;
+            padding: 24px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .contact-info {
+            flex: 1;
             text-align: right;
         }
 
-        .summary-section {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #000;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            margin-bottom: 5px;
+        .footer-title {
             font-size: 12px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
         }
 
-        .summary-label {
-            font-weight: normal;
-        }
-
-        .summary-value {
-            font-weight: normal;
-        }
-
-        .total-row {
-            border-top: 1px dashed #000;
-            padding-top: 15px;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .receipt-footer {
-            text-align: center;
-            padding: 15px 10px;
-            border-top: 1px dashed #000;
-            font-size: 13px;
-        }
-
-        .thank-you {
-            font-weight: bold;
+        .footer-text {
+            text-align: right;
+            font-size: 11px;
+            color: #6b7280;
             margin-bottom: 8px;
-
         }
 
-        .footer-note {
-            margin-bottom: 3px;
+        .contact-details {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .qr-code svg {
+            width: 100px;
+            height: 100px;
+            color: #6b7280;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .receipt {
+                max-width: 100%;
+            }
+
+            .brand-name {
+                font-size: 24px;
+            }
+
+            .customer-section,
+            .receipt-details,
+            .items-section,
+            .totals-section,
+            .payment-section,
+            .footer {
+                padding: 20px;
+            }
+
+            .detail-grid {
+                gap: 12px;
+            }
+
+            /* .footer-content {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 16px;
+            } */
         }
 
         .button-group {
@@ -217,38 +494,6 @@
             color: #fff;
         }
 
-        @media print {
-            .button-group {
-                display: none;
-            }
-        }
-
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .receipt-container {
-                max-width: 100%;
-                border: none;
-            }
-
-            .store-name {
-                font-size: 16px;
-            }
-
-            .items-table {
-                font-size: 10px;
-            }
-
-            .item-price,
-            .item-total {
-                width: 55px;
-            }
-        }
-
         /* Print Styles */
         @media print {
             body {
@@ -256,178 +501,74 @@
                 padding: 0;
             }
 
-            .receipt-container {
+            .container {
+                /* min-height: auto; */
                 border: none;
+                /* max-width: 100%; */
+                min-width: auto;
                 max-width: 100%;
             }
 
-            .print-button {
+            .receipt {
+                box-shadow: none;
+                padding: 10px 5px;
+                max-width: 100%;
+                /* border: 1px solid #e5e7eb; */
+            }
+
+            .button-group {
                 display: none;
             }
-
-            .receipt-header,
-            .receipt-body,
-            .receipt-footer {
-                padding: 10px 5px;
-            }
-        }
-
-        .receipt-header2 {
-            display: flex;
-            align-items: center;
-            /* Vertical center alignment */
-            gap: 10px;
-            /* Space between logo dan teks */
-            padding: 15px 10px;
-            text-align: center;
-            /* Pastikan teks rata kiri */
-        }
-
-        .receipt-logo {
-            max-width: 60px;
-            /* Logo fix width */
-            height: auto;
-        }
-
-        .receipt-text .store-name {
-            font-size: 18px;
-            font-weight: bold;
-            display: block;
-            /* Biar turun sendiri */
-            margin-bottom: 5px;
-        }
-
-        .receipt-text .store-info {
-            font-size: 12px;
-            line-height: 1.4;
-            display: block;
-            /* Biar masing-masing turun */
-        }
-
-        .progress-container {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-            height: 25px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: var(--progress);
-            background: linear-gradient(90deg, #28a745, #a2ff86);
-            border-radius: 999px 0 0 999px;
-            display: flex;
-            align-items: center;
-            padding-left: 10px;
-            color: white;
-            font-weight: bold;
-            transition: width 1s ease-in-out;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .progress-label {
-            position: absolute;
-            right: 10px;
-            color: #333;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .info-row.align-center {
-            align-items: center;
-        }
-
-        .progress-inline-container {
-            flex: 1;
-            position: relative;
-            height: 18px;
-            background-color: #e0e0e0;
-            border-radius: 999px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            margin-left: 10px;
-        }
-
-        .progress-inline-bar {
-            height: 100%;
-            width: var(--progress);
-            background: linear-gradient(90deg, #28a745, #a2ff86);
-            border-radius: 999px;
-            transition: width 1s ease-in-out;
-        }
-
-        .progress-inline-label {
-            position: absolute;
-            right: 8px;
-            color: #333;
-            font-size: 0.75rem;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .receipt-container {
-            position: relative;
-            /* Wajib: agar posisi absolute di dalamnya bekerja */
-        }
-
-        .receipt-overlay-photo {
-            position: absolute;
-            top: 1px;
-            right: 1px;
-            width: 90px;
-            height: auto;
-            z-index: 100;
-            opacity: 0.9;
-            border-radius: 8px;
         }
     </style>
 </head>
 
 <body>
-    <div class="receipt-container">
-        <!-- Header -->
-        <div class="receipt-container">
-            <!-- Foto overlay -->
-            <img src="{{ asset('images/42828.png') }}" alt="Overlay" class="receipt-overlay-photo">
-
+    <div class="container">
+        <div class="receipt">
             <!-- Header -->
-            @if ($setting->is_using_logo && $setting->logo)
-                <div class="receipt-header2">
-                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo" class="receipt-logo">
-                    <div class="receipt-text">
-                        <span class="store-name">{{ $setting->brand_name }}</span>
-                        <span class="store-info">{{ $setting->brand_address }}</span>
-                        <span class="store-info">{{ $setting->brand_social_media }}</span>
-                    </div>
-                </div>
-            @else
-                <div class="receipt-header">
-                    <span class="store-name">{{ $setting->brand_name }}</span>
-                    <span class="store-info">{{ $setting->brand_address }}</span>
-                    <span class="store-info">{{ $setting->brand_social_media }}</span>
-                </div>
-            @endif
-        </div>
+            <div class="header">
+                <h1 class="brand-name">{{ $setting->brand_name }}</h1>
+                <p class="tagline">{{ $setting->brand_address }}</p>
+                <p class="tagline">{{ $setting->brand_social_media }}</p>
+            </div>
 
-        <!-- Body -->
-        <div class="receipt-body">
-            <!-- Invoice Info -->
-            <div class="section">
-                @if ($setting->is_using_invoice_number)
-                    <div class="info-row">
-                        <span class="info-label">No. Nota</span>
-                        <span class="info-value">{{ $data->invoice_number }}</span>
-                    </div>
-                @endif
-                @if ($setting->is_using_customer)
+            <!-- Customer Profile -->
+            <div class="customer-section">
+                <div class="customer-info">
+                    @isset($tier->tier_name)
+                        <div class="avatar">
+                            @php
+                                $assetPath = asset('images/icon/bronze-icon.png');
+                                // if (isset($tier->tier_name)) {
+                                //     switch ($tier->tier_name) {
+                                //         case 'Bronze':
+                                //             $assetPath = asset('images/icon/bronze-icon.png');
+                                //             break;
+                                //         case 'Silver':
+                                //             $assetPath = asset('images/icon/silver-icon.png');
+                                //             break;
+                                //         case 'Gold':
+                                //             $assetPath = asset('images/icon/gold-icon.png');
+                                //             break;
+                                //         case 'Platinum':
+                                //             $assetPath = asset('images/icon/platinum-icon.png');
+                                //             break;
+                                //         default:
+                                //             $assetPath = asset('images/icon/bronze-icon.png');
+                                //             break;
+                                //     }
+                                // }
+                                if (isset($tier->icon)) {
+                                    $assetPath = asset('storage/' . $tier->icon);
+                                }
+                            @endphp
+                            <img src="{{ $assetPath }}" alt="icon" width="48">
+                        </div>
+                    @endisset
                     @php
+                        $currentExp = 0;
+                        $maxExp = 0;
                         if (isset($tier)) {
                             $currentExp = $tier->customer_exp;
                             $maxExp = $tier->max_exp ?? $tier->min_exp;
@@ -435,139 +576,280 @@
                         } else {
                             $percent = 0;
                         }
+
+                        $color = match (true) {
+                            $percent <= 25 => '#dc2626', // merah
+                            $percent <= 50 => '#eab308', // kuning
+                            $percent <= 75 => '#f97316', // orange
+                            default => '#16a34a', // hijau
+                        };
                     @endphp
-                    <div class="info-row">
-                        <span class="info-label">Pelanggan</span>
-                        <span class="info-value">{{ $data->customer->name ?? 'Umum' }}</span>
+                    <div class="customer-details">
+                        <h2 class="customer-name">{{ $data->customer->name ?? 'Pelanggan Umum' }}</h2>
+                        @isset($tier->tier_name)
+                            <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
+                                ({{ tonumberround(floatval($currentExp)) ?? 0 }} /
+                                {{ tonumberround(floatval($maxExp)) ?? 0 }})</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="--progress: {{ $percent }}%; --fill-color: {{ $color }};"
+                                    data-percent="{{ round($percent) }}"></div>
+                            </div>
+                        @endisset
                     </div>
-                    @isset($data->customer->name)
-                        <div class="info-row">
-                            <span class="info-label">Class</span>
-                            <span class="info-value">{{ $tier->tier_name ?? 'Bronze' }} Member</span>
-                        </div>
-                        <div class="info-row align-center">
-                            <span class="info-label">Progress</span>
-                            <div class="progress-inline-container">
-                                <div class="progress-inline-bar" style="--progress: {{ $percent }}%;"></div>
-                                <span class="progress-inline-label">{{ number_format($percent, 1) }}%</span>
+                </div>
+            </div>
+
+            <!-- Receipt Details -->
+            <div class="receipt-details">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        @if ($setting->is_using_invoice_number)
+                            <span class="label">No. Struk</span>
+                        @endif
+                        @if ($setting->is_using_date)
+                            <span class="label">Waktu</span>
+                        @endif
+                        @if ($setting->is_using_cashier)
+                            <span class="label">Kasir</span>
+                        @endif
+                        <span class="label">Jenis Pembayaran</span>
+                    </div>
+                    <div class="detail-item">
+                        @if ($setting->is_using_invoice_number)
+                            <span class="value">{{ $data->invoice_number }}</span>
+                        @endif
+                        @if ($setting->is_using_date)
+                            <span class="value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
+                        @endif
+                        @if ($setting->is_using_cashier)
+                            <span
+                                class="value">{{ Str::limit(ucwords(strtolower($data->user->nm_user ?? 'Admin')), 15, '...') }}</span>
+                        @endif
+                        <span class="value">{{ ucwords(strtolower($payment->paymentMethod->name ?? '-')) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {{-- <!-- Status -->
+            <div class="status-section">
+                @if ($data->status == 'paid')
+                    <div class="status-badge">### LUNAS ###</div>
+                @else
+                    <div class="status-badge-danger">### BELUM LUNAS ###</div>
+                @endif
+            </div> --}}
+
+            <!-- Items -->
+            <div class="items-section">
+                @php
+                    $total = 0;
+                @endphp
+                @isset($detail)
+                    {{-- {{ dd($detail) }} --}}
+                    @foreach ($detail as $item)
+                        <div class="item">
+                            <div class="item-details">
+                                <div class="item-header">
+                                    <span class="item-name">{{ $item->product->name }}</span>
+                                </div>
+                                <div class="item-price" style=" display: flex;justify-content: space-between;">
+                                    <span>
+                                        {{ tonumberround($item->price) }} x
+                                        {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
+                                    </span>
+                                    @php
+                                        $subTotal =
+                                            isset($item->discount) && $item->discount > 0
+                                                ? $item->subtotal + $item->discount
+                                                : $item->subtotal;
+                                    @endphp
+                                    <span class="item-total">Rp
+                                        {{ tonumberround($subTotal) }}</span>
+                                    @php
+                                        $total += $subTotal;
+                                    @endphp
+                                </div>
+                                <div class="discount">
+                                    @isset($item->discount)
+                                        @if ($item->discount > 0)
+                                            <span>Diskon
+                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
+                                            </span>
+                                            <span>- {{ tonumberround($item->discount) }}</span>
+                                            @php
+                                                $total -= $item->discount;
+                                            @endphp
+                                        @endif
+                                    @endisset
+                                </div>
                             </div>
                         </div>
-                    @endisset
-                @endif
-                @if ($setting->is_using_date)
-                    <div class="info-row">
-                        <span class="info-label">Waktu</span>
-                        <span class="info-value">{{ date('d M Y, H:i', strtotime($data->created_at)) }}</span>
-                    </div>
-                @endif
-                @if ($setting->is_using_cashier)
-                    <div class="info-row">
-                        <span class="info-label">Kasir</span>
-                        <span class="info-value">{{ $data->user->nm_user ?? 'Admin' }}</span>
-                    </div>
-                @endif
-            </div>
-
-            <div class="section-divider"></div>
-
-            <div style="text-align: center; font-size: 16px; margin: 10px 0; color:#000;">
-                @if ($data->status == 'paid')
-                    <span>### LUNAS ###</span>
-                @else
-                    <span>### BELUM LUNAS ###</span>
-                @endif
-            </div>
-
-            <div class="section-divider"></div>
-
-            <div style="text-align: left; font-size: 12px; margin: 10px 0;">
-                @isset($detail)
-                    @foreach ($detail as $item)
-                        <table width="100%">
-                            <tr>
-                                <td colspan="2">{{ $item->product->name }}</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    {{ tonumberround($item->price) }} x
-                                    {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
-                                </td>
-                                <td style="text-align: right">{{ tonumberround($item->subtotal) }}</td>
-                            </tr>
-                            @isset($item->discount)
-                                @if ($item->discount > 0)
-                                    <tr>
-                                        <td>Diskon</td>
-                                        <td style="text-align: right">-{{ tonumberround($item->discount) }}</td>
-                                    </tr>
-                                @endif
-                            @endisset
-                            <tr>
-                                <td></td>
-                            </tr>
-                        </table>
                     @endforeach
                 @endisset
+                {{-- <div class="item">
+                    <div class="item-details">
+                        <div class="item-header">
+                            <span class="item-name">Pisang Cavendish</span>
+                            <span class="item-total">Rp 30.000</span>
+                        </div>
+                        <div class="item-price">Rp 30.000 x 1 (kg)</div>
+                        <div class="discount">
+                            <span>Diskon (10%)</span>
+                            <span>- Rp 3.000</span>
+                        </div>
+                    </div>
+                </div>
+                 --}}
             </div>
 
-            <!-- Summary -->
-            <div class="summary-section">
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span>{{ tonumberround($data->total + $data->discount) }}</span>
+            <!-- Totals -->
+            @php
+                $discount = $data->discount;
+                $ongkir_discount = $data->ongkir_discount;
+                $subtotal = $total;
+                if ($discount <= 100) {
+                    $discount = ($discount / 100) * $subtotal;
+                }
+                if ($ongkir_discount <= 100) {
+                    $ongkir_discount = ($ongkir_discount / 100) * $data->ongkir;
+                }
+            @endphp
+            <div class="totals-section">
+                <div class="total-line">
+                    <span class="total-label">Subtotal</span>
+                    <span class="total-value">{{ tonumberround($subtotal) }}</span>
                 </div>
-                @if ($data->discount > 0)
-                    <div class="summary-row">
-                        <span>Diskon</span>
-                        <span>-{{ tonumberround($data->discount) }}</span>
+                @if ($discount > 0)
+                    <div class="total-line discount-line">
+                        <span class="total-label">Diskon</span>
+                        <span class="total-value">-{{ tonumberround($discount) }}</span>
                     </div>
+                    @php
+                        $subtotal -= $discount;
+                    @endphp
                 @endif
-                <div class="summary-row total-row">
-                    <span>Total ({{ count($detail) }} Produk)</span>
-                    <span>{{ tonumberround($data->total) }}</span>
+                @if ($data->ongkir > 0)
+                    <div class="total-line">
+                        <span class="total-label">Biaya Pengiriman</span>
+                        <span class="total-value">{{ tonumberround($data->ongkir) }}</span>
+                    </div>
+                    @php
+                        $subtotal += $data->ongkir;
+                    @endphp
+                @endif
+                @if ($ongkir_discount > 0)
+                    <div class="total-line discount-line">
+                        <span class="total-label">Diskon Ongkir</span>
+                        <span class="total-value">-{{ tonumberround($ongkir_discount) }}</span>
+                    </div>
+                    @php
+                        $subtotal -= $ongkir_discount;
+                    @endphp
+                @endif
+                @if ($data->voucher > 0)
+                    <div class="total-line">
+                        <span class="total-label">Voucher</span>
+                        <span class="total-value">-{{ tonumberround($data->voucher) }}</span>
+                    </div>
+                    @php
+                        $subtotal -= $data->voucher;
+                    @endphp
+                @endif
+                @if (isset($deposito))
+                    <div class="total-line">
+                        <span class="total-label">Voucher</span>
+                        <span class="total-value">-{{ tonumberround($deposito->voucher) }}</span>
+                    </div>
+                    @php
+                        $subtotal -= $deposito->voucher;
+                    @endphp
+                @endif
+            </div>
+            <div class="totals-section">
+                <div class="grand-total">
+                    <span class="grand-total-label">Total ({{ count($detail) }} Produk)</span>
+                    @if (isset($deposito))
+                        <span class="grand-total-value">{{ tonumberround($data->total - $deposito->voucher) }}</span>
+                    @else
+                        <span class="grand-total-value">{{ tonumberround($data->total - $data->voucher) }}</span>
+                    @endif
                 </div>
             </div>
-            <div class="summary-section ">
-                @if (isset($payment))
-                    <div class="summary-row">
-                        <span>Bayar</span>
-                        <span>{{ tonumberround($payment->total) }}</span>
+
+            <!-- Payment -->
+            @if (isset($payment))
+                <div class="payment-section">
+                    <div class="payment-line">
+                        <span class="payment-label"><b>Bayar</b></span>
+                        <span class="payment-value"><b>Rp {{ tonumberround($payment->total) }}</b></span>
                     </div>
+                    @php
+                        $methods = json_decode($payment->payment_method, true);
+                        $amounts = json_decode($payment->payment_amount, true);
+
+                        // gabungkan jadi list
+                        $list_payment = [];
+                        if (is_array($methods) && is_array($amounts)) {
+                            foreach ($methods as $i => $method) {
+                                $list_payment[] = [
+                                    'payment_method' => $method,
+                                    'payment_amount' => $amounts[$i] ?? null, // antisipasi mismatch
+                                ];
+                            }
+                        }
+                    @endphp
+                    @foreach ($list_payment as $key => $item)
+                        <div class="payment-line" style="margin-top: -10px">
+                            <span class="payment-label"> {{ $key + 1 }}.
+                                {{ ucwords($item['payment_method']) }}</span>
+                            <span class="payment-value">Rp {{ $item['payment_amount'] }}</span>
+                        </div>
+                    @endforeach
                     @if (isset($payment->return) && $payment->return > 0)
-                        <div class="summary-row">
-                            <span>Kembalian</span>
-                            <span>{{ tonumberround($payment->return) }}</span>
+                        <div class="payment-line">
+                            <span class="payment-label">Kembali</span>
+                            <span class="payment-value">Rp {{ tonumberround($payment->return) }} -</span>
                         </div>
                     @else
-                        <div class="summary-row">
-                            <span>Kurang</span>
-                            <span>{{ tonumberround($payment->remaining) }}</span>
-                        </div>
+                        {{-- <div class="payment-line">
+                            <span class="payment-label">Kurang</span>
+                            <span class="payment-value">Rp {{ tonumberround($payment->remaining) }} -</span>
+                        </div> --}}
                     @endif
-                @else
-                    <div class="summary-row">
-                        <span>Bayar</span>
-                        <span>{{ tonumberround($data->paid) }}</span>
+                </div>
+            @endif
+            @if (isset($data->courier_id))
+                <div class="totals-section" style="line-height: 14px">
+                    <span class="label" style="font-size: 14px;">Barang akan dikirimkan ke :
+                        <br>{{ $data->ongkir_address ?? '-' }} <br>oleh :
+                        {{ $data->courier->name ?? '-' }}</span>
+                </div>
+            @endif
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-content">
+                    <div class="contact-info">
+                        <h3 class="footer-title">{{ $setting->brand_greeting }}</h3>
+                        <p class="footer-text">{{ $setting->note }}</p>
+                        <p class="contact-details">
+                            {{ $setting->brand_phone }} (WA/SMS)<br>
+                            Instagram: {{ $setting->brand_social_media }}
+                        </p>
                     </div>
-                @endif
+                    <div class="qr-code" id="qrcode"></div>
+                </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <div class="receipt-footer">
-            {!! $setting->footer !!}
+    </div>
+    @if (Request::segment(1) != 'cek-nota')
+        <div class="button-group">
+            <button class="print-button" onclick="window.print()">Cetak Receipt</button>
+            <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
+            <button class="print-button" onclick="downloadReceiptAsPNG()">Download PNG</button>
+            <button class="print-button" onclick="sendReceiptToWA()">Kirim ke WhatsApp</button>
         </div>
-        <div id="qrcode" style="text-align: center"></div>
-    </div>
-
-    <div class="button-group">
-        <button class="print-button" onclick="window.print()">Cetak Receipt</button>
-        <button class="print-button" onclick="window.location.href='{{ route('pos.index') }}'">Kembali</button>
-        <button class="print-button" onclick="downloadReceiptAsPNG()">Download PNG</button>
-        <button class="print-button" onclick="sendReceiptToWA()">Kirim ke WhatsApp</button>
-    </div>
-
-
+    @endif
 
     <script>
         // Auto print jika ada parameter print=true di URL
@@ -587,7 +869,7 @@
         }
 
         function downloadReceiptAsPNG() {
-            const receipt = document.querySelector('.receipt-container');
+            const receipt = document.querySelector('.container');
             html2canvas(receipt, {
                 scale: 2, // Lebih tajam
                 backgroundColor: '#fff',
@@ -600,63 +882,57 @@
         }
 
         function sendReceiptToWA() {
-            const receipt = document.querySelector('.receipt-container');
-            html2canvas(receipt, {
-                scale: 2,
-                backgroundColor: '#fff',
-            }).then(canvas => {
-                const base64Image = canvas.toDataURL('image/png');
-
-                fetch('/upload-receipt', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({
-                            image: base64Image
-                        }),
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.url) {
-                            const message = encodeURIComponent(
-                                `Halo, berikut bukti transaksi Anda:\n${data.url}`);
-                            const phone = '{{$data->customer->whatsapp ?? ''}}'; // Ganti dengan nomor tujuan
-                            const waUrl = `https://wa.me/${phone}?text=${message}`;
-                            window.open(waUrl, '_blank');
-                        } else {
-                            alert('Gagal upload gambar.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Terjadi kesalahan saat mengirim ke WhatsApp.');
-                    });
-            });
+            const url = "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}";
+            const message = encodeURIComponent(
+                `Halo, berikut bukti transaksi Anda:\n${url}`);
+            const phone = '{{ $data->customer->whatsapp ?? '' }}'; // Ganti dengan nomor tujuan
+            const waUrl = `https://wa.me/${phone}?text=${message}`;
+            window.open(waUrl, '_blank');
         }
+
+        // function sendReceiptToWA() {
+        //     const receipt = document.querySelector('.container');
+        //     html2canvas(receipt, {
+        //         scale: 2,
+        //         backgroundColor: '#fff',
+        //     }).then(canvas => {
+        //         const base64Image = canvas.toDataURL('image/png');
+
+        //         fetch('/upload-receipt', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json',
+        //                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        //                 },
+        //                 body: JSON.stringify({
+        //                     image: base64Image
+        //                 }),
+        //             })
+        //             .then(res => res.json())
+        //             .then(data => {
+        //                 if (data.url) {
+        //                     const message = encodeURIComponent(
+        //                         `Halo, berikut bukti transaksi Anda:\n${data.url}`);
+        //                     const phone = '6281230607050'; // Ganti dengan nomor tujuan
+        //                     const waUrl = `https://wa.me/${phone}?text=${message}`;
+        //                     window.open(waUrl, '_blank');
+        //                 } else {
+        //                     alert('Gagal upload gambar.');
+        //                 }
+        //             })
+        //             .catch(err => {
+        //                 console.error(err);
+        //                 alert('Terjadi kesalahan saat mengirim ke WhatsApp.');
+        //             });
+        //     });
+        // }
 
         document.addEventListener("DOMContentLoaded", function() {
             var options = {
-                text: "{{ url('/cek-nota') . '/' . $data->uuid }}",
+                text: "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}",
                 width: 100,
                 height: 100,
-                logo: "{{ asset('images/logo-infruity.png') }}", // Logo
-                logoWidth: 30,
-                logoHeight: 30,
                 quietZone: 5,
-                onRenderingEnd: function(qrCode) {
-                    setTimeout(() => {
-                        let canvas = document.querySelector("#qrcode canvas");
-                        if (canvas) {
-                            let qrBase64 = canvas.toDataURL("image/png"); // Convert ke base64
-                            document.getElementById("qrcodeInput").value = qrBase64;
-                            document.getElementById("qrcodeForm").submit(); // Kirim form otomatis
-                        } else {
-                            console.error("QR Code gagal dibuat.");
-                        }
-                    }, 5);
-                }
             };
 
             new QRCode(document.getElementById("qrcode"), options);

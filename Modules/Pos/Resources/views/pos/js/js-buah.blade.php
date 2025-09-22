@@ -383,14 +383,14 @@
                     this.addProduct.discountPercent = 0;
                 } else {
                     // Input dianggap persen
-                    let diskonRupiah = (input / 100) * subtotal;
+                    let diskonRupiah = (input / 100) * price;
                     this.addProduct.discount = diskonRupiah;
                     this.addProduct.discountNominal = input;
                     this.addProduct.discountPercent = input;
                 }
 
                 // Update total setelah diskon
-                const totalAfterDiscount = subtotal - this.addProduct.discount;
+                const totalAfterDiscount = subtotal - (this.addProduct.discount * qty);
                 this.addProduct.total = totalAfterDiscount;
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(totalAfterDiscount);
             },
