@@ -558,7 +558,11 @@
             // Method untuk rincian total
             get subtotal() {
                 return this.cart.reduce((sum, item) => {
-                    const total = (item.total_input || (item.price * item.qty) - (item.discount || 0));
+                    // Membersihkan total_input dari karakter non-angka
+                    const cleanTotalInput = item.total_input ? parseFloat(item.total_input.replace(/[^\d]/g,
+                        '')) : null;
+
+                    const total = (cleanTotalInput || (item.price * item.qty) - (item.discount || 0));
                     return sum + total;
                 }, 0);
             },
@@ -622,9 +626,9 @@
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
-                const courierId = document.querySelector('select[name="courier_id"]').value;                
+                const courierId = document.querySelector('select[name="courier_id"]').value;
                 const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
-                
+
 
                 const data = {
                     customer_id: customerId,
@@ -667,7 +671,7 @@
                         // this.resetPOS(); // Reset cart dsb.
                         // window.location.href = '/pos';
                         redirectToHome();
-                        
+
                     })
                     .catch(err => {
                         Swal.fire({
@@ -694,9 +698,9 @@
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
-                const courierId = document.querySelector('select[name="courier_id"]').value;                
+                const courierId = document.querySelector('select[name="courier_id"]').value;
                 const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
-                
+
 
                 const data = {
                     customer_id: customerId,
@@ -739,7 +743,7 @@
                         // this.resetPOS(); // Reset cart dsb.
                         // window.location.href = '/pos';
                         redirectToHome();
-                        
+
                     })
                     .catch(err => {
                         Swal.fire({
@@ -1026,7 +1030,8 @@
                             processResults: data => ({
                                 results: data.map(item => ({
                                     id: item.id,
-                                    text: item.name + ' ( ' + this.formatRupiah(item.price) + ' ) ',
+                                    text: item.name + ' ( ' + this.formatRupiah(item
+                                        .price) + ' ) ',
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
@@ -1189,16 +1194,16 @@
                     const obj = {
                         id: id,
                         name: item.product.name,
-                        price: item.price,
+                        price: Number(item.price || 0).toLocaleString('id-ID'), // pastikan number dulu
                         hpp: item.hpp || 0,
                         qty: item.quantity,
                         unit: item.product.unit.abbreviation,
-                        discount: item.discount || 0,
+                        discount: Number(item.discount || 0),
                         discountPercent: item.discountPercent || 0,
                         fee: item.product.fee || 0,
                         kemasanId: item.parcel ? item.parcel.id : null,
                         kemasanName: item.parcel ? item.parcel.name : null,
-                        total_input: item.subtotal || 0,
+                        total_input: Number(item.subtotal || 0).toLocaleString('id-ID'),
                         typeProduct: item.type || 'product',
                     };
                     this.cart.push(obj);
