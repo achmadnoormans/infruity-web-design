@@ -25,6 +25,7 @@ class Product extends Model
         'hpp',
         'fee',
         'created_by',
+        'tipe'
     ];
     protected $table = 'products';
 

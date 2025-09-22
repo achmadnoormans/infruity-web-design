@@ -500,13 +500,14 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
-        $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
-        if (empty($searchValue)) {
-            return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
-        }
+        // $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
+        // if (empty($searchValue)) {
+        //     return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
+        // }
         $query = Product::query()
             ->with('category')
-            ->where('name', 'like', '%' . $searchValue . '%');
+            ->where('tipe', '!=', 'parcel');
+            // ->where('name', 'like', '%' . $searchValue . '%');
 
         $data = $query->get();
         // $data = Product::all();
@@ -617,7 +618,7 @@ class ProductController extends Controller
 
     public function get_data_stock(Request $request)
     {
-        $query = DB::table('product_stock')->orderBy('stock_available', 'desc');
+        $query = DB::table('product_stock')->where('tipe', '!=', 'parcel')->orderBy('stock_available', 'desc');
         if ($request->has('stock_filter')) {
             if ($request->stock_filter === 'ada') {
                 $query->where('stock_available', '>', 0);
