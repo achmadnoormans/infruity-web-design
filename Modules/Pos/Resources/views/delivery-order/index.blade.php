@@ -198,13 +198,13 @@
             }
         }
 
-        function deleteProduct(id) {
+        function setSelesai(id) {
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Data yang dihapus tidak bisa dikembalikan!',
+                title: 'Barang diterima?',
+                text: 'Data yang dirubah tidak bisa dikembalikan!',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, hapus!',
+                confirmButtonText: 'Ya, diterima!',
                 cancelButtonText: 'Batal',
                 customClass: {
                     confirmButton: 'btn btn-danger',
@@ -214,8 +214,8 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/pos/${id}`, // Ganti dengan URL yang sesuai
-                        type: 'DELETE',
+                        url: `/delivery-order/set-selesai/${id}`, // Ganti dengan URL yang sesuai
+                        type: 'PUT',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
@@ -223,7 +223,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.',
+                                text: response.message || 'Data berhasil diubah.',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
@@ -236,7 +236,7 @@
                                 icon: 'error',
                                 title: 'Gagal',
                                 text: xhr.responseJSON?.message ||
-                                    'Terjadi kesalahan saat menghapus data.'
+                                    'Terjadi kesalahan saat mengubah data.'
                             });
                         }
                     });

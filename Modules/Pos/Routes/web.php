@@ -36,6 +36,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('setting-nota', SettingNotaController::class)->names('setting-nota')->except('show');
     Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');
     Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
+    Route::put('delivery-order/set-selesai/{id}', [DeliveryOrderController::class, 'setSelesai'])->name('delivery-order.set-selesai');
     Route::get('other-book', [OtherBookController::class, 'index'])->name('other-book');
     Route::put('other-book/set-selesai/{id}', [OtherBookController::class, 'setSelesai'])->name('other-book.set-selesai');
 });
