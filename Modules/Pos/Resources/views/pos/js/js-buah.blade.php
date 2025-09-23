@@ -556,11 +556,24 @@
             },
 
             // Method untuk rincian total
+            sanitizeNumber(value) {
+                if (value == null) return null;
+
+                if (typeof value === "string") {
+                    return parseFloat(value.replace(/[^\d]/g, "")) || 0;
+                }
+
+                if (typeof value === "number") {
+                    return value;
+                }
+
+                return 0; // fallback kalau tipenya aneh
+            },
+
             get subtotal() {
                 return this.cart.reduce((sum, item) => {
                     // Membersihkan total_input dari karakter non-angka
-                    const cleanTotalInput = item.total_input ? parseFloat(item.total_input.replace(/[^\d]/g,
-                        '')) : null;
+                    const cleanTotalInput = this.sanitizeNumber(item.total_input);
 
                     const total = (cleanTotalInput || (item.price * item.qty) - (item.discount || 0));
                     return sum + total;
