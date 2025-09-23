@@ -2,6 +2,7 @@
 
 namespace Modules\Pos\Http\Controllers;
 
+use DB;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -79,6 +80,22 @@ class OtherBookController extends Controller
         //
     }
 
+    public function setSelesai($id)
+    {
+        try {
+            DB::beginTransaction();
+            $pos = PosModel::find($id);
+            $pos->process_status = 'done';
+            $pos->process_date = date('Y-m-d H:i:s');
+            $pos->save();
+            DB::commit();
+            return response()->json(['success' => true]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+        }
+    }
+
     public function get_data(Request $request)
     {
         $query = PosModel::with('customer', 'payment')->where('process_status', '!=', 'none');
@@ -111,9 +128,9 @@ class OtherBookController extends Controller
             ->editColumn('process_status', function ($item) {
                 $html = '';
                 if ($item->process_status == 'pending') {
-                    $html .= '<span class="badge badge-light-success">Proses</span>';
+                    $html .= '<span class="badge badge-light-danger">Proses</span>';
                 } else if ($item->process_status == 'done') {
-                    $html .= '<span class="badge badge-light-danger">Selesai</span>';
+                    $html .= '<span class="badge badge-light-success">Selesai</span>';
                 } else {
                     $html .= '<span class="badge badge-light-warning">' . $item->process_status . '</span>';
                 }
@@ -131,17 +148,30 @@ class OtherBookController extends Controller
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                if (check_access('pos.show')) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
                                 </a>
-                            </li>
+                            </li>';
+                if (check_access('pos.set-selesai')) {
+                    $html .= '
+                            <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSelesai(' . $item->id . ')">
+                                <i class="bi bi-check2-circle"></i>
+                            </a>
+                        </li>';
+                }
+                $html .= '
                         </ul>
                     </div>
                     ';

@@ -45,7 +45,7 @@
                                     <div>
                                         <label class="form-label fs-6 fw-semibold">Status:</label>
                                         @php
-                                            $category = ['delivered', 'draft'];
+                                            $category = ['pending', 'done'];
                                         @endphp
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Status"
@@ -97,7 +97,7 @@
                             <th class="text-start min-w-150px">Nama Pelanggan</th>
                             <th class="text-start min-w-150px">Tanggal Proses</th>
                             <th class="text-start min-w-100px">Status</th>
-                            <th class="text-end"></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -193,13 +193,13 @@
             }
         }
 
-        function deleteProduct(id) {
+        function setSelesai(id) {
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Data yang dihapus tidak bisa dikembalikan!',
+                title: 'Selesaikan Pesanan?',
+                text: 'Data yang dirubah tidak bisa dikembalikan!',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, hapus!',
+                confirmButtonText: 'Ya, selesaikan!',
                 cancelButtonText: 'Batal',
                 customClass: {
                     confirmButton: 'btn btn-danger',
@@ -209,8 +209,8 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/pos/${id}`, // Ganti dengan URL yang sesuai
-                        type: 'DELETE',
+                        url: `/other-book/set-selesai/${id}`, // Ganti dengan URL yang sesuai
+                        type: 'PUT',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
@@ -218,12 +218,12 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Data berhasil dihapus.',
+                                text: response.message || 'Data berhasil diselesaikan.',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
 
-                            // Reload DataTable setelah berhasil menghapus data
+                            // Reload DataTable setelah berhasil selesaikan data
                             reloadDataTable();
                         },
                         error: function(xhr) {
@@ -231,7 +231,7 @@
                                 icon: 'error',
                                 title: 'Gagal',
                                 text: xhr.responseJSON?.message ||
-                                    'Terjadi kesalahan saat menghapus data.'
+                                    'Terjadi kesalahan saat selesaikan data.'
                             });
                         }
                     });

@@ -37,6 +37,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('setting-nota/view-receipt', [SettingNotaController::class, 'viewReceipt'])->name('setting-nota.view-receipt');
     Route::get('delivery-order', [DeliveryOrderController::class, 'index'])->name('delivery-order');
     Route::get('other-book', [OtherBookController::class, 'index'])->name('other-book');
+    Route::put('other-book/set-selesai/{id}', [OtherBookController::class, 'setSelesai'])->name('other-book.set-selesai');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/data', [PosController::class, 'get_data'])->name('pos-data');
