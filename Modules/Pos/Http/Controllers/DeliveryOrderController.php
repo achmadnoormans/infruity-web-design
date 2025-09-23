@@ -129,7 +129,14 @@ class DeliveryOrderController extends Controller
                 return $item->courier->name;
             })
             ->editColumn('ongkir', function ($item) {
-                return 'Rp. ' . number_format($item->ongkir, 0, ',', '.');
+                $html = '';
+                $html .= '<span class="text-muted d-block fs-8">Rp. ' . number_format($item->ongkir, 0, ',', '.') . '</span>';
+                if ($item->ongkri_status == 'delivered' && $item->payment_status == 'paid') {
+                    $html .= '<span class="badge badge-light-success">Selesai</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-danger">Process</span>';
+                }
+                return $html;
             })
             ->addColumn('total_price', function ($item) {
                 return 'Rp. ' . number_format($item->total_price, 0, ',', '.');
@@ -181,7 +188,7 @@ class DeliveryOrderController extends Controller
                     ';
                 return $html;
             })
-            ->rawColumns(['name', 'action', 'date'])
+            ->rawColumns(['name', 'action', 'date', 'ongkir'])
             ->make(true);
     }
 }
