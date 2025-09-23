@@ -1207,16 +1207,16 @@
                     const obj = {
                         id: id,
                         name: item.product.name,
-                        price: Number(item.price || 0).toLocaleString('id-ID'), // pastikan number dulu
+                        price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
                         hpp: item.hpp || 0,
-                        qty: item.quantity,
+                        qty: this.sanitizeNumber(Number(item.quantity)),
                         unit: item.product.unit.abbreviation,
-                        discount: Number(item.discount || 0),
+                        discount: this.sanitizeNumber(Number(item.discount || 0)),
                         discountPercent: item.discountPercent || 0,
                         fee: item.product.fee || 0,
                         kemasanId: item.parcel ? item.parcel.id : null,
                         kemasanName: item.parcel ? item.parcel.name : null,
-                        total_input: Number(item.subtotal || 0).toLocaleString('id-ID'),
+                        total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
                         typeProduct: item.type || 'product',
                     };
                     this.cart.push(obj);
