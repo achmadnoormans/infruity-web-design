@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Kiriman" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pesanan" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -95,9 +95,8 @@
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-start min-w-150px">Nama Pelanggan</th>
-                            <th class="text-start min-w-150px">Tanggal Pengiriman</th>
-                            <th class="text-start min-w-150px">Nama Kurir</th>
-                            <th class="text-start min-w-150px">Ongkir</th>
+                            <th class="text-start min-w-150px">Tanggal Proses</th>
+                            <th class="text-start min-w-100px">Status</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
@@ -131,7 +130,7 @@
                     targets: -1 // Disable sorting for action column
                 }, ],
                 ajax: {
-                    url: "{{ route('delivery-order.data') }}",
+                    url: "{{ route('other-book.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
@@ -156,12 +155,8 @@
                         className: 'text-center'
                     },
                     {
-                        data: 'courier',
-                        name: 'courier'
-                    },
-                    {
-                        data: 'ongkir',
-                        name: 'ongkir'
+                        data: 'process_status',
+                        name: 'process_status'
                     },
                     {
                         data: 'action',

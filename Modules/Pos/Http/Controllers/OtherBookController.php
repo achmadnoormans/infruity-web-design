@@ -7,12 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosModel;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
-class DeliveryOrderController extends Controller
+class OtherBookController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,7 +16,7 @@ class DeliveryOrderController extends Controller
      */
     public function index()
     {
-        return view('pos::delivery-order.index');
+        return view('pos::otherbook.index');
     }
 
     /**
@@ -85,9 +81,9 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'payment')->where('ongkir', '>', 0);
+        $query = PosModel::with('customer', 'payment')->where('process_status', '!=', 'none');
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
-            $query = $query->where('ongkir_status', $request->status_filter);
+            $query = $query->where('process_status', $request->status_filter);
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
@@ -101,37 +97,31 @@ class DeliveryOrderController extends Controller
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
-                    $html .= '<br><span class="text-muted d-block fs-7">' . ($item->ongkir_address) . '</span>';
+                    $html .= '<br><span class="text-muted d-block fs-7">' . ($item->customer->address) . '</span>';
                 } else {
                     $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
-                    $html .= '<br><span class="text-muted d-block fs-7">' . ($item->ongkir_address) . '</span>';
                 }
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;
             })
-            ->addColumn('courier', function ($item) {
-                return $item->courier->name;
-            })
             ->editColumn('ongkir', function ($item) {
                 return 'Rp. ' . number_format($item->ongkir, 0, ',', '.');
             })
-            ->addColumn('total_price', function ($item) {
-                return 'Rp. ' . number_format($item->total_price, 0, ',', '.');
-            })
-            ->addColumn('total_quantity', function ($item) {
-                return $item->total_quantity;
+            ->editColumn('process_status', function ($item) {
+                $html = '';
+                if ($item->process_status == 'pending') {
+                    $html .= '<span class="badge badge-light-success">Proses</span>';
+                } else if ($item->process_status == 'done') {
+                    $html .= '<span class="badge badge-light-danger">Selesai</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-warning">' . $item->process_status . '</span>';
+                }
+                return $html;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('d M Y', strtotime($item->ongkir_date)) . '</span>';
-                $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
-                if ($item->ongkir_status == 'delivered') {
-                    $html .= '<span class="badge badge-light-success">Diterima</span>';
-                } else if ($item->ongkir_status == 'draft') {
-                    $html .= '<span class="badge badge-light-danger">Belum Dikirm</span>';
-                } else {
-                    $html .= '<span class="badge badge-light-warning">' . $item->ongkir_status . '</span>';
-                }
+                $html = '<span class="text-muted d-block fs-8">' . date('d M Y', strtotime($item->process_date)) . '</span>';
+                $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->process_date)) . '</span>';
                 return $html;
             })
             ->addColumn('action', function ($item) {
@@ -157,7 +147,7 @@ class DeliveryOrderController extends Controller
                     ';
                 return $html;
             })
-            ->rawColumns(['name', 'action', 'date'])
+            ->rawColumns(['name', 'action', 'date', 'process_status'])
             ->make(true);
     }
 }

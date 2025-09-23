@@ -34,6 +34,7 @@ return new class extends Migration
             $table->integer('payment_method')->nullable();
             $table->enum('status', ['draft', 'paid', 'debt', 'temp', 'canceled', 'pending'])->default('draft');
             $table->enum('process_status', ['none','pending', 'done'])->default('none');
+            $table->timestamp('process_date')->nullable();
             $table->text('note')->nullable();
             $table->decimal('voucher', 15, 2)->nullable()->default(0);
             $table->integer('voucher_qty')->nullable()->default(0);

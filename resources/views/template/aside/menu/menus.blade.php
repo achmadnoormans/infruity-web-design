@@ -541,7 +541,7 @@
     </div>
     <!--end:Menu item-->
 @endif
-@if (check_access('pos.index') || check_access('delivery-order.index') || check_access('setting-nota.index'))
+@if (check_access('pos.index') || check_access('delivery-order.index') || check_access('other-book.index') || check_access('setting-nota.index'))
     <div class="menu-item pt-5">
         <!--begin:Menu content-->
         <div class="menu-content">
@@ -575,6 +575,18 @@
                 </i>
             </span>
             <span class="menu-title">Delivery Order</span>
+        </a>
+    @endif
+    @if (check_access('other-book.index'))
+        <a class="menu-link {{ Request::segment(1) == 'other-book' ? 'active' : '' }}"
+            href="{{ url('other-book') }}">
+            <span class="menu-icon">
+                <i class="ki-duotone ki-security-user">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+            </span>
+            <span class="menu-title">Pesanan</span>
         </a>
     @endif
     <!--end:Menu link-->
@@ -789,7 +801,8 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}" href="{{ url('report-transaction') }}">
+            <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}"
+                href="{{ url('report-transaction') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -880,7 +893,8 @@
         <!--begin:Menu item-->
         <div class="menu-item">
             <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'report-product-buang' ? 'active' : '' }}" href="{{ url('report-product-buang') }}">
+            <a class="menu-link {{ $link == 'report-product-buang' ? 'active' : '' }}"
+                href="{{ url('report-product-buang') }}">
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

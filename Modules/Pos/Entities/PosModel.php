@@ -28,6 +28,7 @@ class PosModel extends Model
         'ongkir_time',
         'status',
         'process_status',
+        'process_date',
         'note',
         'courier_id',
         'ongkir_address',

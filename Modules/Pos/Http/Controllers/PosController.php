@@ -346,6 +346,7 @@ class PosController extends Controller
                 'ongkir_time' => $data['ongkir_time'] ?? null,
                 'status' => $data['status'] ?? 'draft',
                 'process_status' => $data['process_status'] ?? 'none',
+                'process_date' => date('Y-m-d H:i:s'),
                 'note' => $data['note'] ?? null,
                 'created_by' => $userId,
                 'courier_id' => $data['courier_id'] ?? null,
