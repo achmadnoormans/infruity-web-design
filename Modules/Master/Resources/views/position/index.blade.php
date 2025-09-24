@@ -5,27 +5,25 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Position" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Posisi" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <!--begin::Export-->
-                    <a href="{{ url(Request::segment(1) . '/export') }}" class="btn btn-light-primary"> <i
-                            class="ki-outline ki-exit-up fs-2"></i>Export</a>
-                    <!--end::Export-->
+                <div class="card-toolbar ms-auto">
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer">Add Position</button>
+                        data-bs-target="#kt_modal_add_customer">
+                        <i class="fa fa-plus"></i>
+                    </button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -45,11 +43,9 @@
                                 </div>
                             </th> --}}
                             {{-- <th>No</th> --}}
-                            <th>Name</th>
-                            <th>Code</th>
-                            <th>Departmen</th>
-                            <th>Description</th>
-                            <th class="text-end">Actions</th>
+                            <th>Nama</th>
+                            <th>Departemen</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -163,7 +159,7 @@
             dataTable = $('#position-table').DataTable({
                 processing: true,
                 serverSide: true,
-                responsive: true,
+                // responsive: true,
                 ajax: {
                     url: "{{ route('position-data') }}",
                     data: function(d) {
@@ -180,16 +176,8 @@
                         name: 'name'
                     },
                     {
-                        data: 'code',
-                        name: 'code'
-                    },
-                    {
                         data: 'department_name',
                         name: 'department_name'
-                    },
-                    {
-                        data: 'description',
-                        name: 'description',
                     },
                     {
                         data: 'action',
