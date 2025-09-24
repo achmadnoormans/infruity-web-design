@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->enum('gender', ['male', 'female'])->nullable();
+            $table->integer('is_kurir')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -41,6 +42,7 @@ return new class extends Migration {
                 'description' => 'Staff IT',
                 'status' => 'aktif',
                 'gender' => 'male',
+                'is_kurir' => 1,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -58,6 +60,7 @@ return new class extends Migration {
                 'description' => 'Staff HRD',
                 'status' => 'aktif',
                 'gender' => 'male',
+                'is_kurir' => 0,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),
@@ -75,6 +78,7 @@ return new class extends Migration {
                 'description' => 'Staff Finance',
                 'status' => 'nonaktif',
                 'gender' => 'female',
+                'is_kurir' => 0,
                 'created_by' => 1,
                 'updated_by' => 1,
                 'created_at' => now(),

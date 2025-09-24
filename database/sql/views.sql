@@ -5,13 +5,15 @@ SELECT
     wholesale.order_number AS order_number,
     wholesale.status AS status,
     wholesale.order_date,
+    wholesale.created_at,
     COUNT(wholesale_product.id) AS total_product
 FROM wholesale
 JOIN wholesale_product ON wholesale_product.wholesale_id = wholesale.id
 GROUP BY 
     wholesale.id, 
     wholesale.status,
-    wholesale.order_date;
+    wholesale.order_date,
+    wholesale.created_at;
 
 DROP VIEW IF EXISTS transaction_stock;
 CREATE VIEW transaction_stock AS

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosModel;
+use Modules\Master\Entities\Staff;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -96,6 +97,23 @@ class DeliveryOrderController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $th->getMessage()]);
         }
+    }
+
+    public function getCourier(Request $request)
+    {
+        $staffs = Staff::all();
+        return view('pos::delivery-order.list-kurir', compact('staffs'));
+    }
+
+    public function updateCourier(Request $request)
+    {
+        $kurirIds = $request->input('kurir_ids', []);
+        $staffs = Staff::all();
+        foreach ($staffs as $staff) {
+            $staff->is_kurir = in_array($staff->id, $kurirIds);
+            $staff->save();
+        }
+        return response()->json(['success' => true]);
     }
 
     public function get_data(Request $request)

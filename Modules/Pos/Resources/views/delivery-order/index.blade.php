@@ -84,6 +84,10 @@
                         </div>
                         <!--end::Toolbar-->
                     </div>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#kt_modal_add_customer">
+                        <i class="bi bi-gear"></i>
+                    </button>
                 </div>
                 <!--end::Card toolbar-->
             </div>
@@ -106,6 +110,60 @@
                 <!--end::Table-->
             </div>
             <!--end::Card body-->
+        </div>
+    </div>
+    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
+        <!--begin::Modal dialog-->
+        <div class="modal-dialog modal-dialog-centered mw-650px">
+            <!--begin::Modal content-->
+            <div class="modal-content">
+                <!--begin::Form-->
+                <form class="form" action="{{ url(Request::segment(1)) . '/update-courier' }}"
+                    id="kt_modal_add_customer_form" data-kt-redirect="#">
+                    @csrf
+                    <!--begin::Modal header-->
+                    <div class="modal-header" id="kt_modal_add_customer_header">
+                        <!--begin::Modal title-->
+                        <h2 class="fw-bold">Pilih Kurir</h2>
+                        <!--end::Modal title-->
+                        <!--begin::Close-->
+                        <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
+                            <i class="ki-outline ki-cross fs-1"></i>
+                        </div>
+                        <!--end::Close-->
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body py-10 px-lg-17">
+                        <!--begin::Scroll-->
+                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+                            data-kt-scroll-dependencies="#kt_modal_add_customer_header"
+                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            <!--begin::Input group-->
+                            <div id="listKurir"></div>
+                            <!--end::Input group-->
+                        </div>
+                        <!--end::Scroll-->
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer flex-center">
+                        <!--begin::Button-->
+                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Batal</button>
+                        <!--end::Button-->
+                        <!--begin::Button-->
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
+                            <span class="indicator-label">Simpan</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                        </button>
+                        <!--end::Button-->
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+                <!--end::Form-->
+            </div>
         </div>
     </div>
     <a href="{{ url('pos/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
@@ -243,6 +301,129 @@
                 }
             });
         }
+
+        $('#kt_modal_add_customer').on('show.bs.modal', function() {
+            let targetDiv = $('#listKurir');
+            targetDiv.html('<div class="text-center py-5">Loading...</div>');
+
+            $.ajax({
+                url: "{{ url('/delivery-order/get-courier') }}",
+                type: "GET",
+                success: function(data) {
+                    targetDiv.html(data);
+
+                    // hancurkan dulu kalau sebelumnya sudah ada
+                    if ($.fn.DataTable.isDataTable('#kurir-table')) {
+                        $('#kurir-table').DataTable().destroy();
+                    }
+
+                    // baru init ulang
+                    $('#kurir-table').DataTable({
+                        responsive: true,
+                        searching: true,
+                        paging: true, // aktifkan dulu
+                        info: true
+                    });
+                },
+                error: function() {
+                    targetDiv.html('<div class="alert alert-danger">Gagal load data kurir.</div>');
+                }
+            });
+        });
+
+        document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
+            e.preventDefault(); // Mencegah form reset langsung
+            Swal.fire({
+                text: "Apakah Anda yakin ingin membatalkan?",
+                icon: "warning",
+                showCancelButton: !0,
+                buttonsStyling: !1,
+                confirmButtonText: "Ya, Batalkan!",
+                cancelButtonText: "Tidak, Kembali",
+                customClass: {
+                    confirmButton: "btn btn-primary",
+                    cancelButton: "btn btn-active-light"
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tutup modal manual
+                    const modal = bootstrap.Modal.getInstance(document.getElementById(
+                        'kt_modal_add_customer'));
+                    modal.hide();
+                    document.getElementById('kt_modal_add_customer_form').reset();
+                }
+            });
+        });
+
+        $('#kt_modal_add_customer_form').on('submit', function(e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+            var submitBtn = $('#kt_modal_add_customer_submit');
+
+            // Show loading
+            submitBtn.prop('disabled', true);
+            submitBtn.find('.indicator-label').hide();
+            submitBtn.find('.indicator-progress').show();
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message || 'Data berhasil disimpan.',
+                        showConfirmButton: false,
+                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
+                    }).then(() => {
+                        // 1. Reset form
+                       
+                        const modal = bootstrap.Modal.getInstance(document
+                            .getElementById('kt_modal_add_customer'));
+                        if (modal) modal.hide();
+
+                        // 6. Refresh DataTable
+                        if (typeof dataTable !== 'undefined') {
+                            dataTable.ajax.reload(null, false);
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    let errorText = 'Terjadi kesalahan.';
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        // Menggabungkan semua pesan error dalam <ul>
+                        const errors = xhr.responseJSON.errors;
+                        errorText = '<ul>';
+                        for (const key in errors) {
+                            if (errors.hasOwnProperty(key)) {
+                                errors[key].forEach(function(msg) {
+                                    errorText += `<li>${msg}</li>`;
+                                });
+                            }
+                        }
+                        errorText += '</ul>';
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorText = xhr.responseJSON.message;
+                    }
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        html: errorText // gunakan html, bukan text
+                    });
+                },
+                complete: function() {
+                    // Reset loading state
+                    submitBtn.prop('disabled', false);
+                    submitBtn.find('.indicator-label').show();
+                    submitBtn.find('.indicator-progress').hide();
+                }
+            });
+        });
     </script>
 @endsection
 @endsection

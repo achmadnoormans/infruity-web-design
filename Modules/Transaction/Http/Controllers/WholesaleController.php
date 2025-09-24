@@ -587,7 +587,7 @@ class WholesaleController extends Controller
                         </div>';
             })
             ->addColumn('order_date', function ($item) {
-                return dateindo($item->order_date);
+                return date('d F Y H:i', strtotime($item->created_at));
             })
             ->addColumn('status', function ($item) {
                 if ($item->status == 'draft') {
