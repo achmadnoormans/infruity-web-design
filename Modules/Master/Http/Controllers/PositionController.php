@@ -220,7 +220,7 @@ class PositionController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('department_name', function ($position) {
-                return $position->department->name;
+                return $position->department->name ?? '-';
             })
             ->addColumn('name', function ($position) {
                 $colors = ['warning', 'success', 'info', 'primary'];
