@@ -1043,8 +1043,7 @@
                             processResults: data => ({
                                 results: data.map(item => ({
                                     id: item.id,
-                                    text: item.name + ' ( ' + this.formatRupiah(item
-                                        .price) + ' ) ',
+                                    text: item.name,
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
@@ -1053,7 +1052,7 @@
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
-                        $('#kemasan_price').val(data.price);
+                        $('#kemasan_price').val(data.price.toLocaleString());
                         this.updateAddTotalFromQty();
                     });
                 }, 0);

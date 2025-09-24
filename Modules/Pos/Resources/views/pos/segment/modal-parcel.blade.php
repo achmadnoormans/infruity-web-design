@@ -23,15 +23,21 @@
                             placeholder="Masukkan budget">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Pilih Kemasan</label>
-                    <select id="select_kemasan" class="form-select"></select>
-                    <input type="hidden" id="kemasan_price" name="kemasan_price">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label class="form-label">Pilih Kemasan</label>
+                        <select id="select_kemasan" class="form-select"></select>
+                    </div>
+                    <div class="col mb-3">
+                        <label class="form-label">Harga</label>
+                        <input type="text" class="form-control format-number" id="kemasan_price" name="kemasan_price"
+                            readonly placeholder="Rp. 0">
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Biaya Jasa</label>
                     <input type="text" class="form-control format-number" id="parcel_jasa" name="parcel_jasa"
-                        placeholder="Masukkan Biaya jasa">
+                        inputmode="numeric" @input="updateTotal" placeholder="Masukkan Biaya jasa">
                 </div>
                 <hr>
 
