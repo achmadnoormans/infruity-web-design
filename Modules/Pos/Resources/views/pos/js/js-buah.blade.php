@@ -820,17 +820,9 @@
                     })
                     .then(res => res.json())
                     .then(res => {
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Berhasil',
-                        //     text: 'Transaksi berhasil disimpan!',
-                        //     showConfirmButton: false,
-                        //     timer: 1500
-                        // });
                         // console.log(res);
                         // this.resetPOS(); // Reset cart dsb.
                         if (typeof doneCallback === 'function') doneCallback();
-                        // window.location.href = `/pos/payment/${res.transaksi_id}`;
                         redirectToPayment(res.transaksi_id);
                     })
                     .catch(err => {

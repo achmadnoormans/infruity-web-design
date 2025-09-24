@@ -395,7 +395,7 @@ class PosController extends Controller
                     $product->save();
                     PosDetailModel::insert([
                         'pos_id' => $transaksiId,
-                        'parcel_id' => $parcel['kemasanId'],
+                        'parcel_id' => $parcel['kemasanId'] ?? Product::where('name', $parcel['kemasan'])->first()->id,
                         'product_id' => $product->id,
                         'price' => $product->price,
                         'quantity' => $parcel['qty'],
