@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('nickname')->nullable();
             $table->text('nik')->nullable();
             $table->text('contact')->nullable();
             $table->unsignedBigInteger('position_id')->nullable();
@@ -30,6 +31,7 @@ return new class extends Migration {
         DB::table('staff')->insert([
             [
                 'name' => 'Ahmad Saputra',
+                'nickname' => 'Ahmad',
                 'nik' => '3201010101010001',
                 'contact' => '081234567891',
                 'position_id' => 1,
@@ -46,6 +48,7 @@ return new class extends Migration {
             ],
             [
                 'name' => 'Budi Santoso',
+                'nickname' => 'Budi',
                 'nik' => '3201010101010002',
                 'contact' => '081234567892',
                 'position_id' => 2,
@@ -62,6 +65,7 @@ return new class extends Migration {
             ],
             [
                 'name' => 'Citra Lestari',
+                'nickname' => 'Citra',
                 'nik' => '3201010101010003',
                 'contact' => '081234567893',
                 'position_id' => 3,

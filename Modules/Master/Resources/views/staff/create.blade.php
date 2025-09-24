@@ -35,7 +35,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Gender</label>
+                            <label class="required form-label">Jenis Kelamin</label>
                             <!--end::Label-->
                             <!--begin::Select2-->
                             <select class="form-select mb-2" data-control="select2" data-hide-search="true"
@@ -48,14 +48,14 @@
                             </select>
                             <!--end::Select2-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set Gender of the staff.</div>
+                            <div class="text-muted fs-7">Atur jenis kelamin staff.</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Date In</label>
+                            <label class="required form-label">Tanggal Bergabung</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             @php
@@ -71,7 +71,7 @@
                                 class="form-control mb-2" value="{{ $tanggal }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the join date of the staff.</div>
+                            <div class="text-muted fs-7">Atur tanggal bergabung staff.</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
@@ -108,7 +108,7 @@
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->
-                    <div class="text-muted fs-7">Set the product status.</div>
+                    <div class="text-muted fs-7">Atur status staff.</div>
                     <!--end::Description-->
                     <!--begin::Datepicker-->
                     <div class="d-none mt-10">
@@ -142,14 +142,27 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Staff Name</label>
+                            <label class="required form-label">Nama Lengkap Staff</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="text" name="staff_name" class="form-control mb-2" placeholder="Staff name"
+                            <input type="text" name="staff_name" class="form-control mb-2" placeholder="Nama Staff"
                                 value="{{ $data->name ?? old('name') }}" />
                             <!--end::Input-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Name of Staff.
+                            <div class="text-muted fs-7">Nama Staff.
+                            </div>
+                            <!--end::Description-->
+                        </div>
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Nama Panggilan</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" name="nickname" class="form-control mb-2" placeholder="Nama Panggilan"
+                                value="{{ $data->nickname ?? old('nickname') }}" />
+                            <!--end::Input-->
+                            <!--begin::Description-->
+                            <div class="text-muted fs-7">Nama Panggilan Staff.
                             </div>
                             <!--end::Description-->
                         </div>
@@ -162,31 +175,31 @@
                                 value="{{ $data->nik ?? old('nik') }}" />
                             <!--end::Input-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Contact of Staff.
+                            <div class="text-muted fs-7">NIK Staff.
                             </div>
                             <!--end::Description-->
                         </div>
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Contact</label>
+                            <label class="form-label">No. Telepon</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="contact" class="form-control mb-2" placeholder="085xxxx"
                                 value="{{ $data->contact ?? old('contact') }}" />
                             <!--end::Input-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Contact of Staff.
+                            <div class="text-muted fs-7">No. Telepon Staff.
                             </div>
                             <!--end::Description-->
                         </div>
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Department</label>
+                            <label class="form-label">Departemen</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <select class="form-select mb-2" name="department" id="department"
                                 data-placeholder="Select a Department">
-                                @if (isset($data->department_id))
+                                @if (isset($department))
                                     <option value="{{ $department->id }}" selected>{{ $department->name }}</option>
                                 @endif
                             </select>
@@ -194,12 +207,12 @@
                         </div>
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Position</label>
+                            <label class="form-label">Posisi</label>
                             <!--end::Label-->
                             <!--begin::Input-->
                             <select class="form-select mb-2" name="position" id="position"
                                 data-placeholder="Select a Position">
-                                @if (isset($data->position_id))
+                                @if (isset($position))
                                     <option value="{{ $position->id }}" selected>{{ $position->name }}</option>
                                 @endif
                             </select>
@@ -220,7 +233,7 @@
                         </div>
                         <div>
                             <!--begin::Label-->
-                            <label class="form-label">Description</label>
+                            <label class="form-label">Deskripsi</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
                             <div id="kt_ecommerce_add_product_description" name="kt_ecommerce_add_product_description"
@@ -228,7 +241,7 @@
                             <input type="hidden" name="description" id="description_input">
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set a description to the staff.
+                            <div class="text-muted fs-7">Deskripsi singkat tentang staff.
                             </div>
                             <!--end::Description-->
                         </div>
@@ -241,12 +254,12 @@
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
-                    class="btn btn-light me-5">Cancel</a>
+                    class="btn btn-light me-5">Batal</a>
                 <!--end::Button-->
                 <!--begin::Button-->
                 <button type="submit" id="kt_ecommerce_edit_order_submit" class="btn btn-primary">
-                    <span class="indicator-label">Save Changes</span>
-                    <span class="indicator-progress">Please wait...
+                    <span class="indicator-label">Simpan</span>
+                    <span class="indicator-progress">Tunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
                 <!--end::Button-->

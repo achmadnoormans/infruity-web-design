@@ -95,10 +95,10 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-center min-w-200px">Name</th>
-                            <th class="min-w-150px">Position</th>
-                            <th class="min-w-100px">Date In</th>
-                            <th class="text-end min-w-70px">Actions</th>
+                            <th class="text-center min-w-200px">Nama</th>
+                            <th class="min-w-150px">Jabatan</th>
+                            <th class="min-w-150px">Tanggal Masuk</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
