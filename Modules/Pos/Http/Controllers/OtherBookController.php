@@ -157,13 +157,15 @@ class OtherBookController extends Controller
                                 </a>
                             </li>';
                 }
-                $html .= '
+                if (in_array($item->process_status, ['pending']) && check_access('pos.edit')) {
+                    $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
-                                    <i class="bi bi-cash-stack"></i>
+                                <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
-                if (check_access('pos.set-selesai')) {
+                }
+                if (in_array($item->process_status, ['pending'])) {
                     $html .= '
                             <li>
                             <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSelesai(' . $item->id . ')">
