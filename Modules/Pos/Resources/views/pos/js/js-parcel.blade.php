@@ -79,6 +79,24 @@
                 this.updateTotal();
             },
 
+            updateQty(index) {
+                console.log('updateQty', index);
+                const item = this.parcels[index];
+
+                // Pastikan harga asli tersimpan (misalnya item.priceAwal = harga satuan)
+                const hargaAwal = Number(item.priceAwal || 0);
+                const qty = Number(item.qty || 1);
+
+                // Hitung ulang total price berdasarkan qty
+                const total = hargaAwal * qty;
+
+                item.price = total;
+                item.priceFormatted = this.formatRupiah(total);
+
+                // update total keseluruhan juga
+                this.updateTotal();
+            },
+
             parseNumber(value) {
                 if (!value) return 0;
 

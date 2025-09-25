@@ -51,7 +51,8 @@
                                 </div>
                                 <div class="col-3 mb-3">
                                     <label class="form-label">Qty</label>
-                                    <input type="number" class="form-control" min="1" x-model.number="item.qty">
+                                    <input type="number" class="form-control" min="1" x-model.number="item.qty" 
+                                    @input="updateQty(index)">
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -132,7 +133,7 @@
                                 <div class="col-3 mb-3">
                                     <label class="form-label">Qty</label>
                                     <input type="number" class="form-control" min="1"
-                                        x-model.number="item.qty">
+                                        x-model.number="item.qty" @input="updateQty(index)">
                                 </div>
                             </div>
                             <div class="mb-3">
