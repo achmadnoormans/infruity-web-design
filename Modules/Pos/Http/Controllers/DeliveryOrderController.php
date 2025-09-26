@@ -144,7 +144,11 @@ class DeliveryOrderController extends Controller
                 return $html;
             })
             ->addColumn('courier', function ($item) {
-                return $item->courier->name ?? '-';
+                $courier = $item->courier->name ?? '-';
+                $html = '';
+                $html .= '<span class="text-muted d-block fs-5">' . ($courier) . '</span>';
+                $html .= '<span class="text-muted d-block fs-8">Rp. ' . number_format($item->ongkir, 0, ',', '.') . '</span>';
+                return $html;
             })
             ->editColumn('ongkir', function ($item) {
                 $html = '';
@@ -165,12 +169,24 @@ class DeliveryOrderController extends Controller
             ->addColumn('date', function ($item) {
                 $html = '<span class="text-muted d-block fs-8">' . date('d M Y', strtotime($item->ongkir_date)) . '</span>';
                 $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
+                return $html;
+            })
+            ->addColumn('status', function ($item) {
+                $html = '';
                 if ($item->ongkir_status == 'delivered') {
                     $html .= '<span class="badge badge-light-success">Diterima</span>';
                 } else if ($item->ongkir_status == 'draft') {
                     $html .= '<span class="badge badge-light-danger">Belum Dikirm</span>';
                 } else {
                     $html .= '<span class="badge badge-light-warning">' . $item->ongkir_status . '</span>';
+                }
+                $html .= '<div class="d-flex"></div>';
+                if ($item->status == 'paid') {
+                    $html .= '<span class="badge badge-light-success">Lunas</span>';
+                } else if ($item->status == 'draft') {
+                    $html .= '<span class="badge badge-light-danger">Belum Lunas</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
                 }
                 return $html;
             })
@@ -188,25 +204,29 @@ class DeliveryOrderController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                $html .= '                        
+                if (!in_array($item->status, ['paid'])) {
+                    $html .= '                        
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
                                 </a>
                             </li>';
-                $html .= '
+                }
+                if (!in_array($item->status_ongkir, ['delivered'])) {
+                    $html .= '
                             <li>
                             <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSelesai(' . $item->id . ')">
                                 <i class="bi bi-check2-circle"></i>
                             </a>
                         </li>';
+                }
                 $html .= '                        
                         </ul>
                     </div>
                     ';
                 return $html;
             })
-            ->rawColumns(['name', 'action', 'date', 'ongkir'])
+            ->rawColumns(['name', 'action', 'date', 'ongkir', 'courier', 'status'])
             ->make(true);
     }
 }

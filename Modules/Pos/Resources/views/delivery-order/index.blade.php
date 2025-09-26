@@ -101,8 +101,8 @@
                             <th class="text-start min-w-150px">Nama Pelanggan</th>
                             <th class="text-start min-w-150px">Tanggal Pengiriman</th>
                             <th class="text-start min-w-150px">Nama Kurir</th>
-                            <th class="text-start min-w-150px">Ongkir</th>
-                            <th class="text-end"></th>
+                            <th class="text-start min-w-150px">Status</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -218,8 +218,8 @@
                         name: 'courier'
                     },
                     {
-                        data: 'ongkir',
-                        name: 'ongkir'
+                        data: 'status',
+                        name: 'status'
                     },
                     {
                         data: 'action',
