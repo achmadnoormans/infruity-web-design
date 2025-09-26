@@ -560,7 +560,7 @@
                     <span class="path2"></span>
                 </i>
             </span>
-            <span class="menu-title">Pos App</span>
+            <span class="menu-title">Penjualan</span>
         </a>
     @endif
     <!--end:Menu link-->
@@ -574,7 +574,7 @@
                     <span class="path2"></span>
                 </i>
             </span>
-            <span class="menu-title">Delivery Order</span>
+            <span class="menu-title">Pengiriman</span>
         </a>
     @endif
     @if (check_access('other-book.index'))
@@ -586,7 +586,7 @@
                     <span class="path2"></span>
                 </i>
             </span>
-            <span class="menu-title">Pesanan</span>
+            <span class="menu-title">Pesanan Masuk</span>
         </a>
     @endif
     <!--end:Menu link-->

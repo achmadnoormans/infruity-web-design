@@ -320,6 +320,19 @@
                 </div>
             @endif
 
+            @if ($data->ongkir && $data->ongkir > 0)
+                <div class="section" style="margin-top: 20px">
+                    <div class="section-title">Informasi Pengiriman</div>
+                    <div class="customer-info">
+                        <div class="customer-name"></div>
+                        <div class="customer-details">
+                            Pesanan dikirim oleh : {{ $data->courier->name ?? '-' }}<br>
+                            ke : {{ $data->ongkir_address ?? '-' }}
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Items -->
             <div class="section">
                 <div class="section-title">Detail Pembelian</div>
@@ -361,11 +374,22 @@
                                 @endphp
                             @endif
                             @isset($parcelDetail)
-                                @foreach ($parcelDetail as $parcel)
+                                <tr>
+                                    <td colspan="4" style="border: none;  padding: 0 !important;" class="item-name">
+                                        List Bahan :
+                                    </td>
+                                </tr>
+                                @foreach ($parcelDetail as $key => $parcel)
                                     @if ($parcel->production_id == $item->product_id)
-                                        <tr style="border: none">
-                                            <td colspan="4" style="border: none">{{ $parcel->product->name ?? '-' }}
-                                                {{ $parcel->quantity }} {{ $parcel->product->unit->abbreviation ?? '-' }}
+                                        <tr style="border: none;">
+                                            <td colspan="4"
+                                                style="border: none;  padding-top: 0 !important;
+                                            padding-bottom: 0 !important;"
+                                                class="item-name">
+                                                {{ $key + 1 }}.
+                                                {{ $parcel->product->name ?? '-' }}
+                                                ({{ $parcel->quantity }}
+                                                {{ $parcel->product->unit->abbreviation ?? '-' }})
                                             </td>
                                         </tr>
                                     @endif
@@ -427,18 +451,6 @@
                         {{ number_format($data->total_amount ?? $subtotal, 0, ',', '.') }}</span>
                 </div>
             </div>
-            @if ($data->ongkir)
-                <div class="section" style="margin-top: 20px">
-                    <div class="section-title">Informasi Pengiriman</div>
-                    <div class="customer-info">
-                        <div class="customer-name"></div>
-                        <div class="customer-details">
-                            Pesanan dikirim oleh : {{ $data->courier->name ?? '-' }}<br>
-                            ke : {{ $data->ongkir_address ?? '-' }}
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
 
