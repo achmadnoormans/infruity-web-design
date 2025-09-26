@@ -313,6 +313,7 @@ class PosController extends Controller
             'note' => 'nullable',
             'courier_id' => 'nullable',
             'ongkir_address' => 'nullable',
+            'kemasan_price' => 'nullable|numeric',
         ]);
 
         try {
@@ -383,7 +384,7 @@ class PosController extends Controller
                     $productNameBase = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
                     $product = new Product([
                         'name' => Product::generateProductName($productNameBase),
-                        'description' => 'Generate parcel ' . $productNameBase . ' by System',
+                        'description' => $productNameBase,
                         'price' => preg_replace('/[^0-9]/', '', $parcel['budget']),
                         'product_unit' => 3,
                         'status' => 'no-receipt',
@@ -401,6 +402,7 @@ class PosController extends Controller
                         'quantity' => $parcel['qty'],
                         'discount' => 0,
                         'subtotal' => $product->price,
+                        'kemasan_price' => isset($parcel['kemasanPrice']) ? preg_replace('/[^0-9]/', '', $parcel['kemasanPrice']) : Product::where('name', $parcel['kemasan'])->first()->price,
                         'hpp' => $product->hpp,
                         'exp' => $product->price - $product->hpp,
                         'exp_value' => ($product->price - $product->hpp) * $settingExp->value_exp,

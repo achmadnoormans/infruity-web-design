@@ -651,7 +651,7 @@
                         <div class="item">
                             <div class="item-details">
                                 <div class="item-header">
-                                    <span class="item-name">{{ $item->product->name }}</span>
+                                    <span class="item-name">{{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}</span>
                                 </div>
                                 <div class="item-price" style=" display: flex;justify-content: space-between;">
                                     <span>

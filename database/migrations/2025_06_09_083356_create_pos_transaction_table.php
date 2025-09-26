@@ -57,6 +57,7 @@ return new class extends Migration
             $table->integer('exp');
             $table->decimal('exp_value');
             $table->decimal('hpp', 15, 2)->nullable()->default(0);
+            $table->decimal('kemasan_price', 15, 2)->nullable()->default(0);
             $table->enum('type', ['product', 'parcel'])->default('product');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

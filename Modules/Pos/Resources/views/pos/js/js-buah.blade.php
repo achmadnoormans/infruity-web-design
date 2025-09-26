@@ -1008,6 +1008,11 @@
             openParcelModal() {
                 this.showParcelModal = true;
                 setTimeout(() => {
+                    const jasaEl = document.getElementById('parcel_edit_jasa');
+                    if (jasaEl) jasaEl.value = 0;
+
+                    const kemasanEl = document.getElementById('kemasan_edit_price');
+                    if (kemasanEl) kemasanEl.value = 0;
                     const modal = new bootstrap.Modal(document.getElementById('parcelModal'));
                     modal.show();
 
@@ -1091,6 +1096,12 @@
                 const parcelData = this.parcel[idx].data;
                 console.log('parcel Data', parcelData, 'item', item);
                 let modalEl = document.getElementById('parcelEditModal');
+
+                const jasaEl = document.getElementById('parcel_jasa');
+                if (jasaEl) jasaEl.value = 0;
+                const kemasanEl = document.getElementById('kemasan_price');
+                if (kemasanEl) kemasanEl.value = 0;
+
                 let parcelFormInstance = Alpine.$data(modalEl);
 
                 Alpine.nextTick(() => {
@@ -1118,7 +1129,7 @@
                 $('#parcel_edit_qty').val(item.qty || 1);
                 $('#parcel_edit_budget').val(this.formatRupiah(item.price || 0));
                 $('#parcel_edit_jasa').val(this.formatRupiah(item.fee || 0));
-                $('#parcel_jasa').val(this.formatRupiah(item.fee || 0));
+                $('#kemasan_edit_price').val(item.kemasanPrice || 0);
                 $('#select_edit_kemasan').select2({
                     placeholder: 'Pilih kemasan',
                     language: {
@@ -1159,6 +1170,7 @@
                     subtotal = this.addProduct.qty * this.addProduct.price;
                     this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
                         .total);
+                    $('#kemasan_edit_price').val(data.price.toLocaleString());
                     this.updateAddTotalFromQty();
                 });
                 if (item.kemasanId) {
@@ -1195,11 +1207,12 @@
                 detail.map(item => {
                     let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
                         .price) : item.product_id;
+                    let productName = item.type == 'parcel' ? item.product.description : item.product.name;
                     const obj = {
                         id: id,
-                        name: item.product.name,
+                        name: productName,
                         price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
-                        hpp: item.hpp || 0,
+                        hpp: parseFloat(item.hpp || 0),
                         qty: this.sanitizeNumber(Number(item.quantity)),
                         unit: item.product.unit.abbreviation,
                         discount: this.sanitizeNumber(Number(item.discount || 0)),
@@ -1207,6 +1220,7 @@
                         fee: item.product.fee || 0,
                         kemasanId: item.parcel ? item.parcel.id : null,
                         kemasanName: item.parcel ? item.parcel.name : null,
+                        kemasanPrice: item.parcel ? item.parcel.price : null,
                         total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
                         typeProduct: item.type || 'product',
                     };
@@ -1221,7 +1235,7 @@
                                 name: item.product.name ?? 'unknown',
                                 unit: item.product.product_unit ?? 1,
                                 priceAwal: item.product.price ?? 0,
-                                hpp: item.product.hpp ?? 0,
+                                hpp: parseFloat(item.product.hpp ?? 0),
                                 price: item.product.price ?? 12,
                                 priceFormatted: this.formatRupiah(item.product.price ?? 1),
                                 qty: item.quantity,
@@ -1235,7 +1249,8 @@
                             qty: item.quantity,
                             kemasan: item.parcel.name,
                             kemasanId: item.parcel.id,
-                            hpp: item.hpp || 0,
+                            kemasanPrice: item.parcel.price,
+                            hpp: parseFloat(item.hpp || 0),
                             fee: parseInt(item.fee, 10) || 0,
                             data: percelDatas,
                             type: 'parcel',

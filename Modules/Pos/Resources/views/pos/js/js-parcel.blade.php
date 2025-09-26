@@ -31,7 +31,10 @@
             setParcel(item) {
                 // this.parcels = []; // reset
                 this.parcels.push(item); // masukkan data baru
-                console.log('Parcel data set:', this.parcels);
+                this.$nextTick(() => {
+                    this.initSelect2();
+                    this.updateTotal();
+                });
             },
 
             addParcel() {
@@ -107,28 +110,29 @@
 
             updateTotal() {
                 // total produk: per item price * qty
-                const totalProduk = this.parcels.reduce((sum, p) => {
-                    const price = this.parseNumber(p.price || p.priceFormatted);
-                    const qty = parseInt(p.qty || 1, 10) || 0;
-                    return sum + (price * qty);
-                }, 0);
+                const totalProduk = this.parcels.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
 
                 // baca biaya jasa / kemasan: coba DOM dulu; kalau tidak ada fallback ke state
                 const jasaEl = document.getElementById('parcel_jasa');
+                const jasaEditEl = document.getElementById('parcel_edit_jasa');
                 const kemasanEl = document.getElementById('kemasan_price');
+                const kemasanEditEl = document.getElementById('kemasan_edit_price');
 
                 const biayaJasa = jasaEl ? this.parseNumber(jasaEl.value) : this.parseNumber(this.biayaJasa);
-                const kemasanPrice = kemasanEl ? this.parseNumber(kemasanEl.value) : this.parseNumber(this
-                    .kemasanPrice);
+                const biayaJasaEdit = jasaEditEl ? this.parseNumber(jasaEditEl.value) : this.parseNumber(this.biayaJasa);
+                const kemasanPrice = kemasanEl ? this.parseNumber(kemasanEl.value) : this.parseNumber(this.kemasanPrice);
+                const kemasanPriceEdit = kemasanEditEl ? this.parseNumber(kemasanEditEl.value) : this.parseNumber(this.kemasanPrice);
 
-                this.biayaJasa = biayaJasa;
-                this.kemasanPrice = kemasanPrice;
+                this.biayaJasa = biayaJasa > 0 ? biayaJasa : biayaJasaEdit;
+                this.kemasanPrice = kemasanPrice > 0 ? kemasanPrice : kemasanPriceEdit;
 
                 // set final total numeric
-                this.totalAll = totalProduk + biayaJasa + kemasanPrice;
+                this.totalAll = totalProduk + biayaJasa + kemasanPrice + biayaJasaEdit + kemasanPriceEdit;
+                console.log('totalAll =>', totalProduk, 'biayaJasa =>', biayaJasa, 'kemasanPrice =>', kemasanPrice, 'biayaJasaEdit =>', biayaJasaEdit, 'kemasanPriceEdit =>', kemasanPriceEdit);
 
                 // (opsional) update kemasan input display
                 if (kemasanEl) kemasanEl.value = kemasanPrice ? kemasanPrice.toLocaleString('id-ID') : '';
+                if (kemasanEditEl) kemasanEditEl.value = kemasanPriceEdit ? kemasanPriceEdit.toLocaleString('id-ID') : '';
                 // (opsional) jika ada elemen di UI yang menampilkan total, kamu bind ke totalAll dan format di template
             },
 
@@ -214,6 +218,7 @@
                 const fee = document.getElementById('parcel_jasa').value;
                 const kemasan = $('#select_kemasan option:selected').text();
                 const kemasanId = $('#select_kemasan option:selected').val();
+                const kemasanPrice = $('#kemasan_price').val();
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
@@ -227,6 +232,7 @@
                     total_input: 0,
                     kemasanId: kemasanId,
                     kemasanName: kemasan,
+                    kemasanPrice: kemasanPrice,
                     typeProduct: 'parcel',
                 };
                 const posParcel = {
@@ -235,6 +241,7 @@
                     qty: qty,
                     kemasan: kemasan,
                     kemasanId: kemasanId,
+                    kemasanPrice: kemasanPrice,
                     hpp: this.totalAll,
                     fee: fee,
                     data: this.parcels,
@@ -278,6 +285,7 @@
                 const fee = document.getElementById('parcel_edit_jasa').value;
                 const kemasan = $('#select_edit_kemasan option:selected').text();
                 const kemasanId = $('#select_edit_kemasan option:selected').val();
+                const kemasanPrice = $('#kemasan_edit_price').val();
 
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
@@ -291,6 +299,9 @@
                     discountPercent: 0,
                     total_input: 0,
                     typeProduct: 'parcel',
+                    kemasanId: kemasanId,
+                    kemasanName: kemasan,
+                    kemasanPrice: kemasanPrice,
                 };
 
                 const posParcel = {
@@ -298,6 +309,9 @@
                     budget: budget,
                     qty: qty,
                     kemasan: kemasan,
+                    kemasanId: kemasanId,
+                    kemasanName: kemasan,
+                    kemasanPrice: kemasanPrice,
                     hpp: this.totalAll,
                     fee: fee,
                     data: this.parcels, // isi produk dalam parcel

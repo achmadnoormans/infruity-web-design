@@ -51,8 +51,8 @@
                                 </div>
                                 <div class="col-3 mb-3">
                                     <label class="form-label">Qty</label>
-                                    <input type="number" class="form-control" min="1" x-model.number="item.qty" 
-                                    @input="updateQty(index)">
+                                    <input type="number" class="form-control" min="1" x-model.number="item.qty"
+                                        @input="updateQty(index)">
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -108,15 +108,21 @@
                             name="parcel_budget" placeholder="Masukkan budget">
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Pilih Kemasan</label>
-                    <select id="select_edit_kemasan" class="form-select"></select>
-                    <input type="hidden" id="kemasan_edit_price" name="kemasan_price">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Pilih Kemasan</label>
+                        <select id="select_edit_kemasan" class="form-select"></select>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Harga</label>
+                        <input type="text" class="form-control format-number" id="kemasan_edit_price"
+                            name="kemasan_price" readonly placeholder="Rp. 0">
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Biaya Jasa</label>
                     <input type="text" class="form-control format-number" id="parcel_edit_jasa"
-                        name="parcel_jasa" placeholder="Masukkan Biaya jasa">
+                        name="parcel_jasa" @input="updateTotal" placeholder="Masukkan Biaya jasa">
                 </div>
                 <hr>
 
