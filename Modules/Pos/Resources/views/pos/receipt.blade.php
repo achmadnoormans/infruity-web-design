@@ -373,7 +373,7 @@
                                     $subtotal -= $item->discount * $item->quantity;
                                 @endphp
                             @endif
-                            @isset($parcelDetail)
+                            @if(isset($parcelDetail) && (count($parcelDetail) > 0))
                                 <tr>
                                     <td colspan="4" style="border: none;  padding: 0 !important;" class="item-name">
                                         List Bahan :
@@ -394,7 +394,7 @@
                                         </tr>
                                     @endif
                                 @endforeach
-                            @endisset
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
