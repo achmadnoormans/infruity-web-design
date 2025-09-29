@@ -302,6 +302,82 @@
             });
         }
 
+        function setBayar(id) {
+            Swal.fire({
+                title: 'Barang diterima?',
+                html: `
+                    <p>Pemohon belum melakukan bayar, Harap masukkan nominal pembayaran:</p>
+                    <label for="nominalBayar">Nominal Pembayaran:</label>
+                    <input type="text" id="nominalBayar" class="swal2-input" placeholder="Masukkan nominal">
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, diterima!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false,
+                didOpen: () => {
+                    const input = document.getElementById('nominalBayar');
+                    input.addEventListener('input', function() {
+                        this.value = formatRupiah(this.value);
+                    });
+                },
+                preConfirm: () => {
+                    return document.getElementById('nominalBayar').value;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/delivery-order/set-selesai/${id}`,
+                        type: 'PUT',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            nominal: result.value // ambil nominal yang sudah diformat
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil diubah.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat mengubah data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function formatRupiah(angka) {
+            if (!angka) return '';
+            angka = angka.toString().replace(/[^,\d]/g, '');
+            const parts = angka.split(',');
+            let sisa = parts[0].length % 3;
+            let rupiah = parts[0].substr(0, sisa);
+            let ribuan = parts[0].substr(sisa).match(/\d{3}/g);
+
+            if (ribuan) {
+                const separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = parts[1] !== undefined ? rupiah + ',' + parts[1] : rupiah;
+            return rupiah;
+        }
+
+
         $('#kt_modal_add_customer').on('show.bs.modal', function() {
             let targetDiv = $('#listKurir');
             targetDiv.html('<div class="text-center py-5">Loading...</div>');
@@ -380,7 +456,7 @@
                         timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                     }).then(() => {
                         // 1. Reset form
-                       
+
                         const modal = bootstrap.Modal.getInstance(document
                             .getElementById('kt_modal_add_customer'));
                         if (modal) modal.hide();

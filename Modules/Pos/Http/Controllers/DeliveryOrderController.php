@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Modules\Pos\Entities\Payment;
+use Illuminate\Support\Str;
 
 class DeliveryOrderController extends Controller
 {
@@ -84,18 +86,55 @@ class DeliveryOrderController extends Controller
         //
     }
 
-    public function setSelesai($id)
+    public function setSelesai(Request $request, $id)
     {
         try {
             DB::beginTransaction();
             $pos = PosModel::find($id);
             $pos->ongkir_status = 'delivered';
             $pos->save();
+
+            if ($request->has('nominal') && $request->nominal > 0) {
+                $payment = new Payment([
+                    'uuid' => Str::uuid(),
+                    'date' => date('Y-m-d'),
+                    'nota_number' => date('YmdHis'),
+                    'pos_id' => $id,
+                    'branch_id' => 1,
+                    // 'account_id' => $data['account_id'],
+                    'payment_method' => json_encode(['cash']),
+                    'payment_method_id' => json_encode([1]),
+                    'payment_amount' => json_encode([preg_replace('/[^0-9]/', '', $request->nominal)]),
+                    'total' => preg_replace('/[^0-9]/', '', $request->nominal),
+                    'created_by' => Auth::user()->id_user,
+                ]);
+                $payment->save();
+                $totalPayment = Payment::where('pos_id', $id)->sum('total');
+                $pos = PosModel::findOrFail($id);
+                $total = $pos->total - $pos->voucher;
+                $pos->paid = $totalPayment;
+                if ($totalPayment > $total) {
+                    $lastPayment = Payment::findOrFail($payment->id);
+                    $lastPayment->return = ($totalPayment - $total);
+                    $lastPayment->save();
+                } else {
+                    $lastPayment = Payment::findOrFail($payment->id);
+                    $lastPayment->remaining = ($total - $totalPayment);
+                    $lastPayment->save();
+                }
+                $status = 'debt';
+                if ($totalPayment >= $total) {
+                    $status = 'paid';
+                }
+                // $pos->ongkir_status = 'delivered';
+                $pos->status = $status;
+                $pos->save();
+            }
             DB::commit();
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => $th->getMessage()]);
+            return response()->json(['error' => false, 'message' => $th->getMessage()]);
         }
     }
 
@@ -213,12 +252,21 @@ class DeliveryOrderController extends Controller
                             </li>';
                 }
                 if (!in_array($item->status_ongkir, ['delivered'])) {
-                    $html .= '
+                    if (!in_array($item->status, ['paid'])) {
+                        $html .= '
                             <li>
-                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSelesai(' . $item->id . ')">
-                                <i class="bi bi-check2-circle"></i>
-                            </a>
-                        </li>';
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setBayar(' . $item->id . ')">
+                                    <i class="bi bi-check2-circle"></i>
+                                </a>
+                            </li>';
+                    } else {
+                        $html .= '
+                            <li>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="setSelesai(' . $item->id . ')">
+                                    <i class="bi bi-check2-circle"></i>
+                                </a>
+                            </li>';
+                    }
                 }
                 $html .= '                        
                         </ul>
