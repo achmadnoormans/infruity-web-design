@@ -92,7 +92,6 @@ class DeliveryOrderController extends Controller
             DB::beginTransaction();
             $pos = PosModel::find($id);
             $pos->ongkir_status = 'delivered';
-            $pos->save();
 
             if ($request->has('nominal') && $request->nominal > 0) {
                 $payment = new Payment([
@@ -128,8 +127,9 @@ class DeliveryOrderController extends Controller
                 }
                 // $pos->ongkir_status = 'delivered';
                 $pos->status = $status;
-                $pos->save();
             }
+
+            $pos->save();
             DB::commit();
             return response()->json(['success' => true]);
         } catch (\Throwable $th) {
@@ -251,7 +251,7 @@ class DeliveryOrderController extends Controller
                                 </a>
                             </li>';
                 }
-                if (!in_array($item->status_ongkir, ['delivered'])) {
+                if (!in_array($item->ongkir_status, ['delivered'])) {
                     if (!in_array($item->status, ['paid'])) {
                         $html .= '
                             <li>
