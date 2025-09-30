@@ -5,7 +5,7 @@ namespace Modules\Pos\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-
+use Modules\Pos\Entities\Expenditure;
 class ExpenditureController extends Controller
 {
     /**
@@ -14,7 +14,7 @@ class ExpenditureController extends Controller
      */
     public function index()
     {
-        return view('pos::index');
+        return view('pos::expenditure.index');
     }
 
     /**
@@ -23,7 +23,11 @@ class ExpenditureController extends Controller
      */
     public function create()
     {
-        return view('pos::create');
+        $data['alpinejs'] = true;
+        $data['data'] = null;
+        $data['detail'] = null;
+        $data['invoice_number'] = Expenditure::getOrderNumber();
+        return view('pos::expenditure.create', $data);
     }
 
     /**

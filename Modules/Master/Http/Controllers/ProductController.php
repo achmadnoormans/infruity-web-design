@@ -477,7 +477,7 @@ class ProductController extends Controller
     {
         $search = $request->input('term', '');
         $query = Product::with('category', 'get_stock', 'unit', 'productReceipt', 'productReceipt.ingredients')
-            ->where('name', 'like', '%' . $search . '%');
+            ->where('tipe', '!=', 'parcel')->where('name', 'like', '%' . $search . '%');
 
         if ($request->type == 'kemasan') {
             $query = $query->where('tipe', 'kemasan');

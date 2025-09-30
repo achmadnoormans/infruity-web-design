@@ -5,6 +5,7 @@ use Modules\Pos\Http\Controllers\SettingNotaController;
 use Modules\Pos\Http\Controllers\DeliveryOrderController;
 use Modules\Master\Http\Controllers\CustomerController;
 use Modules\Pos\Http\Controllers\OtherBookController;
+use Modules\Pos\Http\Controllers\ExpenditureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,11 +42,14 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::put('delivery-order/set-selesai/{id}', [DeliveryOrderController::class, 'setSelesai'])->name('delivery-order.set-selesai');
     Route::get('other-book', [OtherBookController::class, 'index'])->name('other-book');
     Route::put('other-book/set-selesai/{id}', [OtherBookController::class, 'setSelesai'])->name('other-book.set-selesai');
+    
+    Route::resource('expenditure', ExpenditureController::class)->names('expenditure')->except('show');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/data', [PosController::class, 'get_data'])->name('pos-data');
     Route::get('delivery-order/data', [DeliveryOrderController::class, 'get_data'])->name('delivery-order.data');
     Route::get('other-book/data', [OtherBookController::class, 'get_data'])->name('other-book.data');
+    Route::get('expenditure/data', [ExpenditureController::class, 'get_data'])->name('expenditure.data');
 });
 
 Route::get('cek-nota/{id}', [PosController::class, 'cekNota'])->name('pos.cek-nota');

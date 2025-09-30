@@ -541,7 +541,7 @@
     </div>
     <!--end:Menu item-->
 @endif
-@if (check_access('pos.index') || check_access('delivery-order.index') || check_access('other-book.index') || check_access('setting-nota.index'))
+@if (check_access('pos.index') || check_access('delivery-order.index') || check_access('other-book.index') || check_access('setting-nota.index') || check_access('expenditure.index'))
     <div class="menu-item pt-5">
         <!--begin:Menu content-->
         <div class="menu-content">
@@ -589,6 +589,18 @@
             <span class="menu-title">Pesanan Masuk</span>
         </a>
     @endif
+    {{-- @if (check_access('expenditure.index'))
+        <a class="menu-link {{ Request::segment(1) == 'expenditure' ? 'active' : '' }}"
+            href="{{ url('expenditure') }}">
+            <span class="menu-icon">
+                <i class="ki-duotone ki-security-user">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+            </span>
+            <span class="menu-title">Pengeluaran</span>
+        </a>
+    @endif --}}
     <!--end:Menu link-->
     @if (check_access('setting-nota.index'))
         <!--begin:Menu link-->
