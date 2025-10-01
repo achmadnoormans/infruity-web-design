@@ -9,7 +9,20 @@ class ExpenditurePayment extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $table = 'expenditure_payment';
+
+    protected $fillable = [
+        'expenditure_id',
+        'uuid',
+        'nota_number',
+        'date',
+        'total',
+        'payment_method',
+        'payment_method_id',
+        'payment_amount',
+        'branch_id',
+        'created_by',
+    ];
     
     protected static function newFactory()
     {

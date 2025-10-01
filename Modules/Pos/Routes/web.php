@@ -44,6 +44,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::put('other-book/set-selesai/{id}', [OtherBookController::class, 'setSelesai'])->name('other-book.set-selesai');
     
     Route::resource('expenditure', ExpenditureController::class)->names('expenditure')->except('show');
+    Route::post('expenditure/save-transaction', [ExpenditureController::class, 'saveTransaction'])->name('expenditure.save-transaction');
+    Route::get('expenditure/show/{id}', [ExpenditureController::class, 'show'])->name('expenditure.show');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('pos/data', [PosController::class, 'get_data'])->name('pos-data');

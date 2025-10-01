@@ -5,13 +5,26 @@ namespace Modules\Pos\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Entities\Branch;
+use Modules\Pos\Entities\ExpenditurePayment;
+use Modules\Pos\Entities\User;
 
 class Expenditure extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
     protected $table = 'expenditure';
+    protected $fillable = [
+        'uuid',
+        'branch_id',
+        'invoice_number',
+        'date',
+        'paid',
+        'payment_method',
+        'total',
+        'status',
+        'created_by'
+    ];
 
     public static function getOrderNumber()
     {
@@ -31,5 +44,20 @@ class Expenditure extends Model
         $newCode = $prefix . $orderPad;
 
         return $newCode;
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
+    public function payment()
+    {
+        return $this->hasMany(ExpenditurePayment::class, 'expenditure_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

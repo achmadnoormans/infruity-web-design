@@ -25,6 +25,7 @@
             diskonGlobal: 0,
             ongkirGlobal: 0,
             diskonOngkir: 0,
+            payment: 0,
 
             // Add Product
             showAddModal: false,
@@ -608,6 +609,10 @@
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.diskonGlobal = val;
             },
+            updatePayment(e) {
+                const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                this.payment = val;
+            },
             updateOngkirGlobal(e) {
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.ongkirGlobal = val;
@@ -631,39 +636,27 @@
                     });
                     return;
                 }
-                const customerId = document.querySelector('select[name="customer_id"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
-                const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
-                const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
-                const note = document.querySelector('textarea[name="note"]').value;
-                const courierId = document.querySelector('select[name="courier_id"]').value;
-                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
-
+                const payment = this.payment;
+                const paymentMethod = document.querySelector('select[name="payment_id"]').value;
 
                 const data = {
-                    customer_id: customerId,
+                    branch_id: branchId,
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
-                    parcel: this.parcel,
-                    jus: this.jus,
                     subtotal: this.subtotal,
-                    discount: this.diskonGlobal,
-                    ongkir: this.ongkirGlobal,
-                    discount_ongkir: this.diskonOngkir,
-                    ongkir_date: ongkirDate,
-                    ongkir_time: ongkirTime,
                     total: this.totalHargaKeseluruhan,
                     status: 'draft',
-                    note: note,
-                    courier_id: courierId,
-                    ongkir_address: ongkirAddress,
+                    payment: payment,
+                    payment_method: paymentMethod,
                 };
 
                 // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                fetch('/pos/save-transaction', {
+                fetch('/expenditure/save-transaction', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -680,8 +673,8 @@
                         //     text: 'Transaksi berhasil disimpan!',
                         // });
                         // this.resetPOS(); // Reset cart dsb.
-                        // window.location.href = '/pos';
-                        redirectToHome();
+                        console.log(res);
+                        // redirectToHome();
 
                     })
                     .catch(err => {
@@ -1202,6 +1195,8 @@
 
             loadExistingData(data, detail) {
                 // Load existing cart items
+                console.log('data', data);
+                console.log('detail', detail);
                 detail.map(item => {
                     let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
                         .price) : item.product_id;
@@ -1223,39 +1218,6 @@
                         typeProduct: item.type || 'product',
                     };
                     this.cart.push(obj);
-
-                    if (item.type == 'parcel') {
-                        let percelDatas = [];
-                        let data = item.product.production_parcel_details;
-                        data.forEach(item => {
-                            const parcelData = {
-                                product: item.product_id,
-                                name: item.product.name ?? 'unknown',
-                                unit: item.product.product_unit ?? 1,
-                                priceAwal: item.product.price ?? 0,
-                                hpp: parseFloat(item.product.hpp ?? 0),
-                                price: item.product.price ?? 12,
-                                priceFormatted: this.formatRupiah(item.product.price ?? 1),
-                                qty: item.quantity,
-                            };
-                            percelDatas.push(parcelData);
-                        });
-
-                        const parcels = {
-                            id: id,
-                            budget: parseInt(item.price, 10),
-                            qty: item.quantity,
-                            kemasan: item.parcel.name,
-                            kemasanId: item.parcel.id,
-                            kemasanPrice: item.parcel.price,
-                            hpp: parseFloat(item.hpp || 0),
-                            fee: parseInt(item.fee, 10) || 0,
-                            data: percelDatas,
-                            type: 'parcel',
-                        };
-
-                        this.parcel.push(parcels);
-                    }
                 });
 
                 this.diskonGlobal = data.discount;

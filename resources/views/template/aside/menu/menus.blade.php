@@ -589,7 +589,7 @@
             <span class="menu-title">Pesanan Masuk</span>
         </a>
     @endif
-    {{-- @if (check_access('expenditure.index'))
+    @if (check_access('expenditure.index'))
         <a class="menu-link {{ Request::segment(1) == 'expenditure' ? 'active' : '' }}"
             href="{{ url('expenditure') }}">
             <span class="menu-icon">
@@ -600,7 +600,7 @@
             </span>
             <span class="menu-title">Pengeluaran</span>
         </a>
-    @endif --}}
+    @endif
     <!--end:Menu link-->
     @if (check_access('setting-nota.index'))
         <!--begin:Menu link-->

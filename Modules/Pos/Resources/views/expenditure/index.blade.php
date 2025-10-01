@@ -96,7 +96,7 @@
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-start min-w-150px">Name</th>
                             <th class="text-start min-w-150px">Date</th>
-                            <th class="text-end"></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -129,7 +129,7 @@
                     targets: -1 // Disable sorting for action column
                 }, ],
                 ajax: {
-                    url: "{{ route('pos-data') }}",
+                    url: "{{ route('expenditure.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
@@ -204,7 +204,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/pos/${id}`, // Ganti dengan URL yang sesuai
+                        url: `/expenditure/${id}`, // Ganti dengan URL yang sesuai
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')

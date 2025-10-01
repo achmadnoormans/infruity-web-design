@@ -1,7 +1,7 @@
 <script>
     // Variabel penanda (flag) untuk mengizinkan navigasi.
     let isNavigationAllowed = false;
-    const allowedPath = '/pos/payment/';
+    const allowedPath = '/expenditure/payment/';
 
     /**
      * FUNGSI BARU: Gunakan fungsi ini untuk pindah ke halaman pembayaran.
@@ -13,7 +13,7 @@
         isNavigationAllowed = true;
 
         // 2. Lakukan navigasi
-        window.location.href = `/pos/payment/${transaksiId}`;
+        window.location.href = `/expenditure/payment/${transaksiId}`;
     }
 
     function redirectToHome(transaksiId) {
@@ -22,7 +22,7 @@
         isNavigationAllowed = true;
 
         // 2. Lakukan navigasi
-        window.location.href = `/pos`;
+        window.location.href = `/expenditure`;
     }
 
     // Event listener untuk klik tautan biasa (jika masih ada)

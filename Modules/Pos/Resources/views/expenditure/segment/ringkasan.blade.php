@@ -23,8 +23,8 @@
                         </select>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control text-end" :value="formatRupiah(diskonGlobal)"
-                            @input="updateDiskonGlobal">
+                        <input type="text" class="form-control text-end" :value="formatRupiah(payment)"
+                            @input="updatePayment">
                     </div>
                 </div>
 
@@ -87,7 +87,7 @@
                     Simpan (Draft)
                 </button>
                 <button class="btn btn-sm btn-warning shadow-lg" @click="saveToOrderBook()">
-                    Simpan (Order Book)
+                    Simpan (Final)
                 </button>
             </div>
         </template>

@@ -13,25 +13,15 @@ return new class extends Migration {
         Schema::create('expenditure', function (Blueprint $table) {
             $table->id();
             $table->string('uuid');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->date('date')->nullable();
             $table->string('invoice_number')->nullable();
             $table->decimal('total', 15, 2)->nullable();
             $table->decimal('discount', 15, 2)->nullable();
-            $table->decimal('ongkir', 15, 2)->nullable()->default(0);
-            $table->decimal('ongkir_discount', 15, 2)->nullable()->default(0);
-            $table->enum('ongkir_status', ['draft', 'delivered'])->default('draft');
-            $table->date('ongkir_date')->nullable();
-            $table->time('ongkir_time')->nullable();
-            $table->timestamp('delivered_at')->nullable();
-            $table->text('ongkir_address')->nullable();
-            $table->integer('courier_id')->nullable();
             $table->decimal('paid', 15, 2)->nullable();
             $table->decimal('return', 15, 2)->nullable();
             $table->integer('payment_method')->nullable();
             $table->enum('status', ['draft', 'paid', 'debt', 'temp', 'canceled', 'pending'])->default('draft');
-            $table->enum('process_status', ['none', 'pending', 'done'])->default('none');
-            $table->timestamp('process_date')->nullable();
-            $table->text('note')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -47,8 +37,6 @@ return new class extends Migration {
             $table->decimal('price', 15, 2);
             $table->decimal('discount', 15, 2);
             $table->decimal('subtotal', 15, 2);
-            $table->decimal('hpp', 15, 2)->nullable()->default(0);
-            $table->decimal('kemasan_price', 15, 2)->nullable()->default(0);
             $table->enum('type', ['product', 'parcel'])->default('product');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
