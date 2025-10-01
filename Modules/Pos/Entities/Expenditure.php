@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Master\Entities\Branch;
 use Modules\Pos\Entities\ExpenditurePayment;
 use Modules\Pos\Entities\User;
+use Modules\Master\Entities\PaymentMethod;
 
 class Expenditure extends Model
 {
@@ -59,5 +60,10 @@ class Expenditure extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method', 'id');
     }
 }
