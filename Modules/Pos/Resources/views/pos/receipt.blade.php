@@ -356,7 +356,7 @@
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>
-                                <td class="item-name">{{ $item->product->name ?? '-' }}</td>
+                                <td class="item-name">{{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}</td>
                                 <td class="item-qty">{{ $item->quantity }}</td>
                                 <td class="item-price">{{ number_format($item->price, 0, ',', '.') }}</td>
                                 <td class="item-price">{{ number_format($itemTotal, 0, ',', '.') }}</td>
