@@ -143,7 +143,7 @@ class PosController extends Controller
     public function edit($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = PosModel::with('customer', 'customer.customerTier')->findOrFail($id);
+        $data['data'] = PosModel::with('customer', 'customer.customerTier', 'courier')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
