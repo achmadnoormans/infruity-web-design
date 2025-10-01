@@ -627,13 +627,14 @@
             },
 
             // Action save Transaction
-            saveTransaction() {
+            saveTransaction(doneCallback) {
                 if (this.cart.length === 0) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Keranjang kosong',
                         text: 'Silakan tambahkan produk terlebih dahulu!',
                     });
+                    if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
                 const branchId = document.querySelector('select[name="branch_id"]').value;
@@ -673,8 +674,8 @@
                         //     text: 'Transaksi berhasil disimpan!',
                         // });
                         // this.resetPOS(); // Reset cart dsb.
-                        console.log(res);
-                        // redirectToHome();
+                        // console.log(res);
+                        redirectToHome();
 
                     })
                     .catch(err => {
@@ -694,6 +695,7 @@
                         title: 'Keranjang kosong',
                         text: 'Silakan tambahkan produk terlebih dahulu!',
                     });
+                    if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
                 const customerId = document.querySelector('select[name="customer_id"]').value;
