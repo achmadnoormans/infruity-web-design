@@ -598,7 +598,7 @@
                     <span class="path2"></span>
                 </i>
             </span>
-            <span class="menu-title">Pengeluaran</span>
+            <span class="menu-title">Pemasukan / Pengeluaran</span>
         </a>
     @endif
     <!--end:Menu link-->
