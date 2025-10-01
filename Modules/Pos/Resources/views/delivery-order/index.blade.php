@@ -202,7 +202,7 @@
                     }
                 },
                 order: [
-                    [1, 'desc'], // Then by order_date ASC (kolom ke-3)
+                    [1, 'desc'],
                 ],
                 columns: [{
                         data: 'name',
