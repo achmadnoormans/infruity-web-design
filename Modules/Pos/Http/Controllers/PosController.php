@@ -382,9 +382,10 @@ class PosController extends Controller
                 foreach ($data['parcel'] as $key => $value) {
                     $parcel = $value;
                     $productNameBase = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
+                    $productDescription = 'Parcel ' . $parcel['kemasan'] . '-' . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
                     $product = new Product([
                         'name' => Product::generateProductName($productNameBase),
-                        'description' => $productNameBase,
+                        'description' => $productDescription,
                         'price' => preg_replace('/[^0-9]/', '', $parcel['budget']),
                         'product_unit' => 3,
                         'status' => 'no-receipt',

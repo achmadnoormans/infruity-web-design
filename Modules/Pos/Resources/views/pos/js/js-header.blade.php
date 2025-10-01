@@ -44,6 +44,7 @@
         const data = e.params.data;
         const tierId = data.tier_id || ''; // Pastikan Anda mengirimkan tier_id dari server jika dibutuhkan
         $('#tier_id').val(tierId); // Set ke input hidden
+        $('#ongkir_address').val(data.address);
     });
 
     // Fungsi render untuk item di dropdown
