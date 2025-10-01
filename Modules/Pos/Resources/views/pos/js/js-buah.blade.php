@@ -426,15 +426,15 @@
                     return;
                 }
 
-                const isExist = this.cart.some(item => item.id === this.addProduct.id);
-                if (isExist) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Produk sudah ditambahkan',
-                        text: 'Produk ini sudah ada di keranjang.',
-                    });
-                    return;
-                }
+                // const isExist = this.cart.some(item => item.id === this.addProduct.id);
+                // if (isExist) {
+                //     Swal.fire({
+                //         icon: 'warning',
+                //         title: 'Produk sudah ditambahkan',
+                //         text: 'Produk ini sudah ada di keranjang.',
+                //     });
+                //     return;
+                // }
 
                 const discount = Number(this.addProduct.discount || 0);
                 const total_input = this.addProduct.total;

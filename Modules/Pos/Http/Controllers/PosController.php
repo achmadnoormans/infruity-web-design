@@ -658,7 +658,7 @@ class PosController extends Controller
                                     <i class="fa fa-receipt"></i>
                                 </a>
                             </li>';
-                if (!in_array($item->status, ['paid', 'debt'])) {
+                if (!in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
                     $html .= '                       
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">

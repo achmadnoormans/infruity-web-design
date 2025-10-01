@@ -8,7 +8,8 @@
         </template>
 
         <div id="cart-items-container">
-            <template x-for="(item, index) in cart" :key="item.id">
+            {{-- <template x-for="(item, index) in cart" :key="item.id"> --}}
+            <template x-for="(item, index) in cart" :key="index">
                 <div class="card mb-3 p-4 cart-item"
                     :class="item.typeProduct === 'gift' ?
                         'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
