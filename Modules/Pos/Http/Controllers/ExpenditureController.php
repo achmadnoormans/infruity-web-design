@@ -211,7 +211,7 @@ class ExpenditureController extends Controller
             ->addColumn('date', function ($item) {
                 $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
                 if ($item->status == 'paid') {
-                    $html .= '<span class="badge badge-light-success">Paid</span>';
+                    $html .= '<span class="badge badge-light-success">Final</span>';
                 } else if ($item->status == 'draft') {
                     $html .= '<span class="badge badge-light-danger">Draft</span>';
                 } else {
