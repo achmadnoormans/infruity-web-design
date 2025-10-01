@@ -1268,8 +1268,10 @@
                 $('#ongkir_time').val(data.ongkir_time);
                 $('#ongkir_address').val(data.ongkir_address);
 
-                let optionCourier = new Option(data.courier.name, data.courier.id, true, true);
-                $('#courier_id').append(optionCourier).val(data.courier.id).trigger('change');
+                if (data.courier) {
+                    let optionCourier = new Option(data.courier.name, data.courier.id, true, true);
+                    $('#courier_id').append(optionCourier).val(data.courier.id).trigger('change');
+                }
             },
 
             // Open Jus

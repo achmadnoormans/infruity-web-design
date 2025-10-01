@@ -164,7 +164,7 @@ class DeliveryOrderController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->get();
+        $data = $query->orderBy('created_at', 'desc')->get();
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
