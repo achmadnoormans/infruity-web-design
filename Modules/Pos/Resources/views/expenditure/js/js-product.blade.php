@@ -638,6 +638,7 @@
                     return;
                 }
                 const branchId = document.querySelector('select[name="branch_id"]').value;
+                const type = document.querySelector('select[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const payment = this.payment;
@@ -645,6 +646,7 @@
 
                 const data = {
                     branch_id: branchId,
+                    type: type,
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
@@ -699,6 +701,7 @@
                     return;
                 }
                 const branchId = document.querySelector('select[name="branch_id"]').value;
+                const type = document.querySelector('select[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const payment = this.payment;
@@ -706,6 +709,7 @@
 
                 const data = {
                     branch_id: branchId,
+                    type: type,
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,

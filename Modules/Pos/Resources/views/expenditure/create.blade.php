@@ -95,6 +95,25 @@
                     <div class="col-12">
                         <div class="fv-row">
                             <!--begin::Label-->
+                            <label class="required form-label">Pilih Tipe</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <select class="form-select" id="type" name="type">
+                                <option value="pemasukan" {{ isset($data) && $data->type == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
+                                <option value="pengeluaran" {{ isset($data) && $data->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                            </select>
+                            <!--end::Editor-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::Input group-->
+            </div>
+            <div class="d-flex flex-column gap-10 mb-3">
+                <!--begin::Input group-->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="fv-row">
+                            <!--begin::Label-->
                             <label class="required form-label">Pilih Cabang</label>
                             <!--end::Label-->
                             <!--begin::Editor-->

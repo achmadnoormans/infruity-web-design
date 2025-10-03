@@ -106,6 +106,7 @@ class ExpenditureController extends Controller
             'status' => 'nullable|in:draft,paid,debt,temp,pending',
             'payment' => 'nullable|numeric',
             'payment_method' => 'nullable|numeric',
+            'type' => 'required|in:pengeluaran,pemasukan',
         ]);
 
         try {
@@ -129,6 +130,7 @@ class ExpenditureController extends Controller
                 'paid' => $data['payment'] ?? 0,
                 'payment_method' => $data['payment_method'] ?? null,
                 'status' => $data['status'] ?? 'draft',
+                'type' => $data['type'],
                 'created_by' => $userId,
             ]);
             $pos->save();
@@ -227,20 +229,12 @@ class ExpenditureController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '                        
-                            <li>
-                                <a class="dropdown-item" href="' . route('expenditure.show', $item->id) . '">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </li>';
-                if (in_array($item->status, ['temp', 'draft'])) {
-                    $html .= '
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('expenditure.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
-                }
                 if (!in_array($item->status, ['paid', 'debt'])) {
                     $html .= '                       
                             <li>

@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('expenditure', function (Blueprint $table) {
             $table->id();
             $table->string('uuid');
+            $table->enum('type', ['pengeluaran', 'pemasukan'])->default('pengeluaran');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->date('date')->nullable();
             $table->string('invoice_number')->nullable();
