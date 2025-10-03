@@ -892,6 +892,7 @@
 
                             // Tambahkan ke select2
                             $('#customer_id').append(option).trigger('change');
+                            $('#ongkir_address').text(c.address);
 
                             // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
                         } else {

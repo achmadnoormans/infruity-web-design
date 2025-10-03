@@ -253,7 +253,8 @@ class CustomerController extends Controller
                 'success' => true,
                 'customer' => [
                     'id' => $customer->id,
-                    'name' => $customer->name
+                    'name' => $customer->name,
+                    'address' => $customer->address
                 ]
             ]);
         } catch (Exception $e) {
