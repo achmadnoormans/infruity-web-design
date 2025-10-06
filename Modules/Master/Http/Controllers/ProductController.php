@@ -40,6 +40,7 @@ class ProductController extends Controller
     public function create()
     {
         $data['product_units'] = ProductUnit::all();
+        $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan', 'non-pos' => 'Non POS'];
         $data['data'] = null;
         return view('master::products.create', $data);
     }
@@ -161,18 +162,18 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::findOrFail($id);        
         $data = [
             'data' => $product,
             'product_units' => ProductUnit::all(),
-        ];
+        ];        
+        $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan', 'non-pos' => 'Non POS'];
         if (isset($product->category_id)) {
             $data['category'] = ProductCategory::findOrFail($product->category_id);
         } else {
             $data['category'] = null;
         }
         $data['variant'] = ProductChild::with('product')->where('parent_id', $id)->get();
-        // dd($data);
         return view('master::products.create', $data);
     }
 
@@ -479,8 +480,8 @@ class ProductController extends Controller
         $query = Product::with('category', 'get_stock', 'unit', 'productReceipt', 'productReceipt.ingredients')
             ->where('tipe', '!=', 'parcel')->where('name', 'like', '%' . $search . '%');
 
-        if ($request->type == 'kemasan') {
-            $query = $query->where('tipe', 'kemasan');
+        if ($request->has('type') && !empty($request->type)) {
+            $query = $query->where('tipe', $request->type);
         }
 
         if ($request->has('jenis')) {
@@ -507,7 +508,7 @@ class ProductController extends Controller
         $query = Product::query()
             ->with('category')
             ->where('tipe', '!=', 'parcel');
-            // ->where('name', 'like', '%' . $searchValue . '%');
+        // ->where('name', 'like', '%' . $searchValue . '%');
 
         $data = $query->get();
         // $data = Product::all();
@@ -642,7 +643,7 @@ class ProductController extends Controller
                 //                 <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
                 //             </a>';
                 // }
-    
+
                 $html .= '<div class="ms-5">
                 <a href="' . url('products/' . $product->id . '/show') . '" 
                    class="text-gray-800 text-hover-primary fs-5 fw-bold" 

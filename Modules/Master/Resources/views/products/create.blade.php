@@ -170,10 +170,10 @@
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="tipe">
-                        <option value="product" {{ isset($data) && $data->tipe == 'product' ? 'selected' : '' }}>
-                            Product</option>
-                        <option value="kemasan" {{ isset($data) && $data->tipe == 'kemasan' ? 'selected' : '' }}>Kemasan
-                        </option>
+                        @foreach ($tipe as $key => $value)
+                            <option value="{{ $key }}" {{ isset($data) && $data->tipe == $key ? 'selected' : '' }}>
+                                {{ $value }}</option>
+                        @endforeach
                     </select>
                     <!--end::Select2-->
                     <!--begin::Description-->

@@ -87,7 +87,7 @@
                 <button class="btn btn-sm btn-success shadow-lg d-flex align-items-center justify-content-center gap-2"
                     :disabled="loadingDraft"
                     @click="loadingDraft = true; saveTransaction(() => loadingDraft = false)" :disabled="loading">
-                    <span x-show="!loadingDraft">Simpan (Draft)</span>
+                    <span x-show="!loadingDraft">Draft</span>
                     <span x-show="loadingDraft">
                         <span class="spinner-border spinner-border-sm"></span> Menyimpan...
                     </span>
@@ -97,7 +97,7 @@
                 <button class="btn btn-sm btn-warning shadow-lg d-flex align-items-center justify-content-center gap-2"
                     :disabled="loadingFinal"
                     @click="loadingFinal = true; saveToOrderBook(() => loadingFinal = false)" :disabled="loading">
-                    <span x-show="!loadingFinal">Simpan (Final)</span>
+                    <span x-show="!loadingFinal">Submit</span>
                     <span x-show="loadingFinal">
                         <span class="spinner-border spinner-border-sm"></span> Menyimpan...
                     </span>

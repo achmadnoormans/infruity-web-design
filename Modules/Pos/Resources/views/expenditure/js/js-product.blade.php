@@ -312,6 +312,14 @@
                             url: '/ajax/listProduct', // ganti sesuai route
                             dataType: 'json',
                             delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term, // term dari select2 untuk pencarian
+                                    type: 'non-pos', // contoh ambil dari input lain
+                                    status: 'aktif', // contoh nilai statis
+                                    limit: 10 // contoh parameter tambahan
+                                };
+                            },
                             processResults: data => ({
                                 results: data.map(item => ({
                                     id: item.id,
