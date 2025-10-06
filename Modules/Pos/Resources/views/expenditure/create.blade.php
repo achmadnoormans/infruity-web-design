@@ -97,12 +97,42 @@
                             <!--begin::Label-->
                             <label class="required form-label">Pilih Tipe</label>
                             <!--end::Label-->
-                            <!--begin::Editor-->
+                            {{-- <!--begin::Editor-->
                             <select class="form-select" id="type" name="type">
-                                <option value="pemasukan" {{ isset($data) && $data->type == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
-                                <option value="pengeluaran" {{ isset($data) && $data->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
+                                <option value="pemasukan"
+                                    {{ isset($data) && $data->type == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
+                                <option value="pengeluaran"
+                                    {{ isset($data) && $data->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran
+                                </option>
                             </select>
-                            <!--end::Editor-->
+                            <!--end::Editor--> --}}
+                        </div>
+                        <div x-data="transactionInput()">
+                            <!-- Judul -->
+                            <!-- Hidden input untuk type -->
+                            <input type="hidden" id="type" name="type" :value="type">
+
+                            <!-- Input + Tombol -->
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Tombol toggle -->
+                                <button type="button" class="btn"
+                                    :class="type === 'pemasukan' ? 'btn-success' : 'btn-danger'" @click="toggleType()">
+                                    <template x-if="type === 'pemasukan'">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </template>
+                                    <template x-if="type === 'pengeluaran'">
+                                        <i class="bi bi-dash-lg"></i>
+                                    </template>
+                                </button>
+
+                                <!-- Input nominal -->
+                                <input type="text" name="amount_formatted" class="form-control text-end"
+                                    x-model="amountFormatted" @input="formatAmount($event)"
+                                    :placeholder="type === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'" readonly>
+
+                                <!-- Hidden input nilai asli -->
+                                <input type="hidden" name="amount" :value="amount">
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -24,6 +24,7 @@ class Expenditure extends Model
         'payment_method',
         'total',
         'status',
+        'type',
         'created_by'
     ];
 

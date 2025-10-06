@@ -646,7 +646,8 @@
                     return;
                 }
                 const branchId = document.querySelector('select[name="branch_id"]').value;
-                const type = document.querySelector('select[name="type"]').value;
+                // const type = document.querySelector('select[name="type"]').value;
+                const type = document.querySelector('input[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const payment = this.payment;
@@ -664,7 +665,6 @@
                     payment: payment,
                     payment_method: paymentMethod,
                 };
-
                 // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch('/expenditure/save-transaction', {
@@ -709,7 +709,8 @@
                     return;
                 }
                 const branchId = document.querySelector('select[name="branch_id"]').value;
-                const type = document.querySelector('select[name="type"]').value;
+                // const type = document.querySelector('select[name="type"]').value;                
+                const type = document.querySelector('input[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const payment = this.payment;
@@ -836,66 +837,6 @@
                 this.totalHargaKeseluruhan = 0;
             },
 
-            addCustomer() {
-                const modal = new bootstrap.Modal(document.getElementById('customerModal'));
-                modal.show();
-            },
-
-            saveCustomer() {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
-                const name = document.querySelector('[x-model="customerName"]').value;
-                const phone = document.querySelector('[x-model="customerPhone"]').value;
-                const address = document.querySelector('[x-model="customerAddress"]').value;
-
-                if (!name || !phone) {
-                    Swal.fire('Lengkapi data', 'Nama dan nomor telepon wajib diisi.', 'warning');
-                    return;
-                }
-
-                fetch('/pos/customers', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        },
-                        body: JSON.stringify({
-                            name,
-                            phone,
-                            address
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(res => {
-                        if (res.success) {
-                            modal.hide();
-                            console.log(res);
-
-                            const c = res.customer;
-
-                            // Buat <option> baru dengan atribut tambahan
-                            const option = new Option(c.name, c.id, true, true);
-                            $(option).attr({
-                                'data-name': c.name,
-                                'data-address': c.address,
-                                'data-whatsapp': c.phone,
-                                'data-tier_id': c.tier_id || '',
-                                'data-tier_name': c.tier_name || '-',
-                                'data-tier_style': c.tier_style || 'badge-light-secondary'
-                            });
-
-                            // Tambahkan ke select2
-                            $('#customer_id').append(option).trigger('change');
-
-                            // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
-                        } else {
-                            Swal.fire('Gagal', res.message ?? 'Gagal menyimpan customer.', 'error');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        Swal.fire('Error', 'Terjadi kesalahan saat menyimpan.', 'error');
-                    });
-            },
 
             formatShortNumber(num) {
                 num = parseInt(num.toString().replace(/\./g, '')) || 0; // hapus titik & jadi integer
@@ -937,15 +878,30 @@
                     this.cart.push(obj);
                 });
 
-                let option = new Option(data.branch.name, data.branch.id, true, true);
-                $('#branch_id').append(option).val(data.branch.id).trigger('change');
+                if (data.branch) {
+                    let option = new Option(data.branch.name, data.branch.id, true, true);
+                    $('#branch_id').append(option).val(data.branch.id).trigger('change');
+                }
 
-                let optionPayment = new Option(data.payment_method.name, data.payment_method.id, true, true);
-                $('#payment_id').append(optionPayment).val(data.payment_method.id).trigger('change');
+                if (data.payment_method) {
+                    let optionPayment = new Option(data.payment_method.name, data.payment_method.id, true, true);
+                    $('#payment_id').append(optionPayment).val(data.payment_method.id).trigger('change');
+                }
 
                 this.payment = data.paid;
             },
 
+            transactionInput() {
+                return {
+                    type: "{{ $data->type ?? 'pemasukan' }}",
+                    amount: 0,
+                    amountFormatted: '',
+
+                    toggleType() {
+                        this.type = this.type === 'pemasukan' ? 'pengeluaran' : 'pemasukan';
+                    },
+                }
+            },
         }
     }
 </script>
