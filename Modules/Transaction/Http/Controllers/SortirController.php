@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
+use Modules\Transaction\Entities\Sortir;
+use Modules\Transaction\Entities\SortirDetail;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\StockIn;
@@ -40,7 +42,11 @@ class SortirController extends Controller
      */
     public function create()
     {
-        return view('transaction::create');
+        $data['alpinejs'] = true;
+        $data['data'] = null;
+        $data['detail'] = null;
+        $data['invoice_number'] = Sortir::getOrderNumber();
+        return view('transaction::sortir.create', $data);
     }
 
     /**
