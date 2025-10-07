@@ -42,7 +42,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('wholesale/set-selesai/{id}', [WholesaleController::class, 'set_selesai'])->name('wholesale.set_selesai');
     Route::get('wholesale/table-product-data', [WholesaleController::class, 'getProductTableData'])->name('wholsale.product-table-data');
 
-    Route::get('sortir', [SortirController::class, 'index'])->name('sortir');
+    Route::resource('sortir', SortirController::class)->names('sortir')->except('show');
     Route::get('sortir/show/{id}', [SortirController::class, 'show'])->name('sortir.show');
     Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
 

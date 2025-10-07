@@ -33,7 +33,7 @@ class SortirController extends Controller
      */
     public function index()
     {
-        return view('transaction::sortir.index');
+        return view('transaction::sortir.index2');
     }
 
     /**
@@ -207,7 +207,7 @@ class SortirController extends Controller
         return redirect('sortir')->with('success', 'Sortir berhasil');
     }
 
-    public function get_data(Request $request)
+    public function get_data_old(Request $request)
     {
         $data = DB::table('sortir_view')->get();
         return DataTables::of($data)
@@ -240,6 +240,74 @@ class SortirController extends Controller
                 ';
             })
             ->rawColumns(['name', 'action', 'quantity'])
+            ->make(true);
+    }
+
+    public function get_data(Request $request)
+    {
+        $query = Sortir::with('branch', 'payment');
+        if ($request->has('status_filter') && $request->status_filter !== 'all') {
+            $query = $query->where('status', $request->status_filter);
+        }
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
+        $data = $query->orderBy('id', 'DESC')->get();
+        // dd($data);
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) {
+                $html = '<div class="d-flex align-items-center">';
+                $html .= '<div class="ms-5">';
+                if (isset($item->branch->name)) {
+                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->branch->name . '</a>';
+                } else {
+                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                }
+                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
+                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total - $item->paid) . '</span>';
+                return $html;
+            })
+            ->addColumn('date', function ($item) {
+                $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
+                if ($item->status == 'paid') {
+                    $html .= '<span class="badge badge-light-success">Final</span>';
+                } else if ($item->status == 'draft') {
+                    $html .= '<span class="badge badge-light-danger">Draft</span>';
+                } else {
+                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
+                }
+                return $html;
+            })
+            ->addColumn('action', function ($item) {
+                $html = '';
+                $html .= '
+                    <div class="dropstart">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                $html .= '
+                            <li>
+                                <a class="dropdown-item" href="' . route('sortir.edit', $item->id) . '">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </li>';
+                if (!in_array($item->status, ['paid', 'debt'])) {
+                    $html .= '                       
+                            <li>
+                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </li>';
+                }
+                $html .= '           
+                        </ul>
+                    </div>
+                    ';
+                return $html;
+            })
+            ->rawColumns(['name', 'action', 'date'])
             ->make(true);
     }
 }

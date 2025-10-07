@@ -89,73 +89,6 @@
     <!--begin::Aside column-->
     <div class="w-100 flex-lg-row-auto me-7 me-lg-10" x-data="posApp()" x-init="init()">
         <div class="card card-body mb-3">
-            <div class="d-flex flex-column gap-10 mb-3">
-                <!--begin::Input group-->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Pilih Tipe</label>
-                            <!--end::Label-->
-                            {{-- <!--begin::Editor-->
-                            <select class="form-select" id="type" name="type">
-                                <option value="pemasukan"
-                                    {{ isset($data) && $data->type == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
-                                <option value="pengeluaran"
-                                    {{ isset($data) && $data->type == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran
-                                </option>
-                            </select>
-                            <!--end::Editor--> --}}
-                        </div>
-                        <div x-data="transactionInput()">
-                            <!-- Judul -->
-                            <!-- Hidden input untuk type -->
-                            <input type="hidden" id="type" name="type" :value="type">
-
-                            <!-- Input + Tombol -->
-                            <div class="d-flex align-items-center gap-2">
-                                <!-- Tombol toggle -->
-                                <button type="button" class="btn"
-                                    :class="type === 'pemasukan' ? 'btn-success' : 'btn-danger'" @click="toggleType()">
-                                    <template x-if="type === 'pemasukan'">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </template>
-                                    <template x-if="type === 'pengeluaran'">
-                                        <i class="bi bi-dash-lg"></i>
-                                    </template>
-                                </button>
-
-                                <!-- Input nominal -->
-                                <input type="text" name="amount_formatted" class="form-control text-end"
-                                    x-model="amountFormatted" @input="formatAmount($event)"
-                                    :placeholder="type === 'pemasukan' ? 'Pemasukan' : 'Pengeluaran'" readonly>
-
-                                <!-- Hidden input nilai asli -->
-                                <input type="hidden" name="amount" :value="amount">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--end::Input group-->
-            </div>
-            <div class="d-flex flex-column gap-10 mb-3">
-                <!--begin::Input group-->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Pilih Cabang</label>
-                            <!--end::Label-->
-                            <!--begin::Editor-->
-                            <select class="form-select" id="branch_id" name="branch_id">
-                                <option value="">Pilih Cabang</option>
-                            </select>
-                            <!--end::Editor-->
-                        </div>
-                    </div>
-                </div>
-                <!--end::Input group-->
-            </div>
             <div class="d-flex flex-column gap-10">
                 <!--begin::Input group-->
                 <div class="row">
@@ -188,7 +121,7 @@
             <div class="card card-body mb-3">
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="fs-5 fw-bold d-flex">Produk pengeluaran</span>
+                        <span class="fs-5 fw-bold d-flex">Produk Sortir</span>
                         <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
                     </div>
                     <div class="btn-group">
@@ -208,17 +141,17 @@
                     </i>
                 </button> --}}
                 {{-- <!-- Cart --> --}}
-                @include('pos::expenditure.segment.cart')
+                @include('transaction::sortir.segment.cart')
             </div>
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
-                @include('pos::expenditure.segment.ringkasan')
+                @include('transaction::sortir.segment.ringkasan')
             </div>
 
-            @include('pos::expenditure.segment.modal-product')
+            @include('transaction::sortir.segment.modal-product')
         </div>
     </div>
     <!--end::Aside column-->
-    @include('pos::expenditure.js-create')
+    @include('transaction::sortir.js-create')
 @endsection
