@@ -44,7 +44,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('sortir', SortirController::class)->names('sortir')->except('show');
     Route::get('sortir/show/{id}', [SortirController::class, 'show'])->name('sortir.show');
-    Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
+    Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');    
+    Route::post('sortir/save-transaction', [SortirController::class, 'saveTransaction'])->name('sortir.save-transaction');
 
     Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');
 

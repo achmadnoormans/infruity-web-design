@@ -24,6 +24,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Facades\Excel;
 use Exception;
+use Illuminate\Support\Str;
 
 class SortirController extends Controller
 {
@@ -80,7 +81,11 @@ class SortirController extends Controller
      */
     public function edit($id)
     {
-        return view('transaction::edit');
+        $data['alpinejs'] = true;
+        $data['data'] = Sortir::findOrFail($id);
+        $data['detail'] = SortirDetail::with('product', 'product.unit')->where('sortir_id', $id)->get();
+        $data['invoice_number'] = $data['data']->invoice_number;
+        return view('transaction::sortir.create', $data);
     }
 
     /**
@@ -102,6 +107,73 @@ class SortirController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function saveTransaction(Request $request)
+    {
+        // dd($request->all());
+        $data = $request->validate([
+            'date' => 'required|date',
+            'invoice_number' => 'nullable',
+            'items' => 'required|array',
+            'total' => 'required|numeric',
+            'subtotal' => 'required|numeric',
+            'status' => 'nullable|in:draft,paid,debt,temp,pending',
+        ]);
+
+        try {
+            $userId = Auth::id();
+            DB::beginTransaction();
+            $cek = Sortir::where('invoice_number', $data['invoice_number'])->first();
+            if ($cek) {
+                $pos = Sortir::find($cek->id);
+                $posDetail = SortirDetail::where('sortir_id', $cek->id);
+                SortirDetail::where('sortir_id', $cek->id)->delete();
+                $pos->delete();
+            }
+            // Simpan ke tabel transaksi (buat dulu kalau belum ada)
+            $pos = new Sortir([
+                'uuid' => Str::uuid(),
+                'date' => $data['date'],
+                'invoice_number' => Sortir::getOrderNumber(),
+                'total' => $data['total'],
+                'status' => $data['status'] ?? 'draft',
+                'created_by' => $userId,
+            ]);
+            $pos->save();
+
+            // Simpan item transaksi
+            $transaksiId = $pos->id;
+            foreach ($data['items'] as $item) {
+                if (is_numeric($item['id'])) {
+                    SortirDetail::insert([
+                        'sortir_id' => $transaksiId,
+                        'product_id' => $item['id'],
+                        'price' => $item['price'],
+                        'quantity' => $item['qty'],
+                        'discount' => $item['discount'] ?? 0,
+                        'subtotal' => $item['total_input'],
+                        'created_at' => now(),
+                        'created_by' => $userId,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil disimpan',
+                'transaksi_id' => $transaksiId
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function save_stock(Request $request)
@@ -245,7 +317,7 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Sortir::with('branch', 'payment');
+        $query = Sortir::query();
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -259,13 +331,8 @@ class SortirController extends Controller
             ->addColumn('name', function ($item) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
-                if (isset($item->branch->name)) {
-                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->branch->name . '</a>';
-                } else {
-                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
-                }
-                $html .= '<br><span class="text-muted d-block fs-7">Total Rp' . tonumberround($item->total) . '</span>';
-                $html .= '<span class="text-muted d-block fs-7">Sisa Rp' . tonumberround($item->total - $item->paid) . '</span>';
+                $html .= '<a href="' . route('sortir.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
+                $html .= '<br><span class="text-muted d-block fs-7">Hpp: Rp' . tonumberround($item->total) . '</span>';
                 return $html;
             })
             ->addColumn('date', function ($item) {

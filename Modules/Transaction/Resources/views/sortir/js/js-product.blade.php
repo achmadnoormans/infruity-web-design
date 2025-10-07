@@ -644,25 +644,16 @@
                     if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
-                const branchId = document.querySelector('select[name="branch_id"]').value;
-                // const type = document.querySelector('select[name="type"]').value;
-                const type = document.querySelector('input[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
-                const payment = this.payment;
-                const paymentMethod = document.querySelector('select[name="payment_id"]').value;
 
                 const data = {
-                    branch_id: branchId,
-                    type: type,
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
                     status: 'draft',
-                    payment: payment,
-                    payment_method: paymentMethod,
                 };
                 // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -683,7 +674,7 @@
                         //     text: 'Transaksi berhasil disimpan!',
                         // });
                         // this.resetPOS(); // Reset cart dsb.
-                        // console.log(res);
+                        // console.table(res);
                         redirectToHome();
 
                     })
@@ -707,30 +698,21 @@
                     if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
-                const branchId = document.querySelector('select[name="branch_id"]').value;
-                // const type = document.querySelector('select[name="type"]').value;                
-                const type = document.querySelector('input[name="type"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
-                const payment = this.payment;
-                const paymentMethod = document.querySelector('select[name="payment_id"]').value;
 
                 const data = {
-                    branch_id: branchId,
-                    type: type,
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
                     status: 'paid',
-                    payment: payment,
-                    payment_method: paymentMethod,
                 };
 
                 // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                fetch('/expenditure/save-transaction', {
+                fetch('/sortir/save-transaction', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

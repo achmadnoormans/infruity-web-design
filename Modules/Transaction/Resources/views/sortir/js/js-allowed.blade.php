@@ -13,7 +13,7 @@
         isNavigationAllowed = true;
 
         // 2. Lakukan navigasi
-        window.location.href = `/expenditure/payment/${transaksiId}`;
+        window.location.href = `/sortir/payment/${transaksiId}`;
     }
 
     function redirectToHome(transaksiId) {
@@ -22,7 +22,7 @@
         isNavigationAllowed = true;
 
         // 2. Lakukan navigasi
-        window.location.href = `/expenditure`;
+        window.location.href = `/sortir`;
     }
 
     // Event listener untuk klik tautan biasa (jika masih ada)

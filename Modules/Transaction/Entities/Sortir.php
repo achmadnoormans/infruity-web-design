@@ -10,7 +10,16 @@ class Sortir extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'uuid',
+        'date',
+        'invoice_number',
+        'subtotal',
+        'total',
+        'status',
+        'type',
+        'created_by',
+    ];
     protected $table = 'sortir_transaction';
     
     public function detail()
