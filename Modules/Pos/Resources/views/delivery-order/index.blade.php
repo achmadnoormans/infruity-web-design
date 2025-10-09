@@ -209,8 +209,8 @@
                         name: 'name'
                     },
                     {
-                        data: 'date',
-                        name: 'date',
+                        data: 'ongkir_date',
+                        name: 'ongkir_date',
                         className: 'text-center'
                     },
                     {
