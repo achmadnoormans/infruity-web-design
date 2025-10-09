@@ -206,7 +206,7 @@ class DeliveryOrderController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('d M Y', strtotime($item->ongkir_date)) . '</span>';
+                $html = '<span class="text-muted d-block fs-8">' . date('Y-m-d', strtotime($item->ongkir_date)) . '</span>';
                 $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
                 return $html;
             })
