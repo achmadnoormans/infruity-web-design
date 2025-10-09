@@ -64,7 +64,7 @@ class StockOpnameController extends Controller
             $stock->code = StockOpname::getOrderNumber();
             $stock->product_id = $validated['product_id'];
             $stock->date = $validated['date'];
-            $stock->avg_price = $avg_price;
+            $stock->avg_price = $avg_price ?? 0;
             $stock->stock = $stockAvailable;
             $stock->real_stock = $validated['real_stock'];
             $stock->difference =  (Double)$validated['real_stock'] - (Double)$stockAvailable;
