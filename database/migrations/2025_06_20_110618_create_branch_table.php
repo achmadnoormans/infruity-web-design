@@ -51,6 +51,21 @@ return new class extends Migration
                 'updated_at' => now(),
             ],
         ]);
+
+        $productIds = DB::table('products')->pluck('id');
+        $branchIds = DB::table('branch')->pluck('id');
+        $data = [];
+        foreach ($productIds as $productId) {
+            // Set supplier_id sesuai dengan wholesale
+            $ids = range(1, 3);      
+            $data[] = [
+                'product_id' => $productId,
+                'branch_id' => $branchIds[array_rand($ids)],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('product_branch')->insert($data);
     }
 
     /**
@@ -59,5 +74,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('branch');
+        Schema::dropIfExists('product_branch');
     }
 };

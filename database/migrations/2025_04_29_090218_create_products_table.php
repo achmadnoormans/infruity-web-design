@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Entities\Product;
 
 return new class extends Migration {
     /**
@@ -33,6 +34,15 @@ return new class extends Migration {
             $table->date('hpp_date')->nullable();
             $table->integer('fee')->nullable();
             $table->enum('tipe', ['product', 'kemasan', 'non-pos', 'parcel'])->default('product');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('product_branch', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
