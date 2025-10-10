@@ -314,7 +314,7 @@
                             delay: 250,
                             data: function(params) {
                                 return {
-                                    search: params.term, // term dari select2 untuk pencarian
+                                    term: params.term, // term dari select2 untuk pencarian
                                     status: 'aktif', // contoh nilai statis
                                     limit: 10 // contoh parameter tambahan
                                 };
