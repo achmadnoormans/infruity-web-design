@@ -9,6 +9,7 @@ use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
 use Modules\Master\Entities\ProductChild;
+use Modules\Master\Entities\ProductBranch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -123,6 +124,32 @@ class ProductController extends Controller
                     $child->save();
                 }
             }
+
+            if (isset($request->branch)) {
+                foreach ($request->branch['id'] as $key => $value) {
+                    if (is_numeric($value)) {
+                        $branch = ProductBranch::where('product_id', $productId)
+                            ->where('branch_id', $value)
+                            ->first();
+                        if ($branch) {
+                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->save();
+                        } else {
+                            $branch = new ProductBranch();
+                            $branch->product_id = $productId;
+                            $branch->branch_id = $value;
+                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->save();
+                        }
+                    } else {
+                        $branch = new ProductBranch();
+                        $branch->product_id = $productId;
+                        $branch->branch_id = $value;
+                        $branch->price = $request->branch['price'][$key] ?? 0;
+                        $branch->save();
+                    }
+                }
+            }
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -162,11 +189,11 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::findOrFail($id);        
+        $product = Product::findOrFail($id);
         $data = [
             'data' => $product,
             'product_units' => ProductUnit::all(),
-        ];        
+        ];
         $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan', 'non-pos' => 'Non POS'];
         if (isset($product->category_id)) {
             $data['category'] = ProductCategory::findOrFail($product->category_id);
@@ -174,6 +201,7 @@ class ProductController extends Controller
             $data['category'] = null;
         }
         $data['variant'] = ProductChild::with('product')->where('parent_id', $id)->get();
+        $data['product_branch'] = ProductBranch::with('product', 'branch')->where('product_id', $id)->get();
         return view('master::products.create', $data);
     }
 
@@ -185,6 +213,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|unique:products,name,' . $id,
             'price' => 'required',
@@ -263,6 +292,34 @@ class ProductController extends Controller
                     $child->product_id = $variant->id;
                     $child->parent_id = $productId;
                     $child->save();
+                }
+            }
+
+            if (isset($request->branch)) {
+                // Hapus semua branch yang ada
+                ProductBranch::where('product_id', $id)->delete();
+                foreach ($request->branch['id'] as $key => $value) {
+                    if (is_numeric($value)) {
+                        $branch = ProductBranch::where('product_id', $id)
+                            ->where('branch_id', $value)
+                            ->first();
+                        if ($branch) {
+                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->save();
+                        } else {
+                            $branch = new ProductBranch();
+                            $branch->product_id = $productId;
+                            $branch->branch_id = $value;
+                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->save();
+                        }
+                    } else {
+                        $branch = new ProductBranch();
+                        $branch->product_id = $productId;
+                        $branch->branch_id = $value;
+                        $branch->price = $request->branch['price'][$key] ?? 0;
+                        $branch->save();
+                    }
                 }
             }
 
@@ -482,6 +539,12 @@ class ProductController extends Controller
 
         if ($request->has('type') && !empty($request->type)) {
             $query = $query->where('tipe', $request->type);
+        }
+
+        if ($request->has('branch') && !empty($request->branch)) {
+            $query = $query->join('product_branch', 'products.id', '=', 'product_branch.product_id')
+                ->where('product_branch.branch_id', $request->branch)
+                ->select('products.*', 'product_branch.price as price');
         }
 
         if ($request->has('jenis')) {

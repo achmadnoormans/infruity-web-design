@@ -171,7 +171,8 @@
                     <select class="form-select mb-2" data-control="select2" data-hide-search="true"
                         data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="tipe">
                         @foreach ($tipe as $key => $value)
-                            <option value="{{ $key }}" {{ isset($data) && $data->tipe == $key ? 'selected' : '' }}>
+                            <option value="{{ $key }}"
+                                {{ isset($data) && $data->tipe == $key ? 'selected' : '' }}>
                                 {{ $value }}</option>
                         @endforeach
                     </select>
@@ -401,7 +402,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="kt_ecommerce_edit_order_selected_products_body">
-                                            @if (isset($variant) && $variant->count() > 0)
+                                            {{-- @if (isset($variant) && $variant->count() > 0)
                                                 @foreach ($variant as $item)
                                                     <tr>
                                                         <td>
@@ -412,8 +413,7 @@
                                                         <td>
                                                             <input type="text" name="variant_price[]"
                                                                 class="form-control format-number mb-2"
-                                                                placeholder="Harga Produk"
-                                                                inputmode="numeric"
+                                                                placeholder="Harga Produk" inputmode="numeric"
                                                                 value="{{ $item->price }}" />
                                                         </td>
                                                         <td class="text-end">
@@ -423,7 +423,7 @@
                                                             </button>
                                                         </td>
                                                 @endforeach
-                                            @endif
+                                            @endif --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -431,6 +431,38 @@
                                 <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
                                     onclick="addVariant()">
                                     <i class="ki-outline ki-plus fs-2"></i>Buat variant baru
+                                </button>
+                            </div>
+                            <!--end::Card header-->
+                        </div>
+
+                        <div class="card card-flush py-4">
+                            <!--begin::Card header-->
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h2>Cabang</h2>
+                                </div>
+                            </div>
+                            <!--end::Card header-->
+                            <!--begin::Card body-->
+                            <div class="card-body pt-0">
+                                <div class="table table-responsive">
+                                    <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5" id="branch_table">
+                                        <thead>
+                                            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                                <th class="min-w-200px">Cabang</th>
+                                                <th class="min-w-100px">Harga</th>
+                                                <th class="min-w-100px text-end">Opsi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="kt_ecommerce_edit_order_selected_products_branch_body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--end::Input group-->
+                                <button class="variant btn btn-light-primary btn-sm mb-10" type="button"
+                                    onclick="addBranch()">
+                                    <i class="ki-outline ki-plus fs-2"></i>Buat cabang baru
                                 </button>
                             </div>
                             <!--end::Card header-->
@@ -605,7 +637,6 @@
 
         @if (isset($variant) && $variant->count() > 0)
             const response = {!! json_encode($variant) !!};
-            console.log(response);
             $('#kt_ecommerce_edit_order_selected_products_body').empty();
 
             // Loop hasil response
@@ -631,6 +662,96 @@
             });
 
             $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
+                placeholder: 'Select product',
+                ajax: {
+                    url: "{{ route('ajax.getProduct') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: params => ({
+                        search: params.term
+                    }),
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name
+                        }))
+                    })
+                }
+            });
+        @endif
+
+        function addBranch() {
+            let html = `
+            <tr>
+                <td>
+                    <select name="branch[id][]" class="form-select mb-2 select2_product"></select>
+                </td>
+                <td>
+                    <input type="text" inputmode="numeric" name="branch[price][]" class="form-control format-number mb-2" placeholder="Harga Produk" />
+                </td>                    
+                <td class="text-end">
+                    <button type="button" class="btn btn-icon btn-danger remove_branch">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </td>
+            </tr>
+            `;
+            $('#kt_ecommerce_edit_order_selected_products_branch_body').append(html);
+            $('#kt_ecommerce_edit_order_selected_products_branch_body .select2_product').select2({
+                placeholder: 'Ketik nama branch',
+                tags: true, // ini aktifkan fitur menambah item baru
+                ajax: {
+                    url: "{{ route('ajax.getBranch') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term
+                        };
+                    },
+                    processResults: function(data, params) {
+                        const term = params.term || '';
+                        let results = data.map(item => ({
+                            id: item.id, // penting: pastikan id-nya sesuai yg mau kamu simpan
+                            text: item.name
+                        }));
+                        return {
+                            results: results
+                        };
+                    },
+                    cache: true
+                },
+            });
+            bindFormatNumber();
+        }
+
+        @if (isset($product_branch) && $product_branch->count() > 0)
+            const productBranch = {!! json_encode($product_branch) !!};
+            $('#kt_ecommerce_edit_order_selected_products_branch_body').empty();
+
+            // Loop hasil response
+            productBranch.forEach(item => {
+                let html = `
+                <tr>
+                    <td>
+                        <select name="branch[id][]" class="form-select mb-2 select2_product">
+                            <option value="${item.branch_id}" selected>${item.branch.name}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="branch[price][]" class="form-control format-number mb-2" placeholder="Branch price" value="${item.price || ''}"/>
+                    </td>                    
+                    <td class="text-end">
+                        <button type="button" class="btn btn-icon btn-danger remove_variant">
+                            <i class="ki-outline ki-cross fs-2"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+                $('#kt_ecommerce_edit_order_selected_products_branch_body').append(html);
+            });
+
+            $('#kt_ecommerce_edit_order_selected_products_branch_body .select2_product').select2({
                 placeholder: 'Select product',
                 ajax: {
                     url: "{{ route('ajax.getProduct') }}",

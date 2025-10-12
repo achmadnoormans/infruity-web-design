@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -52,20 +53,23 @@ return new class extends Migration
             ],
         ]);
 
-        $productIds = DB::table('products')->pluck('id');
+        $products = DB::table('products')->get();
         $branchIds = DB::table('branch')->pluck('id');
         $data = [];
-        foreach ($productIds as $productId) {
+        foreach ($products as $product) {
             // Set supplier_id sesuai dengan wholesale
-            $ids = range(1, 3);      
-            $data[] = [
-                'product_id' => $productId,
-                'branch_id' => $branchIds[array_rand($ids)],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            foreach ($branchIds as $value) {
+                $data[] = [
+                    'product_id' => $product->id,
+                    'branch_id' => $value,
+                    'price' => array_rand(range(1000, 100000), 1),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];                
+            }    
+            
         }
-        DB::table('product_branch')->insert($data);
+        // DB::table('product_branch')->insert($data);
     }
 
     /**
@@ -74,6 +78,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('branch');
-        Schema::dropIfExists('product_branch');
     }
 };

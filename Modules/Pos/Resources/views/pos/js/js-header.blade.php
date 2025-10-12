@@ -156,4 +156,33 @@
             })
         }
     })
+
+    // Pastikan ada elemen <select id="branch_id"></select> di HTML
+
+    // Tambahkan option Default ke select sebelum inisialisasi Select2
+    if ($('#branch_id option[value="0"]').length === 0) {
+        $('#branch_id').prepend('<option value="0">Default</option>');
+    }
+
+    // Inisialisasi Select2 dengan AJAX
+    $('#branch_id').select2({
+        placeholder: 'Pilih Branch',
+        ajax: {
+            url: '/ajax/getBranch', // ganti sesuai route
+            dataType: 'json',
+            delay: 250,
+            processResults: data => {
+                const branchOptions = data.map(item => ({
+                    id: item.id,
+                    text: item.name,
+                }));
+                return {
+                    results: branchOptions
+                };
+            }
+        }
+    });
+
+    // Set default value setelah Select2 diinisialisasi
+    $('#branch_id').val('0').trigger('change');
 </script>

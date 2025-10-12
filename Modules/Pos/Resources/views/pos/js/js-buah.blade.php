@@ -311,6 +311,14 @@
                             url: '/ajax/listProduct', // ganti sesuai route
                             dataType: 'json',
                             delay: 250,
+                            data: function(params) {
+                                return {
+                                    search: params.term,
+                                    branch: $('#branch_id').val(),
+                                    status: 'aktif', // contoh nilai statis
+                                    limit: 10 // contoh parameter tambahan
+                                };
+                            },
                             processResults: data => ({
                                 results: data.map(item => ({
                                     id: item.id,

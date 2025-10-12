@@ -43,6 +43,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('branch_id');
+            $table->integer('price')->nullable()->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -201,5 +202,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('products');
+        Schema::dropIfExists('product_branch');
     }
 };
