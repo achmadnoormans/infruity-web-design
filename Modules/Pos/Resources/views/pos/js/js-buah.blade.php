@@ -313,7 +313,7 @@
                             delay: 250,
                             data: function(params) {
                                 return {
-                                    search: params.term,
+                                    term: params.term,
                                     branch: $('#branch_id').val(),
                                     status: 'aktif', // contoh nilai statis
                                     limit: 10 // contoh parameter tambahan
@@ -1040,7 +1040,7 @@
                             delay: 250,
                             data: function(params) {
                                 return {
-                                    search: params.term, // term dari select2 untuk pencarian
+                                    term: params.term, // term dari select2 untuk pencarian
                                     type: 'kemasan', // contoh ambil dari input lain
                                     status: 'aktif', // contoh nilai statis
                                     limit: 10 // contoh parameter tambahan
