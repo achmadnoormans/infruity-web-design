@@ -10,12 +10,14 @@ use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductUnit;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\ProductBranch;
+use Modules\Master\Entities\Branch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Schema;
 
 class ProductController extends Controller
 {
@@ -556,6 +558,48 @@ class ProductController extends Controller
         return response()->json($query);
     }
 
+    public function generateBranchPrice(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $products = Product::whereNotIn('tipe', ['parcel', 'non-pos', 'kemasan'])->get();
+            $branchIds = Branch::pluck('id');
+
+            // Nonaktifkan FK constraints untuk truncate aman
+            Schema::disableForeignKeyConstraints();
+            DB::statement('DELETE FROM product_branch');
+            Schema::enableForeignKeyConstraints();
+
+            $productBranch = [];
+
+            foreach ($products as $product) {
+                foreach ($branchIds as $branchId) {
+                    $productBranch[] = [
+                        'product_id' => $product->id,
+                        'branch_id' => $branchId,
+                        'price' => $product->price,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+
+            // Gunakan insert untuk multiple data
+            ProductBranch::insert($productBranch);
+
+            DB::commit();
+
+            return response()->json(['message' => 'Berhasil menggenerate harga cabang']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal menggenerate harga cabang: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     /**
      * Get data for DataTables
      * @param Request $request
@@ -706,7 +750,7 @@ class ProductController extends Controller
                 //                 <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
                 //             </a>';
                 // }
-
+    
                 $html .= '<div class="ms-5">
                 <a href="' . url('products/' . $product->id . '/show') . '" 
                    class="text-gray-800 text-hover-primary fs-5 fw-bold" 
@@ -719,7 +763,7 @@ class ProductController extends Controller
                 //     $childs = explode(',', $product->child);
                 //     $html .= '<span>' . implode('<br>', array_map('trim', $childs)) . '</span>';
                 // }
-
+    
                 $html .= '</div></div>';
 
                 return $html;

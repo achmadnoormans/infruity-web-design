@@ -160,11 +160,6 @@
     // Pastikan ada elemen <select id="branch_id"></select> di HTML
 
     // Tambahkan option Default ke select sebelum inisialisasi Select2
-    if ($('#branch_id option[value="0"]').length === 0) {
-        $('#branch_id').prepend('<option value="0">Default</option>');
-    }
-
-    // Inisialisasi Select2 dengan AJAX
     $('#branch_id').select2({
         placeholder: 'Pilih Branch',
         ajax: {
@@ -172,10 +167,18 @@
             dataType: 'json',
             delay: 250,
             processResults: data => {
+                // ubah hasil dari server jadi format select2
                 const branchOptions = data.map(item => ({
                     id: item.id,
                     text: item.name,
                 }));
+
+                // tambahkan opsi Default di awal
+                branchOptions.unshift({
+                    id: 0,
+                    text: 'Pilih Branch'
+                });
+
                 return {
                     results: branchOptions
                 };
@@ -184,5 +187,6 @@
     });
 
     // Set default value setelah Select2 diinisialisasi
-    $('#branch_id').val('0').trigger('change');
+    const defaultOption = new Option('Pilih Branch', 0, true, true);
+    $('#branch_id').append(defaultOption).trigger('change');
 </script>

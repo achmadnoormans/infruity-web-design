@@ -12,7 +12,13 @@ class ProductBranch extends Model
     use HasFactory;
 
     protected $table = 'product_branch';
-    protected $fillable = [];
+    protected $fillable = [
+        'product_id',
+        'branch_id',
+        'price',
+        'created_at',
+        'updated_at',
+    ];
     
     public function product()
     {

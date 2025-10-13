@@ -70,6 +70,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
     Route::delete('products/variants/{id}', [ProductController::class, 'destroyVariant'])->name('products.destroy-variant');
     Route::get('products/get-product-receipt', [ProductController::class, 'getProductReceipt'])->name('products.get-product-receipt');
+    Route::post('products/generate-branch-price', [ProductController::class, 'generateBranchPrice'])->name('products.generate-branch-price');
     Route::get('staff/get-staff', [StaffController::class, 'getStaff'])->name('staff.get-staff');
     Route::get('customer/get-customer', [CustomerController::class, 'getCustomer'])->name('customer.get-customer');
 

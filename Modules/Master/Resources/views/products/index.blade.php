@@ -12,8 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12"
-                            placeholder="Cari Produk" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Produk" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -21,9 +20,12 @@
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar ms-auto">
                     <!--begin::Add product-->
-                    <a href="{{ url('products/create') }}" class="btn btn-primary">
+                    <a href="{{ url('products/create') }}" class="btn btn-primary me-2">
                         <i class="fa fa-plus"></i>
                     </a>
+                    <button class="btn btn-danger" id="sync-products">
+                        <i class="fa fa-sync"></i>
+                    </button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -227,5 +229,51 @@
                 }
             });
         }
+
+        $('#sync-products').on('click', function() {
+            Swal.fire({
+                title: 'Generate Harga ke semua Branch',
+                text: 'Aksi ini akan mereset harga branch ke harga default Produk yang sudah ada',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, generate!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/products/generate-branch-price`, // Ganti dengan URL yang sesuai
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Berhasil menggenerate harga branch.',
+                                showConfirmButton: false,
+                                timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
+                            });
+
+                            // Reload DataTable setelah berhasil menghapus data
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat menghapus data.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
     </script>
 @endsection

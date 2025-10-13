@@ -92,6 +92,24 @@
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
                 <div class="row">
+                    <div class="col-12">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Pilih Branch</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <select class="form-select" id="branch_id" name="branch_id">
+                                <option value="">Pilih Branch</option>
+                            </select>
+                            <!--end::Editor-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::Input group-->
+            </div>
+            <div class="d-flex flex-column gap-10 mb-3">
+                <!--begin::Input group-->
+                <div class="row">
                     <div class="col-9">
                         <div class="fv-row">
                             <!--begin::Label-->
@@ -112,24 +130,6 @@
                         </button>
                     </div>
 
-                </div>
-                <!--end::Input group-->
-            </div>
-            <div class="d-flex flex-column gap-10 mb-3">
-                <!--begin::Input group-->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Pilih Branch</label>
-                            <!--end::Label-->
-                            <!--begin::Editor-->
-                            <select class="form-select" id="branch_id" name="branch_id">
-                                <option value="">Pilih Branch</option>
-                            </select>
-                            <!--end::Editor-->
-                        </div>
-                    </div>
                 </div>
                 <!--end::Input group-->
             </div>
