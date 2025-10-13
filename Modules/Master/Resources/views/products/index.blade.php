@@ -19,13 +19,54 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar ms-auto">
-                    <!--begin::Add product-->
-                    <a href="{{ url('products/create') }}" class="btn btn-primary me-2">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                    <button class="btn btn-danger" id="sync-products">
-                        <i class="fa fa-sync"></i>
-                    </button>
+                    <div class="card-toolbar">
+                        <!--begin::Toolbar-->
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <!--begin::Filter-->
+                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                                data-kt-menu-placement="bottom-end">
+                                <i class="ki-duotone ki-filter fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i></button>
+                            <!--begin::Menu 1-->
+                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                                <!--begin::Header-->
+                                <div class="px-7 py-5">
+                                    <div class="fs-5 text-gray-900 fw-bold">Pilihan Filter</div>
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Separator-->
+                                <div class="separator border-gray-200"></div>
+                                <!--end::Separator-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div class="mb-2">
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Status"
+                                            data-kt-ecommerce-product-filter="branch">
+                                            <option value="0">Default</option>
+                                            @foreach ($branch as $item)
+                                                <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <div class="px-7 py-5 text-end">
+                                    <button class="btn btn-danger" id="sync-products">
+                                        <i class="fa fa-sync"></i> Generate Harga
+                                    </button>
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Menu 1-->
+                            <!--end::Filter-->
+                        </div>
+                        <!--end::Toolbar-->
+                    </div>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -51,6 +92,10 @@
             <!--end::Card body-->
         </div>
     </div>
+    <a href="{{ url('products/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
+        style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+        <i class="fa fa-plus"></i>
+    </a>
     <div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
@@ -94,6 +139,7 @@
                     data: function(d) {
                         d.searchValue = $('#search').val();
                         d.url = "{{ request()->segment(1) }}";
+                        d.branch_filter = $('[data-kt-ecommerce-product-filter="branch"]').val();
                     }
                 },
                 columns: [
@@ -125,6 +171,10 @@
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+
+            $('[data-kt-ecommerce-product-filter="branch"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
             });
         });
 
@@ -218,6 +268,7 @@
                 type: 'PUT',
                 data: {
                     price: price,
+                    branch_id: $('[data-kt-ecommerce-product-filter="branch"]').val(),
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function() {
@@ -255,7 +306,8 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Berhasil menggenerate harga branch.',
+                                text: response.message ||
+                                    'Berhasil menggenerate harga branch.',
                                 showConfirmButton: false,
                                 timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
                             });

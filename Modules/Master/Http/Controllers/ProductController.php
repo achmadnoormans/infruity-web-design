@@ -27,7 +27,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('master::products.index');
+        $data['branch'] = Branch::all();
+        return view('master::products.index', $data);
     }
 
     public function get_stock()
@@ -74,6 +75,7 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
+            $branches = Branch::all();
             $product = new Product();
             $product->name = $request->product_name;
             $product->category_id = $request->category_id;
@@ -118,6 +120,14 @@ class ProductController extends Controller
                         $variant->created_by = Auth::user()->id_user;
                         $variant->description = strip_tags($request->description ?? '');
                         $variant->save();
+
+                        foreach ($branches as $key => $value) {
+                            $branch = new ProductBranch();
+                            $branch->product_id = $variant->id;
+                            $branch->branch_id = $value->id;
+                            $branch->price = $variant->price;
+                            $branch->save();
+                        }
                     }
 
                     $child = new ProductChild();
@@ -150,6 +160,14 @@ class ProductController extends Controller
                         $branch->price = $request->branch['price'][$key] ?? 0;
                         $branch->save();
                     }
+                }
+            } else {
+                foreach ($branches as $key => $value) {
+                    $branch = new ProductBranch();
+                    $branch->product_id = $productId;
+                    $branch->branch_id = $value->id;
+                    $branch->price = $product->price;
+                    $branch->save();
                 }
             }
             DB::commit();
@@ -372,6 +390,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'price' => 'required|numeric',
+            'branch_id' => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -383,9 +402,17 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
-            $product = Product::findOrFail($id);
-            $product->price = preg_replace('/[^0-9]/', '', $request->price);
-            $product->save();
+            if ($request->has('branch_id') && $request->branch_id != 0) {
+                $productBranch = ProductBranch::where('product_id', $id)->where('branch_id', $request->branch_id)->first();
+                if ($productBranch) {
+                    $productBranch->price = preg_replace('/[^0-9]/', '', $request->price);
+                    $productBranch->save();
+                }
+            } else {
+                $product = Product::findOrFail($id);
+                $product->price = preg_replace('/[^0-9]/', '', $request->price);
+                $product->save();
+            }
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -615,7 +642,12 @@ class ProductController extends Controller
         $query = Product::query()
             ->with('category')
             ->where('tipe', '!=', 'parcel');
-        // ->where('name', 'like', '%' . $searchValue . '%');
+
+        if ($request->has('branch_filter') && $request->branch_filter != 0) {
+            $query = $query->join('product_branch', 'products.id', '=', 'product_branch.product_id')
+                ->where('product_branch.branch_id', $request->branch_filter)
+                ->select('products.*', 'product_branch.price as price');
+        }
 
         $data = $query->get();
         // $data = Product::all();
