@@ -137,7 +137,7 @@
         </div> --}}
     </div>
     <div x-data="{ showActions: false }" class="position-fixed d-flex flex-column-reverse align-items-center"
-        style="bottom: 70px; right: 85px; z-index: 1050; gap: 10px;">
+        style="bottom: 90px; right: 85px; z-index: 1050; gap: 10px;">
 
         <!-- Tombol utama (floating) -->
         <button class="btn btn-primary rounded-circle shadow-lg" style="width: 50px; height: 50px;"
@@ -159,7 +159,7 @@
     </div>
     <div x-data="{ loading: false }">
         <button class="btn btn-success rounded-circle shadow-lg position-fixed"
-            style="bottom: 70px; right: 30px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
+            style="bottom: 90px; right: 30px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
             @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
             <template x-if="!loading">
                 <i class="bi bi-cash-stack"></i>
