@@ -651,6 +651,16 @@
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
+                if (this.ongkirGlobal > 0 && (courierId == null || courierId == '')) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kurir belum dipilih',
+                        text: 'Anda memasukkan biaya ongkir, tetapi tidak memilih kurir!',
+                    });
+                    if (typeof doneCallback === 'function') doneCallback();
+                    return;
+                }
+
 
                 const data = {
                     customer_id: customerId,
@@ -723,6 +733,16 @@
                 const courierId = document.querySelector('select[name="courier_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
+
+                if (this.ongkirGlobal > 0 && (courierId == null || courierId == '')) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kurir belum dipilih',
+                        text: 'Anda memasukkan biaya ongkir, tetapi tidak memilih kurir!',
+                    });
+                    if (typeof doneCallback === 'function') doneCallback();
+                    return;
+                }
 
 
                 const data = {
@@ -797,6 +817,17 @@
                 const courierId = document.querySelector('select[name="courier_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
+                console.table(this.ongkirGlobal, courierId);
+
+                if (this.ongkirGlobal > 0 && (courierId == null || courierId == '')) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kurir belum dipilih',
+                        text: 'Anda memasukkan biaya ongkir, tetapi tidak memilih kurir!',
+                    });
+                    if (typeof doneCallback === 'function') doneCallback();
+                    return;
+                }
 
                 const data = {
                     customer_id: customerId,

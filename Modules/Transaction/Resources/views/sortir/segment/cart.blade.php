@@ -1,4 +1,4 @@
-<div class="col-md-12" style="height: 200px; overflow-y: auto;">
+<div class="col-md-12" style="height: 400px; overflow-y: auto;">
     <div>
         <template x-if="cart.length === 0">
             <div class="text-center py-5">

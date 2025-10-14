@@ -481,7 +481,7 @@
 
             // Total
             totalProduk() {
-                return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
+                return this.cart.length;
             },
             totalHargaKeseluruhan() {
                 return this.cart.reduce((sum, item) => {
