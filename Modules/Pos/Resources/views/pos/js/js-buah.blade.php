@@ -648,7 +648,8 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
-                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
 
                 const data = {
@@ -720,7 +721,8 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
-                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
 
                 const data = {
@@ -793,7 +795,8 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
-                const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
+                const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
                 const data = {
                     customer_id: customerId,
@@ -1275,11 +1278,16 @@
                 $('#note').val(data.note);
                 $('#ongkir_date').val(data.ongkir_date);
                 $('#ongkir_time').val(data.ongkir_time);
-                $('#ongkir_address').val(data.ongkir_address);
+                // $('#ongkir_address').val(data.ongkir_address);
 
                 if (data.courier) {
                     let optionCourier = new Option(data.courier.name, data.courier.id, true, true);
                     $('#courier_id').append(optionCourier).val(data.courier.id).trigger('change');
+                }
+
+                if (data.ongkir_address) {
+                    let ongkirAddress = new Option(data.ongkir_address, data.ongkir_address, true, true);
+                    $('#address_id').append(ongkirAddress).val(data.ongkir_address).trigger('change');
                 }
             },
 

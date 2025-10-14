@@ -45,6 +45,8 @@
         const tierId = data.tier_id || ''; // Pastikan Anda mengirimkan tier_id dari server jika dibutuhkan
         $('#tier_id').val(tierId); // Set ke input hidden
         $('#ongkir_address').val(data.address);
+        const newOption = new Option(data.address, data.address, true, true);
+        $('#address_id').append(newOption).trigger('change');
     });
 
     // Fungsi render untuk item di dropdown
@@ -189,4 +191,103 @@
     // Set default value setelah Select2 diinisialisasi
     const defaultOption = new Option('Pilih Branch', 0, true, true);
     $('#branch_id').append(defaultOption).trigger('change');
+
+    $('#address_id').select2({
+        placeholder: 'Pilih Alamat Pengiriman',
+        ajax: {
+            url: '/customer/get-address',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    term: params.term,
+                    customer_id: $('#customer_id').val(),
+                    status: 'aktif',
+                    limit: 10
+                };
+            },
+            processResults: data => ({
+                results: data.map(item => ({
+                    id: item.address,
+                    text: item.address,
+                }))
+            })
+        },
+        language: {
+            noResults: function() {
+                return 'Alamat tidak ditemukan.';
+            }
+        },
+        escapeMarkup: function(markup) {
+            return markup;
+        }
+    });
+
+
+    $('#address_id').on('select2:open', function() {
+        let addButton = `
+        <div class="select2-add-address" 
+             style="padding: 8px; text-align: center; cursor: pointer; border-top: 1px solid #eee;">
+            ➕ Tambah Alamat Baru
+        </div>`;
+
+        if (!$('.select2-add-address').length) {
+            $('.select2-results').append(addButton);
+        }
+
+        $(document).off('click', '.select2-add-address').on('click', '.select2-add-address', function(e) {
+            e.stopPropagation();
+            $('#address_id').select2('close');
+            $('#modal_tambah_alamat').modal('show');
+        });
+    });
+
+    $('#form_tambah_alamat').on('submit', function(e) {
+        e.preventDefault();
+
+        const customerId = $('#customer_id').val();
+        const alamatBaru = $('#alamat_baru').val().trim();
+
+        if (!alamatBaru) {
+            Swal.fire('Peringatan', 'Alamat tidak boleh kosong.', 'warning');
+            return;
+        }
+
+        if (customerId == 0) {
+            Swal.fire('Peringatan', 'Pelanggan tidak boleh kosong.', 'warning');
+            return;
+        }
+
+        $.ajax({
+            url: '/customer/store-address',
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                customer_id: customerId,
+                address: alamatBaru
+            },
+            success: function(response) {
+                $('#modal_tambah_alamat').modal('hide');
+                $('#alamat_baru').val('');
+
+                // Tambahkan alamat baru ke dropdown
+                const newOption = new Option(response.address, response.address, true, true);
+                $('#address_id').append(newOption).trigger('change');
+
+                // Select2 akan langsung menampilkan alamat baru sebagai terpilih
+                $('#address_id').val(response.address).trigger('change');
+
+                Swal.fire({
+                    title: 'Berhasil',
+                    text: 'Alamat baru berhasil ditambahkan dan dipilih.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            },
+            error: function(xhr) {
+                Swal.fire('Gagal', xhr.responseJSON?.message || 'Terjadi kesalahan.', 'error');
+            }
+        });
+    });
 </script>

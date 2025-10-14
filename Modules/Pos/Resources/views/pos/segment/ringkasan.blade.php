@@ -89,7 +89,9 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label mb-1">Alamat Pengiriman</label>
-                            <textarea name="ongkir_address" id="ongkir_address" cols="30" rows="5" class="form-control"></textarea>
+                            {{-- <textarea name="ongkir_address" id="ongkir_address" cols="30" rows="5" class="form-control"></textarea>
+                            <br> --}}
+                            <select class="form-control" name="ongkir_address" id="address_id"></select>
                         </div>
                     </div>
                 </div>
@@ -173,3 +175,30 @@
         </button>
     </div>
 </div>
+
+<!-- Modal Tambah Alamat -->
+<div class="modal fade" id="modal_tambah_alamat" tabindex="-1" aria-labelledby="modalTambahAlamatLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="form_tambah_alamat">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTambahAlamatLabel">Tambah Alamat Baru</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="alamat_baru" class="form-label">Alamat</label>
+            <textarea id="alamat_baru" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

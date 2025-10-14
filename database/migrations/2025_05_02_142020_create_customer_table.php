@@ -30,6 +30,15 @@ return new class extends Migration {
             $table->timestamps();
         });
 
+        Schema::create('customer_address', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->text('address')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+        });
+
         DB::table('customer')->insert([
             [
                 'name' => 'Andi Setiawan',

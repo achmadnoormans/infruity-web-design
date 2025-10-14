@@ -73,6 +73,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('products/generate-branch-price', [ProductController::class, 'generateBranchPrice'])->name('products.generate-branch-price');
     Route::get('staff/get-staff', [StaffController::class, 'getStaff'])->name('staff.get-staff');
     Route::get('customer/get-customer', [CustomerController::class, 'getCustomer'])->name('customer.get-customer');
+    Route::get('customer/get-address', [CustomerController::class, 'getAddress'])->name('customer.get-address');
+    Route::post('customer/store-address', [CustomerController::class, 'storeAddress'])->name('customer.store-address');
 
     // Datatable
     Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');

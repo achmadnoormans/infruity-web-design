@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Customer;
+use Modules\Master\Entities\CustomerAddress;
 use Modules\Master\Entities\Region;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -266,6 +267,52 @@ class CustomerController extends Controller
         }
 
 
+    }
+
+    public function getAddress(Request $request)
+    {
+        $customerId = $request->customer_id;
+        $query1 = DB::table('customer')
+            ->select('id', 'address')
+            ->where('id', $customerId);
+
+        $query2 = DB::table('customer_address')
+            ->select('customer_id as id', 'address')
+            ->where('customer_id', $customerId);
+
+        $result = $query1->union($query2)->get();
+        return response()->json($result);
+    }
+
+    public function storeAddress(Request $request)
+    {
+        // dd($request->all());
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customer,id',
+            'address' => 'required|string|max:500',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $customerAddress = new CustomerAddress();
+            $customerAddress->customer_id = $request->customer_id;
+            $customerAddress->address = $request->address;
+            $customerAddress->save();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'customer' => [
+                    'id' => $customerAddress->id,
+                    'address' => $customerAddress->address
+                ]
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menambahkan data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function get_data(Request $request)
