@@ -128,7 +128,6 @@
 
                 // set final total numeric
                 this.totalAll = totalProduk + biayaJasa + kemasanPrice + biayaJasaEdit + kemasanPriceEdit;
-                console.log('totalAll =>', totalProduk, 'biayaJasa =>', biayaJasa, 'kemasanPrice =>', kemasanPrice, 'biayaJasaEdit =>', biayaJasaEdit, 'kemasanPriceEdit =>', kemasanPriceEdit);
 
                 // (opsional) update kemasan input display
                 if (kemasanEl) kemasanEl.value = kemasanPrice ? kemasanPrice.toLocaleString('id-ID') : '';
@@ -147,7 +146,13 @@
             },
             initSelect2() {
                 $('.parcel-select').select2({
-                    placeholder: 'Pilih Parcel',
+                    placeholder: 'Pilih Buah',
+                    language: {
+                        errorLoading: function() {
+                            return "Belum ada Buah yang dibuat.";
+                        }
+                    },
+                    dropdownParent: $('#parcelModal'),
                     ajax: {
                         url: '/ajax/listProduct',
                         dataType: 'json',
