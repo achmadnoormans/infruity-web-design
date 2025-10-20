@@ -1,6 +1,9 @@
 @section('script')
     <script type="text/javascript">
         var dataTable;
+        $('#id_branch').select2({
+            dropdownParent: $('#kt_modal_add_customer')
+        });
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -28,14 +31,17 @@
                         d.url = "{{ request()->segment(1) }}";
                     }
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'nm_user',
                         name: 'nm_user'
                     },
                     {
                         data: 'role',
                         name: 'role'
+                    },
+                    {
+                        data: 'branch',
+                        name: 'branch'
                     },
                     {
                         data: 'action',
@@ -206,6 +212,16 @@
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
                     form.attr('action', `/user/${id}`); // URL untuk update produk
+
+                    // Pastikan response.user_branches berisi array seperti yang kamu contohkan
+                    const selectedBranches = response.branches.map(item => item.branch_id);
+
+                    // Reset dulu select-nya
+                    $('#id_branch').val(null).trigger('change');
+
+                    // Set selected options
+                    $('#id_branch').val(selectedBranches).trigger('change');
+
                     form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
                     form.append(
                         '<input type="hidden" name="_method" value="PUT">'
@@ -229,56 +245,6 @@
             altInput: !0,
             altFormat: "d F, Y",
             dateFormat: "Y-m-d"
-        });
-
-        $('#kt_modal_add_customer').on('shown.bs.modal', function() {
-            $('#customer_id').select2({
-                placeholder: 'Select a customer',
-                dropdownParent: $('#kt_modal_add_customer'),
-                ajax: {
-                    url: '/customer/get-customer',
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    })
-                }
-            }).on('select2:select', function(e) {
-                const data = e.params.data;
-            });
-        });
-
-        $('#kt_modal_add_customer').on('shown.bs.modal', function() {
-            $('#tier_id').select2({
-                placeholder: 'Select a tier',
-                dropdownParent: $('#kt_modal_add_customer'),
-                ajax: {
-                    url: '/tier/list-tier',
-                    dataType: 'json',
-                    delay: 250,
-                    data: params => ({
-                        search: params.term
-                    }),
-                    processResults: data => ({
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name,
-                            deposito: item.deposito
-                        }))
-                    })
-                }
-            }).on('select2:select', function(e) {
-                const data = e.params.data;
-                const depostio = data.deposito ?? 0;
-                $('input[name="deposito"]').val(depostio);
-                bindFormatNumber();
-            });
         });
     </script>
 @endsection

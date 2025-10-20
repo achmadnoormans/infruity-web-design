@@ -43,8 +43,9 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-start ">Nama</th>
-                            <th class="text-start min-w-100px">Role</th>
+                            <th class="text-start min-w-200px">Nama</th>
+                            <th class="text-start">Role</th>
+                            <th class="text-start">Branch</th>
                             <th class=""></th>
                         </tr>
                     </thead>
@@ -123,6 +124,20 @@
                                 <select name="id_role" id="id_role" class="form-control form-control">
                                     @foreach ($role as $item)
                                         <option value="{{ $item->id_role }}">{{ $item->nm_role }}</option>
+                                    @endforeach
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-5">
+                                <!--begin::Label-->
+                                <label class="fs-6 fw-semibold mb-2">Branch</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select name="id_branch[]" id="id_branch" class="form-control form-control" multiple="true">
+                                    @foreach ($branch as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
                                 <!--end::Input-->

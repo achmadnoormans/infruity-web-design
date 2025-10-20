@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\Role;
 use App\Models\RoleUser;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use App\User;
 use Auth;
 use DB;
 use Exception;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -18,20 +20,18 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $data['role'] = Role::all();
+        $data['branch'] = Branch::all();
         return view("admin.user.index", $data);
     }
 
-    public function create()
-    {
-
-    }
+    public function create() {}
 
     public function edit($id)
     {
         if (class_exists(\Debugbar::class)) {
             \Debugbar::disable();
         }
-        $user = User::with('RoleUser.role')->findOrFail($id);
+        $user = User::with('RoleUser.role', 'branches.branch')->findOrFail($id);
         return response()->json($user);
     }
 
@@ -51,7 +51,15 @@ class UserController extends Controller
             $role->id_user = DB::getPdo()->lastInsertId();
             $role->id_role = $request->id_role ?? 99;
             $role->save();
-
+            // dd($role);
+            $userBranch = [];
+            foreach ($request->id_branch as $branch) {
+                $userBranch[] = [
+                    'user_id' => $role->id_user,
+                    'branch_id' => $branch,
+                ];
+            }
+            UserBranch::insert($userBranch);
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -84,6 +92,16 @@ class UserController extends Controller
             $role->id_role = $request->id_role ?? 99;
             $role->save();
 
+            // add branches
+            UserBranch::where('user_id', $id)->delete();
+            $userBranch = [];
+            foreach ($request->id_branch as $branch) {
+                $userBranch[] = [
+                    'user_id' => $id,
+                    'branch_id' => $branch,
+                ];
+            }
+            UserBranch::insert($userBranch);
             DB::commit();
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Data User Gagal Disimpan');
@@ -105,7 +123,6 @@ class UserController extends Controller
                 'success' => true,
                 'message' => 'Data berhasil dihapus.'
             ]);
-
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
@@ -132,14 +149,23 @@ class UserController extends Controller
             \Debugbar::disable();
         }
 
-        $data = User::with('RoleUser.role')->get();
+        $data = User::with('RoleUser.role', 'branches.branch')->get();
 
         return DataTables::of($data)
             ->addIndexColumn()
+            // ->addColumn('role', function ($row) {
+            //     return $row->RoleUser->map(function ($ru) {
+            //         return $ru->role->nm_role ?? '-';
+            //     })->implode(', ');
+            // })
             ->addColumn('role', function ($row) {
-                return $row->RoleUser->map(function ($ru) {
-                    return $ru->role->nm_role ?? '-';
-                })->implode(', ');
+                return '<span class="badge badge-light-success fw-bold me-1">' . e($row->RoleUser->role->nm_role ?? '-') . '</span>';
+            })
+            ->addColumn('branch', function ($row) {
+                return $row->branches->map(function ($ub) {
+                    $name = $ub->branch->name ?? '-';
+                    return '<span class="badge badge-light-primary fw-bold me-1">' . e($name) . '</span>';
+                })->implode(' ');
             })
             ->addColumn('nm_user', function ($row) {
                 return $row->nm_user . '<br>' . $row->username;
@@ -164,7 +190,7 @@ class UserController extends Controller
                         </ul>
                     </div>';
             })
-            ->rawColumns(['nm_user', 'action'])
+            ->rawColumns(['nm_user', 'action', 'branch', 'role'])
             ->make(true);
     }
 }
