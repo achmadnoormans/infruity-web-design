@@ -38,6 +38,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->decimal('voucher', 15, 2)->nullable()->default(0);
             $table->integer('voucher_qty')->nullable()->default(0);
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('deposito_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

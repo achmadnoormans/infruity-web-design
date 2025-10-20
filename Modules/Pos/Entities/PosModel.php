@@ -32,6 +32,7 @@ class PosModel extends Model
         'note',
         'courier_id',
         'ongkir_address',
+        'branch_id',
         'created_by'
     ];
     protected $table = 'pos_transaction';

@@ -648,6 +648,7 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
@@ -680,6 +681,7 @@
                     note: note,
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
+                    branch_id: branchId,
                 };
 
                 // Simulasi kirim ke server
@@ -731,6 +733,7 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
@@ -763,6 +766,7 @@
                     note: note,
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
+                    branch_id: branchId,
                 };
 
                 // Simulasi kirim ke server
@@ -815,6 +819,7 @@
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
                 console.table(this.ongkirGlobal, courierId);
@@ -847,6 +852,7 @@
                     note: note,
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
+                    branch_id: branchId,
                 };
 
                 // Simulasi kirim ke server

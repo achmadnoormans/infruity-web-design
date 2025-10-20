@@ -314,6 +314,7 @@ class PosController extends Controller
             'courier_id' => 'nullable',
             'ongkir_address' => 'nullable',
             'kemasan_price' => 'nullable|numeric',
+            'branch_id' => 'nullable',
         ]);
 
         try {
@@ -352,6 +353,7 @@ class PosController extends Controller
                 'created_by' => $userId,
                 'courier_id' => $data['courier_id'] ?? null,
                 'ongkir_address' => $data['ongkir_address'] ?? null,
+                'branch_id' => $data['branch_id'] ?? null,
             ]);
             $pos->save();
 
