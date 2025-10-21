@@ -577,9 +577,9 @@
             <span class="menu-title">Pengiriman</span>
         </a>
     @endif
-    @if (check_access('other-book.index'))
-        <a class="menu-link {{ Request::segment(1) == 'other-book' ? 'active' : '' }}"
-            href="{{ url('other-book') }}">
+    @if (check_access('order-book.index'))
+        <a class="menu-link {{ Request::segment(1) == 'order-book' ? 'active' : '' }}"
+            href="{{ url('order-book') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
