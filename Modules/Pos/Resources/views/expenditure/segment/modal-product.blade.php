@@ -11,21 +11,22 @@
                 <!-- Select Produk -->
                 <div class="mb-3">
                     <label class="form-label">Nama Produk</label>
-                    <select id="select_product" class="form-select"></select>
+                    {{-- <select id="select_product" class="form-select"></select> --}}
+                    <input type="text" class="form-control" x-model="addProduct.name">
                 </div>
 
                 <!-- Satuan -->
                 <div class="row">
                     <div class="col-3 mb-3">
                         <label class="form-label">Satuan</label>
-                        <input type="text" class="form-control" x-model="addProduct.unit" readonly>
+                        <input type="text" class="form-control" x-model="addProduct.unit">
                     </div>
 
                     <!-- Harga -->
                     <div class="col-9 mb-3">
                         <label class="form-label">Harga</label>
                         <input type="text" class="form-control" x-model="formattedAddPrice"
-                            @input="updateAddPriceFromFormatted" readonly>
+                            @input="updateAddPriceFromFormatted">
                     </div>
                 </div>
 
@@ -70,14 +71,14 @@
                 <div x-show="editItem">
                     <div class="mb-3">
                         <label class="form-label">Nama Product</label>
-                        <input type="text" class="form-control" x-model="editProductName" readonly>
+                        <input type="text" class="form-control" x-model="editProductName">
                     </div>
                     <!-- Input Qty -->
                     <div class="row mb-3">
                         <div class="col-4">
                             <label class="form-label">Satuan</label>
                             <input type="text" class="form-control" step="0.01" min="0"
-                                x-model="editProductUnit" readonly>
+                                x-model="editProductUnit">
                         </div>
                         <div class="col-8">
                             <label class="form-label">Quantity</label>

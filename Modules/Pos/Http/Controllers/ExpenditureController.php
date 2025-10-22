@@ -154,20 +154,20 @@ class ExpenditureController extends Controller
             // Simpan item transaksi
             $transaksiId = $pos->id;
             foreach ($data['items'] as $item) {
-                if (is_numeric($item['id'])) {
-                    ExpenditureDetail::insert([
-                        'expenditure_id' => $transaksiId,
-                        'product_id' => $item['id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['qty'],
-                        'discount' => $item['discount'] ?? 0,
-                        'subtotal' => $item['total_input'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                        'type' => 'product',
-                        'created_by' => $userId,
-                    ]);
-                }
+                ExpenditureDetail::insert([
+                    'expenditure_id' => $transaksiId,
+                    'product_id' => $item['id'],
+                    'product_name' => $item['name'],
+                    'product_unit' => $item['unit'],
+                    'price' => $item['price'],
+                    'quantity' => $item['qty'],
+                    'discount' => $item['discount'] ?? 0,
+                    'subtotal' => $item['total_input'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'type' => 'product',
+                    'created_by' => $userId,
+                ]);
             }
             // dd($request->all());
 

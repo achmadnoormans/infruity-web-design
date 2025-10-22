@@ -418,11 +418,11 @@
                 return this.formatRupiah(this.addProduct.qty * this.addProduct.price);
             },
             saveAddToCart() {
-                if (!this.addProduct.id) {
+                if (!this.addProduct.name) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Produk belum dipilih',
-                        text: 'Silakan pilih produk terlebih dahulu.',
+                        title: 'Produk belum diisi',
+                        text: 'Silakan isi nama produk terlebih dahulu.',
                     });
                     return;
                 }
@@ -435,15 +435,6 @@
                     return;
                 }
 
-                const isExist = this.cart.some(item => item.id === this.addProduct.id);
-                if (isExist) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Produk sudah ditambahkan',
-                        text: 'Produk ini sudah ada di keranjang.',
-                    });
-                    return;
-                }
 
                 const discount = Number(this.addProduct.discount || 0);
                 const total_input = this.addProduct.total;
@@ -695,6 +686,8 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         console.error(err);
+                        if (typeof doneCallback === 'function') doneCallback();
+                        return;
                     });
             },
             // Save Order Book
@@ -759,6 +752,8 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         console.error(err);
+                        if (typeof doneCallback === 'function') doneCallback();
+                        return;
                     });
             },
             // Pembayaran 
@@ -856,22 +851,15 @@
                 console.log('data', data);
                 console.log('detail', detail);
                 detail.map(item => {
-                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
-                        .price) : item.product_id;
-                    let productName = item.type == 'parcel' ? item.product.description : item.product.name;
                     const obj = {
-                        id: id,
-                        name: productName,
+                        id: item.id,
+                        name: item.product_name,
                         price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
                         hpp: parseFloat(item.hpp || 0),
                         qty: this.sanitizeNumber(Number(item.quantity)),
-                        unit: item.product.unit.abbreviation,
+                        unit: item.product_unit,
                         discount: this.sanitizeNumber(Number(item.discount || 0)),
                         discountPercent: item.discountPercent || 0,
-                        fee: item.product.fee || 0,
-                        kemasanId: item.parcel ? item.parcel.id : null,
-                        kemasanName: item.parcel ? item.parcel.name : null,
-                        kemasanPrice: item.parcel ? item.parcel.price : null,
                         total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
                         typeProduct: item.type || 'product',
                     };

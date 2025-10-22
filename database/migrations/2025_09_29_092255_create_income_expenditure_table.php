@@ -31,9 +31,11 @@ return new class extends Migration {
         Schema::create('expenditure_detail', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('expenditure_id');
-            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('parcel_id')->nullable();
             $table->unsignedBigInteger('production_id')->nullable();
+            $table->string('product_name')->nullable();
+            $table->string('product_unit')->nullable();
             $table->decimal('quantity', 10, 2);
             $table->decimal('price', 15, 2);
             $table->decimal('discount', 15, 2);
