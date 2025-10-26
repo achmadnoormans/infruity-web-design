@@ -22,6 +22,18 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('order_book_detail', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('order_book_id')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->integer('quantity')->default(1);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+        });
+
+
     }
 
     /**

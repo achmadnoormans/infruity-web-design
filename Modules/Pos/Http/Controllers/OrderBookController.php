@@ -8,7 +8,10 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Pos\Entities\OrderBook;
+use Modules\Pos\Entities\OrderBookDetail;
+use Modules\Master\Entities\Product;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Http;
 
 
 class OrderBookController extends Controller
@@ -105,7 +108,31 @@ class OrderBookController extends Controller
                 'note' => $data['note'],
                 'created_by' => $userId,
             ]);
+            $products = Product::select('id', 'name', 'product_unit')->get();
+            $data = $this->sendToAi($products, $data['note']);
+
+            if (!isset($data['items']) || !is_array($data['items'])) {
+                return response()->json(['error' => 'Respons AI tidak valid.'], 400);
+            }
+
+            foreach ($data['items'] as $item) {
+                if (!isset($item['product_id']) || !isset($item['quantity'])) continue;
+
+                // Validasi: pastikan product_id benar-benar ada di database
+                $productId = (int) $item['product_id'];
+                if (!$products->contains('id', $productId)) {
+                    continue; // skip jika ID tidak valid
+                }
+
+                OrderBookDetail::create([
+                    'order_book_id' => $orderBook->id,
+                    'product_id' => $productId,
+                    'quantity' => (int) $item['quantity']
+                ]);
+            }
+
             DB::commit();
+            // dd($data);
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi berhasil disimpan',
@@ -119,6 +146,55 @@ class OrderBookController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function sendToAi($products, $note)
+    {
+        if ($products->isEmpty()) {
+            return response()->json(['error' => 'Tidak ada produk di database.'], 400);
+        }
+        $productList = $products->map(function ($p) {
+            return "ID: {$p->id}, Nama: {$p->name}, Satuan: {$p->product_unit}";
+        })->implode("\n");
+
+        $systemPrompt = "You are an order processing assistant. 
+            You will receive a shopping list in Indonesian.
+
+            AVAILABLE PRODUCTS:
+            {$productList}
+
+            INSTRUCTIONS:
+            - For each line in the user's message, extract:
+            - product_id (from the AVAILABLE PRODUCTS list above)
+            - quantity (integer, default 1 if missing)
+            - unit (string, e.g., 'Kg', 'Buah'; use product's unit if not specified)
+            - Match the item name to the closest product name in the list (case-insensitive).
+            - If no match found, skip the item.
+            - Output ONLY a valid JSON object with key 'items' containing an array of:
+            {\"product_id\": 1, \"quantity\": 2, \"unit\": \"Kg\"}
+
+            NO EXPLANATION. NO MARKDOWN. ONLY JSON.";
+
+        $response = Http::withToken(env('GROQ_API_KEY'))
+            ->timeout(30)
+            ->post('https://api.groq.com/openai/v1/chat/completions', [
+                'model' => 'llama-3.3-70b-versatile',
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemPrompt],
+                    ['role' => 'user', 'content' => $note],
+                ],
+                'response_format' => ['type' => 'json_object'],
+                'temperature' => 0.0,
+            ]);
+
+        if (! $response->successful()) {
+            return response()->json(['error' => 'Gagal memproses pesanan.'], 500);
+        }
+
+        $aiContent = $response->json()['choices'][0]['message']['content'] ?? '{}';
+        $data = json_decode($aiContent, true);
+
+        return $data;
     }
 
     public function get_data(Request $request)

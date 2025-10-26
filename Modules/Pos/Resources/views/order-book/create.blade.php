@@ -72,12 +72,23 @@
             </div>
             @include('pos::pos.segment.modal-customer')
         </div>
-        <div x-data="{ loading: false }">
-            <button class="btn btn-success rounded-circle shadow-lg position-fixed"
-                style="bottom: 90px; right: 30px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
-                @click="loading = true; saveTransaction(() => loading = false)" :disabled="loading">
+        <div class="text-end" x-data="{ loading: false }">
+            <button class="btn btn-warning" @click="loading = true; saveTransaction(() => loading = false)"
+                :disabled="loading">
                 <template x-if="!loading">
-                    <i class="bi bi-cash-stack"></i>
+                    <span>Draft</span>
+                </template>
+                <template x-if="loading">
+                    <span>
+                        <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                        Memproses...
+                    </span>
+                </template>
+            </button>
+            <button class="btn btn-primary" @click="loading = true; saveTransaction(() => loading = false)"
+                :disabled="loading">
+                <template x-if="!loading">
+                    <span>Simpan dan Proses</span>
                 </template>
                 <template x-if="loading">
                     <span>
@@ -166,6 +177,67 @@
                 },
 
                 saveTransaction(doneCallback) {
+
+                    const customerId = document.querySelector('select[name="customer_id"]').value;
+                    const transactionDate = document.querySelector('input[name="date"]').value;
+                    const note = document.querySelector('textarea[name="note"]').value;
+                    const invoice_number = document.querySelector('input[name="invoice_number"]').value;
+
+                    if (note == null || note == '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Inputan Kosong',
+                            text: 'Silahkan masukkan pesanan!',
+                        });
+                        if (typeof doneCallback === 'function') doneCallback();
+                        return;
+                    }
+
+
+                    const data = {
+                        customer_id: customerId,
+                        date: transactionDate,
+                        status: 'process',
+                        note: note,
+                        invoice_number: invoice_number,
+                    };
+
+                    // Simulasi kirim ke server
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    fetch('/order-book/save-transaction', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            // Swal.fire({
+                            //     icon: 'success',
+                            //     title: 'Berhasil',
+                            //     text: 'Transaksi berhasil disimpan!',
+                            // });
+                            // this.resetPOS(); // Reset cart dsb.
+                            window.location.href = '/order-book';
+                            // redirectToHome();
+
+                        })
+                        .catch(err => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Gagal menyimpan transaksi.',
+                            });
+                            console.error(err);
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return;
+                        });
+                },
+
+                saveDraft(doneCallback) {
 
                     const customerId = document.querySelector('select[name="customer_id"]').value;
                     const transactionDate = document.querySelector('input[name="date"]').value;
