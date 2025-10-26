@@ -165,7 +165,7 @@ class DeliveryOrderController extends Controller
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
         $data = $query->orderBy('ongkir_status', 'asc')
-        ->orderBy('created_at', 'desc')->get();
+        ->orderBy('created_at', 'desc');
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()

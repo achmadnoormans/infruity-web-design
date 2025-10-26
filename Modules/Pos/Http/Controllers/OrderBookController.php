@@ -130,7 +130,7 @@ class OrderBookController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->orderBy('id', 'DESC')->get();
+        $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
