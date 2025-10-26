@@ -589,7 +589,7 @@ class PosController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->orderBy('id', 'DESC')->get();
+        $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
             ->addIndexColumn()
@@ -616,15 +616,14 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
-                if ($item->status == 'paid') {
-                    $html .= '<span class="badge badge-light-success">Paid</span>';
-                } else if ($item->status == 'draft') {
-                    $html .= '<span class="badge badge-light-danger">Draft</span>';
-                } else {
-                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
-                }
-                return $html;
+                $date = date('d M Y H:i', strtotime($item->created_at));
+                $badge = match ($item->status) {
+                    'paid' => '<span class="badge badge-light-success">Paid</span>',
+                    'draft' => '<span class="badge badge-light-danger">Draft</span>',
+                    default => '<span class="badge badge-light-warning">' . e($item->status) . '</span>'
+                };
+
+                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}";
             })
             ->addColumn('action', function ($item) {
                 $html = '';
