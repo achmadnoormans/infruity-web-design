@@ -649,7 +649,7 @@ class ProductController extends Controller
                 ->select('products.*', 'product_branch.price as price');
         }
 
-        $data = $query->get();
+        $data = $query;
         // $data = Product::all();
         return DataTables::of($data)
             ->addIndexColumn()

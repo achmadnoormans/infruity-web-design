@@ -317,7 +317,7 @@ class CustomerController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Customer::orderBy('name', 'asc')->get();
+        $data = Customer::orderBy('name', 'asc');
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {

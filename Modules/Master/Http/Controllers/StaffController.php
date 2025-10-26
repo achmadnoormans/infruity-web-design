@@ -220,8 +220,7 @@ class StaffController extends Controller
     {
         // eager load relations supaya lebih efisien
         $data = Staff::with(['position', 'department'])
-            ->orderBy('name', 'asc')
-            ->get();
+            ->orderBy('name', 'asc');
 
         return DataTables::of($data)
             ->addIndexColumn()
