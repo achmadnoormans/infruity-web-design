@@ -221,7 +221,7 @@
                             //     text: 'Transaksi berhasil disimpan!',
                             // });
                             // this.resetPOS(); // Reset cart dsb.
-                            window.location.href = '/order-book';
+                            window.location.href = '/order-book/' + res.order_book_id + '/order';
                             // redirectToHome();
 
                         })

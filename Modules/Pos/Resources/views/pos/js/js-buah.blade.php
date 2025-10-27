@@ -65,14 +65,20 @@
 
                 let url = '{{ Request::segment(3) }}';
                 if (url == 'edit' && !this._loaded) {
+                    console.log('masuk sini?');
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
                     this.loadExistingData(data, detail);
-                    // console.log('loadExisting', url, data, detail);
                     this._loaded = true;
-
-                    // console.log('cart =>', this.cart);
-                    // console.log('parcel =>', this.parcel);
+                }
+                const currentRouteIsOrderBook = {{ Route::currentRouteNamed('order-book.order') ? 'true' : 'false' }};
+                if (currentRouteIsOrderBook && !this._loaded) {
+                    console.log('masuk sini juga?');
+                    const data = @json($data ?? null);
+                    const detail = @json($detail ?? null);
+                    console.table(data, detail);
+                    this.loadExistingOrderBook(data, detail);
+                    this._loaded = true;
                 }
             },
 
@@ -1326,6 +1332,27 @@
                     let ongkirAddress = new Option(data.ongkir_address, data.ongkir_address, true, true);
                     $('#address_id').append(ongkirAddress).val(data.ongkir_address).trigger('change');
                 }
+            },
+
+            loadExistingOrderBook(data, detail) {
+                // Load existing cart items
+                console.log('akhir', detail);
+                detail.map(item => {
+                    const obj = {
+                        id: item.id,
+                        name: item.product.name,
+                        price: this.sanitizeNumber(Number(item.product.price || 0)), // pastikan number dulu
+                        hpp: parseFloat(item.product.hpp || 0),
+                        qty: this.sanitizeNumber(Number(item.quantity)),
+                        unit: item.product.unit.abbreviation,
+                        discount: this.sanitizeNumber(Number(item.discount || 0)),
+                        discountPercent: item.discountPercent || 0,
+                        fee: item.product.fee || 0,
+                        total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
+                        typeProduct: item.type || 'product',
+                    };
+                    this.cart.push(obj);
+                });
             },
 
             // Open Jus

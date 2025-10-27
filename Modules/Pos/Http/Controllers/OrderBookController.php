@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Pos\Entities\OrderBook;
 use Modules\Pos\Entities\OrderBookDetail;
 use Modules\Master\Entities\Product;
+use Modules\Pos\Entities\PosModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
 
@@ -146,6 +147,17 @@ class OrderBookController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function order($id)
+    {
+        $orderBook = OrderBook::with('details', 'details.product', 'details.product.unit')->find($id);
+        $data['order'] = $orderBook;
+        $data['alpinejs'] = true;
+        $data['data'] = $orderBook;
+        $data['detail'] = $orderBook->details;
+        $data['invoice_number'] = PosModel::getOrderNumber();
+        return view('pos::order-book.order', $data);
     }
 
     public function sendToAi($products, $note)
