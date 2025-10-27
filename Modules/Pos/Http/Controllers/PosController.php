@@ -592,6 +592,32 @@ class PosController extends Controller
         $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
+            ->filter(function ($q) use ($request) {
+                $search = trim($request->input('search.value'));
+
+                if (!empty($search)) {
+                    $q->where(function ($sub) use ($search) {
+                        $sub->whereHas('customer', function ($customerQuery) use ($search) {
+                            $customerQuery->where('name', 'LIKE', "%{$search}%");
+                        });
+                        $possibleDates = [];
+                        $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
+                        foreach ($formats as $format) {
+                            $date = \DateTime::createFromFormat($format, $search);
+                            if ($date) {
+                                $possibleDates[] = $date->format('Y-m-d');
+                                break;
+                            }
+                        }
+                        if (!empty($possibleDates)) {
+                            foreach ($possibleDates as $dateStr) {
+                                $sub->orWhereDate('date', $dateStr);
+                            }
+                        }
+                        $sub->orWhere('status', 'LIKE', "%{$search}%");
+                    });
+                }
+            }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $hasParcel = $item->details->contains(fn($detail) => isset($detail->product) && $detail->type === 'parcel');

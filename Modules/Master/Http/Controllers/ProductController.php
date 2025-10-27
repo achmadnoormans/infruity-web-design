@@ -652,6 +652,16 @@ class ProductController extends Controller
         $data = $query;
         // $data = Product::all();
         return DataTables::of($data)
+            ->filter(function ($q) use ($request) {
+                $search = $request->input('search.value');
+                if ($search) {
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('products.name', 'LIKE', "%$search%")
+                            ->orWhereHas('category', fn($c) => $c->where('name', 'LIKE', "%$search%"));
+                        // tambahkan kolom lain sesuai kebutuhan
+                    });
+                }
+            }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
                 $html = '
