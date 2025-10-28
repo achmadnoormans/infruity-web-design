@@ -64,7 +64,10 @@ class OrderBookController extends Controller
      */
     public function edit($id)
     {
-        return view('pos::edit');
+        $data['alpinejs'] = true;
+        $data['data'] = OrderBook::with('details', 'details.product', 'details.product.unit')->find($id);
+        $data['invoice_number'] = $data['data']->invoice_number;
+        return view('pos::order-book.create', $data);
     }
 
     /**
@@ -85,7 +88,24 @@ class OrderBookController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $pos = OrderBook::findOrFail($id);
+            $pos->delete();
+            OrderBookDetail::where('order_book_id', $id)->delete();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus.'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function saveTransaction(Request $request)
@@ -101,6 +121,12 @@ class OrderBookController extends Controller
         try {
             $userId = Auth::id();
             DB::beginTransaction();
+            $cek = OrderBook::where('invoice_number', $data['invoice_number'])->first();
+            if ($cek) {
+                $pos = OrderBook::find($cek->id);
+                OrderBookDetail::where('order_book_id', $cek->id)->delete();
+                $pos->delete();
+            }
             $orderBook = OrderBook::create([
                 'invoice_number' => $data['invoice_number'],
                 'customer_id' => $data['customer_id'],
@@ -165,27 +191,45 @@ class OrderBookController extends Controller
         if ($products->isEmpty()) {
             return response()->json(['error' => 'Tidak ada produk di database.'], 400);
         }
-        $productList = $products->map(function ($p) {
-            return "ID: {$p->id}, Nama: {$p->name}, Satuan: {$p->product_unit}";
-        })->implode("\n");
+        // $productList = $products->map(function ($p) {
+        //     return "ID: {$p->id}, Nama: {$p->name}, Satuan: {$p->product_unit}";
+        // })->implode("\n");
+        $productJson = $products->toJson(JSON_UNESCAPED_UNICODE);
 
-        $systemPrompt = "You are an order processing assistant. 
-            You will receive a shopping list in Indonesian.
+        $systemPrompt = "You are an intelligent order matcher for an Indonesian grocery store.
 
-            AVAILABLE PRODUCTS:
-            {$productList}
+        AVAILABLE PRODUCTS (in valid JSON format):
+        {$productJson}
 
-            INSTRUCTIONS:
-            - For each line in the user's message, extract:
-            - product_id (from the AVAILABLE PRODUCTS list above)
-            - quantity (integer, default 1 if missing)
-            - unit (string, e.g., 'Kg', 'Buah'; use product's unit if not specified)
-            - Match the item name to the closest product name in the list (case-insensitive).
-            - If no match found, skip the item.
-            - Output ONLY a valid JSON object with key 'items' containing an array of:
-            {\"product_id\": 1, \"quantity\": 2, \"unit\": \"Kg\"}
+        INSTRUCTIONS:
+        - The user will send a shopping list in informal Indonesian, possibly with typos, misspellings, or shorthand (e.g., 'strawberi', 'jruk', 'smngka').
+        - For each line:
+        • Compare the item name to the 'name' field in the JSON list.
+        • Accept close matches based on sound, spelling, or common Indonesian variations.
+            Examples:
+            'strawberi', 'stroberi', 'strawbery' → match 'Strawberry'
+            'jruk', 'jerok' → match 'Jeruk'
+            'semangkaa', 'smngka' → match 'Semangka'
+        • Ignore differences in capitalization, extra spaces, or minor character substitutions.
+        • ONLY match if the name is reasonably similar.
+        • If NO product is similar (e.g., 'kelengkeng' when not in the list), SKIP the item completely.
+        - Extract for each matched item:
+        • product_id = the 'id' from the matched product
+        • quantity = integer (default to 1 if not specified)
+        • unit = the 'unit' from the matched product (unless user explicitly states a different unit)
+        - NEVER invent a product_id.
+        - NEVER match to a product just because it exists — it must be semantically or phonetically similar.
 
-            NO EXPLANATION. NO MARKDOWN. ONLY JSON.";
+        OUTPUT FORMAT:
+        - Return ONLY a valid JSON object with a top-level key \"items\".
+        - Each item must be: {\"product_id\": integer, \"quantity\": integer, \"unit\": string}
+        - Example: {\"items\":[{\"product_id\":1,\"quantity\":2,\"unit\":\"Kg\"}]}
+
+        CRITICAL:
+        - NO explanations.
+        - NO markdown.
+        - NO text before or after the JSON.
+        - If no items match, return: {\"items\":[]}";
 
         $response = Http::withToken(env('GROQ_API_KEY'))
             ->timeout(30)
@@ -264,28 +308,10 @@ class OrderBookController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '                        
-                            <li>
-                                <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </li>';
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
+                                <a class="dropdown-item" href="' . route('order-book.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
-                                </a>
-                            </li>';
-                $html .= '
-                            <li>
-                                <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
-                                    <i class="bi bi-cash-stack"></i>
-                                </a>
-                            </li>';
-                $html .= '
-                            <li>
-                                <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
-                                    <i class="fa fa-receipt"></i>
                                 </a>
                             </li>';
                 $html .= '                       

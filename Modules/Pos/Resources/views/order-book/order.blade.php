@@ -105,9 +105,10 @@
                         </div>
                     </div>
                     <div class="col-3 mt-8">
-                        <button @click="addCustomer()"
-                            class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
-                            <i class="fa-solid fa-plus"></i>
+                        <button type="button"
+                            class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
+                            data-bs-toggle="modal" data-bs-target="#orderBookModal">
+                            <i class="fa fa-file"></i>
                         </button>
                     </div>
                 </div>
@@ -221,6 +222,25 @@
             <div class="card card-body">
                 {{-- Ringkasan --}}
                 @include('pos::pos.segment.ringkasan')
+            </div>
+
+            <div class="modal fade" id="orderBookModal" tabindex="-1" aria-labelledby="orderBookModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="orderBookModalLabel">Order Book</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Isi modal di sini -->
+                            <textarea name="order_note" id="order_note" class="form-control" cols="30" rows="10">{{ $data->note }}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             @include('pos::pos.segment.modal-product')

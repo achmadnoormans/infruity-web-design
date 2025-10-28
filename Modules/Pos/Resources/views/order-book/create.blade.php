@@ -67,7 +67,7 @@
                 </div>
                 <div>
                     <textarea name="note" id="note" cols="30" rows="20" class="form-control"
-                        placeholder="Silahkan paste note disini"></textarea>
+                        placeholder="Silahkan paste note disini">{{ $data->note ?? '' }}</textarea>
                 </div>
             </div>
             @include('pos::pos.segment.modal-customer')
