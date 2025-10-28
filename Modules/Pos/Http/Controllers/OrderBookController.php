@@ -135,7 +135,7 @@ class OrderBookController extends Controller
                 'note' => $data['note'],
                 'created_by' => $userId,
             ]);
-            $products = Product::select('id', 'name', 'product_unit')->get();
+            $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
             $data = $this->sendToAi($products, $data['note']);
 
             if (!isset($data['items']) || !is_array($data['items'])) {
