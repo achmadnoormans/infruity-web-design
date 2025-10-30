@@ -467,8 +467,6 @@ class PosController extends Controller
             }
 
             // dd($request->all());
-
-            
             DB::commit();
 
             return response()->json([
