@@ -20,7 +20,8 @@ return new class extends Migration
             $table->enum('status', ['draft', 'process', 'done'])->default('draft');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->timestamps();
+            $table->dateTime('created_at')->nullable();
+            $table->dateTime('updated_at')->nullable();
         });
 
         Schema::create('order_book_detail', function (Blueprint $table) {
@@ -42,5 +43,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('order_book');
+        Schema::dropIfExists('order_book_detail');
     }
 };

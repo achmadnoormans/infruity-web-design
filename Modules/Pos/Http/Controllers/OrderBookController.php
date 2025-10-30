@@ -119,6 +119,7 @@ class OrderBookController extends Controller
         ]);
 
         try {
+            $updateAt = null;
             $userId = Auth::id();
             DB::beginTransaction();
             $cek = OrderBook::where('invoice_number', $data['invoice_number'])->first();
@@ -126,6 +127,7 @@ class OrderBookController extends Controller
                 $pos = OrderBook::find($cek->id);
                 OrderBookDetail::where('order_book_id', $cek->id)->delete();
                 $pos->delete();
+                $updateAt = date('Y-m-d H:i:s');
             }
             $orderBook = OrderBook::create([
                 'invoice_number' => $data['invoice_number'],
@@ -134,6 +136,7 @@ class OrderBookController extends Controller
                 'status' => $data['status'],
                 'note' => $data['note'],
                 'created_by' => $userId,
+                'updated_at' => $updateAt,
             ]);
             $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
             $data = $this->sendToAi($products, $data['note']);
@@ -143,7 +146,8 @@ class OrderBookController extends Controller
             }
 
             foreach ($data['items'] as $item) {
-                if (!isset($item['product_id']) || !isset($item['quantity'])) continue;
+                if (!isset($item['product_id']) || !isset($item['quantity']))
+                    continue;
 
                 // Validasi: pastikan product_id benar-benar ada di database
                 $productId = (int) $item['product_id'];
@@ -182,7 +186,7 @@ class OrderBookController extends Controller
         $data['alpinejs'] = true;
         $data['data'] = $orderBook;
         $data['detail'] = $orderBook->details;
-        $data['invoice_number'] = PosModel::getOrderNumber();
+        $data['invoice_number'] = $orderBook->invoice_number;
         return view('pos::order-book.order', $data);
     }
 
@@ -243,7 +247,7 @@ class OrderBookController extends Controller
                 'temperature' => 0.0,
             ]);
 
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return response()->json(['error' => 'Gagal memproses pesanan.'], 500);
         }
 
@@ -267,12 +271,16 @@ class OrderBookController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
+                $warningIcon = $item->updated_at ? '<span class="text-warning mx-1" title="Ada updated_at">⚠️</span>' : '';
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
+                    $html .= $warningIcon . '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
                 } else {
-                    $html .= '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $html .= $warningIcon . '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                }
+                if ($item->updated_at != null) {
+                    $html .= '<br><span class="text-muted d-block fs-7">Di Edit : ' . $item->updated_at->format('d M Y H:i') . '</span>';
                 }
                 $html .= '</div>';
                 $html .= '</div>';

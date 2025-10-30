@@ -73,7 +73,7 @@
             @include('pos::pos.segment.modal-customer')
         </div>
         <div class="text-end" x-data="{ loading: false }">
-            <button class="btn btn-warning" @click="loading = true; saveTransaction(() => loading = false)"
+            <button class="btn btn-warning" @click="loading = true; saveDraft(() => loading = false)"
                 :disabled="loading">
                 <template x-if="!loading">
                     <span>Draft</span>

@@ -13,7 +13,16 @@ class OrderBook extends Model
     use HasFactory;
 
     protected $table = 'order_book';
-    protected $fillable = ['customer_id', 'date', 'status', 'created_by', 'updated_by', 'invoice_number', 'note'];
+    protected $fillable = [
+        'customer_id',
+        'date',
+        'status',
+        'created_by',
+        'updated_by',
+        'invoice_number',
+        'note',
+        'updated_at'
+    ];
 
     public static function getOrderNumber()
     {
