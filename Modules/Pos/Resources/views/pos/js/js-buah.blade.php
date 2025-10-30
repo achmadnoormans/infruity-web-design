@@ -1263,6 +1263,7 @@
                     let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
                         .price) : item.product_id;
                     let productName = item.type == 'parcel' ? item.product.description : item.product.name;
+                    let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item.quantity : this.sanitizeNumber(Number(item.subtotal || 0));
                     const obj = {
                         id: id,
                         name: productName,
@@ -1276,7 +1277,7 @@
                         kemasanId: item.parcel ? item.parcel.id : null,
                         kemasanName: item.parcel ? item.parcel.name : null,
                         kemasanPrice: item.parcel ? item.parcel.price : null,
-                        total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
+                        total_input: total,
                         typeProduct: item.type || 'product',
                     };
                     this.cart.push(obj);
