@@ -55,7 +55,8 @@
         },
         "files": [
             "app/Helpers/DateHelper.php",
-            "app/Helpers/Random.php"
+            "app/Helpers/Random.php",
+            "app/Helpers/SlackHelper.php"
         ],
         "classmap": [
             "database/seeds",

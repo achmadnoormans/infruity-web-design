@@ -221,8 +221,10 @@
                             //     text: 'Transaksi berhasil disimpan!',
                             // });
                             // this.resetPOS(); // Reset cart dsb.
-                            window.location.href = '/order-book/' + res.order_book_id + '/order';
+                            // window.location.href = '/order-book/' + res.order_book_id + '/order';
                             // redirectToHome();
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return;
 
                         })
                         .catch(err => {

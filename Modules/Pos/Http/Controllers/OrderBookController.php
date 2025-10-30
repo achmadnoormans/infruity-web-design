@@ -13,6 +13,8 @@ use Modules\Master\Entities\Product;
 use Modules\Pos\Entities\PosModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\SlackHelper;
+use Illuminate\Support\Facades\Log;
 
 
 class OrderBookController extends Controller
@@ -139,13 +141,13 @@ class OrderBookController extends Controller
                 'updated_at' => $updateAt,
             ]);
             $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
-            $data = $this->sendToAi($products, $data['note']);
+            $dataItem = $this->sendToAi($products, $data['note']);
 
-            if (!isset($data['items']) || !is_array($data['items'])) {
+            if (!isset($dataItem['items']) || !is_array($dataItem['items'])) {
                 return response()->json(['error' => 'Respons AI tidak valid.'], 400);
             }
 
-            foreach ($data['items'] as $item) {
+            foreach ($dataItem['items'] as $item) {
                 if (!isset($item['product_id']) || !isset($item['quantity']))
                     continue;
 
@@ -161,6 +163,15 @@ class OrderBookController extends Controller
                     'quantity' => (int) $item['quantity']
                 ]);
             }
+
+            Log::info('Mencoba kirim ke Slack...', [
+                'webhook' => config('services.slack.order_webhook'),
+                'order_id' => $orderBook->id
+            ]);
+
+            SlackHelper::sendOrderNotification($orderBook, Auth::user()->nm_user);
+
+            Log::info('Selesai kirim ke Slack');
 
             DB::commit();
             // dd($data);
@@ -192,12 +203,15 @@ class OrderBookController extends Controller
 
     public function sendToAi($products, $note)
     {
+        // 1. Validasi produk
         if ($products->isEmpty()) {
-            return response()->json(['error' => 'Tidak ada produk di database.'], 400);
+            return [
+                'error' => 'Tidak ada produk di database.',
+                'items' => []
+            ];
         }
-        // $productList = $products->map(function ($p) {
-        //     return "ID: {$p->id}, Nama: {$p->name}, Satuan: {$p->product_unit}";
-        // })->implode("\n");
+
+        // 2. Siapkan data
         $productJson = $products->toJson(JSON_UNESCAPED_UNICODE);
 
         $systemPrompt = "You are an intelligent order matcher for an Indonesian grocery store.
@@ -235,26 +249,57 @@ class OrderBookController extends Controller
         - NO text before or after the JSON.
         - If no items match, return: {\"items\":[]}";
 
-        $response = Http::withToken(env('GROQ_API_KEY'))
-            ->timeout(30)
-            ->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model' => 'llama-3.3-70b-versatile',
-                'messages' => [
-                    ['role' => 'system', 'content' => $systemPrompt],
-                    ['role' => 'user', 'content' => $note],
-                ],
-                'response_format' => ['type' => 'json_object'],
-                'temperature' => 0.0,
-            ]);
+        // 3. Kirim ke Groq
+        try {
+            // HAPUS SPASI DI URL! (ini sering jadi penyebab 404)
+            $url = 'https://api.groq.com/openai/v1/chat/completions';
 
-        if (!$response->successful()) {
-            return response()->json(['error' => 'Gagal memproses pesanan.'], 500);
+            $response = Http::withToken(env('GROQ_API_KEY'))
+                ->timeout(30)
+                ->post($url, [
+                    'model' => 'llama-3.3-70b-versatile',
+                    'messages' => [
+                        ['role' => 'system', 'content' => $systemPrompt],
+                        ['role' => 'user', 'content' => $note],
+                    ],
+                    'response_format' => ['type' => 'json_object'],
+                    'temperature' => 0.0,
+                ]);
+
+            // 4. Cek apakah request gagal (HTTP error)
+            if (!$response->successful()) {
+                $errorMessage = 'Groq API error: ' . $response->status();
+                if ($response->body()) {
+                    $errorMessage .= ' - ' . $response->body();
+                }
+                return [
+                    'error' => $errorMessage,
+                    'items' => []
+                ];
+            }
+
+            // 5. Ambil konten AI
+            $aiContent = $response->json()['choices'][0]['message']['content'] ?? '{}';
+
+            // 6. Decode JSON
+            $data = json_decode($aiContent, true);
+
+            // 7. Validasi format
+            if (!is_array($data) || !isset($data['items']) || !is_array($data['items'])) {
+                return [
+                    'error' => 'Respons AI tidak valid: format JSON salah.',
+                    'items' => []
+                ];
+            }
+
+            return $data; // ✅ Hanya array, tidak pernah JsonResponse
+
+        } catch (\Exception $e) {
+            return [
+                'error' => 'Exception: ' . $e->getMessage(),
+                'items' => []
+            ];
         }
-
-        $aiContent = $response->json()['choices'][0]['message']['content'] ?? '{}';
-        $data = json_decode($aiContent, true);
-
-        return $data;
     }
 
     public function get_data(Request $request)
