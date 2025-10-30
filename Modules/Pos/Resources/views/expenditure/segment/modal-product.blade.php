@@ -25,8 +25,7 @@
                     <!-- Harga -->
                     <div class="col-9 mb-3">
                         <label class="form-label">Harga</label>
-                        <input type="text" class="form-control" x-model="formattedAddPrice"
-                            @input="updateAddPriceFromFormatted">
+                        <input type="text" class="form-control" x-model="formattedAddPrice">
                     </div>
                 </div>
 
