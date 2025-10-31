@@ -11,6 +11,9 @@ use Modules\Report\Entities\BranchTransaction;
 use Modules\Report\Entities\CustomerProduct;
 use Modules\Report\Entities\BranchProduct;
 use Modules\Report\Entities\ProductBuang;
+use Modules\Pos\Entities\PosDetailModel;
+use Modules\Master\Entities\Branch;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -44,6 +47,11 @@ class ReportController extends Controller
     public function product_buang(Request $request)
     {
         return view('report::product-buang');
+    }
+    public function product_sales(Request $request)
+    {
+        $data['branches'] = Branch::all();
+        return view('report::product-sales', $data);
     }
 
     public function get_data_transaction(Request $request)
@@ -335,6 +343,51 @@ class ReportController extends Controller
                     </div>';
             })
             ->rawColumns(['action', 'satuan'])
+            ->make(true);
+    }
+
+    public function get_data_product_sales(Request $request)
+    {
+        $startDate = $request->start_date ?? date('Y-01-01');
+        $endDate = $request->end_date ?? date('Y-12-31');
+        $data = PosDetailModel::select(
+            'pos_transaction_detail.product_id',
+            'products.name',
+            DB::raw('COUNT(pos_transaction_detail.product_id) AS total_beli'),
+            DB::raw('SUM(pos_transaction_detail.quantity) AS quantity'),
+            DB::raw('SUM(pos_transaction_detail.subtotal) AS total'),
+            DB::raw("
+                ROUND(
+                    (SUM(pos_transaction_detail.subtotal) * 100.0) / 
+                    SUM(SUM(pos_transaction_detail.subtotal)) OVER (),
+                    2
+                ) AS persentase_penjualan
+            ")
+        )
+            ->join('products', 'pos_transaction_detail.product_id', '=', 'products.id')
+            ->join('pos_transaction', 'pos_transaction_detail.pos_id', '=', 'pos_transaction.id')
+            ->leftJoin('pos_payment', 'pos_transaction.id', '=', 'pos_payment.pos_id')
+            ->whereBetween('pos_transaction.date', [$startDate, $endDate]);
+
+        if ($request->has('branch_id') && $request->branch_id != 'all') {
+            $data = $data->where('pos_payment.branch_id', $request->branch_id);
+        }
+
+        $data = $data->groupBy('pos_transaction_detail.product_id', 'products.name')
+            ->orderByDesc('total');
+        return DataTables::of($data)
+            ->filter(function ($queryInstance) use ($request) {
+                if ($request->has('search') && !empty($request->search['value'])) {
+                    $searchValue = '%' . trim($request->search['value']) . '%';
+                    $queryInstance->where('products.name', 'like', $searchValue);
+                }
+            })
+            ->editColumn('total', function ($row) {
+                return 'Rp. ' . number_format($row->total, 0, ',', '.');
+            })
+            ->editColumn('persentase_penjualan', function ($row) {
+                return number_format($row->persentase_penjualan, 2, ',', '.') . ' %';
+            })
             ->make(true);
     }
 }

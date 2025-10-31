@@ -541,7 +541,11 @@
     </div>
     <!--end:Menu item-->
 @endif
-@if (check_access('pos.index') || check_access('delivery-order.index') || check_access('other-book.index') || check_access('setting-nota.index') || check_access('expenditure.index'))
+@if (check_access('pos.index') ||
+        check_access('delivery-order.index') ||
+        check_access('other-book.index') ||
+        check_access('setting-nota.index') ||
+        check_access('expenditure.index'))
     <div class="menu-item pt-5">
         <!--begin:Menu content-->
         <div class="menu-content">
@@ -795,7 +799,16 @@
     <!--end:Menu content-->
 </div>
 <div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), ['report-branch-transaction', 'report-branch-product', 'report-customer-transaction', 'report-customer-product', 'report-transaction']) ? 'here show' : '' }} menu-accordion">
+    class="menu-item {{ in_array(Request::segment(1), [
+        'report-branch-transaction',
+        'report-branch-product',
+        'report-customer-transaction',
+        'report-customer-product',
+        'report-transaction',
+        'report-product-sales',
+    ])
+        ? 'here show'
+        : '' }} menu-accordion">
     <!--begin:Menu link-->
     <span class="menu-link">
         <span class="menu-icon">
@@ -848,6 +861,21 @@
                         <span class="bullet bullet-dot"></span>
                     </span>
                     <span class="menu-title">Penjualan Per Cabang</span>
+                </a>
+                <!--end:Menu link-->
+            </div>
+            <!--end:Menu item-->
+        @endif
+        @if (check_access('report.product.sales'))
+            <!--begin:Menu item-->
+            <div class="menu-item">
+                <!--begin:Menu link-->
+                <a class="menu-link {{ $link == 'report-product-sales' ? 'active' : '' }}"
+                    href="{{ url('report-product-sales') }}">
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Penjualan Per Produk</span>
                 </a>
                 <!--end:Menu link-->
             </div>

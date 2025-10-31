@@ -22,6 +22,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('report-branch-product', [ReportController::class, 'branch_product'])->name('report-branch-product');
     Route::get('report-customer-product', [ReportController::class, 'customer_product'])->name('report-customer-product');
     Route::get('report-product-buang', [ReportController::class, 'product_buang'])->name('report-product-buang');
+    Route::get('report-product-sales', [ReportController::class, 'product_sales'])->name('report-product-sales');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
@@ -31,4 +32,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('report-branch-product/data', [ReportController::class, 'get_data_branch_product'])->name('report-branch-product.data');
     Route::get('report-customer-product/data', [ReportController::class, 'get_data_customer_product'])->name('report-customer-product.data');
     Route::get('report-product-buang/data', [ReportController::class, 'get_data_barang_buang'])->name('report-product-buang.data');
+    Route::get('report-product-sales/data', [ReportController::class, 'get_data_product_sales'])->name('report-product-sales.data');
 });
