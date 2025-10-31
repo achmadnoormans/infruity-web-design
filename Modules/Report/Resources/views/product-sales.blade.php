@@ -46,7 +46,7 @@
                                         <label class="form-label fs-6 fw-semibold">Cabang:</label>
                                         <select class="form-select form-select-solid" id="branch-filter"
                                             data-control="select2" data-hide-search="true" data-placeholder="Pilih Cabang">
-                                            <option value="">Semua Cabang</option>
+                                            <option value="all">Semua Cabang</option>
                                             @foreach ($branches as $branch)
                                                 <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
                                             @endforeach
