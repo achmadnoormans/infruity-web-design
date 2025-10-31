@@ -20,7 +20,6 @@
                             <th class="text-start min-w-150px">Chanel</th>
                             <th class="text-start min-w-150px">Total Belanja (Rp)</th>
                             <th class="text-start min-w-150px">Margin (Rp)</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -99,12 +98,6 @@
                     {
                         data: 'profit',
                         name: 'profit'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
                     },
                 ],
                 order: [

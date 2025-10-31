@@ -350,6 +350,8 @@ class ReportController extends Controller
     {
         $startDate = $request->start_date ?? date('Y-01-01');
         $endDate = $request->end_date ?? date('Y-12-31');
+
+        // Query utama
         $data = PosDetailModel::select(
             'pos_transaction_detail.product_id',
             'products.name',
@@ -357,12 +359,12 @@ class ReportController extends Controller
             DB::raw('SUM(pos_transaction_detail.quantity) AS quantity'),
             DB::raw('SUM(pos_transaction_detail.subtotal) AS total'),
             DB::raw("
-                ROUND(
-                    (SUM(pos_transaction_detail.subtotal) * 100.0) / 
-                    SUM(SUM(pos_transaction_detail.subtotal)) OVER (),
-                    2
-                ) AS persentase_penjualan
-            ")
+            ROUND(
+                (SUM(pos_transaction_detail.subtotal) * 100.0) / 
+                SUM(SUM(pos_transaction_detail.subtotal)) OVER (),
+                2
+            ) AS persentase_penjualan
+        ")
         )
             ->join('products', 'pos_transaction_detail.product_id', '=', 'products.id')
             ->join('pos_transaction', 'pos_transaction_detail.pos_id', '=', 'pos_transaction.id')
@@ -373,8 +375,14 @@ class ReportController extends Controller
             $data = $data->where('pos_payment.branch_id', $request->branch_id);
         }
 
+        // Clone query untuk menghitung grand total
+        $grandTotalQuery = clone $data;
+        $grandTotal = $grandTotalQuery->sum('pos_transaction_detail.subtotal');
+
+        // Grouping dan urutan data
         $data = $data->groupBy('pos_transaction_detail.product_id', 'products.name')
             ->orderByDesc('total');
+
         return DataTables::of($data)
             ->filter(function ($queryInstance) use ($request) {
                 if ($request->has('search') && !empty($request->search['value'])) {
@@ -388,6 +396,9 @@ class ReportController extends Controller
             ->editColumn('persentase_penjualan', function ($row) {
                 return number_format($row->persentase_penjualan, 2, ',', '.') . ' %';
             })
+            ->with([
+                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
+            ])
             ->make(true);
     }
 }

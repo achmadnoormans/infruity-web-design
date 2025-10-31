@@ -101,7 +101,15 @@
                         </tr>
                     </thead>
                     <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-end">Grand Total:</th>
+                            <th id="grand-total-cell" class="text-start"></th>
+                            <th>100 %</th>
+                        </tr>
+                    </tfoot>
                 </table>
+
                 <!--end::Table-->
             </div>
             <!--end::Card body-->
@@ -119,29 +127,30 @@
         const segment1 = "{{ Request::segment(1) }}";
 
         $(document).ready(function() {
-            dataTable = $('#transaction-table').DataTable({
+            let dataTable = $('#transaction-table').DataTable({
                 processing: true,
                 serverSide: true,
-                scrollX: true, // Aktifkan scroll horizontal
-                fixedColumns: {
-                    leftColumns: 0,
-                    rightColumns: 1
-                },
-                columnDefs: [{
-                    orderable: false,
-                    targets: -1 // Disable sorting for action column
-                }, ],
+                scrollX: true,
                 ajax: {
                     url: "{{ route('report-product-sales.data') }}",
                     data: function(d) {
-                        d.url = "{{ request()->segment(1) }}";
                         d.branch_id = $('#branch-filter').val();
-                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        let range = $('#kt_ecommerce_sales_flatpickr').val();
                         if (range) {
-                            var dates = range.split(' to ');
+                            let dates = range.split(' to ');
                             d.start_date = dates[0];
-                            d.end_date = dates[1] ?? dates[0]; // jika hanya pilih 1 tanggal
+                            d.end_date = dates[1] ?? dates[0];
                         }
+                    },
+                    dataSrc: function(json) {
+                        // ✅ Update footer grand total setiap kali data diterima
+                        if (json.grand_total) {
+                            $('#grand-total-cell').html(json.grand_total);
+                        } else {
+                            $('#grand-total-cell').html('Rp. 0');
+                        }
+
+                        return json.data; // tetap kembalikan data ke datatables
                     }
                 },
                 columns: [{
@@ -155,12 +164,18 @@
                     {
                         data: 'persentase_penjualan',
                         name: 'persentase_penjualan'
-                    },
+                    }
                 ],
                 order: [
                     [2, 'desc']
                 ]
             });
+
+            // ✅ reload datatable saat filter diubah
+            $('#branch-filter, #kt_ecommerce_sales_flatpickr').on('change', function() {
+                dataTable.ajax.reload();
+            });
+
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
@@ -180,6 +195,10 @@
                     updateDateRangeLabel(); // Update label
                     dataTable.draw(); // Reload data
                 }
+            });
+
+            $('#branch-filter, #kt_ecommerce_sales_flatpickr').on('change', function() {
+                dataTable.ajax.reload(null, false);
             });
 
             function updateDateRangeLabel() {
