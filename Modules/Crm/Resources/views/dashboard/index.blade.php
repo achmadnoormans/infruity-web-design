@@ -507,6 +507,19 @@
                 currency: "IDR"
             }).format(angka);
         }
+
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            Notification.requestPermission().then(permission => {
+                // alert('Permission:', permission);
+                if (permission === 'granted') {
+                    alert('✅ Izin notifikasi diberikan');
+                } else {
+                    alert('❌ Izin notifikasi ditolak, Dimohon untuk memberikan izin notifikasi agar dapat notifikasi dari aplikasi');
+                }
+            });
+        } else {
+            alert('Browser tidak mendukung notifikasi');
+        }
     </script>
     @include('crm::dashboard.js-dashboard')
 @endsection

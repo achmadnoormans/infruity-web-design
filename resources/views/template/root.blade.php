@@ -83,7 +83,7 @@
                         <!--begin::Container-->
                         <div id="kt_content_container" class="container-xxl">
                             @include('template.notif')
-                            <button id="btn-notif">Aktifkan Notifikasi</button>
+                            {{-- <button id="btn-notif">Aktifkan Notifikasi</button> --}}
                             @yield('content')
                         </div>
                         <!--end::Container-->
@@ -226,19 +226,6 @@
                 .catch((err) => {
                     console.error('Gagal mendapatkan token FCM:', err);
                 });
-        }
-
-        if ('Notification' in window && 'serviceWorker' in navigator) {
-            Notification.requestPermission().then(permission => {
-                alert('Permission:', permission);
-                if (permission === 'granted') {
-                    alert('✅ Izin notifikasi diberikan, lanjut ambil token');
-                } else {
-                    alert('❌ Izin notifikasi ditolak');
-                }
-            });
-        } else {
-            alert('Browser tidak mendukung notifikasi');
         }
 
         document.getElementById('btn-notif').addEventListener('click', () => {

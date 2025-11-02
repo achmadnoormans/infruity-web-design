@@ -1,5 +1,6 @@
 <?php
 // route for administrator
+use App\Services\FcmService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\UserController;
@@ -19,12 +20,13 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::resource('user', UserController::class)->names('user')->except('show');
 	Route::resource('role-menu', P_rolemenu::class);
 	Route::resource('roles', P_role::class)->names('roles')->except('show');
-    Route::get('roles/detail/{id}', [P_role::class, 'show'])->name('roles.show');
-    Route::post('roles/duplicate/{id}', [P_role::class, 'duplicate'])->name('roles.duplicate');
+	Route::get('roles/detail/{id}', [P_role::class, 'show'])->name('roles.show');
+	Route::post('roles/duplicate/{id}', [P_role::class, 'duplicate'])->name('roles.duplicate');
 });
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
 	Route::get('roles/data', [P_role::class, 'get_data'])->name('roles.data');
 	Route::get('user/data', [UserController::class, 'get_data'])->name('user.data');
 	Route::post('/api/save-fcm-token', [FCMController::class, 'store']);
+	Route::get('/test-fcm', [FCMController::class, 'testNotification']);
 });
