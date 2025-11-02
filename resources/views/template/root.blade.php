@@ -226,6 +226,19 @@
                     console.error('Gagal mendapatkan token FCM:', err);
                 });
         }
+
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            Notification.requestPermission().then(permission => {
+                alert('Permission:', permission);
+                if (permission === 'granted') {
+                    alert('✅ Izin notifikasi diberikan, lanjut ambil token');
+                } else {
+                    alert('❌ Izin notifikasi ditolak');
+                }
+            });
+        } else {
+            alert('Browser tidak mendukung notifikasi');
+        }
     </script>
 </body>
 <!--end::Body-->
