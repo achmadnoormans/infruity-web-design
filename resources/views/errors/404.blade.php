@@ -15,8 +15,7 @@
     <meta property="og:url" content="https://keenthemes.com/metronic" />
     <meta property="og:site_name" content="Infruity" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- <link rel="canonical" href="https://preview.keenthemes.com/metronic8" /> --}}
-    <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->
@@ -83,7 +82,7 @@
                         <h1 class="fw-bolder fs-2hx text-gray-900 mb-4">Oops!</h1>
                         <!--end::Title-->
                         <!--begin::Text-->
-                        <div class="fw-semibold fs-6 text-gray-500 mb-7">We can't find that page.</div>
+                        <div class="fw-semibold fs-6 text-gray-500 mb-7">Halaman Tidak ditemukan, Hubungi Admin</div>
                         <!--end::Text-->
                         <!--begin::Illustration-->
                         <div class="mb-3">

@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\P_rolemenu;
 use Modules\Crm\Http\Controllers\DashboardController;
 use App\Http\Controllers\P_role;
+use App\Http\Controllers\FCMController;
 
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
@@ -25,4 +26,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('/dashboard', [DashboardController::class, 'index'])->name('crm.dashboard');
 	Route::get('roles/data', [P_role::class, 'get_data'])->name('roles.data');
 	Route::get('user/data', [UserController::class, 'get_data'])->name('user.data');
+	Route::post('/api/save-fcm-token', [FCMController::class, 'store']);
 });

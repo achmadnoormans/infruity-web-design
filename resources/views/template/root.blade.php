@@ -175,6 +175,58 @@
             });
         });
     </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyD68q1qNP-udtOOndJNd6ipHEsqO-iZEyM",
+            authDomain: "laravel-web-dev.firebaseapp.com",
+            projectId: "laravel-web-dev",
+            storageBucket: "laravel-web-dev.firebasestorage.app",
+            messagingSenderId: "537811764561",
+            appId: "1:537811764561:web:429e5642c941aac61a7f70",
+            measurementId: "G-PXD4TLQS7G"
+        });
+
+        const messaging = firebase.messaging();
+
+        // Registrasi service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then(async (registration) => {
+                    console.log('✅ Service Worker terdaftar:', registration);
+
+                    // Tunggu SW siap
+                    const swReady = await navigator.serviceWorker.ready;
+                    console.log('✅ Service Worker aktif:', swReady);
+
+                    // Ambil token FCM
+                    const token = await messaging.getToken({
+                        vapidKey: "BPu7NXtLeC_NjJnRb8OsHhY6bU0u-m761uLeKrqHpm3nCG7jlgxHMO91K3WqbeQglmJeto7LbMrpT2yRjrLu75A",
+                        serviceWorkerRegistration: registration, // gunakan ini, bukan useServiceWorker()
+                    });
+
+                    console.log('🔥 Token FCM:', token);
+
+                    // Kirim token ke backend Laravel
+                    await fetch('/api/save-fcm-token', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            // Tambahkan auth jika perlu
+                        },
+                        body: JSON.stringify({
+                            fcm_token: token
+                        }),
+                    });
+                })
+                .catch((err) => {
+                    console.error('Gagal mendapatkan token FCM:', err);
+                });
+        }
+    </script>
 </body>
 <!--end::Body-->
 

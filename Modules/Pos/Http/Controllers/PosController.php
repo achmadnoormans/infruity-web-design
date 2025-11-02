@@ -572,6 +572,9 @@ class PosController extends Controller
     public function cekNotaDraft($id)
     {
         $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
+        if (!isset($data['data'])) {
+            abort(404);
+        }
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
         $data['setting'] = SettingNota::first();
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['data']->id)->get();
