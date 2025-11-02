@@ -8,6 +8,7 @@ use App\Http\Controllers\P_rolemenu;
 use Modules\Crm\Http\Controllers\DashboardController;
 use App\Http\Controllers\P_role;
 use App\Http\Controllers\FCMController;
+use App\Models\UserDevice;
 
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
@@ -28,5 +29,14 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 	Route::get('roles/data', [P_role::class, 'get_data'])->name('roles.data');
 	Route::get('user/data', [UserController::class, 'get_data'])->name('user.data');
 	Route::post('/api/save-fcm-token', [FCMController::class, 'store']);
-	Route::get('/test-fcm', [FCMController::class, 'testNotification']);
+	// Route::get('/test-fcm', [FCMController::class, 'testNotification']);
+	Route::get('/test-fcm', function (FcmService $fcm) {
+		$tokens = UserDevice::whereNotNull('fcm_token')
+			->pluck('fcm_token')
+			->unique()
+			->values()
+			->toArray();
+		$fcm->sendNotification($tokens, 'Halo dari Infruity 🍉', 'Tes notifikasi via Web');
+		return 'Notifikasi dikirim!';
+	});
 });

@@ -1,6 +1,8 @@
-importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
+// Import Firebase script
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
+// Konfigurasi Firebase
 firebase.initializeApp({
   apiKey: "AIzaSyD68q1qNP-udtOOndJNd6ipHEsqO-iZEyM",
     authDomain: "laravel-web-dev.firebaseapp.com",
@@ -11,15 +13,35 @@ firebase.initializeApp({
     measurementId: "G-PXD4TLQS7G"
 });
 
+// Inisialisasi messaging
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function(payload) {
+// Tangani pesan yang diterima saat browser di background
+messaging.onBackgroundMessage(function (payload) {
   console.log('[firebase-messaging-sw.js] Pesan background diterima:', payload);
-  const notificationTitle = payload.notification.title;
+
+  const notificationTitle = payload.notification?.title || 'Notifikasi Baru';
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/logo.png'
+    body: payload.notification?.body || 'Anda memiliki pesan baru.',
+    icon: payload.notification?.icon || '/icon.png',
+    data: payload.data || {},
   };
 
+  // Tampilkan notifikasi
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// (Opsional) Tangani klik pada notifikasi
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  const urlToOpen = event.notification?.data?.link || 'https://infruity.com';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(urlToOpen);
+    })
+  );
 });
