@@ -83,6 +83,7 @@
                         <!--begin::Container-->
                         <div id="kt_content_container" class="container-xxl">
                             @include('template.notif')
+                            <button id="btn-notif">Aktifkan Notifikasi</button>
                             @yield('content')
                         </div>
                         <!--end::Container-->
@@ -239,6 +240,20 @@
         } else {
             alert('Browser tidak mendukung notifikasi');
         }
+
+        document.getElementById('btn-notif').addEventListener('click', () => {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    alert(
+                        'Berhasil'
+                    );
+                } else {
+                    alert(
+                        'Kamu menolak notifikasi. Ubah izin di pengaturan browser jika ingin mengaktifkannya.'
+                    );
+                }
+            });
+        });
     </script>
 </body>
 <!--end::Body-->
