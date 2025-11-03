@@ -19,6 +19,7 @@ use Modules\Crm\Entities\CustomerDeposito;
 use Illuminate\Support\Str;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
+use Modules\Pos\Entities\OrderBook;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -321,8 +322,10 @@ class PosController extends Controller
             $userId = Auth::id();
             DB::beginTransaction();
             $cek = PosModel::where('invoice_number', $data['invoice_number'])->first();
+            $uuid = Str::uuid();
             if ($cek) {
                 $pos = PosModel::find($cek->id);
+                $uuid = $pos->uuid;
                 $posDetail = PosDetailModel::where('pos_id', $cek->id);
                 $posDetail = $posDetail->where('parcel_id', '!=', null)->get();
                 foreach ($posDetail as $key => $value) {
@@ -335,7 +338,7 @@ class PosController extends Controller
             }
             // Simpan ke tabel transaksi (buat dulu kalau belum ada)
             $pos = new PosModel([
-                'uuid' => Str::uuid(),
+                'uuid' => $uuid,
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
                 'invoice_number' => PosModel::getOrderNumber(),
@@ -463,6 +466,14 @@ class PosController extends Controller
                         'type' => 'product',
                         'created_by' => $userId,
                     ]);
+                }
+            }
+
+            if (preg_match('/ORD\d+/i', $data['invoice_number'])) {
+                $orderBook = OrderBook::where('invoice_number', $data['invoice_number'])->first();
+                if ($orderBook) {
+                    $orderBook->status = 'done';
+                    $orderBook->save();
                 }
             }
 

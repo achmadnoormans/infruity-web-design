@@ -15,6 +15,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\SlackHelper;
 use Illuminate\Support\Facades\Log;
+use App\Services\FcmService;
+use App\Models\UserDevice;
 
 
 class OrderBookController extends Controller
@@ -67,7 +69,7 @@ class OrderBookController extends Controller
     public function edit($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = OrderBook::with('details', 'details.product', 'details.product.unit')->find($id);
+        $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit')->find($id);
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::order-book.create', $data);
     }
@@ -163,17 +165,16 @@ class OrderBookController extends Controller
                     'quantity' => (int) $item['quantity']
                 ]);
             }
-
-            Log::info('Mencoba kirim ke Slack...', [
-                'webhook' => config('services.slack.order_webhook'),
-                'order_id' => $orderBook->id
-            ]);
-
-            SlackHelper::sendOrderNotification($orderBook, Auth::user()->nm_user);
-
-            Log::info('Selesai kirim ke Slack');
-
             DB::commit();
+            $tokens = UserDevice::whereNotNull('fcm_token')
+                ->pluck('fcm_token')
+                ->unique()
+                ->values()
+                ->toArray();
+            $fcm = new FcmService();
+            $title = "Ada Pesanan Masuk 🍉";
+            $body = "List Pesanan : \n" . $data['note'] . "\n\n Semangat Bekerja!";
+            $fcm->sendNotification($tokens, $title, $body);
             // dd($data);
             return response()->json([
                 'success' => true,
@@ -333,10 +334,12 @@ class OrderBookController extends Controller
             })
             ->addColumn('date', function ($item) {
                 $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
-                if ($item->status == 'paid') {
-                    $html .= '<span class="badge badge-light-success">Paid</span>';
-                } else if ($item->status == 'draft') {
+                if ($item->status == 'draft') {
                     $html .= '<span class="badge badge-light-danger">Draft</span>';
+                } else if ($item->status == 'done') {
+                    $html .= '<span class="badge badge-light-success">Selesai</span>';
+                } else if ($item->status == 'process') {
+                    $html .= '<span class="badge badge-light-warning">Proses</span>';
                 } else {
                     $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
                 }
@@ -365,6 +368,12 @@ class OrderBookController extends Controller
                             <li>
                                 <a class="dropdown-item" href="' . route('order-book.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
+                                </a>
+                            </li>';
+                $html .= '
+                            <li>
+                                <a class="dropdown-item" href="' . route('order-book.order', $item->id) . '" tooltip="Proses Pesanan" title="Proses Pesanan">
+                                    <i class="bi bi-box"></i>
                                 </a>
                             </li>';
                 $html .= '                       

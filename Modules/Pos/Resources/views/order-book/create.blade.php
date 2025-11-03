@@ -72,31 +72,38 @@
             </div>
             @include('pos::pos.segment.modal-customer')
         </div>
-        <div class="text-end" x-data="{ loading: false }">
-            <button class="btn btn-warning" @click="loading = true; saveDraft(() => loading = false)"
-                :disabled="loading">
-                <template x-if="!loading">
-                    <span>Draft</span>
-                </template>
-                <template x-if="loading">
-                    <span>
-                        <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                        Memproses...
-                    </span>
-                </template>
-            </button>
-            <button class="btn btn-primary" @click="loading = true; saveTransaction(() => loading = false)"
-                :disabled="loading">
-                <template x-if="!loading">
-                    <span>Simpan dan Proses</span>
-                </template>
-                <template x-if="loading">
-                    <span>
-                        <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                        Memproses...
-                    </span>
-                </template>
-            </button>
+        <div class="row">
+            <div class="col">
+                <a href="{{ url('/order-book') }}" class="btn btn-danger">Kembali</a>
+            </div>
+            <div class="col">
+                <div class="text-end" x-data="{ loading: false }">
+                    <button class="btn btn-warning" @click="loading = true; saveDraft(() => loading = false)"
+                        :disabled="loading">
+                        <template x-if="!loading">
+                            <span>Draft</span>
+                        </template>
+                        <template x-if="loading">
+                            <span>
+                                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                                Memproses...
+                            </span>
+                        </template>
+                    </button>
+                    <button class="btn btn-primary" @click="loading = true; saveTransaction(() => loading = false)"
+                        :disabled="loading">
+                        <template x-if="!loading">
+                            <span>Simpan dan Proses</span>
+                        </template>
+                        <template x-if="loading">
+                            <span>
+                                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                                Memproses...
+                            </span>
+                        </template>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 @section('script')
@@ -112,6 +119,12 @@
                         self.setVoucher(data.voucher || 0);
                         self.setDiscountGlobal(data.discount || 0);
                     });
+
+                    if (data.customer_id) {
+                        console.log(data);
+                        let optionCustomer = new Option(data.customer.name, data.customer.id, true, true);
+                        $('#customer_id').append(optionCustomer).val(data.customer.id).trigger('change');
+                    }
                 },
 
                 addCustomer() {
