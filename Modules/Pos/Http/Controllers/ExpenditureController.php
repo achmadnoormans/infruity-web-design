@@ -185,6 +185,7 @@ class ExpenditureController extends Controller
             // dd($payment);
             $payment->save();
             DB::commit();
+            DB::disconnect();
 
             return response()->json([
                 'success' => true,
@@ -193,6 +194,7 @@ class ExpenditureController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            DB::disconnect();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',

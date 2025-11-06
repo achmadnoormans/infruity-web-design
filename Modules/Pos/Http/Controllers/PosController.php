@@ -479,6 +479,7 @@ class PosController extends Controller
 
             // dd($request->all());
             DB::commit();
+            DB::disconnect();
 
             return response()->json([
                 'success' => true,
@@ -487,6 +488,7 @@ class PosController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            DB::disconnect();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',

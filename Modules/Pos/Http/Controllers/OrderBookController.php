@@ -176,6 +176,7 @@ class OrderBookController extends Controller
             $body = "List Pesanan : \n" . $data['note'] . "\n\n Semangat Bekerja!";
             $fcm->sendNotification($tokens, $title, $body);
             // dd($data);
+            DB::disconnect();
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi berhasil disimpan',
@@ -183,6 +184,7 @@ class OrderBookController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            DB::disconnect();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',

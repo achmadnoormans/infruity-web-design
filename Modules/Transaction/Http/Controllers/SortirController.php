@@ -176,6 +176,7 @@ class SortirController extends Controller
             }
 
             DB::commit();
+            DB::disconnect();
 
             return response()->json([
                 'success' => true,
@@ -184,6 +185,7 @@ class SortirController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            DB::disconnect();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
