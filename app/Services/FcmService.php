@@ -5,6 +5,7 @@ namespace App\Services;
 use Google\Client as GoogleClient;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Models\UserDevice;
 
 class FcmService
@@ -21,54 +22,78 @@ class FcmService
         $this->projectId = env('FCM_PROJECT_ID');
     }
 
-    public function sendNotification(array $tokens, string $title, string $body, array $data = [])
+    public function sendNotification(array $tokens, string $title, string $body, array $data = []): bool
     {
+        if (empty($tokens)) {
+            Log::warning('⚠️ Tidak ada token FCM yang dikirim.');
+            return false;
+        }
+
         $accessToken = $this->client->fetchAccessTokenWithAssertion()['access_token'];
         $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
 
-        $successCount = 0;
+        $invalidTokens = [];
 
-        foreach ($tokens as $token) {
-            $payload = [
-                'message' => [
-                    'token' => $token,
-                    'data' => (object) $data,
-                    'webpush' => [
-                        'notification' => [
-                            'title' => (string) $title,
-                            'body'  => (string) $body,
-                            'icon'  => 'https://infruity.com/icon.png',
-                            'click_action' => 'https://infruity.com',
-                        ],
-                        'fcm_options' => [
-                            'link' => 'https://infruity.com',
+        // ✅ Kirim batch 30 token per jeda 0.2 detik untuk hindari overheat
+        $chunks = array_chunk($tokens, 30);
+        foreach ($chunks as $batch) {
+            foreach ($batch as $token) {
+                $payload = [
+                    'message' => [
+                        'token' => $token,
+                        'data' => (object) $data,
+                        'webpush' => [
+                            'notification' => [
+                                'title' => (string) $title,
+                                'body' => (string) $body,
+                                'icon' => 'https://infruity.com/icon.png',
+                                'click_action' => 'https://infruity.com',
+                            ],
+                            'fcm_options' => [
+                                'link' => 'https://infruity.com',
+                            ],
                         ],
                     ],
-                ],
-            ];
+                ];
 
-            try {
-                $response = Http::withToken($accessToken)
-                    ->withHeaders(['Content-Type' => 'application/json'])
-                    ->send('POST', $url, ['body' => json_encode($payload)]);
+                try {
+                    $response = Http::withToken($accessToken)
+                        ->timeout(10)
+                        ->withHeaders(['Content-Type' => 'application/json'])
+                        ->post($url, $payload);
 
-                if ($response->failed()) {
-                    $body = $response->json();
-                    if (isset($body['error']['details'][0]['errorCode']) && $body['error']['details'][0]['errorCode'] === 'UNREGISTERED') {
-                        Log::warning("🧹 Menghapus token invalid: $token");
-                        UserDevice::where('fcm_token', $token)->delete();
+                    if ($response->failed()) {
+                        $error = $response->json();
+                        $code = $error['error']['details'][0]['errorCode'] ?? null;
+
+                        if ($code === 'UNREGISTERED') {
+                            $invalidTokens[] = $token;
+                            Log::warning("🧹 Token invalid ditemukan: {$token}");
+                        } else {
+                            Log::error('❌ FCM Error: ' . json_encode($error, JSON_UNESCAPED_SLASHES));
+                        }
                     } else {
-                        Log::error("❌ FCM Error: " . $response->body());
+                        Log::info("✅ Notifikasi terkirim ke: {$token}");
                     }
-                } else {
-                    Log::info("✅ Notifikasi terkirim ke: $token");
+                } catch (\Throwable $e) {
+                    Log::error("❌ Gagal kirim ke {$token}: " . $e->getMessage());
                 }
-            } catch (\Exception $e) {
-                Log::error("❌ Gagal kirim notifikasi ke {$token}: " . $e->getMessage());
             }
+
+            // ✅ Delay antar batch (200ms)
+            usleep(200000);
+
+            // ✅ Tutup koneksi DB setiap batch (penting!)
+            DB::disconnect();
         }
 
-        Log::info("✅ Notifikasi FCM berhasil dikirim ke semua token.", ['count' => $successCount]);
+        // ✅ Hapus semua token invalid secara efisien dalam satu query
+        if (!empty($invalidTokens)) {
+            UserDevice::whereIn('fcm_token', $invalidTokens)->delete();
+            Log::info('🧹 Token invalid dihapus dari database.', ['count' => count($invalidTokens)]);
+        }
+
+        Log::info('🎯 FCM broadcast selesai.', ['total_tokens' => count($tokens)]);
         return true;
     }
 }
