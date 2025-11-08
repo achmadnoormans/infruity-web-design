@@ -369,7 +369,9 @@ class ReportController extends Controller
             ->join('products', 'pos_transaction_detail.product_id', '=', 'products.id')
             ->join('pos_transaction', 'pos_transaction_detail.pos_id', '=', 'pos_transaction.id')
             ->leftJoin('pos_payment', 'pos_transaction.id', '=', 'pos_payment.pos_id')
-            ->whereBetween('pos_transaction.date', [$startDate, $endDate]);
+            ->whereBetween('pos_transaction.date', [$startDate, $endDate])
+            ->whereNull('pos_transaction_detail.deleted_at')   // hanya yang belum dihapus
+            ->where('pos_transaction.status', '!=', 'draft');  // status bukan draft
 
         if ($request->has('branch_id') && $request->branch_id != 'all') {
             $data = $data->where('pos_payment.branch_id', $request->branch_id);
