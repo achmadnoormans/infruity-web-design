@@ -115,8 +115,10 @@ class UserController extends Controller
         DB::beginTransaction();
 
         try {
-            // $user = User::findOrFail($id);
-            // $user->delete();
+            $user = User::findOrFail($id);
+            $user->is_aktif = false;
+            $user->save();
+
             RoleUser::where('id_user', $id)->delete();
             DB::commit();
             return response()->json([
