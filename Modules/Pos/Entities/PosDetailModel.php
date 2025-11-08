@@ -5,10 +5,12 @@ namespace Modules\Pos\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Master\Entities\Product;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PosDetailModel extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [];
     protected $table = 'pos_transaction_detail';

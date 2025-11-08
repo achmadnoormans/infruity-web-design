@@ -42,6 +42,7 @@ return new class extends Migration
             $table->unsignedBigInteger('deposito_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -62,6 +63,7 @@ return new class extends Migration
             $table->enum('type', ['product', 'parcel'])->default('product');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -80,6 +82,7 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
 

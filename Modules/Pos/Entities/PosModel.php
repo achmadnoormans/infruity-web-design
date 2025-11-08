@@ -10,9 +10,12 @@ use Modules\Master\Entities\PaymentMethod;
 use Modules\Master\Entities\Staff;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class PosModel extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $fillable = [
@@ -108,7 +111,7 @@ class PosModel extends Model
             ->orderByRaw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
-            $orderPad = '001';
+        $orderPad = '001';
         if ($orderData && $orderData->order_number) {
             $orderPad = str_pad($orderData->order_number, 3, '0', STR_PAD_LEFT);
         }

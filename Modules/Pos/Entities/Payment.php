@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Pos\Entities\PosModel;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\PaymentMethod;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $fillable = [
