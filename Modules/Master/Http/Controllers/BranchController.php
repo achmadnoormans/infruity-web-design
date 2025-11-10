@@ -56,7 +56,7 @@ class BranchController extends Controller
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
-                'message' => 'Branch gagal disimpan.',
+                'message' => 'Branch gagal disimpan. ' . $e->getMessage(),
                 'data' => $branch
             ], 404);
         }
