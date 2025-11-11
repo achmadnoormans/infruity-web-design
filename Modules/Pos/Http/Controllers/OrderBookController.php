@@ -195,7 +195,7 @@ class OrderBookController extends Controller
 
     public function order($id)
     {
-        $orderBook = OrderBook::with('details', 'details.product', 'details.product.unit')->find($id);
+        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit')->find($id);
         $data['order'] = $orderBook;
         $data['alpinejs'] = true;
         $data['data'] = $orderBook;
