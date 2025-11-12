@@ -110,7 +110,7 @@
 <div class="mt-4 border-top pt-3">
     <div class="d-flex justify-content-between">
         <div>
-            <span>Total</span> <span x-text="totalProduk"></span>
+            <span>Total</span> <span x-text="totalProduk"></span><span> Item</span> 
         </div>
         <div class="fw-bold">
             <span>Rp</span>

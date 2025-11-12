@@ -179,7 +179,7 @@
 
             // Edit Product Section
             openEditModal(item) {
-                // console.log('Opening edit modal for item:', item);
+                console.log('Opening edit modal for item:', item);
                 this.editItem = {
                     ...item
                 }; // salin data item
@@ -270,7 +270,7 @@
             },
 
             saveEditToCart() {
-                const idx = this.cart.findIndex(i => i.id === this.editItem.id);
+                const idx = this.cart.findIndex(i => i.key === this.editItem.key);
                 if (idx !== -1) {
                     const disc = this.calculateEditDiscountAmount();
                     this.cart[idx].qty = this.editQty;
@@ -450,8 +450,10 @@
 
                 const discount = Number(this.addProduct.discount || 0);
                 const total_input = this.addProduct.total;
+                const key = Date.now() + Math.floor(Math.random() * 1000);
 
                 this.cart.push({
+                    key: key,
                     id: this.addProduct.id,
                     name: this.addProduct.name,
                     price: this.addProduct.price,
@@ -485,7 +487,8 @@
 
             // Total
             totalProduk() {
-                return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
+                // return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
+                return this.cart.length;
             },
             totalHargaKeseluruhan() {
                 return this.cart.reduce((sum, item) => {
@@ -1262,7 +1265,9 @@
                         .price) : item.product_id;
                     let productName = item.type == 'parcel' ? item.product.description : item.product.name;
                     let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item.quantity : this.sanitizeNumber(Number(item.subtotal || 0));
+                    const key = Date.now() + Math.floor(Math.random() * 1000);
                     const obj = {
+                        key: key,
                         id: id,
                         name: productName,
                         price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
@@ -1335,7 +1340,7 @@
 
             loadExistingOrderBook(data, detail) {
                 // Load existing cart items
-                console.log('akhir', detail);
+                const key = Date.now() + Math.floor(Math.random() * 1000);
                 detail.map(item => {
                     const obj = {
                         id: item.id,
