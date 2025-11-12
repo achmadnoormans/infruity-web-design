@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosModel;
 use Modules\Master\Entities\Staff;
+use Modules\Master\Entities\Branch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -23,7 +24,8 @@ class DeliveryOrderController extends Controller
      */
     public function index()
     {
-        return view('pos::delivery-order.index');
+        $branches = Branch::all();
+        return view('pos::delivery-order.index', compact('branches'));
     }
 
     /**
@@ -157,9 +159,14 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'payment')->where('ongkir', '>', 0);
+        $query = PosModel::with('customer', 'paymentDetails')->where('ongkir', '>', 0);
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('ongkir_status', $request->status_filter);
+        }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->whereHas('paymentDetails', function ($q) use ($request) {
+                $q->where('branch_id', $request->cabang_filter);
+            });
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);

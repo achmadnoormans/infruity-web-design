@@ -40,12 +40,12 @@
                                 <div class="separator border-gray-200"></div>
                                 <!--end::Separator-->
                                 <!--begin::Content-->
-                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
                                     <!--begin::Input group-->
                                     <div>
                                         <label class="form-label fs-6 fw-semibold">Status:</label>
                                         @php
-                                            $category = ['delivered', 'draft'];
+                                            $category = ['draft', 'paid', 'debt', 'canceled'];
                                         @endphp
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Status"
@@ -59,15 +59,29 @@
                                     <!--end::Input group-->
                                 </div>
                                 <!--end::Content-->
-                                <!--begin::Separator-->
-                                <div class="separator border-gray-200"></div>
-                                <!--end::Separator-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div>
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Cabang"
+                                            data-kt-ecommerce-product-filter="cabang">
+                                            <option value="all">All</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
                                 <!--begin::Content-->
                                 <div class="px-7 py-5" data-kt-user-table-filter="form">
                                     <!--begin::Input group-->
                                     <div class="input-group mw-350px">
                                         <input class="form-control form-control-solid rounded rounded-end-0"
-                                            placeholder="Pick date range" id="kt_ecommerce_sales_flatpickr" />
+                                            placeholder="Pilih range tanggal" id="kt_ecommerce_sales_flatpickr" />
                                         <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
                                             <i class="ki-duotone ki-cross fs-2">
                                                 <span class="path1"></span>
@@ -193,6 +207,7 @@
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
+                        d.cabang_filter = $('[data-kt-ecommerce-product-filter="cabang"]').val();
                         var range = $('#kt_ecommerce_sales_flatpickr').val();
                         if (range) {
                             var dates = range.split(' to ');
@@ -234,6 +249,10 @@
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
             });
 

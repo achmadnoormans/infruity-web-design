@@ -12,6 +12,7 @@ use Modules\Crm\Entities\CustomerTier;
 use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Crm\Entities\SettingExp;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\Branch;
 use Modules\Pos\Entities\SettingNota;
 use Modules\Crm\Entities\Deposito;
 use Yajra\DataTables\Facades\DataTables;
@@ -39,6 +40,7 @@ class PosController extends Controller
     public function index()
     {
         $data['alpinejs'] = true;
+        $data['branches'] = Branch::all();
         return view('pos::pos.index2', $data);
     }
 
@@ -598,9 +600,14 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'payment', 'details');
+        $query = PosModel::with('customer', 'paymentDetails', 'details');
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
+        }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->whereHas('paymentDetails', function ($q) use ($request) {
+                $q->where('branch_id', $request->cabang_filter);
+            });
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
