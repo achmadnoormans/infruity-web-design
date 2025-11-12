@@ -27,6 +27,11 @@ class Sortir extends Model
         return $this->hasMany(SortirDetail::class, 'sortir_id', 'id');
     }
 
+    public function createdBy()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'id_user');
+    }
+
     public static function getOrderNumber()
     {
         $orderData = self::select(DB::raw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) + 1 AS order_number'))

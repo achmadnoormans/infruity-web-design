@@ -335,22 +335,35 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Sortir::query();
+        $query = Sortir::with('createdBy');
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->orderBy('id', 'DESC')->get();
+        $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
+            ->filter(function ($query) use ($request) {
+                $search = trim($request->input('search.value'));
+
+                if (!empty($search)) {
+                    $query->where(function ($q) use ($search) {
+                        $q->where('invoice_number', 'LIKE', "%{$search}%")
+                            ->orWhereHas('createdBy', function ($sub) use ($search) {
+                                $sub->where('nm_user', 'LIKE', "%{$search}%");
+                            });
+                    });
+                }
+            }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 $html .= '<a href="' . route('sortir.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">Hpp: Rp' . tonumberround($item->total) . '</span>';
+                $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user)) . '</span>';
                 return $html;
             })
             ->addColumn('date', function ($item) {
