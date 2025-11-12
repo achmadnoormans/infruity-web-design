@@ -583,6 +583,7 @@ class WholesaleController extends Controller
                                 <a href="' . url('wholesale') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->order_number . '</a>
                                 <br>
                                 <span class="text-muted d-block"> Jml Prod : ' . $item->total_product . '</span>
+                                <span class="badge badge-light-danger">' . ucwords(strtolower($item->created_by)) . '</span>
                             </div>
                         </div>';
             })

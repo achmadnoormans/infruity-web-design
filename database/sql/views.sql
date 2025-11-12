@@ -6,9 +6,11 @@ SELECT
     wholesale.status AS status,
     wholesale.order_date,
     wholesale.created_at,
-    COUNT(wholesale_product.id) AS total_product
+    COUNT(wholesale_product.id) AS total_product,
+	users.nm_user AS created_by
 FROM wholesale
 JOIN wholesale_product ON wholesale_product.wholesale_id = wholesale.id
+LEFT JOIN users ON users.id_user = wholesale.created_by
 GROUP BY 
     wholesale.id, 
     wholesale.status,
