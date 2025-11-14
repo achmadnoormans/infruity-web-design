@@ -14,6 +14,7 @@ class OrderBook extends Model
 
     protected $table = 'order_book';
     protected $fillable = [
+        'branch_id',
         'customer_id',
         'date',
         'status',

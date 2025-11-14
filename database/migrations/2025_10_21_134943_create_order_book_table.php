@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('order_book', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('branch_id');
             $table->string('invoice_number')->nullable();
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->date('date')->nullable();

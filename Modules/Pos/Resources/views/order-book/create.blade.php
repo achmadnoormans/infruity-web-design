@@ -6,6 +6,18 @@
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
                 <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Cabang</label>
+                            <!--end::Label-->
+                            <!--begin::Select-->
+                            <select class="form-control" name="branch_id" id="branch_id">
+                                <option value="">Pilih Cabang</option>
+                            </select>
+                            <!--end::Select-->
+                        </div>
+                    </div>
                     <div class="col-9">
                         <div class="fv-row">
                             <!--begin::Label-->
@@ -195,6 +207,7 @@
                     const transactionDate = document.querySelector('input[name="date"]').value;
                     const note = document.querySelector('textarea[name="note"]').value;
                     const invoice_number = document.querySelector('input[name="invoice_number"]').value;
+                    const branchId = document.querySelector('select[name="branch_id"]').value;
 
                     if (note == null || note == '') {
                         Swal.fire({
@@ -213,6 +226,7 @@
                         status: 'process',
                         note: note,
                         invoice_number: invoice_number,
+                        branch_id: branchId,
                     };
 
                     // Simulasi kirim ke server
@@ -256,6 +270,7 @@
                     const transactionDate = document.querySelector('input[name="date"]').value;
                     const note = document.querySelector('textarea[name="note"]').value;
                     const invoice_number = document.querySelector('input[name="invoice_number"]').value;
+                    const branchId = document.querySelector('select[name="branch_id"]').value;
 
                     if (note == null || note == '') {
                         Swal.fire({
@@ -274,6 +289,7 @@
                         status: 'draft',
                         note: note,
                         invoice_number: invoice_number,
+                        branch_id: branchId,
                     };
 
                     // Simulasi kirim ke server

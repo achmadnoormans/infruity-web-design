@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Pos\Entities\OrderBook;
 use Modules\Pos\Entities\OrderBookDetail;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\Branch;
 use Modules\Pos\Entities\PosModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
@@ -27,7 +28,8 @@ class OrderBookController extends Controller
      */
     public function index()
     {
-        return view('pos::order-book.index');
+        $data['branches'] = Branch::all();
+        return view('pos::order-book.index', $data);
     }
 
     /**
@@ -115,6 +117,7 @@ class OrderBookController extends Controller
     public function saveTransaction(Request $request)
     {
         $data = $request->validate([
+            'branch_id' => 'required|exists:branch,id',
             'invoice_number' => 'required',
             'customer_id' => 'nullable',
             'date' => 'required|date',
@@ -134,6 +137,7 @@ class OrderBookController extends Controller
                 $updateAt = date('Y-m-d H:i:s');
             }
             $orderBook = OrderBook::create([
+                'branch_id' => $data['branch_id'],
                 'invoice_number' => $data['invoice_number'],
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
@@ -314,6 +318,9 @@ class OrderBookController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->where('branch_id', $request->cabang_filter);
+        }
         $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
@@ -378,14 +385,14 @@ class OrderBookController extends Controller
                                     <i class="bi bi-box"></i>
                                 </a>
                             </li>';
-                $html .= '                       
+                $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </li>';
 
-                $html .= '           
+                $html .= '
                         </ul>
                     </div>
                     ';

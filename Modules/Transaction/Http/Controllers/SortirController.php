@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
+use Modules\Master\Entities\Branch;
 use Modules\Transaction\Entities\Sortir;
 use Modules\Transaction\Entities\SortirDetail;
 use Modules\Transaction\Entities\WholesaleProduct;
@@ -34,7 +35,8 @@ class SortirController extends Controller
      */
     public function index()
     {
-        return view('transaction::sortir.index2');
+        $data['branches'] = Branch::all();
+        return view('transaction::sortir.index2', $data);
     }
 
     /**
@@ -343,6 +345,9 @@ class SortirController extends Controller
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->where('branch_id', $request->cabang_filter);
         }
         $data = $query->orderBy('id', 'DESC');
         // dd($data);

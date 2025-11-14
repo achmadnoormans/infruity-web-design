@@ -10,15 +10,12 @@
             success: function(data) {
 
                 if (data.length > 0) {
-                    let first = data[0]; // item pertama
-
-                    // STEP 2: Set option pertama sebelum select2 dirender
+                    let first = data[0];
                     $('#branch_id')
                         .append(new Option(first.name, first.id, true, true))
                         .trigger('change');
                 }
 
-                // STEP 3: Baru aktifkan Select2
                 $('#branch_id').select2({
                     placeholder: 'Pilih Cabang',
                     ajax: {

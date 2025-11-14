@@ -163,7 +163,7 @@
 
     // Tambahkan option Default ke select sebelum inisialisasi Select2
     $('#branch_id').select2({
-        placeholder: 'Pilih Branch',
+        placeholder: 'Pilih Cabang',
         ajax: {
             url: '/ajax/getBranch', // ganti sesuai route
             dataType: 'json',
@@ -178,7 +178,7 @@
                 // tambahkan opsi Default di awal
                 branchOptions.unshift({
                     id: 0,
-                    text: 'Pilih Branch'
+                    text: 'Pilih Cabang'
                 });
 
                 return {
@@ -189,7 +189,7 @@
     });
 
     // Set default value setelah Select2 diinisialisasi
-    const defaultOption = new Option('Pilih Branch', 0, true, true);
+    const defaultOption = new Option('Pilih Cabang', 0, true, true);
     $('#branch_id').append(defaultOption).trigger('change');
 
     $('#address_id').select2({
@@ -226,7 +226,7 @@
 
     $('#address_id').on('select2:open', function() {
         let addButton = `
-        <div class="select2-add-address" 
+        <div class="select2-add-address"
              style="padding: 8px; text-align: center; cursor: pointer; border-top: 1px solid #eee;">
             ➕ Tambah Alamat Baru
         </div>`;
