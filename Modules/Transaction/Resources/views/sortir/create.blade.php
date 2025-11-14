@@ -92,7 +92,19 @@
             <div class="d-flex flex-column gap-10">
                 <!--begin::Input group-->
                 <div class="row">
-                    <div class="col">
+                    <div class="col-md-12 mb-3">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Cabang</label>
+                            <!--end::Label-->
+                            <!--begin::Select-->
+                            <select class="form-control" name="branch_id" id="branch_id">
+                                <option value="">Pilih Cabang</option>
+                            </select>
+                            <!--end::Select-->
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Tanggal Transaksi</label>
@@ -102,7 +114,7 @@
                             <!--end::Editor-->
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-md-6 mb-3">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Nomor Faktur</label>
@@ -131,15 +143,6 @@
                         </button>
                     </div>
                 </div>
-                {{-- <button @click="openGiftModal()" x-show="isShowGiftButton" class="btn rounded-circle position-fixed"
-                    style="bottom: 60px; right: 25px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
-                    <i class="ki-duotone ki-gift" style="font-size: 30px; color: green;">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                    </i>
-                </button> --}}
                 {{-- <!-- Cart --> --}}
                 @include('transaction::sortir.segment.cart')
             </div>

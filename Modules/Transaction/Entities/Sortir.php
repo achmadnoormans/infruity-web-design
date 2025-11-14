@@ -3,6 +3,7 @@
 namespace Modules\Transaction\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Entities\Branch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 
@@ -18,13 +19,19 @@ class Sortir extends Model
         'total',
         'status',
         'type',
+        'branch_id',
         'created_by',
     ];
     protected $table = 'sortir_transaction';
-    
+
     public function detail()
     {
         return $this->hasMany(SortirDetail::class, 'sortir_id', 'id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
 
     public function createdBy()

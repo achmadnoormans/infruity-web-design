@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sortir_transaction', function (Blueprint $table) {
             $table->id();
             $table->string('uuid');
+            $table->unsignedBigInteger('branch_id');
             $table->date('date')->nullable();
             $table->string('invoice_number')->nullable();
             $table->decimal('total', 15, 2)->nullable();
@@ -43,6 +44,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('sortir_transaction');
-        Schema::dropIfExists('sortir_detail');
+        Schema::dropIfExists('sortir_transaction_detail');
     }
 };

@@ -57,13 +57,6 @@
 
             init() {
                 const self = this; // simpan konteks Alpine
-                $('#customer_id').on('select2:select', function(e) {
-                    const data = e.params.data;
-                    self.setMinimalPurchase(data.minimalPurchase || 0);
-                    self.setVoucher(data.voucher || 0);
-                    self.setDiscountGlobal(data.discount || 0);
-                });
-
                 let url = '{{ Request::segment(3) }}';
                 if (url == 'edit' && !this._loaded) {
                     const data = @json($data ?? null);
@@ -646,10 +639,12 @@
                 }
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
 
                 const data = {
                     date: transactionDate,
                     invoice_number: invoiceNumber,
+                    branch_id: branchId,
                     items: this.cart,
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
@@ -700,11 +695,13 @@
                 }
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                const branchId = document.querySelector('select[name="branch_id"]').value;
 
                 const data = {
                     date: transactionDate,
                     invoice_number: invoiceNumber,
                     items: this.cart,
+                    branch_id: branchId,
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
                     status: 'paid',
@@ -723,13 +720,7 @@
                     })
                     .then(res => res.json())
                     .then(res => {
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Berhasil',
-                        //     text: 'Transaksi berhasil disimpan!',
-                        // });
-                        // this.resetPOS(); // Reset cart dsb.
-                        // window.location.href = '/pos';
+                        // console.log(res);
                         redirectToHome();
 
                     })
@@ -740,9 +731,11 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         console.error(err);
+                        if (typeof doneCallback === 'function') doneCallback();
+                        return;
                     });
             },
-            // Pembayaran 
+            // Pembayaran
             goToPayment(doneCallback) {
                 if (this.cart.length === 0) {
                     Swal.fire({
@@ -850,9 +843,6 @@
                         discount: this.sanitizeNumber(Number(item.discount || 0)),
                         discountPercent: item.discountPercent || 0,
                         fee: item.product.fee || 0,
-                        kemasanId: item.parcel ? item.parcel.id : null,
-                        kemasanName: item.parcel ? item.parcel.name : null,
-                        kemasanPrice: item.parcel ? item.parcel.price : null,
                         total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
                         typeProduct: item.type || 'product',
                     };

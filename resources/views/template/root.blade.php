@@ -196,11 +196,11 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/firebase-messaging-sw.js')
                 .then(async (registration) => {
-                    console.log('✅ Service Worker terdaftar:', registration);
+                    // console.log('✅ Service Worker terdaftar:', registration);
 
                     // Tunggu SW siap
                     const swReady = await navigator.serviceWorker.ready;
-                    console.log('✅ Service Worker aktif:', swReady);
+                    // console.log('✅ Service Worker aktif:', swReady);
 
                     // Ambil token FCM
                     const token = await messaging.getToken({
@@ -208,7 +208,7 @@
                         serviceWorkerRegistration: registration, // gunakan ini, bukan useServiceWorker()
                     });
 
-                    console.log('🔥 Token FCM:', token);
+                    // console.log('🔥 Token FCM:', token);
 
                     // Kirim token ke backend Laravel
                     await fetch('/api/save-fcm-token', {
@@ -224,7 +224,7 @@
                     });
                 })
                 .catch((err) => {
-                    console.error('Gagal mendapatkan token FCM:', err);
+                    // console.error('Gagal mendapatkan token FCM:', err);
                 });
         }
 

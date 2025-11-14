@@ -82,7 +82,7 @@ class SortirController extends Controller
     public function edit($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = Sortir::findOrFail($id);
+        $data['data'] = Sortir::with('branch', 'createdBy')->findOrFail($id);
         $data['detail'] = SortirDetail::with('product', 'product.unit')->where('sortir_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('transaction::sortir.create', $data);
@@ -129,6 +129,7 @@ class SortirController extends Controller
     {
         // dd($request->all());
         $data = $request->validate([
+            'branch_id' => 'required|exists:branch,id',
             'date' => 'required|date',
             'invoice_number' => 'nullable',
             'items' => 'required|array',
@@ -147,9 +148,10 @@ class SortirController extends Controller
                 SortirDetail::where('sortir_id', $cek->id)->delete();
                 $pos->delete();
             }
-            // Simpan ke tabel transaksi (buat dulu kalau belum ada)
+            // Simpan ke tabel sortir (buat dulu kalau belum ada)
             $pos = new Sortir([
                 'uuid' => Str::uuid(),
+                'branch_id' => $data['branch_id'],
                 'date' => $data['date'],
                 'invoice_number' => Sortir::getOrderNumber(),
                 'total' => $data['total'],
@@ -306,7 +308,7 @@ class SortirController extends Controller
                 $html = '
                     <div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">
-                            <a href="' . url('/products', $item->product_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('/products', $item->product_id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($item->name) . '
                             </a>
@@ -392,14 +394,14 @@ class SortirController extends Controller
                                 </a>
                             </li>';
                 if (!in_array($item->status, ['paid', 'debt'])) {
-                    $html .= '                       
+                    $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </li>';
                 }
-                $html .= '           
+                $html .= '
                         </ul>
                     </div>
                     ';
