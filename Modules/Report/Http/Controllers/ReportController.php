@@ -13,6 +13,7 @@ use Modules\Report\Entities\BranchProduct;
 use Modules\Report\Entities\ProductBuang;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Master\Entities\Branch;
+use Modules\Transaction\Entities\SortirDetail;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
@@ -46,7 +47,8 @@ class ReportController extends Controller
     }
     public function product_buang(Request $request)
     {
-        return view('report::product-buang');
+        $data['branches'] = Branch::all();
+        return view('report::product-buang', $data);
     }
     public function product_sales(Request $request)
     {
@@ -296,10 +298,35 @@ class ReportController extends Controller
 
     public function get_data_barang_buang(Request $request)
     {
-        $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
-        $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
-        $data = ProductBuang::all();
-        return DataTables::of($data)
+        $startDate = $request->start_date ?? date('Y-01-01');
+        $endDate = $request->end_date ?? date('Y-12-31');
+
+        $query = SortirDetail::query()
+            ->join('sortir_transaction as B', 'sortir_transaction_detail.sortir_id', '=', 'B.id')
+            ->join('products as C', 'sortir_transaction_detail.product_id', '=', 'C.id')
+            ->join('product_units as D', 'C.product_unit', '=', 'D.id')
+            ->select(
+                'sortir_transaction_detail.product_id',
+                'B.branch_id',
+                DB::raw('SUM(sortir_transaction_detail.quantity) as quantity'),
+                'C.name',
+                'D.id as unit_id',
+                'D.abbreviation as satuan',
+                'D.name as product_unit',
+                DB::raw('SUM(sortir_transaction_detail.price) as hpp'),
+                DB::raw('SUM(sortir_transaction_detail.subtotal) as total_hpp')
+            )->whereBetween('B.date', [$startDate, $endDate]);
+        
+        if ($request->has('branch_id') && $request->branch_id !== 'all') {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        $grandTotalQuery = clone $query;
+        $grandTotal = $grandTotalQuery->sum('sortir_transaction_detail.subtotal');
+        
+        $query = $query->groupBy('sortir_transaction_detail.product_id')->orderByDesc('total_hpp');
+
+        return DataTables::of($query)
             ->editColumn('satuan', function ($row) {
                 switch ($row->unit_id) {
                     case 1:
@@ -327,22 +354,10 @@ class ReportController extends Controller
             ->editColumn('total_hpp', function ($row) {
                 return number_format($row->total_hpp, 2);
             })
-            ->addColumn('action', function ($row) {
-                return '
-                    <div class="dropstart">
-                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
-                            <li>
-                                <a class="dropdown-item" href="javascript:void(0)">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>';
-            })
-            ->rawColumns(['action', 'satuan'])
+            ->rawColumns(['satuan'])
+             ->with([
+                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
+            ])
             ->make(true);
     }
 
