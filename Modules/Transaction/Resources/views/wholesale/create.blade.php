@@ -198,7 +198,7 @@
 
                             <div class="mb-3">
                                 <label for="inputQuantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="inputQuantity"
+                                <input type="number" step="any" class="form-control" id="inputQuantity"
                                     placeholder="Masukkan jumlah pembelian" min="1">
                             </div>
 
@@ -272,7 +272,7 @@
 
                         <div class="mb-3">
                             <label for="inputQuantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
+                            <input type="number" step="any" class="form-control" id="inputQuantityEdit" name="qty"
                                 placeholder="Masukkan jumlah pembelian" min="1" name="qty">
                         </div>
 

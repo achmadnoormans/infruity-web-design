@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('wholesale_id');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
+            $table->decimal('quantity', 10, 2);
             $table->integer('price')->nullable();
             $table->integer('total_price')->nullable();
             $table->integer('supplier_id')->nullable();
