@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pengeluaran / Pemasukan" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Sortir" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -40,25 +40,43 @@
                                 <div class="separator border-gray-200"></div>
                                 <!--end::Separator-->
                                 <!--begin::Content-->
-                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
                                     <!--begin::Input group-->
-                                    <div class="mb-10">
+                                    <div>
                                         <label class="form-label fs-6 fw-semibold">Status:</label>
                                         @php
-                                            $category = ['draft', 'paid', 'debt', 'canceled'];
+                                            $category = [
+                                                'draft' => 'Draft',
+                                                'paid' => 'Final',
+                                            ];
                                         @endphp
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Status"
                                             data-kt-ecommerce-product-filter="status">
                                             <option value="all">All</option>
-                                            @foreach ($category as $category)
-                                                <option value="{{ $category }}">{{ ucwords($category) }}</option>
+                                            @foreach ($category as $key => $value)
+                                                <option value="{{ $key }}">{{ ucwords($value) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <!--end::Input group-->
                                 </div>
                                 <!--end::Content-->
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div>
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Cabang"
+                                            data-kt-ecommerce-product-filter="cabang">
+                                            <option value="all">All</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
                                 <!--begin::Separator-->
                                 <div class="separator border-gray-200"></div>
                                 <!--end::Separator-->
@@ -133,6 +151,7 @@
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
+                        d.cabang_filter = $('[data-kt-ecommerce-product-filter="cabang"]').val();
                         var range = $('#kt_ecommerce_sales_flatpickr').val();
                         if (range) {
                             var dates = range.split(' to ');
@@ -165,6 +184,10 @@
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
             });
 

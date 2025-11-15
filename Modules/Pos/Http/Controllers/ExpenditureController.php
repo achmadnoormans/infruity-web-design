@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\Expenditure;
 use Modules\Pos\Entities\ExpenditureDetail;
+use Modules\Master\Entities\Branch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -21,7 +22,8 @@ class ExpenditureController extends Controller
      */
     public function index()
     {
-        return view('pos::expenditure.index');
+        $branches = Branch::all();
+        return view('pos::expenditure.index', compact('branches'));
     }
 
     /**
@@ -211,6 +213,9 @@ class ExpenditureController extends Controller
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
+        }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->where('branch_id', $request->cabang_filter);
         }
         $data = $query->orderBy('id', 'DESC')->get();
         // dd($data);
