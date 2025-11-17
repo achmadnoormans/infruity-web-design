@@ -240,28 +240,43 @@
                             },
                             body: JSON.stringify(data),
                         })
-                        .then(res => res.json())
-                        .then(res => {
-                            // Swal.fire({
-                            //     icon: 'success',
-                            //     title: 'Berhasil',
-                            //     text: 'Transaksi berhasil disimpan!',
-                            // });
-                            // this.resetPOS(); // Reset cart dsb.
-                            window.location.href = '/order-book/' + res.order_book_id + '/order';
-                            // redirectToHome();
+                        .then(async res => {
+                            const json = await res.json().catch(() => ({}));
 
+                            // 🔥 Jika error (422, 500, dll)
+                            if (!res.ok) {
+
+                                // Jika VALIDASI ERROR
+                                if (json.errors) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Validasi gagal',
+                                        html: Object.values(json.errors)
+                                            .map(msg => `<div>${msg}</div>`)
+                                            .join('')
+                                    });
+                                } else {
+                                    // Error lain
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: json.message || 'Terjadi kesalahan',
+                                    });
+                                }
+
+                                throw new Error("Request Failed");
+                            }
+
+                            // 🔥 SUCCESS → langsung redirect
+                            window.location.href = '/order-book/' + json.order_book_id + '/order';
+
+                            if (typeof doneCallback === 'function') doneCallback();
                         })
                         .catch(err => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Gagal menyimpan transaksi.',
-                            });
                             console.error(err);
                             if (typeof doneCallback === 'function') doneCallback();
-                            return;
                         });
+
                 },
 
                 saveDraft(doneCallback) {
@@ -303,28 +318,43 @@
                             },
                             body: JSON.stringify(data),
                         })
-                        .then(res => res.json())
-                        .then(res => {
-                            // Swal.fire({
-                            //     icon: 'success',
-                            //     title: 'Berhasil',
-                            //     text: 'Transaksi berhasil disimpan!',
-                            // });
-                            // this.resetPOS(); // Reset cart dsb.
-                            window.location.href = '/order-book';
-                            // redirectToHome();
+                        .then(async res => {
+                            const json = await res.json().catch(() => ({}));
 
+                            // 🔥 Jika error (422, 500, dll)
+                            if (!res.ok) {
+
+                                // Jika VALIDASI ERROR
+                                if (json.errors) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Validasi gagal',
+                                        html: Object.values(json.errors)
+                                            .map(msg => `<div>${msg}</div>`)
+                                            .join('')
+                                    });
+                                } else {
+                                    // Error lain
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: json.message || 'Terjadi kesalahan',
+                                    });
+                                }
+
+                                throw new Error("Request Failed");
+                            }
+
+                            // 🔥 SUCCESS → langsung redirect
+                            window.location.href = '/order-book/' + json.order_book_id + '/order';
+
+                            if (typeof doneCallback === 'function') doneCallback();
                         })
                         .catch(err => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Gagal menyimpan transaksi.',
-                            });
                             console.error(err);
                             if (typeof doneCallback === 'function') doneCallback();
-                            return;
                         });
+
                 },
             }
         }
