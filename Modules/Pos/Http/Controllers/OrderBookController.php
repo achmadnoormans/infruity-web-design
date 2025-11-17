@@ -199,11 +199,11 @@ class OrderBookController extends Controller
 
     public function order($id)
     {
-        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit')->find($id);
+        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch')->find($id);
         $data['order'] = $orderBook;
         $data['alpinejs'] = true;
         $data['data'] = $orderBook;
-        $data['detail'] = $orderBook->details;
+        $data['detail'] = $orderBook->details ?? [];
         $data['invoice_number'] = $orderBook->invoice_number;
         return view('pos::order-book.order', $data);
     }
@@ -261,7 +261,11 @@ class OrderBookController extends Controller
             // HAPUS SPASI DI URL! (ini sering jadi penyebab 404)
             $url = 'https://api.groq.com/openai/v1/chat/completions';
 
-            $response = Http::withToken(env('GROQ_API_KEY'))
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+                'Content-Type'  => 'application/json',
+            ])
+            ->withoutVerifying()
                 ->timeout(30)
                 ->post($url, [
                     'model' => 'llama-3.3-70b-versatile',

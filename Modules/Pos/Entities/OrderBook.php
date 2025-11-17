@@ -5,6 +5,7 @@ namespace Modules\Pos\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Customer;
 use Modules\Master\Entities\User;
 
@@ -58,5 +59,10 @@ class OrderBook extends Model
     public function details()
     {
         return $this->hasMany(OrderBookDetail::class, 'order_book_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

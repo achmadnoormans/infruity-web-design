@@ -808,7 +808,7 @@
                         console.error(err);
                     });
             },
-            // Pembayaran 
+            // Pembayaran
             goToPayment(doneCallback) {
                 if (this.cart.length === 0) {
                     Swal.fire({
@@ -1384,6 +1384,11 @@
 
                     // Append ke select2 + set value
                     $('#customer_id').append(option).val(c.id).trigger('change');
+                }
+
+                if (data.branch) {
+                    let optionBranch = new Option(data.branch.name, data.branch.id, true, true);
+                    $('#branch_id').append(optionBranch).val(data.branch.id).trigger('change');
                 }
             },
 
