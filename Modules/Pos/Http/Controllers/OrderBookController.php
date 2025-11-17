@@ -330,9 +330,9 @@ class OrderBookController extends Controller
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= $warningIcon . '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
+                    $html .= $warningIcon . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
                 } else {
-                    $html .= $warningIcon . '<a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $html .= $warningIcon . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
                 if ($item->updated_at != null) {
                     $html .= '<br><span class="text-muted d-block fs-7">Di Edit : ' . $item->updated_at->format('d M Y H:i') . '</span>';
