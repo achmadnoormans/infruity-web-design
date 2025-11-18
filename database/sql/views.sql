@@ -1,7 +1,8 @@
 DROP VIEW IF EXISTS view_wholesale;
 CREATE VIEW view_wholesale AS
-SELECT 
+SELECT
     wholesale.id AS id,
+    wholesale.branch_id AS branch_id,
     wholesale.order_number AS order_number,
     wholesale.status AS status,
     wholesale.order_date,
@@ -11,8 +12,8 @@ SELECT
 FROM wholesale
 JOIN wholesale_product ON wholesale_product.wholesale_id = wholesale.id
 LEFT JOIN users ON users.id_user = wholesale.created_by
-GROUP BY 
-    wholesale.id, 
+GROUP BY
+    wholesale.id,
     wholesale.status,
     wholesale.order_date,
     wholesale.created_at;
@@ -20,7 +21,7 @@ GROUP BY
 DROP VIEW IF EXISTS transaction_stock;
 CREATE VIEW transaction_stock AS
 SELECT
-	* 
+	*
 FROM
 	(-- 	STOCK IN
 	SELECT
@@ -29,7 +30,7 @@ FROM
 		avg_price,
 		-- date,
 		created_at AS date,
-		`code` AS reff 
+		`code` AS reff
 	FROM
 		stock_in UNION ALL-- 	STOCK OUT
 	SELECT
@@ -38,7 +39,7 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
-		`code` 
+		`code`
 	FROM
 		stock_out UNION ALL-- 	WHOLESALE
 	SELECT
@@ -47,12 +48,12 @@ FROM
 		price,
 		-- wholesale.order_date,
 		wholesale.created_at,
-		'wholelsale' AS reff 
+		'wholelsale' AS reff
 	FROM
 		wholesale_product
-		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id 
+		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
 	WHERE
-		wholesale.`status` = 'posting' 
+		wholesale.`status` = 'posting'
 		AND product_id != 0 UNION ALL-- 	STOCK OUT TRANSACTION
 	SELECT
 		product_id,
@@ -60,7 +61,7 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
-		'stock-out' 
+		'stock-out'
 	FROM
 		stock_out_transaction UNION ALL-- 	STOCK OPNAME
 	SELECT
@@ -69,7 +70,7 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
-		'stock-opname' 
+		'stock-opname'
 	FROM
 		stock_opname UNION ALL-- 	PRODUCTION (PRODUCT RESEP)(+)
 	SELECT
@@ -78,7 +79,7 @@ FROM
 		NULL,
 		-- production_date,
 		created_at,
-		'production' 
+		'production'
 	FROM
 		production UNION ALL-- DETAIL PRODUCTION (-)
 	SELECT
@@ -87,7 +88,7 @@ FROM
 		NULL,
 		-- production.production_date,
 		production.created_at,
-		'production-detail' 
+		'production-detail'
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id UNION ALL-- 		DETAIL POS
@@ -97,10 +98,10 @@ FROM
 		pos_transaction_detail.price,
 		-- pos_transaction.date,
 		pos_transaction.created_at,
-		'pos' 
+		'pos'
 	FROM
 		pos_transaction_detail
-	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id 
+	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
 	) AS Q;
 
 -- Sortir view
@@ -119,7 +120,7 @@ FROM
 	WHERE A.is_variant IS NULL
 GROUP BY
     A.id, B.product_id, C.abbreviation
-ORDER BY 
+ORDER BY
     stock_available DESC;
 
 -- Product Stock
@@ -185,7 +186,7 @@ WHERE A.is_variant IS NULL;
 DROP VIEW IF EXISTS vw_customer_tier;
 CREATE OR REPLACE VIEW vw_customer_tier AS
 WITH customer_exp AS (
-    SELECT customer_id, SUM(customer_exp) AS customer_exp 
+    SELECT customer_id, SUM(customer_exp) AS customer_exp
 	FROM (
 				SELECT SUM(A.exp_value) AS customer_exp, B.customer_id
 					FROM pos_transaction_detail AS A
@@ -233,7 +234,7 @@ JOIN tier_range tr
 -- View Report Customer
 DROP VIEW IF EXISTS vw_customer_report;
 CREATE OR REPLACE VIEW vw_customer_report AS
-SELECT 
+SELECT
     c.id AS id_customer,
     c.name AS nama_customer,
     c.type AS type_customer,
@@ -256,31 +257,31 @@ SELECT
 	( A.deposito - COALESCE ( B.voucher, 0 ) ) AS nominal_remaining
 FROM
 	`deposito` AS A
-	LEFT JOIN ( 
-		SELECT 
-			customer_id, deposito_id, SUM( voucher ) AS voucher, SUM( voucher_qty ) AS voucher_qty 
-		FROM 
-			pos_transaction 
-		GROUP BY 
-			customer_id, deposito_id 
+	LEFT JOIN (
+		SELECT
+			customer_id, deposito_id, SUM( voucher ) AS voucher, SUM( voucher_qty ) AS voucher_qty
+		FROM
+			pos_transaction
+		GROUP BY
+			customer_id, deposito_id
 	) AS B ON A.id = B.deposito_id;
 
 DROP VIEW IF EXISTS vw_customer_deposito_tansaction;
 CREATE VIEW vw_customer_deposito_tansaction AS
 SELECT
-	* 
+	*
 FROM
-	( 
-		SELECT 
-			customer_id, deposito_date, deposito, voucher_qty 
-		FROM 
-			deposito 
-		UNION 
-		SELECT 
-			customer_id, date, -voucher, -voucher_qty 
-		FROM 
-			pos_transaction 
-		WHERE voucher > 0 
+	(
+		SELECT
+			customer_id, deposito_date, deposito, voucher_qty
+		FROM
+			deposito
+		UNION
+		SELECT
+			customer_id, date, -voucher, -voucher_qty
+		FROM
+			pos_transaction
+		WHERE voucher > 0
 	) Q
 ORDER BY
 	deposito_date;

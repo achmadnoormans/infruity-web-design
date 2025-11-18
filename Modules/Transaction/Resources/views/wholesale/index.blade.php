@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pembelian" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pengadaan" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -40,18 +40,58 @@
                                 <div class="separator border-gray-200"></div>
                                 <!--end::Separator-->
                                 <!--begin::Content-->
-                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
                                     <!--begin::Input group-->
-                                    <div class="mb-10">
+                                    <div>
                                         <label class="form-label fs-6 fw-semibold">Status:</label>
+                                        @php
+                                            $category = [
+                                                'draft' => 'Draft',
+                                                'posting' => 'Posting',
+                                            ];
+                                        @endphp
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Status"
                                             data-kt-ecommerce-product-filter="status">
-                                            <option></option>
                                             <option value="all">All</option>
-                                            <option value='posting'>Posting</option>
-                                            <option value='draft'>Draft</option>
+                                            @foreach ($category as $key => $value)
+                                                <option value="{{ $key }}">{{ ucwords($value) }}</option>
+                                            @endforeach
                                         </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div>
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Cabang"
+                                            data-kt-ecommerce-product-filter="cabang">
+                                            <option value="all">All</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--begin::Separator-->
+                                <div class="separator border-gray-200"></div>
+                                <!--end::Separator-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div class="input-group mw-350px">
+                                        <input class="form-control form-control-solid rounded rounded-end-0"
+                                            placeholder="Pick date range" id="kt_ecommerce_sales_flatpickr" />
+                                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
                                     </div>
                                     <!--end::Input group-->
                                 </div>
@@ -62,11 +102,6 @@
                         </div>
                         <!--end::Toolbar-->
                     </div>
-                    <!--begin::Add product-->
-                    <a href="{{ url('wholesale/create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                    <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
             </div>
@@ -97,6 +132,13 @@
             <!--end::Card body-->
         </div>
     </div>
+    <a href="{{ url('wholesale/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
+        style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+        <i class="ki-duotone ki-purchase fs-3x text-white">
+            <span class="path1"></span>
+            <span class="path2"></span>
+        </i>
+    </a>
 @section('script')
     <script type="text/javascript">
         var dataTable;
@@ -127,6 +169,14 @@
                     url: "{{ route('wholesale-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.status_filter = $('[data-kt-ecommerce-product-filter="status"]').val();
+                        d.cabang_filter = $('[data-kt-ecommerce-product-filter="cabang"]').val();
+                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        if (range) {
+                            var dates = range.split(' to ');
+                            d.start_date = dates[0];
+                            d.end_date = dates[1] ?? dates[0]; // jika hanya pilih 1 tanggal
+                        }
                     }
                 },
                 order: [
@@ -174,10 +224,21 @@
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
-                let val = $(this).val();
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
 
-                if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(1).search(val).draw();
+            $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+                altInput: !0,
+                altFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
+                mode: "range",
+                onChange: function(e, t, n) {
+                    dataTable.draw();
+                }
             });
         });
 

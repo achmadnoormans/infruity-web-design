@@ -37,12 +37,22 @@ class Wholesale extends Model
         return $this->hasMany('Modules\Transaction\Entities\WholesaleProduct', 'wholesale_id');
     }
 
-    public static function getData()
+    public static function getData($request)
     {
-        return DB::table('view_wholesale')
+        $query = DB::table('view_wholesale')
             ->select('*')
-            ->orderBy('order_date', 'desc')
-            ->get();
+            ->orderBy('order_date', 'desc');
+
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('order_date', [$request->start_date, $request->end_date]);
+        }
+        if ($request->status && $request->status != 'all') {
+            $query->where('status', $request->status);
+        }
+        if ($request->cabang_filter && $request->cabang_filter != 'all') {
+            $query->where('branch_id', $request->cabang_filter);
+        }
+        return $query;
     }
     public function createdBy()
     {

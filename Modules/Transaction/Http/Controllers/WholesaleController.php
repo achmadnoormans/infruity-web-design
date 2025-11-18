@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
@@ -26,7 +27,8 @@ class WholesaleController extends Controller
      */
     public function index()
     {
-        return view('transaction::wholesale.index');
+        $data['branches'] = Branch::all();
+        return view('transaction::wholesale.index', $data);
     }
 
     /**
@@ -681,7 +683,8 @@ class WholesaleController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Wholesale::getData();
+        // dd($request->all());
+        $data = Wholesale::getData($request);
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
