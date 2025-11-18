@@ -2,9 +2,9 @@
 
 namespace Modules\Transaction\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Wholesale extends Model
 {
@@ -12,11 +12,20 @@ class Wholesale extends Model
 
     protected $table = 'wholesale';
     protected $primaryKey = 'id';
-    protected $fillable = [];
+    protected $fillable = [
+        'order_number',
+        'branch_id',
+        'supplier_id',
+        'order_date',
+        'status',
+        'total_amount',
+        'created_by',
+        'updated_by',
+    ];
 
     protected static function newFactory()
     {
-        return \Modules\Transaction\Database\factories\WholesaleFactory::new();
+        return \Modules\Transaction\Database\factories\WholesaleFactory::new ();
     }
 
     public function supplier()
@@ -80,7 +89,7 @@ class Wholesale extends Model
             ->orderByRaw('CAST(RIGHT(order_number, 3) AS UNSIGNED) DESC')
             ->limit(1)
             ->first();
-            $orderPad = '001';
+        $orderPad = '001';
         if ($orderData && $orderData->order_number) {
             $orderPad = str_pad($orderData->order_number, 3, '0', STR_PAD_LEFT);
         }

@@ -37,6 +37,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('wholesale/edit-product/{id}', [WholesaleController::class, 'edit_product'])->name('wholesale.edit-product');
     Route::put('wholesale/update-product/{id}', [WholesaleController::class, 'update_product'])->name('wholesale.update-product');
     Route::post('wholesale/save-product', [WholesaleController::class, 'save_product'])->name('wholesale.save-product');
+    Route::post('wholesale/save-transaction', [WholesaleController::class, 'saveTransaction'])->name('wholesale.save-transaction');
     Route::delete('wholesale/delete-product/{id}', [WholesaleController::class, 'delete_product'])->name('wholesale.delete_product');
     Route::post('wholesale/update-receive-product/{id}', [WholesaleController::class, 'update_receive_product'])->name('wholesale.update_receive_product');
     Route::post('wholesale/set-selesai/{id}', [WholesaleController::class, 'set_selesai'])->name('wholesale.set_selesai');
@@ -44,7 +45,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('sortir', SortirController::class)->names('sortir')->except('show');
     Route::get('sortir/show/{id}', [SortirController::class, 'show'])->name('sortir.show');
-    Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');    
+    Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
     Route::post('sortir/save-transaction', [SortirController::class, 'saveTransaction'])->name('sortir.save-transaction');
 
     Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');

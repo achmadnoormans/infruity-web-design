@@ -13,6 +13,8 @@ return new class extends Migration {
     {
         Schema::create('wholesale', function (Blueprint $table) {
             $table->id();
+            $table->text('uuid');
+            $table->unsignedBigInteger('branch_id');
             $table->string('order_number', 20); // Kolom untuk nomor pesanan
             $table->unsignedBigInteger('supplier_id');
             $table->date('order_date');
