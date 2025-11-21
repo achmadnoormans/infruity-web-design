@@ -2,23 +2,18 @@
 
 namespace Modules\Master\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Modules\Master\Entities\Customer;
 use Modules\Master\Entities\CustomerAddress;
 use Modules\Master\Entities\Region;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Facades\Excel;
-use Exception;
 
 class CustomerController extends Controller
 {
@@ -67,7 +62,7 @@ class CustomerController extends Controller
                 'numeric',
                 'digits_between:10,15',
                 'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
-                'unique:customer,whatsapp'
+                'unique:customer,whatsapp',
             ],
             'email' => 'nullable',
         ]);
@@ -220,13 +215,13 @@ class CustomerController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -255,17 +250,16 @@ class CustomerController extends Controller
                 'customer' => [
                     'id' => $customer->id,
                     'name' => $customer->name,
-                    'address' => $customer->address
-                ]
+                    'address' => $customer->address,
+                ],
             ]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menambahkan data: ' . $e->getMessage()
+                'message' => 'Gagal menambahkan data: ' . $e->getMessage(),
             ], 500);
         }
-
 
     }
 
@@ -303,14 +297,14 @@ class CustomerController extends Controller
                 'success' => true,
                 'customer' => [
                     'id' => $customerAddress->id,
-                    'address' => $customerAddress->address
-                ]
+                    'address' => $customerAddress->address,
+                ],
             ]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menambahkan data: ' . $e->getMessage()
+                'message' => 'Gagal menambahkan data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -340,7 +334,7 @@ class CustomerController extends Controller
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">                        
+                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
                             <li>
                                 <a class="dropdown-item" href="' . route('customers.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
@@ -371,27 +365,25 @@ class CustomerController extends Controller
         $search = $request->get('search');
 
         $customer = Customer::where('name', 'like', '%' . $search . '%')
-            ->leftjoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
+            ->leftJoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
             ->orWhere('whatsapp', 'like', '%' . $search . '%')
             ->select('*')
-            ->limit(10)
-            ->get();
-
-        $data = [];
-        foreach ($customer as $item) {
-            $data[] = [
-                'id' => $item->id,
-                'name' => $item->name,
-                'address' => $item->address,
-                'whatsapp' => $item->whatsapp,
-                'tier_name' => $item->tier_name,
-                'tier_id' => $item->tier_id,
-                'tier_style' => $item->tier_style,
-                'minimal_purchase' => $item->minimal_purchase ?? 0, // Pastikan minimal_purchase ada di data
-                'voucher' => $item->voucher ?? 0,
-                'discount' => $item->discount ?? 0,
-            ];
-        }
+            ->chunk(10, function ($chunk) use (&$data) {
+                foreach ($chunk as $item) {
+                    $data[] = [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'address' => $item->address,
+                        'whatsapp' => $item->whatsapp,
+                        'tier_name' => $item->tier_name,
+                        'tier_id' => $item->tier_id,
+                        'tier_style' => $item->tier_style,
+                        'minimal_purchase' => $item->minimal_purchase ?? 0,
+                        'voucher' => $item->voucher ?? 0,
+                        'discount' => $item->discount ?? 0,
+                    ];
+                }
+            });
 
         return response()->json($data);
     }
