@@ -21,7 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         // \App\Http\Middleware\BasicAuthMiddleware::class,
         // Middleware Hijacking
-        \App\Http\Middleware\FrameOptionsMiddleware::class,
+        // \App\Http\Middleware\FrameOptionsMiddleware::class,
     ];
 
     /**
@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-        
+
     ];
 
     /**
