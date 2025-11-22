@@ -362,29 +362,39 @@ class CustomerController extends Controller
     public function getCustomer(Request $request)
     {
         $search = $request->get('search');
+        $page = $request->get('page', 1); // Select2 akan mengirim page
 
-        $customer = Customer::where('name', 'like', '%' . $search . '%')
-            ->leftjoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
-            ->orWhere('whatsapp', 'like', '%' . $search . '%')
-            ->select('*')
-            ->paginate(10);
+        $customer = Customer::where(function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%')
+                ->orWhere('whatsapp', 'like', '%' . $search . '%');
+        })
+            ->leftJoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
+            ->select('customer.*', 'tier_name', 'tier_id', 'tier_style', 'minimal_purchase', 'voucher', 'discount')
+            ->paginate(10, ['*'], 'page', $page);
 
-        $data = [];
+        $results = [];
+
         foreach ($customer as $item) {
-            $data[] = [
-                'id' => $item->id,
-                'name' => $item->name,
-                'address' => $item->address,
-                'whatsapp' => $item->whatsapp,
-                'tier_name' => $item->tier_name,
-                'tier_id' => $item->tier_id,
-                'tier_style' => $item->tier_style,
-                'minimal_purchase' => $item->minimal_purchase ?? 0, // Pastikan minimal_purchase ada di data
-                'voucher' => $item->voucher ?? 0,
-                'discount' => $item->discount ?? 0,
+            $results[] = [
+                "id" => $item->id,
+                "text" => $item->name . " (" . $item->whatsapp . ")", // untuk Select2
+                "name" => $item->name,
+                "address" => $item->address,
+                "whatsapp" => $item->whatsapp,
+                "tier_name" => $item->tier_name,
+                "tier_id" => $item->tier_id,
+                "tier_style" => $item->tier_style,
+                "minimal_purchase" => $item->minimal_purchase ?? 0,
+                "voucher" => $item->voucher ?? 0,
+                "discount" => $item->discount ?? 0,
             ];
         }
 
-        return response()->json($data);
+        return response()->json([
+            "results" => $results,
+            "pagination" => [
+                "more" => $customer->hasMorePages() // Select2 akan load page berikutnya
+            ]
+        ]);
     }
 }

@@ -9,7 +9,8 @@
                 dataType: 'json',
                 delay: 250,
                 data: params => ({
-                    search: params.term
+                    search: params.term,
+                    page: params.page || 1
                 }),
                 processResults: data => {
                     const umum = {
@@ -18,7 +19,7 @@
                         address: '-',
                         whatsapp: '-'
                     };
-                    const results = data.map(item => ({
+                    const results = data.results.map(item => ({
                         id: item.id,
                         name: item.name,
                         address: item.address,
@@ -31,7 +32,10 @@
                         discount: item.discount,
                     }));
                     return {
-                        results: [umum, ...results]
+                        results: [umum, ...results],
+                        pagination: {
+                            more: data.pagination.more
+                        }
                     };
                 }
             },

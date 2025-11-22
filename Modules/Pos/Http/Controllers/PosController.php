@@ -335,15 +335,15 @@ class PosController extends Controller
                     $product = Product::find($productId);
                     $product->delete();
                 }
-                PosDetailModel::where('pos_id', $cek->id)->forceDelete();
-                $pos->forceDelete();
+                PosDetailModel::where('pos_id', $cek->id)->withoutGlobalScopes()->forceDelete();
+                $pos->withoutGlobalScopes()->forceDelete();
             }
             // Simpan ke tabel transaksi (buat dulu kalau belum ada)
             $pos = new PosModel([
                 'uuid' => $uuid,
                 'customer_id' => $data['customer_id'],
                 'date' => $data['date'],
-                'invoice_number' => PosModel::getOrderNumber(),
+                'invoice_number' => $data['invoice_number'],
                 'subtotal' => $data['subtotal'],
                 'total' => $data['total'],
                 'discount' => $data['discount'],
