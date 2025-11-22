@@ -260,7 +260,6 @@ class CustomerController extends Controller
                 'message' => 'Gagal menambahkan data: ' . $e->getMessage(),
             ], 500);
         }
-
     }
 
     public function getAddress(Request $request)
@@ -365,25 +364,26 @@ class CustomerController extends Controller
         $search = $request->get('search');
 
         $customer = Customer::where('name', 'like', '%' . $search . '%')
-            ->leftJoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
+            ->leftjoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
             ->orWhere('whatsapp', 'like', '%' . $search . '%')
             ->select('*')
-            ->chunk(10, function ($chunk) use (&$data) {
-                foreach ($chunk as $item) {
-                    $data[] = [
-                        'id' => $item->id,
-                        'name' => $item->name,
-                        'address' => $item->address,
-                        'whatsapp' => $item->whatsapp,
-                        'tier_name' => $item->tier_name,
-                        'tier_id' => $item->tier_id,
-                        'tier_style' => $item->tier_style,
-                        'minimal_purchase' => $item->minimal_purchase ?? 0,
-                        'voucher' => $item->voucher ?? 0,
-                        'discount' => $item->discount ?? 0,
-                    ];
-                }
-            });
+            ->paginate(10);
+
+        $data = [];
+        foreach ($customer as $item) {
+            $data[] = [
+                'id' => $item->id,
+                'name' => $item->name,
+                'address' => $item->address,
+                'whatsapp' => $item->whatsapp,
+                'tier_name' => $item->tier_name,
+                'tier_id' => $item->tier_id,
+                'tier_style' => $item->tier_style,
+                'minimal_purchase' => $item->minimal_purchase ?? 0, // Pastikan minimal_purchase ada di data
+                'voucher' => $item->voucher ?? 0,
+                'discount' => $item->discount ?? 0,
+            ];
+        }
 
         return response()->json($data);
     }
