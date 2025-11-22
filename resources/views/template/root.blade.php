@@ -4,19 +4,23 @@
 
 <head>
     <base href="/" />
-    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
-    <meta charset="utf-8" />
-    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
-    <meta name="keywords" content="buah, umkm, pasar" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
-    <meta property="og:url" content="https://infruity.com" />
-    <meta property="og:site_name" content="Infruity" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="canonical" href="https://infruity.com" />
+    <title>@yield('title', 'Infruity')</title>
+    <meta name="description" content="@yield('meta_description', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta name="keywords" content="@yield('meta_keywords', 'jual buah online, buah segar, infruity, infruity.com, buah sehat')">
+    <meta name="author" content="Infruity">
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="@yield('title', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta property="og:site_name" content="UMKM Jual Buah Segar dan Sehat Secara Online">
+    <meta property="og:description" content="@yield('meta_description', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo-infruity.png'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
+    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!--begin::Fonts(mandatory for all pages)-->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     <!--end::Fonts-->

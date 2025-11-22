@@ -4,18 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infruity - UMKM Jual Buah Terbaik di Negeri Ini</title>
-    <meta charset="utf-8" />
-    <meta name="description" content="UMKM jual buah dengan harga terjangkau" />
-    <meta name="keywords" content="buah, umkm, pasar" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="Infruity - UMKM Olahan Buah Terbesar di Abad Ini" />
-    <meta property="og:url" content="https://infruity.com" />
-    <meta property="og:site_name" content="Infruity" />
+    <title>@yield('title', 'Infruity')</title>
+    <meta name="description" content="@yield('meta_description', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta name="keywords" content="@yield('meta_keywords', 'jual buah online, buah segar, infruity, infruity.com, buah sehat')">
+    <meta name="author" content="Infruity">
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="@yield('title', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta property="og:site_name" content="UMKM Jual Buah Segar dan Sehat Secara Online">
+    <meta property="og:description" content="@yield('meta_description', 'UMKM Jual Buah Segar dan Sehat Secara Online')">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo-infruity.png'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="canonical" href="https://infruity.com" />
     <link rel="shortcut icon" href="{{ asset('images/logo-infruity.png') }}" />
     <script src="https://cdn.jsdelivr.net/npm/easyqrcodejs@4.4.10/dist/easy.qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -651,7 +655,8 @@
                         <div class="item">
                             <div class="item-details">
                                 <div class="item-header">
-                                    <span class="item-name">{{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}</span>
+                                    <span
+                                        class="item-name">{{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}</span>
                                 </div>
                                 <div class="item-price" style=" display: flex;justify-content: space-between;">
                                     <span>
@@ -661,7 +666,7 @@
                                     @php
                                         $subTotal =
                                             isset($item->discount) && $item->discount > 0
-                                                ? $item->subtotal + ($item->discount * $item->quantity)
+                                                ? $item->subtotal + $item->discount * $item->quantity
                                                 : $item->subtotal;
                                     @endphp
                                     <span class="item-total">Rp
@@ -674,7 +679,8 @@
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
                                             <span>Diskon
-                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%) per Item
+                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
+                                                per Item
                                             </span>
                                             <span>- {{ tonumberround($item->discount * $item->quantity) }}</span>
                                             @php
