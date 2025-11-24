@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\UserDevice;
 use Google\Client as GoogleClient;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use App\Models\UserDevice;
 
 class FcmService
 {
@@ -23,6 +23,91 @@ class FcmService
     }
 
     public function sendNotification(array $tokens, string $title, string $body, array $data = []): bool
+    {
+        if (empty($tokens)) {
+            Log::warning('⚠️ Tidak ada token FCM yang dikirim.');
+            return false;
+        }
+
+        // 🧹 Hapus token duplikat (penyebab utama notifikasi double)
+        $tokens = array_unique($tokens);
+
+        // Ambil token yang benar-benar ada di database (hindari token duplikat multi device)
+        $tokens = UserDevice::whereIn('fcm_token', $tokens)
+            ->distinct()
+            ->pluck('fcm_token')
+            ->toArray();
+
+        if (empty($tokens)) {
+            Log::warning('⚠️ Setelah filter, token kosong.');
+            return false;
+        }
+
+        $accessToken = $this->client->fetchAccessTokenWithAssertion()['access_token'];
+        $url = "https://fcm.googleapis.com/v1/projects/{$this->projectId}/messages:send";
+
+        $invalidTokens = [];
+
+        // 🔥 Kirim per 30 token (batch), tetapi 1 REQUEST = 30 token, bukan 30 request
+        $chunks = array_chunk($tokens, 30);
+
+        foreach ($chunks as $batch) {
+
+            // FCM supports sending multiple tokens using "message => tokens"
+            $payload = [
+                'message' => [
+                    'tokens' => $batch, // 👈 kirim 1x untuk semua token
+                    'notification' => [
+                        'title' => $title,
+                        'body' => $body,
+                    ],
+                    'data' => $data,
+                    'webpush' => [
+                        'notification' => [
+                            'title' => $title,
+                            'body' => $body,
+                            'icon' => 'https://infruity.com/icon.png',
+                            'click_action' => 'https://infruity.com',
+                        ],
+                    ],
+                ],
+            ];
+
+            try {
+                $response = Http::withToken($accessToken)
+                    ->timeout(10)
+                    ->withHeaders(['Content-Type' => 'application/json'])
+                    ->post($url, $payload);
+
+                $json = $response->json();
+
+                // FCM akan merespon token mana yang invalid
+                if (!empty($json['error'])) {
+                    Log::error('❌ Error batch: ' . json_encode($json, JSON_UNESCAPED_SLASHES));
+                }
+
+            } catch (\Throwable $e) {
+                Log::error("❌ Error kirim batch: " . $e->getMessage());
+            }
+
+            // jeda 200ms
+            usleep(200000);
+
+            // Hindari overload DB connection
+            DB::disconnect();
+        }
+
+        // 🧹 Hapus token invalid (jika ada)
+        if (!empty($invalidTokens)) {
+            UserDevice::whereIn('fcm_token', $invalidTokens)->delete();
+            Log::info("🧹 Menghapus token invalid: " . count($invalidTokens));
+        }
+
+        Log::info("🎯 Selesai kirim notifikasi ke " . count($tokens) . " device.");
+        return true;
+    }
+
+    public function sendNotificationOld(array $tokens, string $title, string $body, array $data = []): bool
     {
         if (empty($tokens)) {
             Log::warning('⚠️ Tidak ada token FCM yang dikirim.');
