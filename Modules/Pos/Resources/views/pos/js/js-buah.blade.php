@@ -656,6 +656,7 @@
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
                 const branchId = document.querySelector('select[name="branch_id"]').value;
+                const branchProcessId = document.querySelector('select[name="branch_process_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
@@ -689,6 +690,7 @@
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
                     branch_id: branchId,
+                    branch_process_id: branchProcessId,
                 };
 
                 // Simulasi kirim ke server
@@ -741,6 +743,7 @@
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
                 const branchId = document.querySelector('select[name="branch_id"]').value;
+                const branchProsesId = document.querySelector('select[name="branch_process_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
 
@@ -774,6 +777,7 @@
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
                     branch_id: branchId,
+                    branch_process_id: branchProsesId,
                 };
 
                 // Simulasi kirim ke server
@@ -787,18 +791,38 @@
                         },
                         body: JSON.stringify(data),
                     })
-                    .then(res => res.json())
-                    .then(res => {
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Berhasil',
-                        //     text: 'Transaksi berhasil disimpan!',
-                        // });
-                        // this.resetPOS(); // Reset cart dsb.
-                        // window.location.href = '/pos';
-                        redirectToHome();
+                    .then(async (res) => {
+                        const json = await res.json();
 
+                        // Jika server mengembalikan error (HTTP bukan 200)
+                        if (!res.ok) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return; // ⛔ STOP — jangan redirect
+                        }
+
+                        // Jika JSON success = false
+                        if (json.success === false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return; // ⛔ STOP redirect
+                        }
+
+                        // Jika sukses → baru redirect
+                        if (typeof doneCallback === 'function') doneCallback();
+                        redirectToPayment(json.transaksi_id);
                     })
+
                     .catch(err => {
                         Swal.fire({
                             icon: 'error',
@@ -827,6 +851,7 @@
                 const note = document.querySelector('textarea[name="note"]').value;
                 const courierId = document.querySelector('select[name="courier_id"]').value;
                 const branchId = document.querySelector('select[name="branch_id"]').value;
+                const branchProsesId = document.querySelector('select[name="branch_process_id"]').value;
                 // const ongkirAddress = document.querySelector('textarea[name="ongkir_address"]').value;
                 const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
                 console.table(this.ongkirGlobal, courierId);
@@ -860,6 +885,7 @@
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,
                     branch_id: branchId,
+                    branch_process_id: branchProsesId,
                 };
 
                 // Simulasi kirim ke server
@@ -873,12 +899,36 @@
                         },
                         body: JSON.stringify(data),
                     })
-                    .then(res => res.json())
-                    .then(res => {
-                        // console.log(res);
-                        // this.resetPOS(); // Reset cart dsb.
+                    .then(async (res) => {
+                        const json = await res.json();
+
+                        // Jika server mengembalikan error (HTTP bukan 200)
+                        if (!res.ok) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return; // ⛔ STOP — jangan redirect
+                        }
+
+                        // Jika JSON success = false
+                        if (json.success === false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return; // ⛔ STOP redirect
+                        }
+
+                        // Jika sukses → baru redirect
                         if (typeof doneCallback === 'function') doneCallback();
-                        redirectToPayment(res.transaksi_id);
+                        redirectToPayment(json.transaksi_id);
                     })
                     .catch(err => {
                         Swal.fire({
@@ -1264,7 +1314,8 @@
                     let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
                         .price) : item.product_id;
                     let productName = item.type == 'parcel' ? item.product.description : item.product.name;
-                    let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item.quantity : this.sanitizeNumber(Number(item.subtotal || 0));
+                    let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item
+                        .quantity : this.sanitizeNumber(Number(item.subtotal || 0));
                     const key = Date.now() + Math.floor(Math.random() * 1000);
                     const obj = {
                         key: key,
@@ -1335,6 +1386,16 @@
                 if (data.ongkir_address) {
                     let ongkirAddress = new Option(data.ongkir_address, data.ongkir_address, true, true);
                     $('#address_id').append(ongkirAddress).val(data.ongkir_address).trigger('change');
+                }
+
+                if (data.branch_proses) {
+                    let branchProcess = new Option(data.branch_proses.name, data.branch_proses.id, true, true);
+                    $('#branch_process_id').append(branchProcess).val(data.branch_proses.id).trigger('change');
+                }
+
+                if (data.branch) {
+                    let branch = new Option(data.branch.name, data.branch.id, true, true);
+                    $('#branch_id').append(branch).val(data.branch.id).trigger('change');
                 }
             },
 

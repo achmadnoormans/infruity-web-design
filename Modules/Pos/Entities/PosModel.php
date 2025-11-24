@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
 use Modules\Master\Entities\PaymentMethod;
 use Modules\Master\Entities\Staff;
+use Modules\Master\Entities\Branch;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,6 +37,7 @@ class PosModel extends Model
         'courier_id',
         'ongkir_address',
         'branch_id',
+        'branch_process_id',
         'created_by'
     ];
     protected $table = 'pos_transaction';
@@ -99,6 +101,16 @@ class PosModel extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function branch_proses()
+    {
+        return $this->belongsTo(Branch::class, 'branch_process_id');
     }
 
 

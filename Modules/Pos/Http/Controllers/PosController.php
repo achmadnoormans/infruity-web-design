@@ -146,7 +146,7 @@ class PosController extends Controller
     public function edit($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = PosModel::with('customer', 'customer.customerTier', 'courier')->findOrFail($id);
+        $data['data'] = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
@@ -318,6 +318,7 @@ class PosController extends Controller
             'ongkir_address' => 'nullable',
             'kemasan_price' => 'nullable|numeric',
             'branch_id' => 'nullable',
+            'branch_process_id' => 'nullable',
         ]);
 
         try {
@@ -325,9 +326,11 @@ class PosController extends Controller
             DB::beginTransaction();
             $cek = PosModel::where('invoice_number', $data['invoice_number'])->first();
             $uuid = Str::uuid();
+            $date = $data['date'];
             if ($cek) {
                 $pos = PosModel::find($cek->id);
                 $uuid = $pos->uuid;
+                $date = $pos->date;
                 $posDetail = PosDetailModel::where('pos_id', $cek->id);
                 $posDetail = $posDetail->where('parcel_id', '!=', null)->get();
                 foreach ($posDetail as $key => $value) {
@@ -342,8 +345,8 @@ class PosController extends Controller
             $pos = new PosModel([
                 'uuid' => $uuid,
                 'customer_id' => $data['customer_id'],
-                'date' => $data['date'],
-                'invoice_number' => PosModel::getOrderNumber(),
+                'date' => $date,
+                'invoice_number' => $data['invoice_number'],
                 'subtotal' => $data['subtotal'],
                 'total' => $data['total'],
                 'discount' => $data['discount'],
@@ -359,6 +362,7 @@ class PosController extends Controller
                 'courier_id' => $data['courier_id'] ?? null,
                 'ongkir_address' => $data['ongkir_address'] ?? null,
                 'branch_id' => $data['branch_id'] ?? null,
+                'branch_process_id' => $data['branch_process_id'] ?? null,
             ]);
             $pos->save();
 
@@ -682,7 +686,7 @@ class PosController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '                        
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
@@ -711,7 +715,7 @@ class PosController extends Controller
                                 </a>
                             </li>';
                 if (!in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
-                    $html .= '                       
+                    $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
@@ -719,7 +723,7 @@ class PosController extends Controller
                             </li>';
                 }
 
-                $html .= '           
+                $html .= '
                         </ul>
                     </div>
                     ';

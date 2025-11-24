@@ -192,6 +192,36 @@
         }
     });
 
+    $.ajax({
+        url: '/ajax/getBranch',
+        dataType: 'json',
+        success: function(data) {
+
+            if (data.length > 0) {
+                let first = data[0];
+                $('#branch_process_id')
+                    .append(new Option(first.name, first.id, true, true))
+                    .trigger('change');
+            }
+
+            $('#branch_process_id').select2({
+                placeholder: 'Pilih Cabang',
+                ajax: {
+                    url: '/ajax/getBranch',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name,
+                        }))
+                    })
+                }
+            });
+
+        }
+    });
+
     // Set default value setelah Select2 diinisialisasi
     const defaultOption = new Option('Pilih Cabang', 0, true, true);
     $('#branch_id').append(defaultOption).trigger('change');
