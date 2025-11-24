@@ -55,6 +55,11 @@ class ReportController extends Controller
         $data['branches'] = Branch::all();
         return view('report::product-sales', $data);
     }
+    public function total_aset(Request $request)
+    {
+        $data['branches'] = Branch::all();
+        return view('report::total-aset', $data);
+    }
 
     public function get_data_transaction(Request $request)
     {
@@ -316,14 +321,14 @@ class ReportController extends Controller
                 DB::raw('SUM(sortir_transaction_detail.price) as hpp'),
                 DB::raw('SUM(sortir_transaction_detail.subtotal) as total_hpp')
             )->whereBetween('B.date', [$startDate, $endDate]);
-        
+
         if ($request->has('branch_id') && $request->branch_id !== 'all') {
             $query->where('branch_id', $request->branch_id);
         }
 
         $grandTotalQuery = clone $query;
         $grandTotal = $grandTotalQuery->sum('sortir_transaction_detail.subtotal');
-        
+
         $query = $query->groupBy('sortir_transaction_detail.product_id')->orderByDesc('total_hpp');
 
         return DataTables::of($query)
@@ -355,7 +360,7 @@ class ReportController extends Controller
                 return number_format($row->total_hpp, 2);
             })
             ->rawColumns(['satuan'])
-             ->with([
+            ->with([
                 'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
             ])
             ->make(true);
@@ -415,6 +420,57 @@ class ReportController extends Controller
             })
             ->with([
                 'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
+            ])
+            ->make(true);
+    }
+
+    public function get_data_total_aset(Request $request)
+    {
+        $startDate = $request->start_date ?? date('Y-01-01');
+        $endDate = $request->end_date ?? date('Y-12-31');
+
+        // Query utama
+        $query = DB::table('transaction_stock as A')
+            ->select(
+                'A.product_id',
+                'B.parent_id',
+                'B.name',
+                'C.abbreviation',
+                'B.hpp',
+                DB::raw('SUM(A.quantity) as total_stock'),
+                DB::raw('(SUM(A.quantity) * B.hpp) as total_hpp')
+            )
+            ->join('products as B', 'A.product_id', '=', 'B.id')
+            ->join('product_units as C', 'B.product_unit', '=', 'C.id')
+            ->where('B.tipe', '!=', 'parcel')
+            ->groupBy('A.product_id', 'B.parent_id', 'B.name', 'C.abbreviation', 'B.hpp');
+
+        // GRAND TOTAL HPP (semua baris)
+        $grandTotal = DB::table('transaction_stock as A')
+            ->join('products as B', 'A.product_id', '=', 'B.id')
+            ->where('B.tipe', '!=', 'parcel')
+            ->select(DB::raw('SUM(A.quantity * B.hpp) as grand_total_hpp'))
+            ->first()->grand_total_hpp ?? 0;
+
+        return DataTables::of($query)
+            ->editColumn('total_hpp', function ($row) {
+                return 'Rp' . number_format($row->total_hpp, 0, ',', '.');
+            })
+            ->editColumn('hpp', function ($row) {
+                return 'Rp' . number_format($row->hpp, 0, ',', '.');
+            })
+            ->editColumn('total_stock', function ($row) {
+                return number_format($row->total_stock, 2, ',', '.');
+            })
+            ->addColumn('action', function ($item) {
+                return '
+                    <a href="' . url('product-stock') . '/' . $item->product_id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                        <i class="fa fa-eye"></i>
+                    </a>
+                ';
+            })
+            ->with([
+                'grand_total' => number_format($grandTotal, 0, ',', '.')
             ])
             ->make(true);
     }

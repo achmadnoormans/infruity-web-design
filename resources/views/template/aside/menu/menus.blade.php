@@ -915,7 +915,7 @@
     <!--end:Menu sub-->
 </div>
 <div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), ['report-branch-transaction', 'report-branch-product', 'report-customer-transaction', 'report-customer-product', 'report-transaction']) ? 'here show' : '' }} menu-accordion">
+    class="menu-item {{ in_array(Request::segment(1), ['report-branch-transaction', 'report-branch-product', 'report-customer-transaction', 'report-customer-product', 'report-transaction', 'report-total-aset']) ? 'here show' : '' }} menu-accordion">
     <!--begin:Menu link-->
     <span class="menu-link">
         <span class="menu-icon">
@@ -939,6 +939,15 @@
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Produk Buang</span>
+            </a>
+            <!--end:Menu link-->
+            <!--begin:Menu link-->
+            <a class="menu-link {{ $link == 'report-total-aset' ? 'active' : '' }}"
+                href="{{ url('report-total-aset') }}">
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Total Aset</span>
             </a>
             <!--end:Menu link-->
         </div>

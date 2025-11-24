@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Exception;
-use Schema;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
