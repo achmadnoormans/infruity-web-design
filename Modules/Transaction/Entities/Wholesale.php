@@ -5,6 +5,7 @@ namespace Modules\Transaction\Entities;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Entities\Branch;
 
 class Wholesale extends Model
 {
@@ -35,6 +36,10 @@ class Wholesale extends Model
     public function products()
     {
         return $this->hasMany('Modules\Transaction\Entities\WholesaleProduct', 'wholesale_id');
+    }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public static function getData($request)

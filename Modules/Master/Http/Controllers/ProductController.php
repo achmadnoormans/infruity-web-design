@@ -436,9 +436,9 @@ class ProductController extends Controller
         return DataTables::of($variants)
             ->addColumn('action', function ($row) {
                 return '
-                <button class="btn btn-sm btn-light-primary edit-variant variant" type="button" 
-                        data-id="' . $row->id . '" 
-                        data-name="' . $row->name . '" 
+                <button class="btn btn-sm btn-light-primary edit-variant variant" type="button"
+                        data-id="' . $row->id . '"
+                        data-name="' . $row->name . '"
                         data-price="' . $row->price . '">
                     Edit
                 </button>
@@ -580,6 +580,14 @@ class ProductController extends Controller
             $query = $query->where('status', $request->jenis);
         }
 
+        if ($request->has('variant')) {
+            if ($request->variant == "0") {
+                $query = $query->whereNull('is_variant');
+            } else {
+                $query = $query->where('is_variant', 1);
+            }
+        }
+
         $query = $query->get();
 
         return response()->json($query);
@@ -675,7 +683,7 @@ class ProductController extends Controller
                         </a>';
                 }
                 $html .= '<div class="ms-5">
-                            <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>
@@ -707,10 +715,10 @@ class ProductController extends Controller
             // ->addColumn('action', function ($product) {
             //     return '
             //         <div class="dropdown text-end">
-            //             <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle" 
-            //                 type="button" 
-            //                 id="dropdownMenuButton' . $product->id . '" 
-            //                 data-bs-toggle="dropdown" 
+            //             <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle"
+            //                 type="button"
+            //                 id="dropdownMenuButton' . $product->id . '"
+            //                 data-bs-toggle="dropdown"
             //                 aria-expanded="false">
             //                 <i class="ki-outline ki-gear fs-5 ms-1"></i>
             //             </button>
@@ -792,10 +800,10 @@ class ProductController extends Controller
                 //                 <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
                 //             </a>';
                 // }
-    
+
                 $html .= '<div class="ms-5">
-                <a href="' . url('products/' . $product->id . '/show') . '" 
-                   class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                <a href="' . url('products/' . $product->id . '/show') . '"
+                   class="text-gray-800 text-hover-primary fs-5 fw-bold"
                    data-kt-ecommerce-product-filter="product_name">'
                     . e($product->name) . '
                 </a>
@@ -805,7 +813,7 @@ class ProductController extends Controller
                 //     $childs = explode(',', $product->child);
                 //     $html .= '<span>' . implode('<br>', array_map('trim', $childs)) . '</span>';
                 // }
-    
+
                 $html .= '</div></div>';
 
                 return $html;
@@ -862,7 +870,7 @@ class ProductController extends Controller
                 $html = '
                     <div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">
-                            <a href="' . url('products/') . $product->product_id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold" 
+                            <a href="' . url('products/') . $product->product_id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>

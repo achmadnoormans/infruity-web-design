@@ -141,7 +141,7 @@ class WholesaleController extends Controller
     public function edit($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = Wholesale::findOrFail($id);
+        $data['data'] = Wholesale::with('branch')->findOrFail($id);
         $data['detail'] = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
         $data['invoice_number'] = $data['data']->order_number;
         return view('transaction::wholesale.create2', $data);
