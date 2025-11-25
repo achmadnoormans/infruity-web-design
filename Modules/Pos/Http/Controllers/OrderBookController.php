@@ -223,40 +223,64 @@ class OrderBookController extends Controller
         // 2. Siapkan data
         $productJson = $products->toJson(JSON_UNESCAPED_UNICODE);
 
-        $systemPrompt = "You are an intelligent order matcher for an Indonesian grocery store.
+        // $systemPrompt = "You are an intelligent order matcher for an Indonesian grocery store.
 
-        AVAILABLE PRODUCTS (in valid JSON format):
-        {$productJson}
+        // AVAILABLE PRODUCTS (in valid JSON format):
+        // {$productJson}
 
-        INSTRUCTIONS:
-        - The user will send a shopping list in informal Indonesian, possibly with typos, misspellings, or shorthand (e.g., 'strawberi', 'jruk', 'smngka').
-        - For each line:
-        • Compare the item name to the 'name' field in the JSON list.
-        • Accept close matches based on sound, spelling, or common Indonesian variations.
-            Examples:
-            'strawberi', 'stroberi', 'strawbery' → match 'Strawberry'
-            'jruk', 'jerok' → match 'Jeruk'
-            'semangkaa', 'smngka' → match 'Semangka'
-        • Ignore differences in capitalization, extra spaces, or minor character substitutions.
-        • ONLY match if the name is reasonably similar.
-        • If NO product is similar (e.g., 'kelengkeng' when not in the list), SKIP the item completely.
-        - Extract for each matched item:
-        • product_id = the 'id' from the matched product
-        • quantity = integer (default to 1 if not specified)
-        • unit = the 'unit' from the matched product (unless user explicitly states a different unit)
-        - NEVER invent a product_id.
-        - NEVER match to a product just because it exists — it must be semantically or phonetically similar.
+        // INSTRUCTIONS:
+        // - The user will send a shopping list in informal Indonesian, possibly with typos, misspellings, or shorthand (e.g., 'strawberi', 'jruk', 'smngka').
+        // - For each line:
+        // • Compare the item name to the 'name' field in the JSON list.
+        // • Accept close matches based on sound, spelling, or common Indonesian variations.
+        //     Examples:
+        //     'strawberi', 'stroberi', 'strawbery' → match 'Strawberry'
+        //     'jruk', 'jerok' → match 'Jeruk'
+        //     'semangkaa', 'smngka' → match 'Semangka'
+        // • Ignore differences in capitalization, extra spaces, or minor character substitutions.
+        // • ONLY match if the name is reasonably similar.
+        // • If NO product is similar (e.g., 'kelengkeng' when not in the list), SKIP the item completely.
+        // - Extract for each matched item:
+        // • product_id = the 'id' from the matched product
+        // • quantity = integer (default to 1 if not specified)
+        // • unit = the 'unit' from the matched product (unless user explicitly states a different unit)
+        // - NEVER invent a product_id.
+        // - NEVER match to a product just because it exists — it must be semantically or phonetically similar.
 
-        OUTPUT FORMAT:
-        - Return ONLY a valid JSON object with a top-level key \"items\".
-        - Each item must be: {\"product_id\": integer, \"quantity\": integer, \"unit\": string}
-        - Example: {\"items\":[{\"product_id\":1,\"quantity\":2,\"unit\":\"Kg\"}]}
+        // OUTPUT FORMAT:
+        // - Return ONLY a valid JSON object with a top-level key \"items\".
+        // - Each item must be: {\"product_id\": integer, \"quantity\": integer, \"unit\": string}
+        // - Example: {\"items\":[{\"product_id\":1,\"quantity\":2,\"unit\":\"Kg\"}]}
 
-        CRITICAL:
-        - NO explanations.
-        - NO markdown.
-        - NO text before or after the JSON.
-        - If no items match, return: {\"items\":[]}";
+        // CRITICAL:
+        // - NO explanations.
+        // - NO markdown.
+        // - NO text before or after the JSON.
+        // - If no items match, return: {\"items\":[]}";
+
+        $systemPrompt = "
+            You are an order matcher.
+            Output must be valid JSON.
+
+            PRODUCTS (JSON):
+            {$productJson}
+
+            RULES:
+            - User sends Indonesian shopping items, possibly with typos.
+            - Match each line to a product name using fuzzy similarity.
+            - Only match if clearly similar; otherwise skip.
+            - Extract product_id, quantity (default 1), unit.
+            - Never invent product_id or force-match.
+
+            OUTPUT:
+            Return ONLY valid JSON:
+            {\"items\":[{\"product_id\":int,\"quantity\":int,\"unit\":\"string\"}]}
+
+            If no match:
+            {\"items\":[]}
+
+            No explanation. No markdown. No extra text.
+            ";
 
         // 3. Kirim ke Groq
         try {
@@ -267,7 +291,7 @@ class OrderBookController extends Controller
                 'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
                 'Content-Type'  => 'application/json',
             ])
-            ->withoutVerifying()
+                ->withoutVerifying()
                 ->timeout(30)
                 ->post($url, [
                     // 'model' => 'llama-3.3-70b-versatile',
