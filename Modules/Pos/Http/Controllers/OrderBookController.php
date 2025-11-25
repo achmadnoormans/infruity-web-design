@@ -148,6 +148,7 @@ class OrderBookController extends Controller
             ]);
             $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
             $dataItem = $this->sendToAi($products, $data['note']);
+            // dd($dataItem);
 
             if (!isset($dataItem['items']) || !is_array($dataItem['items'])) {
                 return response()->json(['error' => 'Respons AI tidak valid.'], 400);
