@@ -9,6 +9,7 @@ use Modules\Crm\Http\Controllers\DashboardController;
 use App\Http\Controllers\P_role;
 use App\Http\Controllers\FCMController;
 use App\Models\UserDevice;
+use Illuminate\Support\Facades\Http;
 
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
@@ -38,5 +39,25 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 			->toArray();
 		$fcm->sendNotification($tokens, 'Halo dari Infruity 🍉', 'Tes notifikasi via Web');
 		return 'Notifikasi dikirim!';
+	});
+
+	Route::get('/get-ai-models', function (Illuminate\Http\Request $request) {
+		$response = Http::withHeaders([
+			'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),
+		])->get('https://api.groq.com/openai/v1/models');
+
+		if ($response->failed()) {
+			return response()->json([
+				'error' => 'Failed to fetch models',
+				'details' => $response->body()
+			], 500);
+		}
+
+		return response()->json(
+			$response->json(),
+			200,
+			[],
+			JSON_PRETTY_PRINT
+		);
 	});
 });

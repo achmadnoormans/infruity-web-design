@@ -270,7 +270,8 @@ class OrderBookController extends Controller
             ->withoutVerifying()
                 ->timeout(30)
                 ->post($url, [
-                    'model' => 'llama-3.3-70b-versatile',
+                    // 'model' => 'llama-3.3-70b-versatile',
+                    'model' => 'llama-3.1-8b-instant',
                     'messages' => [
                         ['role' => 'system', 'content' => $systemPrompt],
                         ['role' => 'user', 'content' => $note],
