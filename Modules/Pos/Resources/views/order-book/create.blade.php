@@ -346,7 +346,7 @@
                             }
 
                             // 🔥 SUCCESS → langsung redirect
-                            window.location.href = '/order-book/' + json.order_book_id + '/order';
+                            window.location.href = '/order-book/';
 
                             if (typeof doneCallback === 'function') doneCallback();
                         })
