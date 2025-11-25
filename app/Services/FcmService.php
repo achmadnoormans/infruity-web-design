@@ -73,7 +73,7 @@ class FcmService
                             Log::error('❌ FCM Error: ' . json_encode($error, JSON_UNESCAPED_SLASHES));
                         }
                     } else {
-                        Log::info("✅ Notifikasi terkirim ke: {$token}");
+                        // Log::info("✅ Notifikasi terkirim ke: {$token}");
                     }
                 } catch (\Throwable $e) {
                     Log::error("❌ Gagal kirim ke {$token}: " . $e->getMessage());
