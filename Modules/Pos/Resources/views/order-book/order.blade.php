@@ -92,7 +92,7 @@
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-5">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Pilih Branch</label>
@@ -104,7 +104,19 @@
                             <!--end::Editor-->
                         </div>
                     </div>
-                    <div class="col-3 mt-8">
+                    <div class="col-5">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Di Proses oleh:</label>
+                            <!--end::Label-->
+                            <!--begin::Editor-->
+                            <select class="form-select" id="branch_process_id" name="branch_process_id">
+                                <option value="">Pilih Branch</option>
+                            </select>
+                            <!--end::Editor-->
+                        </div>
+                    </div>
+                    <div class="col-2 mt-8">
                         <button type="button"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
                             data-bs-toggle="modal" data-bs-target="#orderBookModal">
