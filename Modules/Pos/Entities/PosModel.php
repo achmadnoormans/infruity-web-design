@@ -117,6 +117,7 @@ class PosModel extends Model
     public static function getOrderNumber()
     {
         $orderData = self::select(DB::raw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) + 1 AS order_number'))
+            ->whereRaw('DAY(created_at) = DAY(NOW())')
             ->whereRaw('MONTH(created_at) = MONTH(NOW())')
             ->whereRaw('YEAR(created_at) = YEAR(NOW())')
             ->whereRaw('SUBSTRING(invoice_number, 1, 3) = ?', ['INV'])
@@ -128,7 +129,7 @@ class PosModel extends Model
             $orderPad = str_pad($orderData->order_number, 3, '0', STR_PAD_LEFT);
         }
 
-        $prefix = 'INV' . now()->format('Ym');
+        $prefix = 'INV' . now()->format('Ymd');
         $newCode = $prefix . $orderPad;
 
         return $newCode;
