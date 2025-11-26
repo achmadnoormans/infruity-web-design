@@ -59,7 +59,7 @@
             init() {
                 const self = this; // simpan konteks Alpine
                 let url = '{{ Request::segment(3) }}';
-                if (url == 'edit' && !this._loaded) {
+                if ((url == 'edit' || url == 'show' )&& !this._loaded) {
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
                     this.loadExistingData(data, detail);
@@ -845,6 +845,7 @@
                         name: productName,
                         price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
                         hpp: parseFloat(item.hpp || 0),
+                        sell: this.sanitizeNumber(Number(item.product.price || 0)),
                         qty: this.sanitizeNumber(Number(item.quantity)),
                         unit: item.product.unit.abbreviation,
                         discount: this.sanitizeNumber(Number(item.discount || 0)),

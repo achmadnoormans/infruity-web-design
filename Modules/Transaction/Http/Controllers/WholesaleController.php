@@ -121,9 +121,15 @@ class WholesaleController extends Controller
      */
     public function show($id)
     {
-        $data['suppliers'] = Supplier::all();
-        $data['data'] = Wholesale::findOrFail($id);
-        return view('transaction::wholesale.show', $data);
+        // $data['suppliers'] = Supplier::all();
+        // $data['data'] = Wholesale::findOrFail($id);
+        // return view('transaction::wholesale.show', $data);
+
+        $data['alpinejs'] = true;
+        $data['data'] = Wholesale::with('branch')->findOrFail($id);
+        $data['detail'] = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
+        $data['invoice_number'] = $data['data']->order_number;
+        return view('transaction::wholesale.create2', $data);
     }
 
     /**
@@ -627,6 +633,12 @@ class WholesaleController extends Controller
                         'created_at' => now(),
                         'created_by' => $userId,
                     ]);
+
+                    if ($item['sell'] != null) {
+                        $product = Product::findOrFail($item['id']);
+                        $product->price = $item['sell'];
+                        $product->save();
+                    }
                 }
             }
 

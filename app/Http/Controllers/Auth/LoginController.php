@@ -8,7 +8,7 @@ use App\Models\RoleUser;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Auth;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+// use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Redirect;
 use Session;
@@ -17,7 +17,7 @@ use Modules\Permohonan\Entities\Permohonan;
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
+    // use AuthenticatesUsers;
     protected $redirectTo = RouteServiceProvider::HOME;
 
     public function __construct()

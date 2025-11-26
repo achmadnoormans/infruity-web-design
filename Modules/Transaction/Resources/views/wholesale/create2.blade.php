@@ -137,10 +137,12 @@
                         <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
                     </div>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary"
-                            @click="openAddModal()">
-                            <i class="fa fa-plus"></i>
-                        </button>
+                        @if (Request::segment(3) != 'show')
+                            <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary"
+                                @click="openAddModal()">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        @endif
                     </div>
                 </div>
                 {{-- <!-- Cart --> --}}

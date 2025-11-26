@@ -23,6 +23,10 @@
                                     <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
                                     <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
                                 </small>
+                                <small class="text-success d-flex">
+                                    <span>Jual :</span>
+                                    <span class="text-success" x-text="item.sell.toLocaleString()"></span>
+                                </small>
                                 <div x-show="item.discount > 0">
                                     <small class="text-muted">Diskon</small>
                                     <small class="text-muted" x-show="item.discountPercent > 0">
@@ -53,6 +57,10 @@
                                 <small class="text-muted d-flex">
                                     <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
                                     <span x-text="item.qty"></span>(<span x-text="item.unit"></span>)
+                                </small>
+                                <small class="text-success d-flex">
+                                    <span>Jual :</span>
+                                    <span class="text-success" x-text="item.sell.toLocaleString()"></span>
                                 </small>
                                 <div x-show="item.discount > 0">
                                     <small class="text-muted">Diskon</small>
