@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Sortir;
 use Modules\Transaction\Entities\SortirDetail;
 use Modules\Transaction\Entities\WholesaleProduct;
@@ -35,7 +36,7 @@ class SortirController extends Controller
      */
     public function index()
     {
-        $data['branches'] = Branch::all();
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::sortir.index2', $data);
     }
 
@@ -339,7 +340,7 @@ class SortirController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Sortir::with('createdBy');
+        $query = Sortir::with('createdBy')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }

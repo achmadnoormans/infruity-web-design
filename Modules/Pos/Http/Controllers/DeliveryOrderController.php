@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\PosModel;
 use Modules\Master\Entities\Staff;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class DeliveryOrderController extends Controller
      */
     public function index()
     {
-        $branches = Branch::all();
+        $branches = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::delivery-order.index', compact('branches'));
     }
 
@@ -159,15 +160,15 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails')->where('ongkir', '>', 0);
+        $query = PosModel::with('customer', 'paymentDetails', 'details')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('ongkir_status', $request->status_filter);
         }
-        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
-            $query->whereHas('paymentDetails', function ($q) use ($request) {
-                $q->where('branch_id', $request->cabang_filter);
-            });
-        }
+        // if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+        //     $query->whereHas('paymentDetails', function ($q) use ($request) {
+        //         $q->where('branch_id', $request->cabang_filter);
+        //     });
+        // }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
@@ -245,14 +246,14 @@ class DeliveryOrderController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '                        
+                $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
                 if (!in_array($item->status, ['paid'])) {
-                    $html .= '                        
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
                                     <i class="bi bi-cash-stack"></i>
@@ -276,7 +277,7 @@ class DeliveryOrderController extends Controller
                             </li>';
                     }
                 }
-                $html .= '                        
+                $html .= '
                         </ul>
                     </div>
                     ';

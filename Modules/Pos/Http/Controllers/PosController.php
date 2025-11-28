@@ -5,31 +5,26 @@ namespace Modules\Pos\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Modules\Crm\Entities\CustomerDeposito;
+use Modules\Crm\Entities\CustomerTier;
+use Modules\Crm\Entities\Deposito;
+use Modules\Crm\Entities\SettingExp;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\Product;
+use Modules\Master\Entities\UserBranch;
+use Modules\Pos\Entities\OrderBook;
+use Modules\Pos\Entities\Payment;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
-use Modules\Pos\Entities\Payment;
-use Modules\Crm\Entities\CustomerTier;
-use Modules\Transaction\Entities\ProductionParcelDetail;
-use Modules\Crm\Entities\SettingExp;
-use Modules\Master\Entities\Product;
-use Modules\Master\Entities\Branch;
 use Modules\Pos\Entities\SettingNota;
-use Modules\Crm\Entities\Deposito;
-use Yajra\DataTables\Facades\DataTables;
-use Modules\Crm\Entities\CustomerDeposito;
-use Illuminate\Support\Str;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
-use Modules\Pos\Entities\OrderBook;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Facades\Excel;
+use Modules\Transaction\Entities\ProductionParcelDetail;
+use Yajra\DataTables\Facades\DataTables;
 
 class PosController extends Controller
 {
@@ -40,7 +35,7 @@ class PosController extends Controller
     public function index()
     {
         $data['alpinejs'] = true;
-        $data['branches'] = Branch::all();
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::pos.index2', $data);
     }
 
@@ -118,7 +113,7 @@ class PosController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -180,13 +175,13 @@ class PosController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -271,7 +266,7 @@ class PosController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -490,7 +485,7 @@ class PosController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi berhasil disimpan',
-                'transaksi_id' => $transaksiId
+                'transaksi_id' => $transaksiId,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -498,7 +493,7 @@ class PosController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -538,8 +533,9 @@ class PosController extends Controller
     public function uploadReceipt(Request $request)
     {
         $image = $request->input('image');
-        if (!$image)
+        if (!$image) {
             return response()->json(['error' => 'No image'], 400);
+        }
 
         // Pisahkan data:image/png;base64,
         $image_parts = explode(";base64,", $image);
@@ -604,14 +600,17 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details');
+        $query = PosModel::with('customer', 'paymentDetails', 'details')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
+        // if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+        //     $query->whereHas('paymentDetails', function ($q) use ($request) {
+        //         $q->where('branch_id', $request->cabang_filter);
+        //     });
+        // }
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
-            $query->whereHas('paymentDetails', function ($q) use ($request) {
-                $q->where('branch_id', $request->cabang_filter);
-            });
+            $query = $query->where('branch_id', $request->cabang_filter);
         }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);

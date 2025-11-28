@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Pos\Entities\Expenditure;
 use Modules\Pos\Entities\ExpenditureDetail;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -22,7 +23,7 @@ class ExpenditureController extends Controller
      */
     public function index()
     {
-        $branches = Branch::all();
+        $branches = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::expenditure.index', compact('branches'));
     }
 
@@ -207,7 +208,7 @@ class ExpenditureController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Expenditure::with('branch', 'payment');
+        $query = Expenditure::with('branch', 'payment')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -259,14 +260,14 @@ class ExpenditureController extends Controller
                                 </a>
                             </li>';
                 if (!in_array($item->status, ['paid', 'debt'])) {
-                    $html .= '                       
+                    $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </li>';
                 }
-                $html .= '           
+                $html .= '
                         </ul>
                     </div>
                     ';

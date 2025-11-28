@@ -2,16 +2,15 @@
 
 namespace Modules\Master\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Master\Entities\Branch;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Exception;
+use Illuminate\Support\Facades\Storage;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
+use Yajra\DataTables\Facades\DataTables;
 
 class BranchController extends Controller
 {
@@ -57,14 +56,14 @@ class BranchController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => 'Branch gagal disimpan. ' . $e->getMessage(),
-                'data' => $branch
+                'data' => $branch,
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
             'message' => 'Branch berhasil disimpan.',
-            'data' => $branch
+            'data' => $branch,
         ], 201);
     }
 
@@ -114,14 +113,14 @@ class BranchController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => 'Branch gagal disimpan.',
-                'data' => $branch
+                'data' => $branch,
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
             'message' => 'Branch berhasil disimpan.',
-            'data' => $branch
+            'data' => $branch,
         ], 201);
     }
 
@@ -139,13 +138,13 @@ class BranchController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -154,7 +153,9 @@ class BranchController extends Controller
     {
         $search = $request->get('search');
 
-        $data = Branch::where('name', 'like', '%' . $search . '%')
+        $data = Branch::
+            where('name', 'like', '%' . $search . '%')
+            ->whereIn('id', UserBranch::getUserBranch())
             ->select('id', 'name')
             ->limit(10)
             ->get();

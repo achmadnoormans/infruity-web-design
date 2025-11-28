@@ -11,6 +11,7 @@ use Modules\Pos\Entities\OrderBook;
 use Modules\Pos\Entities\OrderBookDetail;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Modules\Pos\Entities\PosModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Http;
@@ -28,7 +29,7 @@ class OrderBookController extends Controller
      */
     public function index()
     {
-        $data['branches'] = Branch::all();
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::order-book.index', $data);
     }
 
@@ -342,7 +343,7 @@ class OrderBookController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = OrderBook::with('customer');
+        $query = OrderBook::with('customer')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }

@@ -14,6 +14,7 @@ use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
+use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Yajra\DataTables\Facades\DataTables;
@@ -27,7 +28,7 @@ class WholesaleController extends Controller
      */
     public function index()
     {
-        $data['branches'] = Branch::all();
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::wholesale.index', $data);
     }
 

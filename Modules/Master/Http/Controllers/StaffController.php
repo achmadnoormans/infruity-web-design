@@ -2,23 +2,18 @@
 
 namespace Modules\Master\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Modules\Master\Entities\Department;
 use Modules\Master\Entities\Position;
 use Modules\Master\Entities\Staff;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Facades\Excel;
 
 class StaffController extends Controller
 {
@@ -62,7 +57,7 @@ class StaffController extends Controller
                 'nullable',
                 'numeric',
                 'digits_between:10,15',
-                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/'
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
             ],
             'email' => 'nullable|email',
             // 'department' => 'required|exists:department,id',
@@ -149,7 +144,7 @@ class StaffController extends Controller
                 'nullable',
                 'numeric',
                 'digits_between:10,15',
-                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/'
+                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
             ],
             'email' => 'nullable|email',
             // 'department' => 'nullable|exists:department,id',
@@ -205,13 +200,13 @@ class StaffController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -298,9 +293,13 @@ class StaffController extends Controller
         $search = $request->get('search');
 
         $data = Staff::where('name', 'like', '%' . $search . '%')
-            ->select('id', 'name')
-            ->limit(10)
-            ->get();
+            ->select('id', 'name');
+
+        if ($request->has('type') && $request->type == 'kurir') {
+            $data = $data->where('is_kurir', 1);
+        }
+
+        $data = $data->limit(10)->get();
 
         return response()->json($data);
     }

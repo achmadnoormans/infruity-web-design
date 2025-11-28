@@ -154,6 +154,12 @@
             url: '/staff/get-staff', // ganti sesuai route
             dataType: 'json',
             delay: 250,
+            data: function(params) {
+                return {
+                    term: params.term, // term dari select2 untuk pencarian
+                    type: 'kurir', // contoh ambil dari input lain
+                };
+            },
             processResults: data => ({
                 results: data.map(item => ({
                     id: item.id,
@@ -166,29 +172,33 @@
     // Pastikan ada elemen <select id="branch_id"></select> di HTML
 
     // Tambahkan option Default ke select sebelum inisialisasi Select2
-    $('#branch_id').select2({
-        placeholder: 'Pilih Cabang',
-        ajax: {
-            url: '/ajax/getBranch', // ganti sesuai route
-            dataType: 'json',
-            delay: 250,
-            processResults: data => {
-                // ubah hasil dari server jadi format select2
-                const branchOptions = data.map(item => ({
-                    id: item.id,
-                    text: item.name,
-                }));
+    $.ajax({
+        url: '/ajax/getBranch',
+        dataType: 'json',
+        success: function(data) {
 
-                // tambahkan opsi Default di awal
-                branchOptions.unshift({
-                    id: 0,
-                    text: 'Pilih Cabang'
-                });
-
-                return {
-                    results: branchOptions
-                };
+            if (data.length > 0) {
+                let first = data[0];
+                $('#branch_id')
+                    .append(new Option(first.name, first.id, true, true))
+                    .trigger('change');
             }
+
+            $('#branch_id').select2({
+                placeholder: 'Pilih Cabang',
+                ajax: {
+                    url: '/ajax/getBranch',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: data => ({
+                        results: data.map(item => ({
+                            id: item.id,
+                            text: item.name,
+                        }))
+                    })
+                }
+            });
+
         }
     });
 

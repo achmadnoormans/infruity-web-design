@@ -46,6 +46,7 @@
                                         <label class="form-label fs-6 fw-semibold">Status:</label>
                                         @php
                                             $category = [
+                                                'all' => 'All',
                                                 'draft' => 'Draft',
                                                 'paid' => 'Final',
                                             ];

@@ -2,22 +2,23 @@
 
 namespace Modules\Master\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Master\Entities\Product;
-use Modules\Master\Entities\ProductCategory;
-use Modules\Master\Entities\ProductUnit;
-use Modules\Master\Entities\ProductChild;
-use Modules\Master\Entities\ProductBranch;
-use Modules\Master\Entities\Branch;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductBranch;
+use Modules\Master\Entities\ProductCategory;
+use Modules\Master\Entities\ProductChild;
+use Modules\Master\Entities\ProductUnit;
+use Yajra\DataTables\Facades\DataTables;
+use Modules\Master\Entities\UserBranch;
 
 class ProductController extends Controller
 {
@@ -27,7 +28,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $data['branch'] = Branch::all();
+        $data['branch'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('master::products.index', $data);
     }
 
@@ -375,13 +376,13 @@ class ProductController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -396,7 +397,7 @@ class ProductController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first()
+                'message' => $validator->errors()->first(),
             ], 422);
         }
 
@@ -416,13 +417,13 @@ class ProductController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Harga berhasil diperbarui.'
+                'message' => 'Harga berhasil diperbarui.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memperbarui harga: ' . $e->getMessage()
+                'message' => 'Gagal memperbarui harga: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -463,7 +464,7 @@ class ProductController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first()
+                'message' => $validator->errors()->first(),
             ], 422);
         }
 
@@ -486,13 +487,13 @@ class ProductController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Variant berhasil disimpan.'
+                'message' => 'Variant berhasil disimpan.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan variant: ' . $e->getMessage()
+                'message' => 'Gagal menyimpan variant: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -507,7 +508,7 @@ class ProductController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => $validator->errors()->first()
+                    'message' => $validator->errors()->first(),
                 ], 422);
             }
             DB::beginTransaction();
@@ -629,11 +630,10 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Gagal menggenerate harga cabang: ' . $e->getMessage()
+                'message' => 'Gagal menggenerate harga cabang: ' . $e->getMessage(),
             ], 500);
         }
     }
-
 
     /**
      * Get data for DataTables
@@ -712,32 +712,32 @@ class ProductController extends Controller
                 }
                 return $html;
             })
-            // ->addColumn('action', function ($product) {
-            //     return '
-            //         <div class="dropdown text-end">
-            //             <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle"
-            //                 type="button"
-            //                 id="dropdownMenuButton' . $product->id . '"
-            //                 data-bs-toggle="dropdown"
-            //                 aria-expanded="false">
-            //                 <i class="ki-outline ki-gear fs-5 ms-1"></i>
-            //             </button>
+        // ->addColumn('action', function ($product) {
+        //     return '
+        //         <div class="dropdown text-end">
+        //             <button class="btn btn-sm btn-light btn-flex btn-center btn-active-light-primary dropdown-toggle"
+        //                 type="button"
+        //                 id="dropdownMenuButton' . $product->id . '"
+        //                 data-bs-toggle="dropdown"
+        //                 aria-expanded="false">
+        //                 <i class="ki-outline ki-gear fs-5 ms-1"></i>
+        //             </button>
 
-            //             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
-            //                 <li>
-            //                     <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
-            //                         Edit
-            //                     </a>
-            //                 </li>
-            //                 <li>
-            //                     <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
-            //                         Delete
-            //                     </a>
-            //                 </li>
-            //             </ul>
-            //         </div>
-            //     ';
-            // })
+        //             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton' . $product->id . '">
+        //                 <li>
+        //                     <a class="dropdown-item" href="' . route('products.edit', $product->id) . '">
+        //                         Edit
+        //                     </a>
+        //                 </li>
+        //                 <li>
+        //                     <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="deleteProduct(' . $product->id . ')">
+        //                         Delete
+        //                     </a>
+        //                 </li>
+        //             </ul>
+        //         </div>
+        //     ';
+        // })
             ->addColumn('action', function ($row) {
                 $editUrl = route('products.edit', $row->id);
                 $deleteUrl = route('products.destroy', $row->id);
@@ -805,7 +805,7 @@ class ProductController extends Controller
                 <a href="' . url('products/' . $product->id . '/show') . '"
                    class="text-gray-800 text-hover-primary fs-5 fw-bold"
                    data-kt-ecommerce-product-filter="product_name">'
-                    . e($product->name) . '
+                . e($product->name) . '
                 </a>
                 <br>';
 
@@ -886,9 +886,9 @@ class ProductController extends Controller
                     return '<span class="badge badge-light-danger">' . $product->quantity . ' ' . $product->unit . '</span>';
                 }
             })
-            // ->addColumn('date', function ($item) {
-            //     return \Carbon\Carbon::parse($item->date)->format('d M y H:i:s');
-            // })
+        // ->addColumn('date', function ($item) {
+        //     return \Carbon\Carbon::parse($item->date)->format('d M y H:i:s');
+        // })
             ->rawColumns(['name', 'quantity'])
             ->make(true);
     }

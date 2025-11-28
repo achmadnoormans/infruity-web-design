@@ -47,7 +47,6 @@
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Status"
                                             data-kt-ecommerce-product-filter="branch">
-                                            <option value="0">Default</option>
                                             @foreach ($branch as $item)
                                                 <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
                                             @endforeach

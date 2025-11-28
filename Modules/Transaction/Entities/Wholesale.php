@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 
 class Wholesale extends Model
 {
@@ -46,6 +47,7 @@ class Wholesale extends Model
     {
         $query = DB::table('view_wholesale')
             ->select('*')
+            ->whereIn('branch_id', UserBranch::getUserBranch())
             ->orderBy('order_date', 'desc');
 
         if ($request->start_date && $request->end_date) {
