@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Transaction\Http\Controllers\WholesaleController;
 use Modules\Transaction\Http\Controllers\SortirController;
+use Modules\Transaction\Http\Controllers\TransferController;
 use Modules\Transaction\Http\Controllers\ProductReceiptController;
 use Modules\Master\Http\Controllers\ProductController;
 use Modules\Transaction\Http\Controllers\StockOutController;
@@ -48,6 +49,11 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
     Route::post('sortir/save-transaction', [SortirController::class, 'saveTransaction'])->name('sortir.save-transaction');
 
+    Route::resource('transfer', TransferController::class)->names('transfer')->except('show');
+    Route::get('transfer/show/{id}', [TransferController::class, 'show'])->name('transfer.show');
+    Route::post('transfer/save-stock', [TransferController::class, 'save_stock'])->name('transfer.save-stock');
+    Route::post('transfer/save-transaction', [TransferController::class, 'saveTransaction'])->name('transfer.save-transaction');
+
     Route::resource('product-receipt', ProductReceiptController::class)->names('product-receipt')->except('show');
 
     Route::resource('stock-out', StockOutController::class)->names('stock-out')->except('show');
@@ -90,6 +96,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock-data-show', [ProductController::class, 'get_data_stock_show'])->name('product-stock-data-show');
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');
+    Route::get('transfer/data', [TransferController::class, 'get_data'])->name('transfer-data');    
     Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data');
     Route::get('stock-opname/data', [StockOpnameController::class, 'get_data'])->name('stock-opname.data');
     Route::get('stock-out-type/data', [StockOutTypeController::class, 'get_data'])->name('stock-out-type.data');

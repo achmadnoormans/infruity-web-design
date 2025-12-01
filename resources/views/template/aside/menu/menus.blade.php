@@ -461,6 +461,19 @@
         </a>
         <!--end:Menu link-->
     @endif
+    @if (check_access('transfer.index'))
+        <!--begin:Menu link-->
+        <a class="menu-link {{ $link == 'transfer' ? 'active' : '' }}" href="{{ url('transfer') }}">
+            <span class="menu-icon">
+                <i class="ki-duotone ki-security-user">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+            </span>
+            <span class="menu-title">Transfer Stok</span>
+        </a>
+        <!--end:Menu link-->
+    @endif
     {{-- <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
         <span class="menu-icon">
