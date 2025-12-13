@@ -80,6 +80,7 @@ License: For each use you must have a valid license purchased only from above li
                     <!--begin::Wrapper-->
                     <div class="w-lg-500px p-10">
                         <!--begin::Form-->
+                        @include('template.notif')
                         <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form"
                             action="{{ url('auth/login') }}" method="POST">
                             @csrf

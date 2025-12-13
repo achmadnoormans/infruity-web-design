@@ -173,7 +173,9 @@ class OrderBookController extends Controller
                 ]);
             }
             DB::commit();
-            $tokens = UserDevice::whereNotNull('fcm_token')
+            $tokens = UserDevice::join('user_branch', 'user_devices.user_id', '=', 'user_branch.user_id')
+                ->whereNotNull('user_devices.fcm_token')
+                ->where('user_branch.branch_id', $data['branch_id'])
                 ->pluck('fcm_token')
                 ->unique()
                 ->values()
