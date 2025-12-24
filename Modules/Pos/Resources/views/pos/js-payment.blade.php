@@ -20,25 +20,25 @@
             }
         });
 
-        $('#branch_id').select2({
-            placeholder: 'Pilih Cabang',
-            ajax: {
-                url: '{{ route('ajax.getBranch') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => {
-                    return {
-                        results: data.map(item => ({
-                            id: item.id,
-                            text: item.name
-                        }))
-                    };
-                }
-            }
-        });
+        // $('#branch_id').select2({
+        //     placeholder: 'Pilih Cabang',
+        //     ajax: {
+        //         url: '{{ route('ajax.getBranch') }}',
+        //         dataType: 'json',
+        //         delay: 250,
+        //         data: params => ({
+        //             search: params.term
+        //         }),
+        //         processResults: data => {
+        //             return {
+        //                 results: data.map(item => ({
+        //                     id: item.id,
+        //                     text: item.name
+        //                 }))
+        //             };
+        //         }
+        //     }
+        // });
         $.ajax({
             url: '{{ route('ajax.getBranch') }}',
             dataType: 'json',
@@ -183,13 +183,13 @@
                         payments: this.payments,
                         // account_id: document.querySelector('[name="account_id"]').value,
                         total_payment: this.totalPayment,
-                        branch_id: document.querySelector('[name="branch_id"]').value,
+                        // branch_id: document.querySelector('[name="branch_id"]').value,
                         customer_id: '{{ $data->customer_id ?? '' }}', // kalau tersedia dari server
                         transaction_id: '{{ $data->id ?? '' }}'
                     };
 
                     console.log(payload);
-                    if (!payload.payments || !payload.branch_id || !payload.date || !payload.total_payment) {
+                    if (!payload.payments || !payload.date || !payload.total_payment) {
                         Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
                         this.loading = false; // hentikan loading jika validasi gagal
                         return;

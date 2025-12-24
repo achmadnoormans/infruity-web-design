@@ -114,7 +114,7 @@
                 this.updateQtyFromTotal();
             },
 
-            submitTransaction() {
+            submitTransaction(doneCallback) {
                 if (!this.cart.length) {
                     alert('Keranjang masih kosong!');
                     return;
@@ -147,25 +147,47 @@
                         body: JSON.stringify(payload)
                     })
                     .then(res => res.json())
-                    .then(data => {
-                        console.log(data);
-                        if (data.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: 'Data berhasil disimpan.'
-                            });
-                            this.cart = []; // Kosongkan keranjang
-                            document.getElementById('customer_id').value = '';
-                            $('#customer_id').val(null).trigger('change');
-                            window.location.href = '/pos/show/' + data.id;
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Terjadi kesalahan saat menyimpan data.'
-                            });
+                    .then(async res => {
+                        const json = await res.json().catch(() => ({}));
+
+                        // 🔥 Jika error (422, 500, dll)
+                        if (!res.ok) {
+
+                            // Jika VALIDASI ERROR
+                            if (json.errors) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi gagal',
+                                    html: Object.values(json.errors)
+                                        .map(msg => `<div>${msg}</div>`)
+                                        .join('')
+                                });
+                                if (typeof doneCallback === 'function') doneCallback();
+                            } else {
+                                // Error lain
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: json.message || 'Terjadi kesalahan',
+                                });
+                                if (typeof doneCallback === 'function') doneCallback();
+                            }
+
+                            throw new Error("Request Failed");
                         }
+
+                        // 🔥 SUCCESS → langsung redirect
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil disimpan.'
+                        });
+                        this.cart = []; // Kosongkan keranjang
+                        document.getElementById('customer_id').value = '';
+                        $('#customer_id').val(null).trigger('change');
+                        window.location.href = '/pos/show/' + data.id;
+
+                        if (typeof doneCallback === 'function') doneCallback();
                     })
                     .catch(err => {
                         console.error(err);

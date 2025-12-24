@@ -192,7 +192,7 @@ class PosController extends Controller
         $data = $request->validate([
             'date' => 'required|date',
             'transaction_id' => 'required|exists:pos_transaction,id',
-            'branch_id' => 'required|exists:branch,id',
+            // 'branch_id' => 'required|exists:branch,id',
             // 'account_id' => 'required|exists:account,id',
             // 'payment_id' => 'required|exists:payment_method,id',
             'payments' => 'required|array',
@@ -213,7 +213,7 @@ class PosController extends Controller
                 'date' => $data['date'],
                 'nota_number' => date('YmdHis'),
                 'pos_id' => $data['transaction_id'],
-                'branch_id' => $data['branch_id'],
+                // 'branch_id' => $data['branch_id'],
                 // 'account_id' => $data['account_id'],
                 'payment_method' => json_encode($paymentNames),
                 'payment_method_id' => json_encode($paymentIds),
@@ -364,8 +364,11 @@ class PosController extends Controller
             // Simpan item transaksi
             $transaksiId = $pos->id;
             $settingExp = SettingExp::first();
+            $totalPrice = $this->sumTotalPrice($data['items']);
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
+                    $prosentase = round(($item['total_input'] / $totalPrice) * 100, 2);
+                    $posDiscount = $pos->discount * $prosentase / 100;
                     PosDetailModel::insert([
                         'pos_id' => $transaksiId,
                         'product_id' => $item['id'],
@@ -374,6 +377,7 @@ class PosController extends Controller
                         'discount' => $item['discount'] ?? 0,
                         'subtotal' => $item['total_input'],
                         'hpp' => $item['hpp'] ?? 0,
+                        'price_after_discount' => $item['price'] - $posDiscount,
                         'exp' => $item['price'] - $item['hpp'],
                         'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
                         'created_at' => now(),
@@ -730,5 +734,12 @@ class PosController extends Controller
             })
             ->rawColumns(['name', 'action', 'date'])
             ->make(true);
+    }
+
+    private function sumTotalPrice(array $items): int
+    {
+        return collect($items)->sum(function ($item) {
+            return $item['total_input'] ?? ($item['price'] * $item['qty']);
+        });
     }
 }

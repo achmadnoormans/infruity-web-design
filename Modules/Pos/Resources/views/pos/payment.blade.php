@@ -95,14 +95,14 @@
                             x-text="paymentStatus.selisih.toLocaleString('id-ID')"></span>)</span>
                 </template>
             </div>
-            <div class="d-flex flex-column">
+            {{-- <div class="d-flex flex-column">
                 <div class="fv-row mb-2">
                     <label class="required form-label">Cabang</label>
                     <select class="form-select" id="branch_id" name="branch_id">
                         <option value="">Select Branch</option>
                     </select>
                 </div>
-            </div>
+            </div> --}}
         </div>
         <div class="card-body mb-3">
             <div class="accordion mb-4" id="accordionPembayaranSebelumnya" x-show="previousPayments.length > 0"
