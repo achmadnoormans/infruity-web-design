@@ -380,7 +380,7 @@ class ReportController extends Controller
             DB::raw('SUM(pos_transaction_detail.subtotal) AS total'),
             DB::raw("
             ROUND(
-                (SUM(pos_transaction_detail.subtotal) * 100.0) / 
+                (SUM(pos_transaction_detail.subtotal) * 100.0) /
                 SUM(SUM(pos_transaction_detail.subtotal)) OVER (),
                 2
             ) AS persentase_penjualan

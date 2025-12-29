@@ -22,12 +22,13 @@ SELECT
 	kelurahan.name AS village_name
 FROM
 	pos_transaction AS A
-	LEFT JOIN ( 
-	    SELECT 
-            pos_id, SUM( subtotal ) AS total, SUM( hpp ) AS total_hpp 
-        FROM 
-            pos_transaction_detail 
-        GROUP BY pos_id 
+	LEFT JOIN (
+	    SELECT
+            pos_id, SUM( subtotal ) AS total, SUM( hpp ) AS total_hpp
+        FROM
+            pos_transaction_detail
+            WHERE deleted_at IS NULL
+        GROUP BY pos_id
 	) AS B ON B.pos_id = A.id
 	LEFT JOIN customer AS C ON A.customer_id = C.id
 	LEFT JOIN pos_payment AS D ON A.id = D.pos_id
@@ -35,6 +36,7 @@ FROM
 	LEFT JOIN reg_regencies AS kabupaten ON kabupaten.id = C.city
 	LEFT JOIN reg_districts AS kecamatan ON kecamatan.id = C.district
 	LEFT JOIN reg_villages AS kelurahan ON kelurahan.id = C.village
+    WHERE A.deleted_at IS NULL
 	ORDER BY A.created_at DESC;
 
 DROP VIEW IF EXISTS vw_product_buang;
@@ -47,12 +49,12 @@ SELECT
 	SUM( A.quantity ) AS quantity,
 	AVG( A.avg_price ) AS hpp,
 	(
-	SUM( A.quantity ) * AVG( A.avg_price )) AS total_hpp 
+	SUM( A.quantity ) * AVG( A.avg_price )) AS total_hpp
 FROM
 	stock_out AS A
 	JOIN products AS B ON A.product_id = B.id
-	JOIN product_units AS C ON B.product_unit = C.id 
+	JOIN product_units AS C ON B.product_unit = C.id
 GROUP BY
-	A.product_id 
+	A.product_id
 ORDER BY
 	SUM( A.quantity ) DESC

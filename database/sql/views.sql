@@ -91,7 +91,8 @@ FROM
 		'production-detail'
 	FROM
 		production_detail
-		JOIN production ON production.id = production_detail.production_id UNION ALL-- 		DETAIL POS
+		JOIN production ON production.id = production_detail.production_id
+        UNION ALL-- 		DETAIL POS
 	SELECT
 		pos_transaction_detail.product_id,
 		- pos_transaction_detail.quantity,
@@ -102,6 +103,7 @@ FROM
 	FROM
 		pos_transaction_detail
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
+    WHERE pos_transaction_detail.deleted_at IS NULL
 	) AS Q;
 
 -- Sortir view
@@ -191,7 +193,7 @@ WITH customer_exp AS (
 				SELECT SUM(A.exp_value) AS customer_exp, B.customer_id
 					FROM pos_transaction_detail AS A
 					JOIN pos_transaction AS B ON A.pos_id = B.id
-				WHERE B.status = 'paid'
+				WHERE B.status = 'paid' AND A.deleted_at IS NULL
 					GROUP BY B.customer_id
 				UNION
 					SELECT SUM(exp), customer_id FROM deposito
@@ -244,6 +246,7 @@ SELECT
     DATEDIFF(CURDATE(), MAX(t.date)) AS recency
 FROM customer c
 JOIN pos_transaction t ON t.customer_id = c.id
+WHERE t.deleted_at IS NULL
 GROUP BY c.id, c.name, c.type;
 
 -- View Deposito
