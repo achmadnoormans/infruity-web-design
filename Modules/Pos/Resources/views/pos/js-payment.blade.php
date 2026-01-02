@@ -189,6 +189,14 @@
                     };
 
                     console.log(payload);
+                    for (let p of this.payments) {
+                        if (!p.payment_id || !p.payment_name) {
+                            Swal.fire('Perhatian', 'Harus pilih metode pembayaran', 'warning');
+                            this.loading = false;
+                            return;
+                        }
+                    }
+
                     if (!payload.payments || !payload.date || !payload.total_payment) {
                         Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
                         this.loading = false; // hentikan loading jika validasi gagal

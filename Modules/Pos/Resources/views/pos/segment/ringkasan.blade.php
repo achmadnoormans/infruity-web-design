@@ -110,7 +110,7 @@
 <div class="mt-4 border-top pt-3">
     <div class="d-flex justify-content-between">
         <div>
-            <span>Total</span> <span x-text="totalProduk"></span><span> Item</span> 
+            <span>Total</span> <span x-text="totalProduk"></span><span> Item</span>
         </div>
         <div class="fw-bold">
             <span>Rp</span>
@@ -138,26 +138,17 @@
             </div>
         </div> --}}
     </div>
-    <div x-data="{ showActions: false }" class="position-fixed d-flex flex-column-reverse align-items-center"
-        style="bottom: 90px; right: 85px; z-index: 1050; gap: 10px;">
-
-        <!-- Tombol utama (floating) -->
-        <button class="btn btn-primary rounded-circle shadow-lg" style="width: 50px; height: 50px;"
-            @click="showActions = !showActions">
-            <i class="bi bi-three-dots-vertical"></i>
+    <div x-data="{ loading: false }">
+        <button class="btn btn-primary rounded-circle shadow-lg position-fixed"
+            style="bottom: 90px; right: 85px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
+            @click="loading = true; saveTransaction(() => loading = false)" :disabled="loading">
+            <template x-if="!loading">
+                <i class="bi bi-save"></i>
+            </template>
+            <template x-if="loading">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </template>
         </button>
-
-        <!-- Tombol tambahan (floating) -->
-        <template x-if="showActions">
-            <div class="d-flex flex-column align-items-center gap-2 mb-2">
-                <button class="btn btn-sm btn-success shadow-lg" @click="saveTransaction()">
-                    Simpan (Draft)
-                </button>
-                <button class="btn btn-sm btn-warning shadow-lg" @click="saveToOrderBook()">
-                    Simpan (Order Book)
-                </button>
-            </div>
-        </template>
     </div>
     <div x-data="{ loading: false }">
         <button class="btn btn-success rounded-circle shadow-lg position-fixed"
@@ -177,28 +168,28 @@
 </div>
 
 <!-- Modal Tambah Alamat -->
-<div class="modal fade" id="modal_tambah_alamat" tabindex="-1" aria-labelledby="modalTambahAlamatLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form id="form_tambah_alamat">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTambahAlamatLabel">Tambah Alamat Baru</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+<div class="modal fade" id="modal_tambah_alamat" tabindex="-1" aria-labelledby="modalTambahAlamatLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form_tambah_alamat">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTambahAlamatLabel">Tambah Alamat Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="alamat_baru" class="form-label">Alamat</label>
-            <textarea id="alamat_baru" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
-          </div>
-        </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="alamat_baru" class="form-label">Alamat</label>
+                        <textarea id="alamat_baru" class="form-control" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+                    </div>
+                </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
-
