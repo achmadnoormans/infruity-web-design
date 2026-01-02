@@ -14,18 +14,19 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            background-color: white;
+            padding: 0;
             line-height: 1.4;
         }
 
         .receipt-container {
-            max-width: 400px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
             background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
+            box-shadow: none;
+            border-radius: 0;
+            overflow: visible;
+            min-height: 100vh;
         }
 
         .receipt-header {
@@ -221,13 +222,6 @@
 
         /* Responsive Design */
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .receipt-container {
-                max-width: 100%;
-            }
 
             .invoice-info {
                 grid-template-columns: 1fr;
@@ -356,7 +350,9 @@
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>
-                                <td class="item-name">{{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}</td>
+                                <td class="item-name">
+                                    {{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}
+                                </td>
                                 <td class="item-qty">{{ $item->quantity }}</td>
                                 <td class="item-price">{{ number_format($item->price, 0, ',', '.') }}</td>
                                 <td class="item-price">{{ number_format($itemTotal, 0, ',', '.') }}</td>
@@ -373,7 +369,7 @@
                                     $subtotal -= $item->discount * $item->quantity;
                                 @endphp
                             @endif
-                            @if(isset($parcelDetail) && (count($parcelDetail) > 0))
+                            @if (isset($parcelDetail) && count($parcelDetail) > 0)
                                 <tr>
                                     <td colspan="4" style="border: none;  padding: 0 !important;" class="item-name">
                                         List Bahan :
