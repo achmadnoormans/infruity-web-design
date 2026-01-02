@@ -146,38 +146,39 @@
                 </div>
             </div>
         </div>
-        <div class="card-body mb-3">
-            <div class="row">
-                <div class="col-9">
-                    <button type="button" class="btn btn-primary w-100" :disabled="loading" @click="submitPayment()">
-                        <template x-if="loading">
-                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                        </template>
-                        <template x-if="!loading">
-                            <i class="bi bi-cash-stack"></i>
-                        </template>
-                        <span x-text="loading ? 'Memproses...' : 'Bayar'"></span>
-                    </button>
+        <div class="position-fixed bottom-0 start-0 w-100 bg-white shadow-lg p-3" style="z-index: 1000;">
+            <div class="card-body mb-3">
+                <div class="row">
+                    <div class="col-9">
+                        <button type="button" class="btn btn-primary w-100" :disabled="loading"
+                            @click="submitPayment()">
+                            <template x-if="loading">
+                                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            </template>
+                            <template x-if="!loading">
+                                <i class="bi bi-cash-stack"></i>
+                            </template>
+                            <span x-text="loading ? 'Memproses...' : 'Bayar'"></span>
+                        </button>
 
+                    </div>
+                    <div class="col-3">
+                        <a href="{{ route('pos.printDraftPayment', $data->id) }}" class="btn btn-success w-100">
+                            <i class="fa-solid fa-print"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <a href="{{ route('pos.printDraftPayment', $data->id) }}" class="btn btn-success w-100">
-                        <i class="fa-solid fa-print"></i>
-                    </a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning w-100">
+                            <i class="bi bi-arrow-left"></i> Kembali / Edit Lagi
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning w-100 mb-2">
-                        <i class="bi bi-arrow-left"></i> Kembali / Edit Lagi
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
     </div>
     <!--end::Aside column-->
     @include('pos::pos.js-payment')
