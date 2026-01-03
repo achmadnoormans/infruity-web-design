@@ -160,7 +160,9 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details')->whereIn('branch_id', UserBranch::getUserBranch());
+        $query = PosModel::with('customer', 'paymentDetails', 'details')
+        ->whereIn('branch_id', UserBranch::getUserBranch())
+        ->where('ongkir', '>', 0);
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('ongkir_status', $request->status_filter);
         }

@@ -57,19 +57,18 @@
                     <!-- Input Note -->
                     <div x-show="showOngkir" x-transition class="mt-2">
                         <!-- Input Ongkir -->
-                        <div class="row">
-                            <div class="mb-3 col">
-                                <label class="form-label mb-1">Biaya Pengiriman</label>
-                                <input type="text" class="form-control text-end" inputmode="numeric"
-                                    :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
-                            </div>
-                            <div class="mb-3 col">
-                                <label class="form-label mb-1">Diskon Ongkir</label>
-                                <input type="text" class="form-control text-end" inputmode="numeric"
-                                    :value="formatRupiah(diskonOngkir)" @input="updateDiskonOngkir">
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Alamat Pengiriman</label>
+                            {{-- <textarea name="ongkir_address" id="ongkir_address" cols="30" rows="5" class="form-control"></textarea>
+                            <br> --}}
+                            <select class="form-control" name="ongkir_address" id="address_id"></select>
                         </div>
-                        <!-- Input Ongkir -->
+                        <div class="mb-3">
+                            <label class="form-label mb-1">Pilih Kurir</label>
+                            <select class="form-control" name="courier_id" id="courier_id">
+                                <option value="">Pilih Kurir</option>
+                            </select>
+                        </div>
                         <div class="mb-3 row">
                             <div class="col">
                                 <label class="form-label mb-1">Jadwal</label>
@@ -81,17 +80,17 @@
                                 <input type="time" class="form-control" name="ongkir_time" id="ongkir_time">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label mb-1">Pilih Kurir</label>
-                            <select class="form-control" name="courier_id" id="courier_id">
-                                <option value="">Pilih Kurir</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label mb-1">Alamat Pengiriman</label>
-                            {{-- <textarea name="ongkir_address" id="ongkir_address" cols="30" rows="5" class="form-control"></textarea>
-                            <br> --}}
-                            <select class="form-control" name="ongkir_address" id="address_id"></select>
+                        <div class="row">
+                            <div class="mb-3 col">
+                                <label class="form-label mb-1">Biaya Pengiriman</label>
+                                <input type="text" class="form-control text-end" inputmode="numeric"
+                                    :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
+                            </div>
+                            <div class="mb-3 col">
+                                <label class="form-label mb-1">Diskon Ongkir</label>
+                                <input type="text" class="form-control text-end" inputmode="numeric"
+                                    :value="formatRupiah(diskonOngkir)" @input="updateDiskonOngkir">
+                            </div>
                         </div>
                     </div>
                 </div>
