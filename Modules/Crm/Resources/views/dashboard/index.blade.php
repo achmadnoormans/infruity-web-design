@@ -512,9 +512,10 @@
             Notification.requestPermission().then(permission => {
                 // alert('Permission:', permission);
                 if (permission === 'granted') {
-                    alert('✅ Izin notifikasi diberikan');
+                    // alert('✅ Izin notifikasi diberikan');
                 } else {
-                    alert('❌ Izin notifikasi ditolak, Dimohon untuk memberikan izin notifikasi agar dapat notifikasi dari aplikasi');
+                    alert(
+                        '❌ Izin notifikasi ditolak, Dimohon untuk memberikan izin notifikasi agar dapat notifikasi dari aplikasi');
                 }
             });
         } else {
