@@ -317,7 +317,7 @@
         <!--end:Menu link-->
     </div>
 @endif
-@if (check_access('account.index'))
+{{-- @if (check_access('account.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ $link == 'account' ? 'active' : '' }}" href="{{ url('account') }}">
@@ -331,7 +331,7 @@
         </a>
         <!--end:Menu link-->
     </div>
-@endif
+@endif --}}
 @if (check_access('role.index') || check_access('user.index'))
     <div class="menu-item pt-5">
         <!--begin:Menu content-->
@@ -405,7 +405,7 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item-->
-            <!--begin:Menu item-->
+            {{-- <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
                 <a class="menu-link {{ $link == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
@@ -416,7 +416,7 @@
                 </a>
                 <!--end:Menu link-->
             </div>
-            <!--end:Menu item-->
+            <!--end:Menu item--> --}}
             <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
