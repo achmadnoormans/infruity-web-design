@@ -271,7 +271,7 @@
         <!--end:Menu link-->
     </div>
 @endif
-@if (check_access('stock-out-type.index'))
+{{-- @if (check_access('stock-out-type.index'))
     <!--end:Menu item-->
     <div class="menu-item">
         <!--begin:Menu link-->
@@ -286,7 +286,7 @@
         </a>
         <!--end:Menu link-->
     </div>
-@endif
+@endif --}}
 @if (check_access('branch.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
