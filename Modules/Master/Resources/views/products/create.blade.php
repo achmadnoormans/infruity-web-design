@@ -134,11 +134,11 @@
                     <!--end::Label-->
                     <!--begin::Select2-->
                     <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
-                        data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id">
+                        data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id" required>
                         <option></option>
                         @foreach ($product_units as $item)
                             <option value="{{ $item->id }}"
-                                {{ isset($data) && $data->product_unit == $item->id ? 'selected' : '' }}>
+                                {{ (isset($data) && $data->product_unit == $item->id) || old('product_unit_id') == $item->id ? 'selected' : '' }}>
                                 {{ $item->name }}</option>
                         @endforeach
                     </select>
@@ -724,6 +724,9 @@
             });
             bindFormatNumber();
         }
+        $('#branch_table').on('click', '.remove_branch', function() {
+            $(this).closest('tr').remove();
+        });
 
         @if (isset($product_branch) && $product_branch->count() > 0)
             const productBranch = {!! json_encode($product_branch) !!};
@@ -742,7 +745,7 @@
                         <input type="text" name="branch[price][]" class="form-control format-number mb-2" placeholder="Branch price" value="${item.price || ''}"/>
                     </td>                    
                     <td class="text-end">
-                        <button type="button" class="btn btn-icon btn-danger remove_variant">
+                        <button type="button" class="btn btn-icon btn-danger remove_branch">
                             <i class="ki-outline ki-cross fs-2"></i>
                         </button>
                     </td>

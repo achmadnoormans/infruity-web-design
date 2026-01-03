@@ -108,6 +108,11 @@ class ProductController extends Controller
                         $variant->is_variant = 1;
                         $variant->save();
                     } else {
+                        if ($value == $product->name) {
+                            return redirect()->back()
+                                ->withErrors('Nama variant tidak boleh sama dengan nama produk utama')
+                                ->withInput();
+                        }
                         $variant = new Product();
                         $variant->parent_id = $productId;
                         $variant->name = $value;
@@ -457,7 +462,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'parent_id' => 'required|exists:products,id',
-            'product_name' => 'required|string|max:255',
+            'product_name' => 'required|string|max:255|unique:products,name',
             'price' => 'required|numeric',
         ]);
 
