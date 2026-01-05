@@ -559,7 +559,7 @@ class PosController extends Controller
     {
         $data['data'] = Payment::with('paymentMethod', 'pos')->findOrFail($id);
         $data['totalPayment'] = Payment::where('pos_id', $data['data']->pos_id)->sum('total');
-        return view('pos::pos.payment-success', $data);
+        return view('pos::pos.payment-success2', $data);
     }
 
     public function printNota($id)
