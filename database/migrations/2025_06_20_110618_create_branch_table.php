@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -24,52 +24,52 @@ return new class extends Migration
 
         DB::table('branch')->insert([
             [
-                'name' => 'Kantor Pusat',
-                'code' => 'HQ',
-                'address' => 'Jl. Raya No. 1, Jakarta',
+                'name'       => 'Kantor Pusat',
+                'code'       => 'HQ',
+                'address'    => 'Jl. Raya No. 1, Jakarta',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Cabang Jakarta',
-                'code' => 'JKT',
-                'address' => 'Jl. Sudirman No. 2, Jakarta',
+                'name'       => 'Cabang Jakarta',
+                'code'       => 'JKT',
+                'address'    => 'Jl. Sudirman No. 2, Jakarta',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Cabang Surabaya',
-                'code' => 'SUB',
-                'address' => 'Jl. Diponegoro No. 3, Surabaya',
+                'name'       => 'Cabang Surabaya',
+                'code'       => 'SUB',
+                'address'    => 'Jl. Diponegoro No. 3, Surabaya',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Cabang Bandung',
-                'code' => 'BDG',
-                'address' => 'Jl. Braga No. 4, Bandung',
+                'name'       => 'Cabang Bandung',
+                'code'       => 'BDG',
+                'address'    => 'Jl. Braga No. 4, Bandung',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
 
-        $products = DB::table('products')->get();
+        $products  = DB::table('products')->get();
         $branchIds = DB::table('branch')->pluck('id');
-        $data = [];
+        $data      = [];
         foreach ($products as $product) {
             // Set supplier_id sesuai dengan wholesale
             foreach ($branchIds as $value) {
                 $data[] = [
                     'product_id' => $product->id,
-                    'branch_id' => $value,
-                    'price' => array_rand(range(1000, 100000), 1),
+                    'branch_id'  => $value,
+                    'price'      => array_rand(range(1000, 100000), 1),
                     'created_at' => now(),
                     'updated_at' => now(),
-                ];                
-            }    
-            
+                ];
+            }
+
         }
-        // DB::table('product_branch')->insert($data);
+        DB::table('product_branch')->insert($data);
     }
 
     /**

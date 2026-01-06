@@ -3,9 +3,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -31,18 +31,18 @@ return new class extends Migration {
             $supplierId = rand(1, 3);
 
             $data[] = [
-                'supplier_id' => $supplierId,
+                'supplier_id'  => $supplierId,
                 'order_number' => 'PO' . date('Ym') . str_pad($i, 3, '0', STR_PAD_LEFT),
-                'order_date' => "2025-05-" . str_pad($i, 2, '0', STR_PAD_LEFT),
-                'status' => 'posting',
-                'created_by' => 1, // contoh: sama dengan supplier_id
-                'updated_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'order_date'   => "2025-05-" . str_pad($i, 2, '0', STR_PAD_LEFT),
+                'status'       => 'posting',
+                'created_by'   => 1, // contoh: sama dengan supplier_id
+                'updated_by'   => 1,
+                'created_at'   => now(),
+                'updated_at'   => now(),
             ];
         }
 
-        DB::table('wholesale')->insert($data);
+        // DB::table('wholesale')->insert($data);
     }
 
     /**

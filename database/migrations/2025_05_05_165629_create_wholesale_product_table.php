@@ -2,10 +2,11 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -39,31 +40,31 @@ return new class extends Migration {
             $numProducts = rand(1, 5);
 
             for ($i = 1; $i <= $numProducts; $i++) {
-                $ids = range(1, 10);          // [1,2,3,...,10]
-                $exclude = [6, 7];            // yang mau dikecualikan
-                $available = array_diff($ids, $exclude);
-                $productId = $available[array_rand($available)];
-                $quantity = rand(5, 20);
-                $price = rand(500, 2000);
+                $ids        = range(1, 10); // [1,2,3,...,10]
+                $exclude    = [6, 7];       // yang mau dikecualikan
+                $available  = array_diff($ids, $exclude);
+                $productId  = $available[array_rand($available)];
+                $quantity   = rand(5, 20);
+                $price      = rand(500, 2000);
                 $totalPrice = $quantity * $price;
 
                 $data[] = [
                     'wholesale_id' => $wholesaleId,
-                    'product_id' => $productId,
-                    'quantity' => $quantity,
-                    'price' => $price,
-                    'total_price' => $totalPrice,
-                    'supplier_id' => $supplierId,
-                    'status' => rand(0, 1) ? 'processing' : 'complete',
-                    'created_by' => $supplierId,
-                    'updated_by' => $supplierId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'product_id'   => $productId,
+                    'quantity'     => $quantity,
+                    'price'        => $price,
+                    'total_price'  => $totalPrice,
+                    'supplier_id'  => $supplierId,
+                    'status'       => rand(0, 1) ? 'processing' : 'complete',
+                    'created_by'   => $supplierId,
+                    'updated_by'   => $supplierId,
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
                 ];
             }
         }
 
-        DB::table('wholesale_product')->insert($data);
+        // DB::table('wholesale_product')->insert($data);
     }
 
     /**

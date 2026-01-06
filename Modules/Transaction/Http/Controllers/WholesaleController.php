@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Transaction\Http\Controllers;
 
 use Exception;
@@ -10,15 +9,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\UserBranch;
+use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Str;
 
 class WholesaleController extends Controller
 {
@@ -51,9 +51,9 @@ class WholesaleController extends Controller
     // }
     public function create()
     {
-        $data['alpinejs'] = true;
-        $data['data'] = null;
-        $data['detail'] = null;
+        $data['alpinejs']       = true;
+        $data['data']           = null;
+        $data['detail']         = null;
         $data['invoice_number'] = Wholesale::getOrderNumber();
         return view('transaction::wholesale.create2', $data);
     }
@@ -67,9 +67,9 @@ class WholesaleController extends Controller
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'order_date' => 'required',
+            'order_date'  => 'required',
             'description' => 'nullable|string|max:255',
-            'products' => 'required|array',
+            'products'    => 'required|array',
         ]);
 
         if ($validator->fails()) {
@@ -80,21 +80,21 @@ class WholesaleController extends Controller
 
         try {
             DB::beginTransaction();
-            $wholesale = new Wholesale();
+            $wholesale               = new Wholesale();
             $wholesale->order_number = Wholesale::getOrderNumber();
-            $wholesale->order_date = $request->order_date;
-            $wholesale->description = $request->description;
-            $wholesale->status = $request->submit_type;
-            $wholesale->created_by = Auth::user()->id_user;
+            $wholesale->order_date   = $request->order_date;
+            $wholesale->description  = $request->description;
+            $wholesale->status       = $request->submit_type;
+            $wholesale->created_by   = Auth::user()->id_user;
             $wholesale->save();
 
             $wholesaleId = $wholesale->id;
             foreach ($request->products as $product) {
-                $wholesaleDetail = new WholesaleProduct();
+                $wholesaleDetail               = new WholesaleProduct();
                 $wholesaleDetail->wholesale_id = $wholesaleId;
-                $wholesaleDetail->quantity = $product['qty'];
-                $wholesaleDetail->price = $product['price'];
-                $wholesaleDetail->total_price = $product['price'] * $product['qty'];
+                $wholesaleDetail->quantity     = $product['qty'];
+                $wholesaleDetail->price        = $product['price'];
+                $wholesaleDetail->total_price  = $product['price'] * $product['qty'];
                 if ($product['type'] == 'product') {
                     $wholesaleDetail->product_id = $product['id'];
                 } else {
@@ -126,9 +126,9 @@ class WholesaleController extends Controller
         // $data['data'] = Wholesale::findOrFail($id);
         // return view('transaction::wholesale.show', $data);
 
-        $data['alpinejs'] = true;
-        $data['data'] = Wholesale::with('branch')->findOrFail($id);
-        $data['detail'] = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = Wholesale::with('branch')->findOrFail($id);
+        $data['detail']         = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
         $data['invoice_number'] = $data['data']->order_number;
         return view('transaction::wholesale.create2', $data);
     }
@@ -147,9 +147,9 @@ class WholesaleController extends Controller
 
     public function edit($id)
     {
-        $data['alpinejs'] = true;
-        $data['data'] = Wholesale::with('branch')->findOrFail($id);
-        $data['detail'] = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = Wholesale::with('branch')->findOrFail($id);
+        $data['detail']         = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
         $data['invoice_number'] = $data['data']->order_number;
         return view('transaction::wholesale.create2', $data);
     }
@@ -165,16 +165,16 @@ class WholesaleController extends Controller
         // dd($request->all());
         $validated = $request->validate([
             'supplier_id' => 'nullable|exists:supplier,id',
-            'price' => 'required|numeric',
-            'qty' => 'required|numeric',
+            'price'       => 'required|numeric',
+            'qty'         => 'required|numeric',
         ]);
 
         try {
             DB::beginTransaction();
-            $wholesaleProduct = WholesaleProduct::findOrFail($id);
+            $wholesaleProduct              = WholesaleProduct::findOrFail($id);
             $wholesaleProduct->supplier_id = $validated['supplier_id'];
-            $wholesaleProduct->price = $validated['price'];
-            $wholesaleProduct->quantity = $validated['qty'];
+            $wholesaleProduct->price       = $validated['price'];
+            $wholesaleProduct->quantity    = $validated['qty'];
             $wholesaleProduct->save();
             DB::commit();
         } catch (Exception $e) {
@@ -196,7 +196,7 @@ class WholesaleController extends Controller
         // dd($request->all());
         // Validasi input
         $request->validate([
-            'order_date' => 'required|date',
+            'order_date'  => 'required|date',
             'submit_type' => 'required|in:draft,posting',
         ]);
 
@@ -207,16 +207,16 @@ class WholesaleController extends Controller
                 // Generate order number if not already set
                 $wholesale->order_number = Wholesale::getOrderNumber();
             }
-            $wholesale->status = $request->submit_type;
-            $wholesale->created_by = Auth::user()->id_user;
-            $wholesale->order_date = $request->order_date;
+            $wholesale->status      = $request->submit_type;
+            $wholesale->created_by  = Auth::user()->id_user;
+            $wholesale->order_date  = $request->order_date;
             $wholesale->description = $request->description;
 
             if ($request->submit_type == 'posting') {
                 $wholesaleProduct = WholesaleProduct::with('product', 'productStock')->where('wholesale_id', $id)->get();
                 foreach ($wholesaleProduct as $key => $value) {
                     $wholesaleProductChild = ProductChild::with('product', 'productStock')->where('parent_id', $value->product_id);
-                    $totalStock = $wholesaleProductChild->get()->sum(function ($child) {
+                    $totalStock            = $wholesaleProductChild->get()->sum(function ($child) {
                         return $child->productStock->stock_available ?? 0;
                     });
                     // dd($totalStock);
@@ -284,19 +284,19 @@ class WholesaleController extends Controller
 
     public function receive_productOld($id)
     {
-        $data['data'] = Wholesale::findOrFail($id);
+        $data['data']             = Wholesale::findOrFail($id);
         $data['selectedProducts'] = WholesaleProduct::with('product')
             ->where('wholesale_id', $id)
             ->get()
             ->map(function ($item) {
                 return [
-                    'id' => $item->id,
-                    'name' => $item->product->name,
-                    'sku' => $item->product->sku,
-                    'unit' => $item->product->unit->abbreviation,
+                    'id'    => $item->id,
+                    'name'  => $item->product->name,
+                    'sku'   => $item->product->sku,
+                    'unit'  => $item->product->unit->abbreviation,
                     'price' => number_format($item->product->price, 0, ',', '.'),
                     'image' => asset('storage/' . $item->product->image),
-                    'qty' => $item->quantity,
+                    'qty'   => $item->quantity,
                 ];
             });
         // dd($data);
@@ -307,7 +307,7 @@ class WholesaleController extends Controller
     {
         try {
             DB::beginTransaction();
-            $wholesale = Wholesale::findOrFail($id);
+            $wholesale         = Wholesale::findOrFail($id);
             $wholesale->status = 'complete';
             $wholesale->save();
             DB::commit();
@@ -328,7 +328,7 @@ class WholesaleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'wholesale_id' => 'required|exists:wholesale,id',
-            'products' => 'required|array',
+            'products'     => 'required|array',
         ]);
 
         if ($validator->fails()) {
@@ -339,14 +339,14 @@ class WholesaleController extends Controller
 
         try {
             DB::beginTransaction();
-            $wholesale = Wholesale::findOrFail($request->wholesale_id);
+            $wholesale         = Wholesale::findOrFail($request->wholesale_id);
             $wholesale->status = 'complete';
             $wholesale->save();
 
             foreach ($request->products as $key => $product) {
-                $wholesaleDetail = WholesaleProduct::findOrFail($key);
+                $wholesaleDetail           = WholesaleProduct::findOrFail($key);
                 $wholesaleDetail->quantity = $product['quantity'];
-                $wholesaleDetail->hpp = $product['price'];
+                $wholesaleDetail->hpp      = $product['price'];
                 $wholesaleDetail->save();
             }
 
@@ -424,11 +424,11 @@ class WholesaleController extends Controller
     {
         $validated = $request->validate([
             'wholesale_id' => 'required|exists:wholesale,id',
-            'id' => 'required|exists:products,id',
-            'supplier_id' => 'nullable|exists:supplier,id',
-            'qty' => 'required',
-            'price' => 'required',
-            'sell_price' => 'nullable',
+            'id'           => 'required|exists:products,id',
+            'supplier_id'  => 'nullable|exists:supplier,id',
+            'qty'          => 'required',
+            'price'        => 'required',
+            'sell_price'   => 'nullable',
         ]);
 
         $cek = WholesaleProduct::where('wholesale_id', $validated['wholesale_id'])
@@ -447,17 +447,17 @@ class WholesaleController extends Controller
         }
         try {
             DB::beginTransaction();
-            $wholesaleProduct = new WholesaleProduct();
+            $wholesaleProduct               = new WholesaleProduct();
             $wholesaleProduct->wholesale_id = $validated['wholesale_id'];
-            $wholesaleProduct->product_id = $validated['id'];
-            $wholesaleProduct->supplier_id = $validated['supplier_id'];
-            $wholesaleProduct->quantity = $validated['qty'];
-            $wholesaleProduct->price = $validated['price'];
-            $wholesaleProduct->total_price = $validated['price'] * $validated['qty'];
+            $wholesaleProduct->product_id   = $validated['id'];
+            $wholesaleProduct->supplier_id  = $validated['supplier_id'];
+            $wholesaleProduct->quantity     = $validated['qty'];
+            $wholesaleProduct->price        = $validated['price'];
+            $wholesaleProduct->total_price  = $validated['price'] * $validated['qty'];
             $wholesaleProduct->save();
 
             if ($validated['sell_price'] != null) {
-                $product = Product::findOrFail($validated['id']);
+                $product        = Product::findOrFail($validated['id']);
                 $product->price = $validated['sell_price'];
                 $product->save();
             }
@@ -466,14 +466,14 @@ class WholesaleController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => 'Product gagal disimpan.' . $e->getMessage(),
-                'data' => $wholesaleProduct,
+                'data'    => $wholesaleProduct,
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
             'message' => 'Product berhasil disimpan.',
-            'data' => $wholesaleProduct,
+            'data'    => $wholesaleProduct,
         ], 201);
     }
 
@@ -505,9 +505,9 @@ class WholesaleController extends Controller
 
     public function receive_process($id)
     {
-        $wholesale = Wholesale::findOrFail($id);
-        $wholsaleProduct = WholesaleProduct::with('product', 'supplier')->where('wholesale_id', $id)->get();
-        $data['data'] = $wholesale;
+        $wholesale        = Wholesale::findOrFail($id);
+        $wholsaleProduct  = WholesaleProduct::with('product', 'supplier')->where('wholesale_id', $id)->get();
+        $data['data']     = $wholesale;
         $data['products'] = $wholsaleProduct;
 
         return view('transaction::wholesale.process', $data);
@@ -517,7 +517,7 @@ class WholesaleController extends Controller
     {
         try {
             DB::beginTransaction();
-            $wholesaleProduct = WholesaleProduct::findOrFail($id);
+            $wholesaleProduct         = WholesaleProduct::findOrFail($id);
             $wholesaleProduct->status = 'complete';
             $wholesaleProduct->save();
             DB::commit();
@@ -536,7 +536,7 @@ class WholesaleController extends Controller
     {
         try {
             DB::beginTransaction();
-            $wholesale = Wholesale::findOrFail($id);
+            $wholesale         = Wholesale::findOrFail($id);
             $wholesale->status = 'complete';
             $wholesale->save();
             DB::commit();
@@ -589,13 +589,13 @@ class WholesaleController extends Controller
     {
         // dd($request->all());
         $data = $request->validate([
-            'branch_id' => 'required|exists:branch,id',
-            'date' => 'required|date',
+            'branch_id'      => 'required|exists:branch,id',
+            'date'           => 'required|date',
             'invoice_number' => 'nullable',
-            'items' => 'required|array',
-            'total' => 'required|numeric',
-            'subtotal' => 'required|numeric',
-            'status' => 'nullable|in:draft,posting',
+            'items'          => 'required|array',
+            'total'          => 'required|numeric',
+            'subtotal'       => 'required|numeric',
+            'status'         => 'nullable|in:draft,posting',
         ]);
 
         try {
@@ -603,19 +603,19 @@ class WholesaleController extends Controller
             DB::beginTransaction();
             $cek = Wholesale::where('order_number', $data['invoice_number'])->first();
             if ($cek) {
-                $pos = Wholesale::find($cek->id);
+                $pos       = Wholesale::find($cek->id);
                 $posDetail = WholesaleProduct::where('wholesale_id', $cek->id);
                 WholesaleProduct::where('wholesale_id', $cek->id)->delete();
                 $pos->delete();
             }
             // Simpan ke tabel sortir (buat dulu kalau belum ada)
             $pos = new Wholesale([
-                'uuid' => Str::uuid(),
-                'branch_id' => $data['branch_id'],
-                'order_date' => $data['date'],
+                'uuid'         => Str::uuid(),
+                'branch_id'    => $data['branch_id'],
+                'order_date'   => $data['date'],
                 'order_number' => $data['invoice_number'],
-                'status' => $data['status'] ?? 'draft',
-                'created_by' => $userId,
+                'status'       => $data['status'] ?? 'draft',
+                'created_by'   => $userId,
             ]);
             // dd($pos);
             $pos->save();
@@ -624,53 +624,37 @@ class WholesaleController extends Controller
             $transaksiId = $pos->id;
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
+
+                    if ($data['status'] == 'posting') {
+                        $productStock = (float) (ProductStock::where('id', $item['id'])->value('stock_available') ?? 0);
+                        if ($productStock == 0) {
+                            Product::where("id", $item['id'])->update([
+                                'hpp' => $item['price'],
+                            ]);
+                        } else {
+                            $hpp    = Product::where("id", $item['id'])->value('hpp');
+                            $newHpp = collect([$hpp, $item['price']])->avg();
+                            Product::where("id", $item['id'])->update([
+                                'hpp' => $newHpp,
+                            ]);
+                        }
+                    }
+
                     WholesaleProduct::insert([
                         'wholesale_id' => $transaksiId,
-                        'product_id' => $item['id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['qty'],
+                        'product_id'   => $item['id'],
+                        'price'        => $item['price'],
+                        'quantity'     => $item['qty'],
                         // 'discount' => $item['discount'] ?? 0,
-                        'total_price' => $item['total_input'],
-                        'created_at' => now(),
-                        'created_by' => $userId,
+                        'total_price'  => $item['total_input'],
+                        'created_at'   => now(),
+                        'created_by'   => $userId,
                     ]);
 
                     if ($item['sell'] != null) {
-                        $product = Product::findOrFail($item['id']);
+                        $product        = Product::findOrFail($item['id']);
                         $product->price = $item['sell'];
                         $product->save();
-                    }
-                }
-            }
-
-            if ($data['status'] == 'posting') {
-                $wholesaleProduct = WholesaleProduct::with('product', 'productStock')->where('wholesale_id', $transaksiId)->get();
-                foreach ($wholesaleProduct as $key => $value) {
-                    $wholesaleProductChild = ProductChild::with('product', 'productStock')->where('parent_id', $value->product_id);
-                    $totalStock = $wholesaleProductChild->get()->sum(function ($child) {
-                        return $child->productStock->stock_available ?? 0;
-                    });
-                    // dd($totalStock);
-                    $stock = $value->productStock->stock_available ?? 0;
-                    $stock += $totalStock;
-                    $hpp = $value->product->hpp ?? 0;
-
-                    // dd($stock);
-                    if ($stock == 0) {
-                        Product::where("id", $value->product_id)->update([
-                            'hpp' => $value->price,
-                        ]);
-                        Product::whereIn('id', $wholesaleProductChild->pluck('product_id')->toArray())->update([
-                            'hpp' => $value->price,
-                        ]);
-                    } else {
-                        $newHpp = collect([$hpp, $value->price])->avg();
-                        Product::where("id", $value->product_id)->update([
-                            'hpp' => $newHpp,
-                        ]);
-                        Product::whereIn('id', $wholesaleProductChild->pluck('product_id')->toArray())->update([
-                            'hpp' => $newHpp,
-                        ]);
                     }
                 }
             }
@@ -679,8 +663,8 @@ class WholesaleController extends Controller
             DB::disconnect();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil disimpan',
+                'success'      => true,
+                'message'      => 'Transaksi berhasil disimpan',
                 'transaksi_id' => $transaksiId,
             ]);
         } catch (\Throwable $e) {
@@ -689,7 +673,7 @@ class WholesaleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -702,7 +686,7 @@ class WholesaleController extends Controller
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $colors = ['warning', 'success', 'info', 'primary'];
-                $color = $colors[$item->id % count($colors)];
+                $color  = $colors[$item->id % count($colors)];
                 return '<div class="d-flex align-items-center">
                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                 <a href="' . url('wholesale') . '/' . $item->id . '/show' . '">

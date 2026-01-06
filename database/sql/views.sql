@@ -32,7 +32,9 @@ FROM
 		created_at AS date,
 		`code` AS reff
 	FROM
-		stock_in UNION ALL-- 	STOCK OUT
+		stock_in 
+	UNION ALL
+	-- STOCK OUT
 	SELECT
 		product_id,
 		- quantity,
@@ -41,7 +43,9 @@ FROM
 		created_at,
 		`code`
 	FROM
-		stock_out UNION ALL-- 	WHOLESALE
+		stock_out 
+	UNION ALL
+	-- WHOLESALE
 	SELECT
 		product_id,
 		quantity,
@@ -54,7 +58,9 @@ FROM
 		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
 	WHERE
 		wholesale.`status` = 'posting'
-		AND product_id != 0 UNION ALL-- 	STOCK OUT TRANSACTION
+		AND product_id != 0 
+	UNION ALL
+	-- STOCK OUT TRANSACTION
 	SELECT
 		product_id,
 		- quantity,
@@ -63,7 +69,9 @@ FROM
 		created_at,
 		'stock-out'
 	FROM
-		stock_out_transaction UNION ALL-- 	STOCK OPNAME
+		stock_out_transaction 
+	UNION ALL
+	-- STOCK OPNAME
 	SELECT
 		product_id,
 		difference,
@@ -72,7 +80,9 @@ FROM
 		created_at,
 		'stock-opname'
 	FROM
-		stock_opname UNION ALL-- 	PRODUCTION (PRODUCT RESEP)(+)
+		stock_opname 
+	UNION ALL
+	-- PRODUCTION (PRODUCT RESEP)(+)
 	SELECT
 		product_id,
 		quantity,
@@ -81,7 +91,9 @@ FROM
 		created_at,
 		'production'
 	FROM
-		production UNION ALL-- DETAIL PRODUCTION (-)
+		production 
+	UNION ALL
+	-- DETAIL PRODUCTION (-)
 	SELECT
 		production_detail.product_id,
 		- production_detail.quantity,
@@ -92,7 +104,8 @@ FROM
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id
-        UNION ALL-- 		DETAIL POS
+        UNION ALL
+	-- DETAIL POS
 	SELECT
 		pos_transaction_detail.product_id,
 		- pos_transaction_detail.quantity,
@@ -104,6 +117,15 @@ FROM
 		pos_transaction_detail
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
     WHERE pos_transaction_detail.deleted_at IS NULL
+	UNION ALL
+	SELECT
+		product_id,
+		- quantity,
+		price,
+		created_at,
+		'sortir' 
+	FROM
+	sortir_transaction_detail
 	) AS Q;
 
 -- Sortir view
