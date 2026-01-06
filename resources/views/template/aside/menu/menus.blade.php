@@ -424,7 +424,7 @@
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
-                    <span class="menu-title">Laporan Stock Opname</span>
+                    <span class="menu-title">Stock Opname</span>
                 </a>
                 <!--end:Menu link-->
             </div>
