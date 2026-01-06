@@ -52,7 +52,7 @@ FROM
 		price,
 		-- wholesale.order_date,
 		wholesale.created_at,
-		'wholelsale' AS reff
+		'pengadaan' AS reff
 	FROM
 		wholesale_product
 		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
@@ -89,7 +89,7 @@ FROM
 		NULL,
 		-- production_date,
 		created_at,
-		'production'
+		'produksi'
 	FROM
 		production 
 	UNION ALL
@@ -100,10 +100,11 @@ FROM
 		NULL,
 		-- production.production_date,
 		production.created_at,
-		'production-detail'
+		'produksi-detail'
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id
+		WHERE production.`status` = 'posting'
         UNION ALL
 	-- DETAIL POS
 	SELECT
@@ -117,6 +118,7 @@ FROM
 		pos_transaction_detail
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
     WHERE pos_transaction_detail.deleted_at IS NULL
+	AND pos_transaction.`status` != 'draft'
 	UNION ALL
 	SELECT
 		product_id,

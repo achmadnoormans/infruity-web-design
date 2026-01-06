@@ -15,7 +15,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Production Details</h2>
+                        <h2>Detail Produksi</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -25,7 +25,7 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Production ID</label>
+                            <label class="form-label">Produksi ID</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <div class="fw-bold fs-3">#{{ isset($data) ? $data->code : '14364' }}</div>
@@ -35,12 +35,12 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Production Name</label>
+                            <label class="form-label">Nama Produksi</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <select name="product_id" id="product_id" class="form-select mb-2">
-                                @if (isset($selectedProduct) && $selectedProduct != null)
-                                    <option value="{{ $selectedProduct->id }}" selected>{{ $selectedProduct->name }}
+                                @if (isset($receipt) && $receipt != null)
+                                    <option value="{{ $receipt->id }}" selected>{{ $receipt->products->name }}
                                     </option>
                                 @endif
                             </select>
@@ -52,11 +52,11 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Quantity</label>
+                            <label class="form-label">Jumlah</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <input type="number" name="quantity" id="quantity" class="form-control mb-2"
-                                placeholder="Enter Quantity"
+                                placeholder="Masukkan Jumlah"
                                 value="{{ isset($data) ? $data->quantity : old('quantity') }}" />
                             <!--end::Input-->
                         </div>
@@ -64,21 +64,21 @@
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Production Date</label>
+                            <label class="required form-label">Tanggal Produksi</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                            <input id="kt_ecommerce_edit_order_date" name="production_date" placeholder="Select a date"
+                            <input id="kt_ecommerce_edit_order_date" name="production_date" placeholder="Pilih tanggal"
                                 class="form-control mb-2" value="{{ old('production_date') ?? date('Y-m-d') }}" />
                             <!--end::Editor-->
                             <!--begin::Description-->
-                            <div class="text-muted fs-7">Set the date of the production to process.</div>
+                            <div class="text-muted fs-7">Atur tanggal produksi untuk diproses.</div>
                             <!--end::Description-->
                         </div>
                         <!--end::Input group-->
                         <!--begin::Input group-->
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">Pic</label>
+                            <label class="form-label">PIC / Penanggung Jawab</label>
                             <!--end::Label-->
                             <!--begin::Auto-generated ID-->
                             <select name="staff_id" id="staff_id" class="form-select mb-2">
@@ -137,7 +137,7 @@
                                         <!--end::Radio-->
                                         <!--begin::Info-->
                                         <span class="ms-5">
-                                            <span class="fs-4 fw-bold text-gray-800 d-block">Weight to Price</span>
+                                            <span class="fs-4 fw-bold text-gray-800 d-block">Berat ke Harga</span>
                                         </span>
                                         <!--end::Info-->
                                     </label>
@@ -159,7 +159,7 @@
                                         <!--end::Radio-->
                                         <!--begin::Info-->
                                         <span class="ms-5">
-                                            <span class="fs-4 fw-bold text-gray-800 d-block">Price to Weight</span>
+                                            <span class="fs-4 fw-bold text-gray-800 d-block">Harga ke Berat</span>
                                         </span>
                                         <!--end::Info-->
                                     </label>
@@ -178,7 +178,7 @@
                             </i>
                             <input type="text" data-kt-ecommerce-edit-order-filter="search"
                                 class="form-control form-control-solid w-100 w-lg-50 ps-12" id="search"
-                                placeholder="Search Products" />
+                                placeholder="Cari Produk" />
                         </div>
                         <!--end::Search products-->
                         <!--begin::Table-->
@@ -187,8 +187,8 @@
                             <thead>
                                 <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                                     {{-- <th class="w-25px pe-2"></th> --}}
-                                    <th class="min-w-200px">Product</th>
-                                    <th class="min-w-100px text-end pe-5">Stock</th>
+                                    <th class="min-w-200px">Produk</th>
+                                    <th class="min-w-100px text-end pe-5">Stok</th>
                                 </tr>
                             </thead>
                             <tbody class="fw-semibold text-gray-600">
@@ -206,7 +206,7 @@
                 <!--begin::Card header-->
                 <div class="card-header">
                     <div class="card-title">
-                        <h2>Preview Products</h2>
+                        <h2>Pratinjau Produk</h2>
                     </div>
                 </div>
                 <!--end::Card header-->
@@ -216,7 +216,7 @@
                         <!--begin::Input group-->
                         <div>
                             <!--begin::Label-->
-                            <label class="form-label">Add products to this order</label>
+                            <label class="form-label">Tambah produk ke pesanan ini</label>
                             <!--end::Label-->
                             <!--begin::Selected products-->
                             <div class="table table-responsive">
@@ -224,18 +224,15 @@
                                     id="kt_ecommerce_edit_order_selected_products_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-200px">Product</th>
+                                            <th class="min-w-200px">Produk</th>
                                             <th class="min-w-100px">Hpp</th>
                                             <th class="min-w-100px">Total</th>
                                             <th class="text-end"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="kt_ecommerce_edit_order_selected_products_body">
-                                        <tr class="text-muted text-center">
-                                            <td colspan="6">Select one or more products from the list below by ticking
-                                                the
-                                                checkbox.</td>
-                                        </tr>
+                                        <td colspan="6">Pilih satu atau lebih produk dari daftar di bawah dengan
+                                            mencentang kotak centang.</td>
                                     </tbody>
                                 </table>
                             </div>
@@ -253,18 +250,18 @@
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
-                    class="btn btn-light me-5">Cancel</a>
+                    class="btn btn-light me-5">Batal</a>
                 <!--end::Button-->
 
                 <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
                     <span class="indicator-label">Draft</span>
-                    <span class="indicator-progress">Please wait...
+                    <span class="indicator-progress">Mohon tunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
 
                 <button type="submit" class="btn btn-primary" onclick="setSubmitType('posting')">
                     <span class="indicator-label">Posting</span>
-                    <span class="indicator-progress">Please wait...
+                    <span class="indicator-progress">Mohon tunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
                 <!--end::Button-->
@@ -277,16 +274,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalInputQtyLabel">Input Product Details</h5>
+                    <h5 class="modal-title" id="modalInputQtyLabel">Masukkan Detail Produk</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="inputProductId">
                     <input type="hidden" id="typeList">
                     <div class="mb-3">
-                        <label for="inputQuantity" class="form-label">Quantity</label>
+                        <label for="inputQuantity" class="form-label">Jumlah</label>
                         <input type="number" step="0.01" class="form-control" id="inputQuantity"
-                            placeholder="Enter quantity">
+                            placeholder="Masukkan jumlah">
                     </div>
 
                     <div class="mb-3">
@@ -297,7 +294,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitQty">Add Product</button>
+                    <button type="button" class="btn btn-primary" id="submitQty">Tambah Produk</button>
                 </div>
             </div>
         </div>
@@ -310,29 +307,29 @@
                 <form class="form" action="{{ url('production') }}" id="kt_modal_add_customer_form"
                     data-kt-redirect="#">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalEditQtyLabel">Edit Detail</h5>
+                        <h5 class="modal-title" id="modalInputPrcLabel">Ubah Detail</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         @csrf
                         <input type="hidden" name="_method" id="methodField" value="">
                         <div class="mb-3">
-                            <label for="inputQuantity" class="form-label">Quantity</label>
+                            <label for="inputQuantity" class="form-label">Jumlah</label>
                             <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
-                                placeholder="Enter quantity" step="0.01" name="qty">
+                                placeholder="Masukkan jumlah" step="0.01" name="qty">
                         </div>
 
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Harga Jual</label>
                             <input type="text" class="form-control format-number" id="inputPriceEdit"
-                                name="sell_price" placeholder="Enter price" min="0">
+                                name="sell_price" placeholder="Masukkan harga" min="0">
                         </div>
                     </div>
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
                         <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Close</button>
+                            class="btn btn-light me-3">Tutup</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
@@ -352,7 +349,7 @@
             <div class="modal-content">
                 <form class="form" action="{{ url('production') }}" id="modalInputPrcForm" data-kt-redirect="#">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalInputPrcLabel">Edit Detail</h5>
+                        <h5 class="modal-title" id="modalInputPrcLabel">Ubah Detail</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -365,24 +362,24 @@
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Masukkan Harga</label>
                             <input type="text" class="form-control format-number" id="inputPrice"
-                                placeholder="Enter price" min="0">
+                                placeholder="Masukkan harga" min="0">
                         </div>
                         <div class="mb-3">
-                            <label for="inputQuantity" class="form-label">Quantity</label>
+                            <label for="inputQuantity" class="form-label">Jumlah</label>
                             <input type="number" name="qty" step="0.01" class="form-control"
-                                id="inputQuantityPrc" placeholder="Enter quantity" readonly>
+                                id="inputQuantityPrc" placeholder="Masukkan jumlah" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="inputPrice" class="form-label">Harga Jual</label>
                             <input type="text" name="sell_price" class="form-control format-number"
-                                id="inputSellPricePrc" placeholder="Enter price" min="0" readonly>
+                                id="inputSellPricePrc" placeholder="Masukkan harga" min="0" readonly>
                         </div>
                     </div>
                     <!--begin::Modal footer-->
                     <div class="modal-footer flex-center">
                         <!--begin::Button-->
                         <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Close</button>
+                            class="btn btn-light me-3">Tutup</button>
                         <!--end::Button-->
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit_prc" class="btn btn-primary">
