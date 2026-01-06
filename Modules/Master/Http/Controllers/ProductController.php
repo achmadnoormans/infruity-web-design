@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Master\Http\Controllers;
 
 use Exception;
@@ -17,8 +16,8 @@ use Modules\Master\Entities\ProductBranch;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\ProductUnit;
-use Yajra\DataTables\Facades\DataTables;
 use Modules\Master\Entities\UserBranch;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
@@ -45,8 +44,8 @@ class ProductController extends Controller
     public function create()
     {
         $data['product_units'] = ProductUnit::all();
-        $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan', 'non-pos' => 'Non POS'];
-        $data['data'] = null;
+        $data['tipe']          = ['product' => 'Product', 'kemasan' => 'Kemasan'];
+        $data['data']          = null;
         return view('master::products.create', $data);
     }
 
@@ -59,13 +58,13 @@ class ProductController extends Controller
     {
         // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
-            'product_name' => 'required|unique:products,name',
-            'price' => 'required',
+            'product_name'    => 'required|unique:products,name',
+            'price'           => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
-            'status' => 'required',
+            'status'          => 'required',
             // 'category_id' => 'required|exists:products_category,id',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'nullable|string|max:1000',
+            'avatar'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description'     => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -76,24 +75,24 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
-            $branches = Branch::all();
-            $product = new Product();
-            $product->name = $request->product_name;
-            $product->category_id = $request->category_id;
-            $product->description = strip_tags($request->description ?? '');
-            $product->price = $request->price ?? '';
+            $branches              = Branch::all();
+            $product               = new Product();
+            $product->name         = $request->product_name;
+            $product->category_id  = $request->category_id;
+            $product->description  = strip_tags($request->description ?? '');
+            $product->price        = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';
-            $product->stock = $request->stock ?? 0;
-            $product->limit = $request->limit ?? 0;
-            $product->handling = $request->handling ?? '';
-            $product->sku = $request->sku ?? '';
-            $product->barcode = $request->barcode ?? '';
-            $product->status = $request->status ?? '';
-            $product->tipe = $request->tipe ?? 'product';
-            $product->created_by = Auth::user()->id_user;
+            $product->stock        = $request->stock ?? 0;
+            $product->limit        = $request->limit ?? 0;
+            $product->handling     = $request->handling ?? '';
+            $product->sku          = $request->sku ?? '';
+            $product->barcode      = $request->barcode ?? '';
+            $product->status       = $request->status ?? '';
+            $product->tipe         = $request->tipe ?? 'product';
+            $product->created_by   = Auth::user()->id_user;
 
             if ($request->hasFile('avatar')) {
-                $path = $request->file('avatar')->store('products', 'public');
+                $path           = $request->file('avatar')->store('products', 'public');
                 $product->image = $path;
                 // $product->save();
             }
@@ -104,7 +103,7 @@ class ProductController extends Controller
             if (isset($request->variant)) {
                 foreach ($request->variant['id'] as $key => $value) {
                     if (is_numeric($value)) {
-                        $variant = Product::find($value);
+                        $variant             = Product::find($value);
                         $variant->is_variant = 1;
                         $variant->save();
                     } else {
@@ -113,32 +112,32 @@ class ProductController extends Controller
                                 ->withErrors('Nama variant tidak boleh sama dengan nama produk utama')
                                 ->withInput();
                         }
-                        $variant = new Product();
-                        $variant->parent_id = $productId;
-                        $variant->name = $value;
-                        $variant->price = $request->variant['price'][$key];
-                        $variant->category_id = $product->category_id;
+                        $variant               = new Product();
+                        $variant->parent_id    = $productId;
+                        $variant->name         = $value;
+                        $variant->price        = $request->variant['price'][$key];
+                        $variant->category_id  = $product->category_id;
                         $variant->product_unit = $product->product_unit;
-                        $variant->stock = $product->stock;
-                        $variant->limit = $product->limit;
-                        $variant->handling = $product->handling;
-                        $variant->is_variant = 1;
-                        $variant->created_by = Auth::user()->id_user;
-                        $variant->description = strip_tags($request->description ?? '');
+                        $variant->stock        = $product->stock;
+                        $variant->limit        = $product->limit;
+                        $variant->handling     = $product->handling;
+                        $variant->is_variant   = 1;
+                        $variant->created_by   = Auth::user()->id_user;
+                        $variant->description  = strip_tags($request->description ?? '');
                         $variant->save();
 
                         foreach ($branches as $key => $value) {
-                            $branch = new ProductBranch();
+                            $branch             = new ProductBranch();
                             $branch->product_id = $variant->id;
-                            $branch->branch_id = $value->id;
-                            $branch->price = $variant->price;
+                            $branch->branch_id  = $value->id;
+                            $branch->price      = $variant->price;
                             $branch->save();
                         }
                     }
 
-                    $child = new ProductChild();
+                    $child             = new ProductChild();
                     $child->product_id = $variant->id;
-                    $child->parent_id = $productId;
+                    $child->parent_id  = $productId;
                     $child->save();
                 }
             }
@@ -153,26 +152,26 @@ class ProductController extends Controller
                             $branch->price = $request->branch['price'][$key] ?? 0;
                             $branch->save();
                         } else {
-                            $branch = new ProductBranch();
+                            $branch             = new ProductBranch();
                             $branch->product_id = $productId;
-                            $branch->branch_id = $value;
-                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->branch_id  = $value;
+                            $branch->price      = $request->branch['price'][$key] ?? 0;
                             $branch->save();
                         }
                     } else {
-                        $branch = new ProductBranch();
+                        $branch             = new ProductBranch();
                         $branch->product_id = $productId;
-                        $branch->branch_id = $value;
-                        $branch->price = $request->branch['price'][$key] ?? 0;
+                        $branch->branch_id  = $value;
+                        $branch->price      = $request->branch['price'][$key] ?? 0;
                         $branch->save();
                     }
                 }
             } else {
                 foreach ($branches as $key => $value) {
-                    $branch = new ProductBranch();
+                    $branch             = new ProductBranch();
                     $branch->product_id = $productId;
-                    $branch->branch_id = $value->id;
-                    $branch->price = $product->price;
+                    $branch->branch_id  = $value->id;
+                    $branch->price      = $product->price;
                     $branch->save();
                 }
             }
@@ -194,8 +193,8 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $data = [
-            'data' => $product,
+        $data    = [
+            'data'          => $product,
             'product_units' => ProductUnit::all(),
         ];
         // dd($data);
@@ -216,17 +215,17 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        $data = [
-            'data' => $product,
+        $data    = [
+            'data'          => $product,
             'product_units' => ProductUnit::all(),
         ];
-        $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan', 'non-pos' => 'Non POS'];
+        $data['tipe'] = ['product' => 'Product', 'kemasan' => 'Kemasan'];
         if (isset($product->category_id)) {
             $data['category'] = ProductCategory::findOrFail($product->category_id);
         } else {
             $data['category'] = null;
         }
-        $data['variant'] = ProductChild::with('product')->where('parent_id', $id)->get();
+        $data['variant']        = ProductChild::with('product')->where('parent_id', $id)->get();
         $data['product_branch'] = ProductBranch::with('product', 'branch')->where('product_id', $id)->get();
         return view('master::products.create', $data);
     }
@@ -241,13 +240,13 @@ class ProductController extends Controller
     {
         // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
-            'product_name' => 'required|unique:products,name,' . $id,
-            'price' => 'required',
+            'product_name'    => 'required|unique:products,name,' . $id,
+            'price'           => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
-            'status' => 'required',
-            'category_id' => 'nullable|exists:products_category,id',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'nullable|string|max:1000',
+            'status'          => 'required',
+            'category_id'     => 'nullable|exists:products_category,id',
+            'avatar'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description'     => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -264,25 +263,25 @@ class ProductController extends Controller
                 if ($product->image) {
                     Storage::disk('public')->delete($product->image);
                 }
-                $path = $request->file('avatar')->store('products', 'public');
+                $path           = $request->file('avatar')->store('products', 'public');
                 $product->image = $path;
             }
-            $product->name = $request->product_name;
-            $product->category_id = $request->category_id;
-            $product->description = strip_tags($request->description ?? '');
-            $product->price = $request->price ?? '';
+            $product->name         = $request->product_name;
+            $product->category_id  = $request->category_id;
+            $product->description  = strip_tags($request->description ?? '');
+            $product->price        = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';
-            $product->stock = $request->stock ?? 0;
-            $product->limit = $request->limit ?? 0;
-            $product->handling = $request->handling ?? '';
-            $product->sku = $request->sku ?? '';
-            $product->barcode = $request->barcode ?? '';
-            $product->status = $request->status ?? '';
-            $product->tipe = $request->tipe ?? 'product';
-            $product->created_by = Auth::user()->id_user;
+            $product->stock        = $request->stock ?? 0;
+            $product->limit        = $request->limit ?? 0;
+            $product->handling     = $request->handling ?? '';
+            $product->sku          = $request->sku ?? '';
+            $product->barcode      = $request->barcode ?? '';
+            $product->status       = $request->status ?? '';
+            $product->tipe         = $request->tipe ?? 'product';
+            $product->created_by   = Auth::user()->id_user;
 
             if ($request->hasFile('avatar')) {
-                $path = $request->file('avatar')->store('products', 'public');
+                $path           = $request->file('avatar')->store('products', 'public');
                 $product->image = $path;
                 $product->save();
             }
@@ -294,29 +293,29 @@ class ProductController extends Controller
             if (isset($request->variant)) {
                 foreach ($request->variant['id'] as $key => $value) {
                     if (is_numeric($value)) {
-                        $variant = Product::find($value);
+                        $variant             = Product::find($value);
                         $variant->is_variant = 1;
-                        $variant->price = $request->variant['price'][$key] ?? 0;
+                        $variant->price      = $request->variant['price'][$key] ?? 0;
                         $variant->save();
                     } else {
-                        $variant = new Product();
-                        $variant->parent_id = $productId;
-                        $variant->name = $value;
-                        $variant->price = $request->variant['price'][$key] ?? 0;
-                        $variant->category_id = $product->category_id;
+                        $variant               = new Product();
+                        $variant->parent_id    = $productId;
+                        $variant->name         = $value;
+                        $variant->price        = $request->variant['price'][$key] ?? 0;
+                        $variant->category_id  = $product->category_id;
                         $variant->product_unit = $product->product_unit;
-                        $variant->stock = $product->stock;
-                        $variant->limit = $product->limit;
-                        $variant->handling = $product->handling;
-                        $variant->is_variant = 1;
-                        $variant->created_by = Auth::user()->id_user;
-                        $variant->description = strip_tags($request->description ?? '');
+                        $variant->stock        = $product->stock;
+                        $variant->limit        = $product->limit;
+                        $variant->handling     = $product->handling;
+                        $variant->is_variant   = 1;
+                        $variant->created_by   = Auth::user()->id_user;
+                        $variant->description  = strip_tags($request->description ?? '');
                         $variant->save();
                     }
 
-                    $child = new ProductChild();
+                    $child             = new ProductChild();
                     $child->product_id = $variant->id;
-                    $child->parent_id = $productId;
+                    $child->parent_id  = $productId;
                     $child->save();
                 }
             }
@@ -333,17 +332,17 @@ class ProductController extends Controller
                             $branch->price = $request->branch['price'][$key] ?? 0;
                             $branch->save();
                         } else {
-                            $branch = new ProductBranch();
+                            $branch             = new ProductBranch();
                             $branch->product_id = $productId;
-                            $branch->branch_id = $value;
-                            $branch->price = $request->branch['price'][$key] ?? 0;
+                            $branch->branch_id  = $value;
+                            $branch->price      = $request->branch['price'][$key] ?? 0;
                             $branch->save();
                         }
                     } else {
-                        $branch = new ProductBranch();
+                        $branch             = new ProductBranch();
                         $branch->product_id = $productId;
-                        $branch->branch_id = $value;
-                        $branch->price = $request->branch['price'][$key] ?? 0;
+                        $branch->branch_id  = $value;
+                        $branch->price      = $request->branch['price'][$key] ?? 0;
                         $branch->save();
                     }
                 }
@@ -371,7 +370,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $product = Product::findOrFail($id);
-            $child = Product::where('parent_id', $id)->get();
+            $child   = Product::where('parent_id', $id)->get();
             if ($child->count() > 0) {
                 foreach ($child as $item) {
                     $item->delete();
@@ -395,7 +394,7 @@ class ProductController extends Controller
     public function updatePrice(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'price' => 'required|numeric',
+            'price'     => 'required|numeric',
             'branch_id' => 'required|numeric',
         ]);
 
@@ -415,7 +414,7 @@ class ProductController extends Controller
                     $productBranch->save();
                 }
             } else {
-                $product = Product::findOrFail($id);
+                $product        = Product::findOrFail($id);
                 $product->price = preg_replace('/[^0-9]/', '', $request->price);
                 $product->save();
             }
@@ -461,9 +460,9 @@ class ProductController extends Controller
     public function storeVariant(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'parent_id' => 'required|exists:products,id',
+            'parent_id'    => 'required|exists:products,id',
             'product_name' => 'required|string|max:255|unique:products,name',
-            'price' => 'required|numeric',
+            'price'        => 'required|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -476,17 +475,17 @@ class ProductController extends Controller
         try {
             $parentProduct = Product::findOrFail($request->parent_id);
             DB::beginTransaction();
-            $product = new Product();
-            $product->parent_id = $request->parent_id;
-            $product->name = $request->product_name;
-            $product->price = $request->price;
-            $product->category_id = $parentProduct->category_id;
+            $product               = new Product();
+            $product->parent_id    = $request->parent_id;
+            $product->name         = $request->product_name;
+            $product->price        = $request->price;
+            $product->category_id  = $parentProduct->category_id;
             $product->product_unit = $parentProduct->product_unit;
-            $product->stock = $parentProduct->stock;
-            $product->limit = $parentProduct->limit;
-            $product->handling = $parentProduct->handling;
-            $product->created_by = Auth::user()->id_user;
-            $product->description = $parentProduct->description;
+            $product->stock        = $parentProduct->stock;
+            $product->limit        = $parentProduct->limit;
+            $product->handling     = $parentProduct->handling;
+            $product->created_by   = Auth::user()->id_user;
+            $product->description  = $parentProduct->description;
             $product->save();
 
             DB::commit();
@@ -508,7 +507,7 @@ class ProductController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'product_name' => 'required|string|max:255',
-                'price' => 'required|numeric',
+                'price'        => 'required|numeric',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -517,8 +516,8 @@ class ProductController extends Controller
                 ], 422);
             }
             DB::beginTransaction();
-            $variant = Product::findOrFail($id);
-            $variant->name = $request->product_name;
+            $variant        = Product::findOrFail($id);
+            $variant->name  = $request->product_name;
             $variant->price = $request->price;
             $variant->save();
             DB::commit();
@@ -547,7 +546,7 @@ class ProductController extends Controller
     public function getProductReceipt(Request $request)
     {
         $search = $request->input('search', '');
-        $query = Product::where('status', 'receipt')
+        $query  = Product::where('status', 'receipt')
             ->where('name', 'like', '%' . $search . '%')
             ->where('status', 'receipt')
             ->select('id', 'name')
@@ -559,7 +558,7 @@ class ProductController extends Controller
     public function getProduct(Request $request)
     {
         $search = $request->input('search', '');
-        $query = Product::select('id', 'name')
+        $query  = Product::select('id', 'name')
             ->where('name', 'like', '%' . $search . '%')
             ->get();
 
@@ -569,14 +568,14 @@ class ProductController extends Controller
     public function listProduct(Request $request)
     {
         $search = $request->input('term', '');
-        $query = Product::with('category', 'get_stock', 'unit', 'productReceipt', 'productReceipt.ingredients')
+        $query  = Product::with('category', 'get_stock', 'unit', 'productReceipt', 'productReceipt.ingredients')
             ->where('tipe', '!=', 'parcel')->where('name', 'like', '%' . $search . '%');
 
-        if ($request->has('type') && !empty($request->type)) {
+        if ($request->has('type') && ! empty($request->type)) {
             $query = $query->where('tipe', $request->type);
         }
 
-        if ($request->has('branch') && !empty($request->branch)) {
+        if ($request->has('branch') && ! empty($request->branch)) {
             $query = $query->join('product_branch', 'products.id', '=', 'product_branch.product_id')
                 ->where('product_branch.branch_id', $request->branch)
                 ->select('products.*', 'product_branch.price as price');
@@ -604,7 +603,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $products = Product::whereNotIn('tipe', ['parcel', 'non-pos', 'kemasan'])->get();
+            $products  = Product::whereNotIn('tipe', ['parcel', 'non-pos', 'kemasan'])->get();
             $branchIds = Branch::pluck('id');
 
             // Nonaktifkan FK constraints untuk truncate aman
@@ -618,8 +617,8 @@ class ProductController extends Controller
                 foreach ($branchIds as $branchId) {
                     $productBranch[] = [
                         'product_id' => $product->id,
-                        'branch_id' => $branchId,
-                        'price' => $product->price,
+                        'branch_id'  => $branchId,
+                        'price'      => $product->price,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
@@ -744,9 +743,9 @@ class ProductController extends Controller
         //     ';
         // })
             ->addColumn('action', function ($row) {
-                $editUrl = route('products.edit', $row->id);
+                $editUrl   = route('products.edit', $row->id);
                 $deleteUrl = route('products.destroy', $row->id);
-                $name = e($row->name);
+                $name      = e($row->name);
 
                 $html = '
                 <div class="dropstart">
