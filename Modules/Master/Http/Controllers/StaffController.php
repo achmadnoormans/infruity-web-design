@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Master\Http\Controllers;
 
 use Exception;
@@ -48,21 +47,22 @@ class StaffController extends Controller
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'staff_name' => 'required',
-            'nickname' => 'required',
-            'date_in' => 'nullable|date|date_format:Y-m-d',
-            'gender' => 'nullable|in:male,female',
-            'nik' => 'nullable',
-            'contact' => [
+            'staff_name'  => 'required',
+            'nickname'    => 'required',
+            'date_in'     => 'nullable|date|date_format:Y-m-d',
+            'gender'      => 'nullable|in:male,female',
+            'nik'         => 'nullable',
+            'contact'     => [
                 'nullable',
                 'numeric',
                 'digits_between:10,15',
                 'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
             ],
-            'email' => 'nullable|email',
+            'email'       => 'nullable|email',
             // 'department' => 'required|exists:department,id',
             // 'position' => 'required|exists:position,id',
             'description' => 'nullable|string|max:1000',
+            'avatar'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -73,20 +73,27 @@ class StaffController extends Controller
 
         try {
             DB::beginTransaction();
-            $staff = new Staff();
-            $staff->name = $request->staff_name;
-            $staff->nickname = $request->nickname;
-            $staff->date_in = $request->date_in;
-            $staff->gender = $request->gender;
-            $staff->nik = $request->nik;
-            $staff->contact = $request->contact;
-            $staff->email = $request->email;
+            $staff                = new Staff();
+            $staff->name          = $request->staff_name;
+            $staff->nickname      = $request->nickname;
+            $staff->date_in       = $request->date_in;
+            $staff->gender        = $request->gender;
+            $staff->nik           = $request->nik;
+            $staff->contact       = $request->contact;
+            $staff->email         = $request->email;
             $staff->department_id = $request->department;
-            $staff->position_id = $request->position;
-            $staff->position_id = $request->position;
-            $staff->description = $request->description;
-            $staff->status = $request->status ?? 'aktif';
-            $staff->created_by = Auth::user()->id_user;
+            $staff->position_id   = $request->position;
+            $staff->description   = $request->description;
+            $staff->status        = $request->status ?? 'aktif';
+            $staff->created_by    = Auth::user()->id_user;
+
+            if ($request->hasFile('avatar')) {
+                $file         = $request->file('avatar');
+                $filename     = time() . '_' . $file->getClientOriginalName();
+                $path         = $file->storeAs('staff', $filename, 'public');
+                $staff->image = $path;
+            }
+
             $staff->save();
 
             DB::commit();
@@ -120,9 +127,9 @@ class StaffController extends Controller
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
-        $data['data'] = Staff::findOrFail($id);
+        $data['data']       = Staff::findOrFail($id);
         $data['department'] = Department::where('id', $data['data']->department_id)->first();
-        $data['position'] = Position::where('id', $data['data']->position_id)->first();
+        $data['position']   = Position::where('id', $data['data']->position_id)->first();
         return view('master::staff.create', $data);
     }
 
@@ -135,21 +142,22 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'staff_name' => 'required',
-            'nickname' => 'required',
-            'date_in' => 'nullable|date|date_format:Y-m-d',
-            'gender' => 'nullable|in:male,female',
-            'nik' => 'nullable',
-            'contact' => [
+            'staff_name'  => 'required',
+            'nickname'    => 'required',
+            'date_in'     => 'nullable|date|date_format:Y-m-d',
+            'gender'      => 'nullable|in:male,female',
+            'nik'         => 'nullable',
+            'contact'     => [
                 'nullable',
                 'numeric',
                 'digits_between:10,15',
                 'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
             ],
-            'email' => 'nullable|email',
+            'email'       => 'nullable|email',
             // 'department' => 'nullable|exists:department,id',
             // 'position' => 'nullable|exists:position,id',
             'description' => 'nullable|string|max:1000',
+            'avatar'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -160,20 +168,38 @@ class StaffController extends Controller
 
         try {
             DB::beginTransaction();
-            $staff = Staff::findOrFail($id);
-            $staff->name = $request->staff_name;
-            $staff->nickname = $request->nickname;
-            $staff->date_in = $request->date_in;
-            $staff->gender = $request->gender;
-            $staff->nik = $request->nik;
-            $staff->contact = $request->contact;
-            $staff->email = $request->email;
+            $staff                = Staff::findOrFail($id);
+            $staff->name          = $request->staff_name;
+            $staff->nickname      = $request->nickname;
+            $staff->date_in       = $request->date_in;
+            $staff->gender        = $request->gender;
+            $staff->nik           = $request->nik;
+            $staff->contact       = $request->contact;
+            $staff->email         = $request->email;
             $staff->department_id = $request->department;
-            $staff->position_id = $request->position;
-            $staff->position_id = $request->position;
-            $staff->description = strip_tags($request->description ?? '');
-            $staff->status = $request->status ?? 'aktif';
-            $staff->created_by = Auth::user()->id_user;
+            $staff->position_id   = $request->position;
+            $staff->description   = strip_tags($request->description ?? '');
+            $staff->status        = $request->status ?? 'aktif';
+            $staff->created_by    = Auth::user()->id_user;
+
+            if ($request->hasFile('avatar')) {
+                // Hapus foto lama jika ada
+                if ($staff->image) {
+                    Storage::disk('public')->delete($staff->image);
+                }
+                $file         = $request->file('avatar');
+                $filename     = time() . '_' . $file->getClientOriginalName();
+                $path         = $file->storeAs('staff', $filename, 'public');
+                $staff->image = $path;
+            }
+
+            if ($request->avatar_remove == '1') {
+                if ($staff->image) {
+                    Storage::disk('public')->delete($staff->image);
+                }
+                $staff->image = null;
+            }
+
             $staff->save();
 
             DB::commit();
@@ -196,6 +222,9 @@ class StaffController extends Controller
         try {
             DB::beginTransaction();
             $staff = Staff::findOrFail($id);
+            if ($staff->image) {
+                Storage::disk('public')->delete($staff->image);
+            }
             $staff->delete();
             DB::commit();
             return response()->json([
@@ -220,17 +249,26 @@ class StaffController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $colors = ['warning', 'success', 'info', 'primary'];
-                $color = $colors[$item->id % count($colors)];
-                $initial = strtoupper(substr($item->name ?? '', 0, 1));
+                $colors      = ['warning', 'success', 'info', 'primary'];
+                $color       = $colors[$item->id % count($colors)];
+                $initial     = strtoupper(substr($item->name ?? '', 0, 1));
                 $displayName = $item->name ?? '-';
-                $email = $item->email ?? '-';
-                $contact = $item->contact ?? '-';
+                $email       = $item->email ?? '-';
+                $contact     = $item->contact ?? '-';
+
+                $avatarInner = '<div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . e($initial) . '</div>';
+                if ($item->image) {
+                    $imageUrl    = asset('storage/' . $item->image);
+                    $avatarInner = '<img src="' . $imageUrl . '" alt="' . e($displayName) . '" style="width: 50px; height: 50px; object-fit: cover;">';
+                }
+
+                $linkUrl = $item->image ? asset('storage/' . $item->image) : 'javascript:void(0)';
+                $target  = $item->image ? 'target="_blank"' : '';
 
                 return '<div class="d-flex align-items-center">
-                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                            <a href="javascript:void(0)">
-                                <div class="symbol-label fs-3 bg-light-' . $color . ' text-' . $color . '">' . e($initial) . '</div>
+                        <div class="symbol symbol-circle symbol-50px overflow-hidden me-3 border">
+                            <a href="' . $linkUrl . '" ' . $target . ' class="d-block w-100 h-100">
+                                ' . $avatarInner . '
                             </a>
                         </div>
                         <div class="ms-5">

@@ -1,23 +1,22 @@
 <?php
-
 namespace Modules\Master\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Master\Entities\Position;
-use Modules\Master\Entities\Department;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Entities\Department;
+use Modules\Master\Entities\Position;
 
 class Staff extends Model
 {
     use HasFactory;
 
-    protected $table = 'staff';
-    protected $fillable = [];
+    protected $table    = 'staff';
+    protected $fillable = ['image'];
 
     protected static function newFactory()
     {
-        return \Modules\Master\Database\factories\StaffFactory::new();
+        return \Modules\Master\Database\factories\StaffFactory::new ();
     }
 
     public function position()
@@ -30,7 +29,8 @@ class Staff extends Model
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'created_by', 'id_user');
     }
 }
