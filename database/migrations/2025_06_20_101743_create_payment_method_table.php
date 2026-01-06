@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_method', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('code')->unique();
+            $table->string('code')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -22,20 +22,20 @@ return new class extends Migration
 
         DB::table('payment_method')->insert([
             [
-                'name' => 'cash',
-                'code' => 'paid',
+                'name'       => 'cash',
+                'code'       => 'paid',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'transfer',
-                'code' => 'transfer',
+                'name'       => 'transfer',
+                'code'       => 'transfer',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'qris',
-                'code' => 'qris',
+                'name'       => 'qris',
+                'code'       => 'qris',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

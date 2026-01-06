@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Transaction" />
+                            class="form-control form-control-solid w-250px ps-12" placeholder="Cari Metode Pembayaran" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -21,7 +21,7 @@
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer">Add Payment Method</button>
+                        data-bs-target="#kt_modal_add_customer">Tambah Metode Pembayaran</button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -40,9 +40,8 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-start min-w-100px">Code</th>
-                            <th class="text-start min-w-100px">Name</th>
-                            <th class="text-end min-w-70px">Actions</th>
+                            <th class="text-start min-w-100px">Nama</th>
+                            <th class="text-end min-w-70px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -64,7 +63,7 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Add a Payment Method</h2>
+                        <h2 class="fw-bold">Tambah Metode Pembayaran</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -83,18 +82,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Code</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" class="form-control form-control-solid" placeholder=""
-                                    name="code" />
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-15">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Name</label>
+                                <label class="fs-6 fw-semibold mb-2">Nama</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="text" class="form-control form-control-solid" placeholder=""
@@ -114,7 +102,7 @@
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
                             <span class="indicator-label">Simpan</span>
-                            <span class="indicator-progress">Please wait...
+                            <span class="indicator-progress">Harap tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
                         <!--end::Button-->
@@ -148,10 +136,6 @@
                     }
                 },
                 columns: [{
-                        data: 'code',
-                        name: 'code'
-                    },
-                    {
                         data: 'name',
                         name: 'name'
                     },
@@ -345,7 +329,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
-                        text: 'Terjadi kesalahan saat memuat data produk.'
+                        text: 'Terjadi kesalahan saat memuat data metode pembayaran.'
                     });
                 }
             });
@@ -359,7 +343,7 @@
 
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
             $('#product_id').select2({
-                placeholder: 'Select a product',
+                placeholder: 'Pilih produk',
                 dropdownParent: $('#kt_modal_add_customer'),
                 ajax: {
                     url: '{{ route('ajax.stock-available') }}',

@@ -1,17 +1,14 @@
 <?php
-
 namespace Modules\Master\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Master\Entities\PaymentMethod;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Exception;
 
 class PaymentMethodController extends Controller
 {
@@ -41,15 +38,13 @@ class PaymentMethodController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:payment_method,code',
             'name' => 'required|string|max:255|unique:payment_method,name',
         ]);
 
         // Simpan data ke database
         try {
             DB::beginTransaction();
-            $paymentMethod = new PaymentMethod();
-            $paymentMethod->code = $validated['code'] ?? null;
+            $paymentMethod       = new PaymentMethod();
             $paymentMethod->name = $validated['name'] ?? null;
             $paymentMethod->save();
             DB::commit();
@@ -57,14 +52,14 @@ class PaymentMethodController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => 'Payment Method gagal disimpan.',
-                'data' => $paymentMethod
+                'data'    => $paymentMethod,
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
             'message' => 'Payment Method berhasil disimpan.',
-            'data' => $paymentMethod
+            'data'    => $paymentMethod,
         ], 201);
     }
 
@@ -98,15 +93,13 @@ class PaymentMethodController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:payment_method,code,' . $id,
             'name' => 'required|string|max:255|unique:payment_method,name,' . $id,
         ]);
 
         // Simpan data ke database
         try {
             DB::beginTransaction();
-            $paymentMethod = PaymentMethod::findOrFail($id);
-            $paymentMethod->code = $validated['code'] ?? null;
+            $paymentMethod       = PaymentMethod::findOrFail($id);
             $paymentMethod->name = $validated['name'] ?? null;
             $paymentMethod->save();
             DB::commit();
@@ -114,14 +107,14 @@ class PaymentMethodController extends Controller
             DB::rollback();
             return response()->json([
                 'message' => 'Payment Method gagal diupdate.',
-                'data' => $paymentMethod
+                'data'    => $paymentMethod,
             ], 404);
         }
 
         // Kirim response JSON
         return response()->json([
             'message' => 'Payment Method berhasil diupdate.',
-            'data' => $paymentMethod
+            'data'    => $paymentMethod,
         ], 201);
     }
 
@@ -151,13 +144,13 @@ class PaymentMethodController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
