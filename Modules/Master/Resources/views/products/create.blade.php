@@ -42,7 +42,7 @@
                         <!--end::Preview existing avatar-->
                         <!--begin::Label-->
                         <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
+                            data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Ganti gambar">
                             <i class="ki-outline ki-pencil fs-7"></i>
                             <!--begin::Inputs-->
                             <input type="file" name="avatar" accept=".png, .jpg, .jpeg" />
@@ -52,13 +52,13 @@
                         <!--end::Label-->
                         <!--begin::Cancel-->
                         <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
+                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Batal">
                             <i class="ki-outline ki-cross fs-2"></i>
                         </span>
                         <!--end::Cancel-->
                         <!--begin::Remove-->
                         <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
+                            data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Hapus gambar">
                             <i class="ki-outline ki-cross fs-2"></i>
                         </span>
                         <!--end::Remove-->
@@ -67,6 +67,9 @@
                     <!--begin::Description-->
                     <div class="text-muted fs-7">Tentukan gambar produk. Hanya berkas gambar dengan ekstensi *.png,
                         *.jpg, dan *.jpeg yang diterima.</div>
+                    @error('avatar')
+                        <div class="text-danger fs-7">{{ $message }}</div>
+                    @enderror
                     <!--end::Description-->
                 </div>
                 <!--end::Card body-->
@@ -91,24 +94,28 @@
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <!--begin::Select2-->
-                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                        data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="status">
-                        <option value="no-receipt" {{ isset($data) && $data->status == 'no-receipt' ? 'selected' : '' }}>
-                            Tanpa
-                            Resep</option>
-                        <option value="receipt" {{ isset($data) && $data->status == 'receipt' ? 'selected' : '' }}>Dengan
-                            Resep</option>
+                    <select class="form-select mb-2 @error('status') is-invalid @enderror" data-control="select2"
+                        data-hide-search="true" data-placeholder="Pilih opsi" id="kt_ecommerce_add_product_status_select"
+                        name="status">
+                        <option value="no-receipt"
+                            {{ old('status', $data->status ?? '') == 'no-receipt' ? 'selected' : '' }}>
+                            Tanpa Resep</option>
+                        <option value="receipt" {{ old('status', $data->status ?? '') == 'receipt' ? 'selected' : '' }}>
+                            Dengan Resep</option>
                     </select>
+                    @error('status')
+                        <div class="text-danger fs-7">{{ $message }}</div>
+                    @enderror
                     <!--end::Select2-->
                     <!--begin::Description-->
                     <div class="text-muted fs-7">Set Status Produk.</div>
                     <!--end::Description-->
                     <!--begin::Datepicker-->
                     <div class="d-none mt-10">
-                        <label for="kt_ecommerce_add_product_status_datepicker" class="form-label">Select publishing date
-                            and time</label>
+                        <label for="kt_ecommerce_add_product_status_datepicker" class="form-label">Pilih tanggal dan waktu
+                            publikasi</label>
                         <input class="form-control" id="kt_ecommerce_add_product_status_datepicker"
-                            placeholder="Pick date & time" />
+                            placeholder="Pilih tanggal & waktu" />
                     </div>
                     <!--end::Datepicker-->
                 </div>
@@ -133,15 +140,19 @@
                     <label class="form-label required">Satuan Produk</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
-                    <select class="form-select mb-2" data-control="select2" data-placeholder="Select an option"
-                        data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id" required>
+                    <select class="form-select mb-2 @error('product_unit_id') is-invalid @enderror" data-control="select2"
+                        data-placeholder="Pilih opsi" data-allow-clear="true" {{-- multiple="multiple" --}} name="product_unit_id"
+                        required>
                         <option></option>
                         @foreach ($product_units as $item)
                             <option value="{{ $item->id }}"
-                                {{ (isset($data) && $data->product_unit == $item->id) || old('product_unit_id') == $item->id ? 'selected' : '' }}>
+                                {{ old('product_unit_id', $data->product_unit ?? '') == $item->id ? 'selected' : '' }}>
                                 {{ $item->name }}</option>
                         @endforeach
                     </select>
+                    @error('product_unit_id')
+                        <div class="text-danger fs-7">{{ $message }}</div>
+                    @enderror
                     <!--end::Select2-->
                     <!--begin::Description-->
                     <div class="text-muted fs-7 mb-7">Tambah satuan produk.</div>
@@ -152,12 +163,20 @@
                     <label class="form-label">Kategori Produk</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
-                    <select class="form-select mb-2" data-placeholder="Select an option" data-allow-clear="true"
-                        {{-- multiple="multiple" --}} name="category_id" id="category_id">
-                        @if (isset($data->category_id))
+                    <select class="form-select mb-2 @error('category_id') is-invalid @enderror"
+                        data-placeholder="Pilih opsi" data-allow-clear="true" {{-- multiple="multiple" --}} name="category_id"
+                        id="category_id">
+                        @if (old('category_id'))
+                            <option value="{{ old('category_id') }}" selected>
+                                {{ \Modules\Master\Entities\ProductCategory::find(old('category_id'))->name ?? '' }}
+                            </option>
+                        @elseif(isset($data->category_id))
                             <option value="{{ $category->id }}" selected>{{ $category->name }}</option>
                         @endif
                     </select>
+                    @error('category_id')
+                        <div class="text-danger fs-7">{{ $message }}</div>
+                    @enderror
                     <!--end::Select2-->
                     <!--begin::Description-->
                     <div class="text-muted fs-7 mb-7">Tambah produk ke dalam kategori.</div>
@@ -168,14 +187,18 @@
                     <label class="form-label required">Tipe</label>
                     <!--end::Label-->
                     <!--begin::Select2-->
-                    <select class="form-select mb-2" data-control="select2" data-hide-search="true"
-                        data-placeholder="Select an option" id="kt_ecommerce_add_product_status_select" name="tipe">
+                    <select class="form-select mb-2 @error('tipe') is-invalid @enderror" data-control="select2"
+                        data-hide-search="true" data-placeholder="Pilih opsi" id="kt_ecommerce_add_product_status_select"
+                        name="tipe">
                         @foreach ($tipe as $key => $value)
                             <option value="{{ $key }}"
-                                {{ isset($data) && $data->tipe == $key ? 'selected' : '' }}>
+                                {{ old('tipe', $data->tipe ?? '') == $key ? 'selected' : '' }}>
                                 {{ $value }}</option>
                         @endforeach
                     </select>
+                    @error('tipe')
+                        <div class="text-danger fs-7">{{ $message }}</div>
+                    @enderror
                     <!--end::Select2-->
                     <!--begin::Description-->
                     <div class="text-muted fs-7 mb-7">Tambah produk ke dalam unit.</div>
@@ -232,8 +255,12 @@
                                     <label class="required form-label">Nama Produk</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="product_name" class="form-control mb-2"
-                                        placeholder="Nama Produk" value="{{ $data->name ?? old('product_name') }}" />
+                                    <input type="text" name="product_name"
+                                        class="form-control mb-2 @error('product_name') is-invalid @enderror"
+                                        placeholder="Nama Produk" value="{{ old('product_name', $data->name ?? '') }}" />
+                                    @error('product_name')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Nama produk diperlukan dan disarankan untuk unik.
@@ -247,7 +274,11 @@
                                     <label class="form-label">Deskripsi</label>
                                     <!--end::Label-->
                                     <!--begin::Editor-->
-                                    <textarea name="description" class="form-control" id="description_input" cols="30" rows="10">{{ $data->description ?? old('description') }}</textarea>
+                                    <textarea name="description" class="form-control @error('description') is-invalid @enderror" id="description_input"
+                                        cols="30" rows="10">{{ old('description', $data->description ?? '') }}</textarea>
+                                    @error('description')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
 
                                     <!--end::Editor-->
                                     <!--begin::Description-->
@@ -277,8 +308,12 @@
                                     <label class="required form-label">Harga Jual</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="price" class="form-control format-number mb-2"
-                                        placeholder="Product price" value="{{ $data->price ?? old('price') }}" />
+                                    <input type="text" name="price"
+                                        class="form-control format-number mb-2 @error('price') is-invalid @enderror"
+                                        placeholder="Harga produk" value="{{ old('price', $data->price ?? '') }}" />
+                                    @error('price')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Tentukan harga produk.</div>
@@ -292,8 +327,12 @@
                                         <label class="form-label">Fee</label>
                                         <!--end::Label-->
                                         <!--begin::Input-->
-                                        <input type="text" name="fee" class="form-control format-number mb-2"
-                                            placeholder="Product fee" value="{{ $data->fee ?? old('fee') }}" />
+                                        <input type="text" name="fee"
+                                            class="form-control format-number mb-2 @error('fee') is-invalid @enderror"
+                                            placeholder="Fee produk" value="{{ old('fee', $data->fee ?? '') }}" />
+                                        @error('fee')
+                                            <div class="text-danger fs-7">{{ $message }}</div>
+                                        @enderror
                                         <!--end::Input-->
                                         <!--begin::Description-->
                                         <div class="text-muted fs-7">Tentukan fee produk.</div>
@@ -307,8 +346,12 @@
                                     <label class="form-label">Limit</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="number" name="limit" class="form-control mb-2"
-                                        placeholder="Limit Stock" value="{{ $data->limit ?? old('limit') }}" />
+                                    <input type="number" name="limit"
+                                        class="form-control mb-2 @error('limit') is-invalid @enderror"
+                                        placeholder="Limit stok" value="{{ old('limit', $data->limit ?? '') }}" />
+                                    @error('limit')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Masukkan limit stok produk.</div>
@@ -330,7 +373,7 @@
                             <!--begin::Card header-->
                             <div class="card-header">
                                 <div class="card-title">
-                                    <h2>Inventory</h2>
+                                    <h2>Inventori</h2>
                                 </div>
                             </div>
                             <!--end::Card header-->
@@ -342,8 +385,12 @@
                                     <label class="form-label">SKU</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="sku" class="form-control mb-2"
-                                        placeholder="SKU Number" value="{{ $data->sku ?? old('sku') }}" />
+                                    <input type="text" name="sku"
+                                        class="form-control mb-2 @error('sku') is-invalid @enderror"
+                                        placeholder="Nomor SKU" value="{{ old('sku', $data->sku ?? '') }}" />
+                                    @error('sku')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
                                     <div class="text-muted fs-7">Masukkan SKU produk.</div>
@@ -356,25 +403,33 @@
                                     <label class="form-label">Barcode</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="barcode" class="form-control mb-2"
-                                        placeholder="Barcode Number" value="{{ $data->barcode ?? old('barcode') }}" />
+                                    <input type="text" name="barcode"
+                                        class="form-control mb-2 @error('barcode') is-invalid @enderror"
+                                        placeholder="Nomor Barcode" value="{{ old('barcode', $data->barcode ?? '') }}" />
+                                    @error('barcode')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Enter the product barcode number.</div>
+                                    <div class="text-muted fs-7">Masukkan nomor barcode produk.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
                                 <!--begin::Input group-->
                                 <div class="mb-10 fv-row">
                                     <!--begin::Label-->
-                                    <label class="form-label">Handling Condition</label>
+                                    <label class="form-label">Kondisi Penanganan</label>
                                     <!--end::Label-->
                                     <!--begin::Input-->
-                                    <input type="text" name="handling" class="form-control mb-2"
-                                        placeholder="Handling" value="{{ $data->handling ?? old('handling') }}" />
+                                    <input type="text" name="handling"
+                                        class="form-control mb-2 @error('handling') is-invalid @enderror"
+                                        placeholder="Handling" value="{{ old('handling', $data->handling ?? '') }}" />
+                                    @error('handling')
+                                        <div class="text-danger fs-7">{{ $message }}</div>
+                                    @enderror
                                     <!--end::Input-->
                                     <!--begin::Description-->
-                                    <div class="text-muted fs-7">Enter limit stock of product.</div>
+                                    <div class="text-muted fs-7">Masukkan limit stok produk.</div>
                                     <!--end::Description-->
                                 </div>
                                 <!--end::Input group-->
@@ -386,7 +441,7 @@
                             <!--begin::Card header-->
                             <div class="card-header">
                                 <div class="card-title">
-                                    <h2>Variant</h2>
+                                    <h2>Varian</h2>
                                 </div>
                             </div>
                             <!--end::Card header-->
@@ -475,7 +530,7 @@
             <div class="d-flex justify-content-end">
                 <!--begin::Button-->
                 <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_add_product_cancel"
-                    class="btn btn-light me-5">Cancel</a>
+                    class="btn btn-light me-5">Batal</a>
                 <!--end::Button-->
                 <!--begin::Button-->
                 <button type="submit" id="kt_ecommerce_add_product_submit" class="btn btn-primary">
@@ -493,7 +548,7 @@
             <form id="editVariantForm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Variant</h5>
+                        <h5 class="modal-title">Ubah Varian</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -518,7 +573,7 @@
 @section('script')
     <script>
         $('#category_id').select2({
-            placeholder: 'Select a Category',
+            placeholder: 'Pilih Kategori',
             ajax: {
                 url: '{{ route('ajax.category') }}',
                 dataType: 'json',
@@ -538,7 +593,7 @@
         $("form").submit(function() {
             $(this).find(":submit").attr('disabled', 'disabled');
             $(this).find(":submit").html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memuat...`
             );
         });
 
@@ -662,7 +717,7 @@
             });
 
             $('#kt_ecommerce_edit_order_selected_products_body .select2_product').select2({
-                placeholder: 'Select product',
+                placeholder: 'Pilih produk',
                 ajax: {
                     url: "{{ route('ajax.getProduct') }}",
                     dataType: 'json',
@@ -755,7 +810,7 @@
             });
 
             $('#kt_ecommerce_edit_order_selected_products_branch_body .select2_product').select2({
-                placeholder: 'Select product',
+                placeholder: 'Pilih produk',
                 ajax: {
                     url: "{{ route('ajax.getProduct') }}",
                     dataType: 'json',
@@ -877,10 +932,10 @@
                 let html = `
                 <tr>
                     <td>
-                        <input type="text" name="product_name[]" class="form-control mb-2" placeholder="Product name" />
+                        <input type="text" name="product_name[]" class="form-control mb-2" placeholder="Nama produk" />
                     </td>
                     <td>
-                        <input type="text" name="price[]" class="form-control format-number mb-2" placeholder="Product price" />
+                        <input type="text" name="price[]" class="form-control format-number mb-2" placeholder="Harga produk" />
                     </td>                    
                     <td class="text-end">
                         <button type="button" class="btn btn-icon btn-danger save_variant">
@@ -909,7 +964,7 @@
                 let productId = {{ $data->id }}; // jika kamu butuh ID produk utama
 
                 if (productName === '' || price === '') {
-                    alert('Product name and price are required.');
+                    alert('Nama produk dan harga harus diisi.');
                     return;
                 }
 
