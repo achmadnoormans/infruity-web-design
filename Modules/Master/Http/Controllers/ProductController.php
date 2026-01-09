@@ -75,10 +75,26 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
+
+            $category = [];
+            if (isset($request->category_id)) {
+                if (is_numeric($request->category_id)) {
+                    $category = ProductCategory::find($request->category_id);
+                    if (! $category) {
+                        return redirect()->back()
+                            ->withErrors('Kategori tidak ditemukan')
+                            ->withInput();
+                    }
+                } else {
+                    $category       = new ProductCategory();
+                    $category->name = $request->category_id;
+                    $category->save();
+                }
+            }
             $branches              = Branch::all();
             $product               = new Product();
             $product->name         = $request->product_name;
-            $product->category_id  = $request->category_id;
+            $product->category_id  = $category->id ?? null;
             $product->description  = strip_tags($request->description ?? '');
             $product->price        = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';
@@ -244,7 +260,7 @@ class ProductController extends Controller
             'price'           => 'required',
             'product_unit_id' => 'required|exists:product_units,id',
             'status'          => 'required',
-            'category_id'     => 'nullable|exists:products_category,id',
+            // 'category_id'     => 'nullable|exists:products_category,id',
             'avatar'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description'     => 'nullable|string|max:1000',
         ]);
@@ -257,6 +273,23 @@ class ProductController extends Controller
 
         try {
             DB::beginTransaction();
+
+            $category = [];
+            if (isset($request->category_id)) {
+                if (is_numeric($request->category_id)) {
+                    $category = ProductCategory::find($request->category_id);
+                    if (! $category) {
+                        return redirect()->back()
+                            ->withErrors('Kategori tidak ditemukan')
+                            ->withInput();
+                    }
+                } else {
+                    $category       = new ProductCategory();
+                    $category->name = $request->category_id;
+                    $category->save();
+                }
+            }
+
             $product = Product::findOrFail($id);
             if ($request->hasFile('avatar')) {
                 // Hapus gambar lama jika ada
@@ -267,7 +300,7 @@ class ProductController extends Controller
                 $product->image = $path;
             }
             $product->name         = $request->product_name;
-            $product->category_id  = $request->category_id;
+            $product->category_id  = $category->id ?? null;
             $product->description  = strip_tags($request->description ?? '');
             $product->price        = $request->price ?? '';
             $product->product_unit = $request->product_unit_id ?? '';

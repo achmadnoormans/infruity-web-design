@@ -573,20 +573,52 @@
 @section('script')
     <script>
         $('#category_id').select2({
-            placeholder: 'Pilih Kategori',
+            placeholder: 'Ketik nama kategori',
+            tags: true, // ini aktifkan fitur menambah item baru
             ajax: {
                 url: '{{ route('ajax.category') }}',
                 dataType: 'json',
                 delay: 250,
-                data: params => ({
-                    search: params.term
-                }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
+                data: function(params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function(data, params) {
+                    const term = params.term || '';
+
+                    // Map hasil dari server
+                    let results = data.map(item => ({
+                        id: item.id, // penting: pastikan id-nya sesuai yg mau kamu simpan
                         text: item.name
-                    }))
-                })
+                    }));
+
+                    // Kalau term (yang diketik user) tidak ada di hasil, tambahkan manual
+                    if (term && !results.some(r => r.text.toLowerCase() === term.toLowerCase())) {
+                        results.push({
+                            id: term, // kita pakai term sebagai id juga (karena kategori baru)
+                            text: term
+                        });
+                    }
+
+                    return {
+                        results: results
+                    };
+                },
+                cache: true
+            },
+            createTag: function(params) {
+                const term = $.trim(params.term);
+
+                if (term === '') {
+                    return null;
+                }
+
+                return {
+                    id: term,
+                    text: term,
+                    newTag: true // optional: kalau mau tandai item baru
+                };
             }
         });
 
