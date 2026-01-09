@@ -318,7 +318,7 @@ class ReportController extends Controller
                 'D.id as unit_id',
                 'D.abbreviation as satuan',
                 'D.name as product_unit',
-                DB::raw('SUM(sortir_transaction_detail.price) as hpp'),
+                DB::raw('AVG(sortir_transaction_detail.price) as hpp'),
                 DB::raw('SUM(sortir_transaction_detail.subtotal) as total_hpp')
             )->whereBetween('B.date', [$startDate, $endDate]);
 
@@ -357,7 +357,7 @@ class ReportController extends Controller
                 return number_format($row->hpp, 2);
             })
             ->editColumn('total_hpp', function ($row) {
-                return number_format($row->total_hpp, 2);
+                return number_format($row->quantity * $row->hpp, 2);
             })
             ->rawColumns(['satuan'])
             ->with([
