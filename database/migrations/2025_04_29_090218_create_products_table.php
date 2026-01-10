@@ -31,6 +31,7 @@ return new class extends Migration
             $table->integer('category_id')->nullable();
             $table->integer('direct_stock')->nullable();
             $table->integer('hpp')->nullable();
+            $table->unsignedBigInteger('total_belanja')->nullable();
             $table->date('hpp_date')->nullable();
             $table->integer('fee')->nullable();
             $table->enum('tipe', ['product', 'kemasan', 'non-pos', 'parcel'])->default('product');

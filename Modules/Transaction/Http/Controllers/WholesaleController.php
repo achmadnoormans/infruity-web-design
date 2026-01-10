@@ -629,13 +629,19 @@ class WholesaleController extends Controller
                         $productStock = (float) (ProductStock::where('id', $item['id'])->value('stock_available') ?? 0);
                         if ($productStock == 0) {
                             Product::where("id", $item['id'])->update([
-                                'hpp' => $item['price'],
+                                'hpp'           => $item['price'],
+                                'total_belanja' => $item['total_input'],
                             ]);
                         } else {
-                            $hpp    = Product::where("id", $item['id'])->value('hpp');
-                            $newHpp = collect([$hpp, $item['price']])->avg();
+                            $newStock     = $productStock + $item['qty'];
+                            $totalBelanja = Product::where("id", $item['id'])->value('total_belanja') + $item['total_input'];
+                            $hpp          = Product::where("id", $item['id'])->value('hpp');
+                            // $newHpp       = collect([$hpp, $item['price']])->avg();
+                            $newHpp = $totalBelanja / $newStock;
+                            // dd($newStock, $totalBelanja, $newHpp);
                             Product::where("id", $item['id'])->update([
-                                'hpp' => $newHpp,
+                                'hpp'           => $newHpp,
+                                'total_belanja' => $totalBelanja,
                             ]);
                         }
                     }
