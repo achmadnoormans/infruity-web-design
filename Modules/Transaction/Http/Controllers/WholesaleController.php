@@ -634,11 +634,10 @@ class WholesaleController extends Controller
                             ]);
                         } else {
                             $newStock     = $productStock + $item['qty'];
-                            $totalBelanja = Product::where("id", $item['id'])->value('total_belanja') + $item['total_input'];
-                            $hpp          = Product::where("id", $item['id'])->value('hpp');
-                            // $newHpp       = collect([$hpp, $item['price']])->avg();
-                            $newHpp = $totalBelanja / $newStock;
-                            // dd($newStock, $totalBelanja, $newHpp);
+                            $totalAset    = Product::where("id", $item['id'])->value('hpp') * $productStock;
+                            $totalBelanja = $totalAset + $item['total_input'];
+                            $newHpp       = $totalBelanja / $newStock;
+                            // dd($newStock, $totalAset, $newHpp);
                             Product::where("id", $item['id'])->update([
                                 'hpp'           => $newHpp,
                                 'total_belanja' => $totalBelanja,

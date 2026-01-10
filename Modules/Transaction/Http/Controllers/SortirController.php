@@ -1,32 +1,23 @@
 <?php
-
 namespace Modules\Transaction\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Master\Entities\Product;
-use Modules\Master\Entities\ProductChild;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\Product;
 use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Sortir;
 use Modules\Transaction\Entities\SortirDetail;
-use Modules\Transaction\Entities\WholesaleProduct;
-use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\StockIn;
 use Modules\Transaction\Entities\StockOut;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Facades\Excel;
-use Exception;
-use Illuminate\Support\Str;
 
 class SortirController extends Controller
 {
@@ -46,9 +37,9 @@ class SortirController extends Controller
      */
     public function create()
     {
-        $data['alpinejs'] = true;
-        $data['data'] = null;
-        $data['detail'] = null;
+        $data['alpinejs']       = true;
+        $data['data']           = null;
+        $data['detail']         = null;
         $data['invoice_number'] = Sortir::getOrderNumber();
         return view('transaction::sortir.create', $data);
     }
@@ -84,9 +75,9 @@ class SortirController extends Controller
      */
     public function edit($id)
     {
-        $data['alpinejs'] = true;
-        $data['data'] = Sortir::with('branch', 'createdBy')->findOrFail($id);
-        $data['detail'] = SortirDetail::with('product', 'product.unit')->where('sortir_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = Sortir::with('branch', 'createdBy')->findOrFail($id);
+        $data['detail']         = SortirDetail::with('product', 'product.unit')->where('sortir_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('transaction::sortir.create', $data);
     }
@@ -117,13 +108,13 @@ class SortirController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -132,13 +123,13 @@ class SortirController extends Controller
     {
         // dd($request->all());
         $data = $request->validate([
-            'branch_id' => 'required|exists:branch,id',
-            'date' => 'required|date',
+            'branch_id'      => 'required|exists:branch,id',
+            'date'           => 'required|date',
             'invoice_number' => 'nullable',
-            'items' => 'required|array',
-            'total' => 'required|numeric',
-            'subtotal' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,debt,temp,pending',
+            'items'          => 'required|array',
+            'total'          => 'required|numeric',
+            'subtotal'       => 'required|numeric',
+            'status'         => 'nullable|in:draft,paid,debt,temp,pending',
         ]);
 
         try {
@@ -146,20 +137,20 @@ class SortirController extends Controller
             DB::beginTransaction();
             $cek = Sortir::where('invoice_number', $data['invoice_number'])->first();
             if ($cek) {
-                $pos = Sortir::find($cek->id);
+                $pos       = Sortir::find($cek->id);
                 $posDetail = SortirDetail::where('sortir_id', $cek->id);
                 SortirDetail::where('sortir_id', $cek->id)->delete();
                 $pos->delete();
             }
             // Simpan ke tabel sortir (buat dulu kalau belum ada)
             $pos = new Sortir([
-                'uuid' => Str::uuid(),
-                'branch_id' => $data['branch_id'],
-                'date' => $data['date'],
+                'uuid'           => Str::uuid(),
+                'branch_id'      => $data['branch_id'],
+                'date'           => $data['date'],
                 'invoice_number' => Sortir::getOrderNumber(),
-                'total' => $data['total'],
-                'status' => $data['status'] ?? 'draft',
-                'created_by' => $userId,
+                'total'          => $data['total'],
+                'status'         => $data['status'] ?? 'draft',
+                'created_by'     => $userId,
             ]);
             $pos->save();
 
@@ -168,12 +159,12 @@ class SortirController extends Controller
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
                     SortirDetail::insert([
-                        'sortir_id' => $transaksiId,
+                        'sortir_id'  => $transaksiId,
                         'product_id' => $item['id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['qty'],
-                        'discount' => $item['discount'] ?? 0,
-                        'subtotal' => $item['total_input'],
+                        'price'      => $item['price'],
+                        'quantity'   => $item['qty'],
+                        'discount'   => $item['discount'] ?? 0,
+                        'subtotal'   => $item['total_input'],
                         'created_at' => now(),
                         'created_by' => $userId,
                     ]);
@@ -184,9 +175,9 @@ class SortirController extends Controller
             DB::disconnect();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil disimpan',
-                'transaksi_id' => $transaksiId
+                'success'      => true,
+                'message'      => 'Transaksi berhasil disimpan',
+                'transaksi_id' => $transaksiId,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -194,7 +185,7 @@ class SortirController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -204,25 +195,25 @@ class SortirController extends Controller
         // dd($request->all());
         Validator::make($request->all(), [
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'nullable|array',
+            'quantity'   => 'nullable|array',
         ])->validate();
 
         try {
             DB::beginTransaction();
-            $product = DB::table('product_stock')->where('id', $request->product_id)->first();
+            $product  = DB::table('product_stock')->where('id', $request->product_id)->first();
             $quantity = $product->stock_available;
-            $hpp = $product->hpp ?? 0;
+            $hpp      = $product->hpp ?? 0;
 
             if (isset($request->quantity)) {
                 foreach ($request->quantity as $key => $value) {
-                    $stockIn = new StockIn();
-                    $stockIn->code = 'sortir';
+                    $stockIn               = new StockIn();
+                    $stockIn->code         = 'sortir';
                     $stockIn->reference_id = $request->product_id;
-                    $stockIn->date = date('Y-m-d');
-                    $stockIn->product_id = $key;
-                    $stockIn->quantity = $value ?? 0;
-                    $stockIn->avg_price = $hpp;
-                    $stockIn->created_by = Auth::user()->id_user;
+                    $stockIn->date         = date('Y-m-d');
+                    $stockIn->product_id   = $key;
+                    $stockIn->quantity     = $value ?? 0;
+                    $stockIn->avg_price    = $hpp;
+                    $stockIn->created_by   = Auth::user()->id_user;
 
                     Product::where("id", $key)->update([
                         'hpp' => $hpp,
@@ -245,50 +236,50 @@ class SortirController extends Controller
                     $stockIn->save();
                 }
 
-                $stockOut = new StockOut();
-                $stockOut->code = 'sortir';
+                $stockOut               = new StockOut();
+                $stockOut->code         = 'sortir';
                 $stockOut->reference_id = $request->product_id;
-                $stockOut->date = date('Y-m-d');
-                $stockOut->product_id = $request->product_id;
-                $stockOut->quantity = array_sum($request->quantity) ?? 0;
-                $stockOut->avg_price = $hpp;
-                $stockOut->created_by = Auth::user()->id_user;
+                $stockOut->date         = date('Y-m-d');
+                $stockOut->product_id   = $request->product_id;
+                $stockOut->quantity     = array_sum($request->quantity) ?? 0;
+                $stockOut->avg_price    = $hpp;
+                $stockOut->created_by   = Auth::user()->id_user;
                 // dd($stockOut);
                 $stockOut->save();
             }
 
             if (isset($request->buang) && $request->buang > 0) {
-                $buang = new StockOut();
-                $buang->code = 'buang';
+                $buang               = new StockOut();
+                $buang->code         = 'buang';
                 $buang->reference_id = $request->product_id;
-                $buang->date = date('Y-m-d');
-                $buang->product_id = $request->product_id;
-                $buang->quantity = $request->buang ?? 0;
-                $buang->avg_price = $hpp;
-                $buang->created_by = Auth::user()->id_user;
+                $buang->date         = date('Y-m-d');
+                $buang->product_id   = $request->product_id;
+                $buang->quantity     = $request->buang ?? 0;
+                $buang->avg_price    = $hpp;
+                $buang->created_by   = Auth::user()->id_user;
                 $buang->save();
             }
 
             if (isset($request->product_transfer_id) && $request->value_transfer > 0) {
                 // dd('masuk', $hpp);
-                $transfer = new StockOut();
-                $transfer->code = 'transfer';
+                $transfer               = new StockOut();
+                $transfer->code         = 'transfer';
                 $transfer->reference_id = $request->product_id;
-                $transfer->date = date('Y-m-d');
-                $transfer->product_id = $request->product_id;
-                $transfer->quantity = $request->value_transfer ?? 0;
-                $transfer->avg_price = $hpp;
-                $transfer->created_by = Auth::user()->id_user;
+                $transfer->date         = date('Y-m-d');
+                $transfer->product_id   = $request->product_id;
+                $transfer->quantity     = $request->value_transfer ?? 0;
+                $transfer->avg_price    = $hpp;
+                $transfer->created_by   = Auth::user()->id_user;
                 $transfer->save();
 
-                $stockIn = new StockIn();
-                $stockIn->code = 'transfer';
+                $stockIn               = new StockIn();
+                $stockIn->code         = 'transfer';
                 $stockIn->reference_id = $request->product_id;
-                $stockIn->date = date('Y-m-d');
-                $stockIn->product_id = $request->product_transfer_id;
-                $stockIn->quantity = $request->value_transfer ?? 0;
-                $stockIn->avg_price = $hpp;
-                $stockIn->created_by = Auth::user()->id_user;
+                $stockIn->date         = date('Y-m-d');
+                $stockIn->product_id   = $request->product_transfer_id;
+                $stockIn->quantity     = $request->value_transfer ?? 0;
+                $stockIn->avg_price    = $hpp;
+                $stockIn->created_by   = Auth::user()->id_user;
                 $stockIn->save();
             }
             // dd($stockIn, $stockOut);
@@ -356,7 +347,7 @@ class SortirController extends Controller
             ->filter(function ($query) use ($request) {
                 $search = trim($request->input('search.value'));
 
-                if (!empty($search)) {
+                if (! empty($search)) {
                     $query->where(function ($q) use ($search) {
                         $q->where('invoice_number', 'LIKE', "%{$search}%")
                             ->orWhereHas('createdBy', function ($sub) use ($search) {
@@ -399,7 +390,7 @@ class SortirController extends Controller
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
-                if (!in_array($item->status, ['paid', 'debt'])) {
+                if (! in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">

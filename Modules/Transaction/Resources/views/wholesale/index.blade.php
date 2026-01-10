@@ -276,6 +276,8 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
+                                showConfirmButton: false,
+                                timer: 1500,
                                 text: response.message || 'Data berhasil dihapus.'
                             });
 
