@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Modules\Master\Entities\Product;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductReceipt;
@@ -159,25 +160,16 @@ class ProductionController extends Controller
             $production->staff_id        = $request->staff_id;
             $production->save();
 
-            // $productionId = $id;
-            // // Hapus detail produksi yang lama
-            // ProductionDetail::where('production_id', $productionId)->delete();
-            // // Simpan detail produksi yang baru
-            // $detail = ProductReceipt::where('receipt_id', $request->id_receipt)->get();
-            // if (empty($detail)) {
-            //     return redirect()->back()->withInput($request->all())
-            //         ->with('error', 'Detail produksi tidak boleh kosong');
-            // }
-
-            // // dd($request->product_receipt_id);
-            // foreach ($detail as $key => $product) {
-            //     $productionDetail = new ProductionDetail();
-            //     $productionDetail->production_id = $productionId;
-            //     $productionDetail->product_id = $product->product_receipt_id;
-            //     $productionDetail->quantity = $product->quantity * $production->quantity;
-            //     // dd($productionDetail);
-            //     $productionDetail->save();
-            // }
+            if ($request->submit_type == 'posting') {
+                $productionDetail = ProductionDetail::with('products')->where('production_id', $id)->get();
+                $hpp              = 0;
+                foreach ($productionDetail as $key => $value) {
+                    $hpp += $value->products->hpp * $value->quantity;
+                }
+                Product::where('id', $productId)->update([
+                    'hpp' => $hpp,
+                ]);
+            }
 
             DB::commit();
         } catch (Exception $e) {
@@ -230,7 +222,7 @@ class ProductionController extends Controller
             $newProduct       = ProductReceipt::where('receipt_id', $request->receipt_id)->get();
             $productionDetail = [];
             foreach ($newProduct as $key => $product) {
-                $productionDetail[] = [
+                $productionDetail[]  = [
                     'production_id' => $id,
                     'product_id'    => $product->product_receipt_id,
                     'quantity'      => $product->quantity,
@@ -287,7 +279,7 @@ class ProductionController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $html = '';
+                $html  = '';
                 $html .= $item->products->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->products->unit->abbreviation . '<br> Harga : ' . toNumber($item->products->price) . '';
                 return $html;
             })
@@ -433,7 +425,7 @@ class ProductionController extends Controller
                 return $item->status;
             })
             ->addColumn('action', function ($item) {
-                $html = '';
+                $html  = '';
                 $html .= '
                     <div class="dropstart">
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
