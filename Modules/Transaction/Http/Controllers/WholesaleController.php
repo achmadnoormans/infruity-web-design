@@ -220,9 +220,9 @@ class WholesaleController extends Controller
                         return $child->productStock->stock_available ?? 0;
                     });
                     // dd($totalStock);
-                    $stock = $value->productStock->stock_available ?? 0;
+                    $stock  = $value->productStock->stock_available ?? 0;
                     $stock += $totalStock;
-                    $hpp = $value->product->hpp ?? 0;
+                    $hpp    = $value->product->hpp ?? 0;
 
                     // dd($stock);
                     if ($stock == 0) {
@@ -632,6 +632,11 @@ class WholesaleController extends Controller
                                 'hpp'           => $item['price'],
                                 'total_belanja' => $item['total_input'],
                             ]);
+                            $ProductChild = ProductChild::where('parent_id', $item['id']);
+                            Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
+                                'hpp'           => $item['price'],
+                                'total_belanja' => $item['total_input'],
+                            ]);
                         } else {
                             $newStock     = $productStock + $item['qty'];
                             $totalAset    = Product::where("id", $item['id'])->value('hpp') * $productStock;
@@ -639,6 +644,11 @@ class WholesaleController extends Controller
                             $newHpp       = $totalBelanja / $newStock;
                             // dd($newStock, $totalAset, $newHpp);
                             Product::where("id", $item['id'])->update([
+                                'hpp'           => $newHpp,
+                                'total_belanja' => $totalBelanja,
+                            ]);
+                            $ProductChild = ProductChild::where('parent_id', $item['id']);
+                            Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
                                 'hpp'           => $newHpp,
                                 'total_belanja' => $totalBelanja,
                             ]);
