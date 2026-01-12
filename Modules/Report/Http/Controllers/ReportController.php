@@ -1,20 +1,18 @@
 <?php
-
 namespace Modules\Report\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use Modules\Report\Entities\CustomerTransaction;
+use Illuminate\Support\Facades\DB;
+use Modules\Master\Entities\Branch;
+use Modules\Pos\Entities\PosDetailModel;
+use Modules\Report\Entities\BranchProduct;
 use Modules\Report\Entities\BranchTransaction;
 use Modules\Report\Entities\CustomerProduct;
-use Modules\Report\Entities\BranchProduct;
-use Modules\Report\Entities\ProductBuang;
-use Modules\Pos\Entities\PosDetailModel;
-use Modules\Master\Entities\Branch;
+use Modules\Report\Entities\CustomerTransaction;
 use Modules\Transaction\Entities\SortirDetail;
-use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
 {
@@ -129,7 +127,7 @@ class ReportController extends Controller
     {
         $dr_tgl = date('Y-01-01');
         $sp_tgl = date('Y-12-31');
-        $data = CustomerTransaction::getAllCustomerTransaction($dr_tgl, $sp_tgl);
+        $data   = CustomerTransaction::getAllCustomerTransaction($dr_tgl, $sp_tgl);
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -168,7 +166,7 @@ class ReportController extends Controller
     {
         $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
         $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
-        $data = BranchTransaction::getAllBranchTransaction($dr_tgl, $sp_tgl);
+        $data   = BranchTransaction::getAllBranchTransaction($dr_tgl, $sp_tgl);
         return DataTables::of($data)
             ->addIndexColumn()
             ->editColumn('total_omset', function ($row) {
@@ -206,7 +204,7 @@ class ReportController extends Controller
     {
         $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
         $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
-        $data = BranchProduct::getAllBranchProduct($dr_tgl, $sp_tgl);
+        $data   = BranchProduct::getAllBranchProduct($dr_tgl, $sp_tgl);
         return DataTables::of($data)
             ->addIndexColumn()
             ->editColumn('branch', function ($row) {
@@ -250,7 +248,7 @@ class ReportController extends Controller
     {
         $dr_tgl = $request->dr_tgl ?? date('Y-01-01');
         $sp_tgl = $request->sp_tgl ?? date('Y-12-31');
-        $data = CustomerProduct::getAllCustomerProduct($dr_tgl, $sp_tgl);
+        $data   = CustomerProduct::getAllCustomerProduct($dr_tgl, $sp_tgl);
         return DataTables::of($data)
             ->editColumn('nama', function ($row) {
                 return $row->nama ?? 'Pelanggan Umum';
@@ -304,7 +302,7 @@ class ReportController extends Controller
     public function get_data_barang_buang(Request $request)
     {
         $startDate = $request->start_date ?? date('Y-01-01');
-        $endDate = $request->end_date ?? date('Y-12-31');
+        $endDate   = $request->end_date ?? date('Y-12-31');
 
         $query = SortirDetail::query()
             ->join('sortir_transaction as B', 'sortir_transaction_detail.sortir_id', '=', 'B.id')
@@ -327,7 +325,7 @@ class ReportController extends Controller
         }
 
         $grandTotalQuery = clone $query;
-        $grandTotal = $grandTotalQuery->sum('sortir_transaction_detail.subtotal');
+        $grandTotal      = $grandTotalQuery->sum('sortir_transaction_detail.subtotal');
 
         $query = $query->groupBy('sortir_transaction_detail.product_id')->orderByDesc('total_hpp');
 
@@ -361,7 +359,7 @@ class ReportController extends Controller
             })
             ->rawColumns(['satuan'])
             ->with([
-                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
+                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.'),
             ])
             ->make(true);
     }
@@ -369,7 +367,7 @@ class ReportController extends Controller
     public function get_data_product_sales(Request $request)
     {
         $startDate = $request->start_date ?? date('Y-01-01');
-        $endDate = $request->end_date ?? date('Y-12-31');
+        $endDate   = $request->end_date ?? date('Y-12-31');
 
         // Query utama
         $data = PosDetailModel::select(
@@ -390,8 +388,8 @@ class ReportController extends Controller
             ->join('pos_transaction', 'pos_transaction_detail.pos_id', '=', 'pos_transaction.id')
             ->leftJoin('pos_payment', 'pos_transaction.id', '=', 'pos_payment.pos_id')
             ->whereBetween('pos_transaction.date', [$startDate, $endDate])
-            ->whereNull('pos_transaction_detail.deleted_at')   // hanya yang belum dihapus
-            ->where('pos_transaction.status', '!=', 'draft');  // status bukan draft
+            ->whereNull('pos_transaction_detail.deleted_at')  // hanya yang belum dihapus
+            ->where('pos_transaction.status', '!=', 'draft'); // status bukan draft
 
         if ($request->has('branch_id') && $request->branch_id != 'all') {
             $data = $data->where('pos_payment.branch_id', $request->branch_id);
@@ -399,7 +397,7 @@ class ReportController extends Controller
 
         // Clone query untuk menghitung grand total
         $grandTotalQuery = clone $data;
-        $grandTotal = $grandTotalQuery->sum('pos_transaction_detail.subtotal');
+        $grandTotal      = $grandTotalQuery->sum('pos_transaction_detail.subtotal');
 
         // Grouping dan urutan data
         $data = $data->groupBy('pos_transaction_detail.product_id', 'products.name')
@@ -407,7 +405,7 @@ class ReportController extends Controller
 
         return DataTables::of($data)
             ->filter(function ($queryInstance) use ($request) {
-                if ($request->has('search') && !empty($request->search['value'])) {
+                if ($request->has('search') && ! empty($request->search['value'])) {
                     $searchValue = '%' . trim($request->search['value']) . '%';
                     $queryInstance->where('products.name', 'like', $searchValue);
                 }
@@ -419,7 +417,7 @@ class ReportController extends Controller
                 return number_format($row->persentase_penjualan, 2, ',', '.') . ' %';
             })
             ->with([
-                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.')
+                'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.'),
             ])
             ->make(true);
     }
@@ -427,7 +425,7 @@ class ReportController extends Controller
     public function get_data_total_aset(Request $request)
     {
         $startDate = $request->start_date ?? date('Y-01-01');
-        $endDate = $request->end_date ?? date('Y-12-31');
+        $endDate   = $request->end_date ?? date('Y-12-31');
 
         // Query utama
         $query = DB::table('transaction_stock as A')
@@ -443,14 +441,13 @@ class ReportController extends Controller
             ->join('products as B', 'A.product_id', '=', 'B.id')
             ->join('product_units as C', 'B.product_unit', '=', 'C.id')
             ->where('B.tipe', '!=', 'parcel')
-            ->groupBy('A.product_id', 'B.parent_id', 'B.name', 'C.abbreviation', 'B.hpp');
+            ->groupBy('A.product_id', 'B.parent_id', 'B.name', 'C.abbreviation', 'B.hpp')
+            ->having('total_stock', '>', 0);
 
-        // GRAND TOTAL HPP (semua baris)
-        $grandTotal = DB::table('transaction_stock as A')
-            ->join('products as B', 'A.product_id', '=', 'B.id')
-            ->where('B.tipe', '!=', 'parcel')
-            ->select(DB::raw('SUM(A.quantity * B.hpp) as grand_total_hpp'))
-            ->first()->grand_total_hpp ?? 0;
+        // GRAND TOTAL HPP (semua baris yang tampil)
+        $grandTotal = DB::table(DB::raw("({$query->toSql()}) as sub"))
+            ->mergeBindings($query)
+            ->sum('total_hpp');
 
         return DataTables::of($query)
             ->editColumn('total_hpp', function ($row) {
@@ -470,7 +467,7 @@ class ReportController extends Controller
                 ';
             })
             ->with([
-                'grand_total' => number_format($grandTotal, 0, ',', '.')
+                'grand_total' => number_format($grandTotal, 0, ',', '.'),
             ])
             ->make(true);
     }
