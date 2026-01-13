@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Pos\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
@@ -45,9 +44,9 @@ class PosController extends Controller
      */
     public function create()
     {
-        $data['alpinejs'] = true;
-        $data['data'] = null;
-        $data['detail'] = null;
+        $data['alpinejs']       = true;
+        $data['data']           = null;
+        $data['detail']         = null;
         $data['invoice_number'] = PosModel::getOrderNumber();
         return view('pos::pos.create2', $data);
     }
@@ -61,27 +60,27 @@ class PosController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'customer_id' => 'nullable|exists:customer,id',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.qty' => 'required|numeric|min:1',
-            'items.*.price' => 'required|numeric|min:0',
-            'items.*.discount' => 'nullable|numeric|min:0',
+            'customer_id'         => 'nullable|exists:customer,id',
+            'items'               => 'required|array',
+            'items.*.product_id'  => 'required|exists:products,id',
+            'items.*.qty'         => 'required|numeric|min:1',
+            'items.*.price'       => 'required|numeric|min:0',
+            'items.*.discount'    => 'nullable|numeric|min:0',
             'items.*.total_input' => 'required|numeric|min:0',
         ]);
 
-        $sum_discount = array_sum(array_column($request->items, 'discount'));
+        $sum_discount    = array_sum(array_column($request->items, 'discount'));
         $sum_total_input = array_sum(array_column($request->items, 'total_input'));
 
         DB::beginTransaction();
         try {
 
             $userId = Auth::id(); // Ambil user sekali
-            $pos = new PosModel([
+            $pos    = new PosModel([
                 'customer_id' => $request->customer_id,
-                'date' => date('Y-m-d'),
-                'total' => $sum_total_input - $sum_discount,
-                'created_by' => $userId,
+                'date'        => date('Y-m-d'),
+                'total'       => $sum_total_input - $sum_discount,
+                'created_by'  => $userId,
             ]);
             $pos->save();
             // $transaction = PosModel::create([
@@ -93,12 +92,12 @@ class PosController extends Controller
             $posDetail = [];
             foreach ($request->items as $item) {
                 $posDetail[] = [
-                    'pos_id' => $pos->id,
+                    'pos_id'     => $pos->id,
                     'product_id' => $item['product_id'],
-                    'quantity' => $item['qty'],
-                    'price' => $item['price'],
-                    'discount' => $item['discount'] ?? 0,
-                    'subtotal' => $item['total_input'],
+                    'quantity'   => $item['qty'],
+                    'price'      => $item['price'],
+                    'discount'   => $item['discount'] ?? 0,
+                    'subtotal'   => $item['total_input'],
                 ];
             }
             PosDetailModel::insert($posDetail);
@@ -107,7 +106,7 @@ class PosController extends Controller
 
             return response()->json([
                 'success' => true,
-                'id' => $pos->id,
+                'id'      => $pos->id,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -125,10 +124,10 @@ class PosController extends Controller
      */
     public function show($id)
     {
-        $data['data'] = PosModel::with('customer')->findOrFail($id);
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['data']         = PosModel::with('customer')->findOrFail($id);
+        $data['detail']       = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['parcelDetail'] = ProductionParcelDetail::with('product')->where('pos_id', $id)->get();
-        $data['setting'] = SettingNota::first();
+        $data['setting']      = SettingNota::first();
         // dd($data);
         return view('pos::pos.receipt', $data);
     }
@@ -140,9 +139,9 @@ class PosController extends Controller
      */
     public function edit($id)
     {
-        $data['alpinejs'] = true;
-        $data['data'] = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
-        $data['detail'] = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
+        $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
     }
@@ -190,44 +189,44 @@ class PosController extends Controller
     {
         // dd($request->all());
         $data = $request->validate([
-            'date' => 'required|date',
+            'date'           => 'required|date',
             'transaction_id' => 'required|exists:pos_transaction,id',
             // 'branch_id' => 'required|exists:branch,id',
             // 'account_id' => 'required|exists:account,id',
             // 'payment_id' => 'required|exists:payment_method,id',
-            'payments' => 'required|array',
-            'total_payment' => 'required|numeric|min:1',
-            'customer_id' => 'nullable',
+            'payments'       => 'required|array',
+            'total_payment'  => 'required|numeric|min:1',
+            'customer_id'    => 'nullable',
         ]);
 
         try {
             DB::beginTransaction();
 
             // Simpan ke tabel pembayaran
-            $paymentNames = collect($data['payments'])->pluck('payment_name')->toArray();
-            $paymentIds = collect($data['payments'])->pluck('payment_id')->toArray();
+            $paymentNames   = collect($data['payments'])->pluck('payment_name')->toArray();
+            $paymentIds     = collect($data['payments'])->pluck('payment_id')->toArray();
             $paymentAmounts = collect($data['payments'])->pluck('amount')->toArray();
 
             $payment = new Payment([
-                'uuid' => Str::uuid(),
-                'date' => $data['date'],
-                'nota_number' => date('YmdHis'),
-                'pos_id' => $data['transaction_id'],
+                'uuid'              => Str::uuid(),
+                'date'              => $data['date'],
+                'nota_number'       => date('YmdHis'),
+                'pos_id'            => $data['transaction_id'],
                 // 'branch_id' => $data['branch_id'],
                 // 'account_id' => $data['account_id'],
-                'payment_method' => json_encode($paymentNames),
+                'payment_method'    => json_encode($paymentNames),
                 'payment_method_id' => json_encode($paymentIds),
-                'payment_amount' => json_encode($paymentAmounts),
-                'total' => $data['total_payment'],
-                'created_by' => Auth::user()->id_user,
+                'payment_amount'    => json_encode($paymentAmounts),
+                'total'             => $data['total_payment'],
+                'created_by'        => Auth::user()->id_user,
             ]);
             // dd($payment);
             $payment->save();
 
             $deposito = Deposito::where('customer_id', $data['customer_id'])->first();
-            $voucher = $deposito->voucher ?? 0;
+            $voucher  = $deposito->voucher ?? 0;
             PosModel::where("id", $data['transaction_id'])->update([
-                'voucher' => $voucher,
+                'voucher'     => $voucher,
                 'voucher_qty' => 1,
                 'deposito_id' => $deposito->id ?? null,
             ]);
@@ -235,15 +234,15 @@ class PosController extends Controller
             $totalPayment = Payment::where('pos_id', $data['transaction_id'])
                 ->sum('total');
 
-            $pos = PosModel::findOrFail($data['transaction_id']);
-            $total = $pos->total - $pos->voucher;
+            $pos       = PosModel::findOrFail($data['transaction_id']);
+            $total     = $pos->total - $pos->voucher;
             $pos->paid = $totalPayment;
             if ($totalPayment > $total) {
-                $lastPayment = Payment::findOrFail($payment->id);
+                $lastPayment         = Payment::findOrFail($payment->id);
                 $lastPayment->return = ($totalPayment - $total);
                 $lastPayment->save();
             } else {
-                $lastPayment = Payment::findOrFail($payment->id);
+                $lastPayment            = Payment::findOrFail($payment->id);
                 $lastPayment->remaining = ($total - $totalPayment);
                 $lastPayment->save();
             }
@@ -259,14 +258,14 @@ class PosController extends Controller
                 'success' => true,
                 'message' => 'Transaksi berhasil disimpan',
                 'payment' => $payment,
-                'pos' => $pos,
+                'pos'     => $pos,
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -282,7 +281,7 @@ class PosController extends Controller
 
     public function showReceipt($id)
     {
-        $data['data'] = PosModel::with('customer')->findOrFail($id);
+        $data['data']   = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         // dd($data);
         return view('pos::pos.receipt2', $data);
@@ -293,44 +292,44 @@ class PosController extends Controller
         // dd($request->all());
         $data = $request->validate([
             // 'customer_id' => 'nullable|exists:customer,id',
-            'customer_id' => 'nullable',
-            'date' => 'required|date',
-            'invoice_number' => 'nullable',
-            'items' => 'required|array',
-            'parcel' => 'nullable|array',
-            'jus' => 'nullable|array',
-            'subtotal' => 'required|numeric',
-            'discount' => 'required|numeric',
-            'ongkir' => 'required|numeric',
-            'discount_ongkir' => 'required|numeric',
-            'total' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,debt,temp,pending',
-            'process_status' => 'nullable|in:none,pending,done',
-            'ongkir_date' => 'nullable|date',
-            'ongkir_time' => 'nullable',
-            'note' => 'nullable',
-            'courier_id' => 'nullable',
-            'ongkir_address' => 'nullable',
-            'kemasan_price' => 'nullable|numeric',
-            'branch_id' => 'nullable',
+            'customer_id'       => 'nullable',
+            'date'              => 'required|date',
+            'invoice_number'    => 'nullable',
+            'items'             => 'required|array',
+            'parcel'            => 'nullable|array',
+            'jus'               => 'nullable|array',
+            'subtotal'          => 'required|numeric',
+            'discount'          => 'required|numeric',
+            'ongkir'            => 'required|numeric',
+            'discount_ongkir'   => 'required|numeric',
+            'total'             => 'required|numeric',
+            'status'            => 'nullable|in:draft,paid,debt,temp,pending',
+            'process_status'    => 'nullable|in:none,pending,done',
+            'ongkir_date'       => 'nullable|date',
+            'ongkir_time'       => 'nullable',
+            'note'              => 'nullable',
+            'courier_id'        => 'nullable',
+            'ongkir_address'    => 'nullable',
+            'kemasan_price'     => 'nullable|numeric',
+            'branch_id'         => 'nullable',
             'branch_process_id' => 'nullable',
         ]);
 
         try {
             $userId = Auth::id();
             DB::beginTransaction();
-            $cek = PosModel::where('invoice_number', $data['invoice_number'])->first();
+            $cek  = PosModel::where('invoice_number', $data['invoice_number'])->first();
             $uuid = Str::uuid();
             $date = $data['date'];
             if ($cek) {
-                $pos = PosModel::find($cek->id);
-                $uuid = $pos->uuid;
-                $date = $pos->date;
+                $pos       = PosModel::find($cek->id);
+                $uuid      = $pos->uuid;
+                $date      = $pos->date;
                 $posDetail = PosDetailModel::where('pos_id', $cek->id);
                 $posDetail = $posDetail->where('parcel_id', '!=', null)->get();
                 foreach ($posDetail as $key => $value) {
                     $productId = $value->product_id;
-                    $product = Product::find($productId);
+                    $product   = Product::find($productId);
                     $product->delete();
                 }
                 PosDetailModel::where('pos_id', $cek->id)->forceDelete();
@@ -338,96 +337,96 @@ class PosController extends Controller
             }
             // Simpan ke tabel transaksi (buat dulu kalau belum ada)
             $pos = new PosModel([
-                'uuid' => $uuid,
-                'customer_id' => $data['customer_id'],
-                'date' => $date,
-                'invoice_number' => $data['invoice_number'],
-                'subtotal' => $data['subtotal'],
-                'total' => $data['total'],
-                'discount' => $data['discount'],
-                'ongkir' => $data['ongkir'],
-                'ongkir_discount' => $data['discount_ongkir'] ?? 0,
-                'ongkir_date' => $data['ongkir_date'] ?? null,
-                'ongkir_time' => $data['ongkir_time'] ?? null,
-                'status' => $data['status'] ?? 'draft',
-                'process_status' => $data['process_status'] ?? 'none',
-                'process_date' => date('Y-m-d H:i:s'),
-                'note' => $data['note'] ?? null,
-                'created_by' => $userId,
-                'courier_id' => $data['courier_id'] ?? null,
-                'ongkir_address' => $data['ongkir_address'] ?? null,
-                'branch_id' => $data['branch_id'] ?? null,
+                'uuid'              => $uuid,
+                'customer_id'       => $data['customer_id'],
+                'date'              => $date,
+                'invoice_number'    => $data['invoice_number'],
+                'subtotal'          => $data['subtotal'],
+                'total'             => $data['total'],
+                'discount'          => $data['discount'],
+                'ongkir'            => $data['ongkir'],
+                'ongkir_discount'   => $data['discount_ongkir'] ?? 0,
+                'ongkir_date'       => $data['ongkir_date'] ?? null,
+                'ongkir_time'       => $data['ongkir_time'] ?? null,
+                'status'            => $data['status'] ?? 'draft',
+                'process_status'    => $data['process_status'] ?? 'none',
+                'process_date'      => date('Y-m-d H:i:s'),
+                'note'              => $data['note'] ?? null,
+                'created_by'        => $userId,
+                'courier_id'        => $data['courier_id'] ?? null,
+                'ongkir_address'    => $data['ongkir_address'] ?? null,
+                'branch_id'         => $data['branch_id'] ?? null,
                 'branch_process_id' => $data['branch_process_id'] ?? null,
             ]);
             $pos->save();
 
             // Simpan item transaksi
             $transaksiId = $pos->id;
-            $settingExp = SettingExp::first();
-            $totalPrice = $this->sumTotalPrice($data['items']);
+            $settingExp  = SettingExp::first();
+            $totalPrice  = $this->sumTotalPrice($data['items']);
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
-                    $prosentase = round(($item['total_input'] / $totalPrice) * 100, 2);
+                    $prosentase  = round(($item['total_input'] / $totalPrice) * 100, 2);
                     $posDiscount = $pos->discount * $prosentase / 100;
                     PosDetailModel::insert([
-                        'pos_id' => $transaksiId,
-                        'product_id' => $item['id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['qty'],
-                        'discount' => $item['discount'] ?? 0,
-                        'subtotal' => $item['total_input'],
-                        'hpp' => $item['hpp'] ?? 0,
+                        'pos_id'               => $transaksiId,
+                        'product_id'           => $item['id'],
+                        'price'                => $item['price'],
+                        'quantity'             => $item['qty'],
+                        'discount'             => $item['discount'] ?? 0,
+                        'subtotal'             => $item['total_input'],
+                        'hpp'                  => isset($item['hpp']) ? $item['hpp'] * $item['qty'] : 0,
                         'price_after_discount' => $item['price'] - $posDiscount,
-                        'exp' => $item['price'] - $item['hpp'],
-                        'exp_value' => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                        'type' => 'product',
-                        'created_by' => $userId,
+                        'exp'                  => $item['price'] - $item['hpp'],
+                        'exp_value'            => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
+                        'created_at'           => now(),
+                        'updated_at'           => now(),
+                        'type'                 => 'product',
+                        'created_by'           => $userId,
                     ]);
                 }
             }
 
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $key => $value) {
-                    $parcel = $value;
-                    $productNameBase = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
+                    $parcel             = $value;
+                    $productNameBase    = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
                     $productDescription = 'Parcel ' . $parcel['kemasan'] . '-' . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
-                    $product = new Product([
-                        'name' => Product::generateProductName($productNameBase),
-                        'description' => $productDescription,
-                        'price' => preg_replace('/[^0-9]/', '', $parcel['budget']),
+                    $product            = new Product([
+                        'name'         => Product::generateProductName($productNameBase),
+                        'description'  => $productDescription,
+                        'price'        => preg_replace('/[^0-9]/', '', $parcel['budget']),
                         'product_unit' => 3,
-                        'status' => 'no-receipt',
-                        'tipe' => 'parcel',
-                        'hpp' => preg_replace('/[^0-9]/', '', $parcel['hpp']),
-                        'fee' => preg_replace('/[^0-9]/', '', $parcel['fee']),
-                        'created_by' => $userId,
+                        'status'       => 'no-receipt',
+                        'tipe'         => 'parcel',
+                        'hpp'          => preg_replace('/[^0-9]/', '', $parcel['hpp']),
+                        'fee'          => preg_replace('/[^0-9]/', '', $parcel['fee']),
+                        'created_by'   => $userId,
                     ]);
                     $product->save();
                     PosDetailModel::insert([
-                        'pos_id' => $transaksiId,
-                        'parcel_id' => $parcel['kemasanId'] ?? Product::where('name', $parcel['kemasan'])->first()->id,
-                        'product_id' => $product->id,
-                        'price' => $product->price,
-                        'quantity' => $parcel['qty'],
-                        'discount' => 0,
-                        'subtotal' => $product->price,
+                        'pos_id'        => $transaksiId,
+                        'parcel_id'     => $parcel['kemasanId'] ?? Product::where('name', $parcel['kemasan'])->first()->id,
+                        'product_id'    => $product->id,
+                        'price'         => $product->price,
+                        'quantity'      => $parcel['qty'],
+                        'discount'      => 0,
+                        'subtotal'      => $product->price,
                         'kemasan_price' => isset($parcel['kemasanPrice']) ? preg_replace('/[^0-9]/', '', $parcel['kemasanPrice']) : Product::where('name', $parcel['kemasan'])->first()->price,
-                        'hpp' => $product->hpp,
-                        'exp' => $product->price - $product->hpp,
-                        'exp_value' => ($product->price - $product->hpp) * $settingExp->value_exp,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                        'type' => 'parcel',
-                        'created_by' => $userId,
+                        'hpp'           => $product->hpp,
+                        'exp'           => $product->price - $product->hpp,
+                        'exp_value'     => ($product->price - $product->hpp) * $settingExp->value_exp,
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                        'type'          => 'parcel',
+                        'created_by'    => $userId,
                     ]);
                     foreach ($value['data'] as $item) {
                         ProductionParcelDetail::insert([
                             'production_id' => $product->id,
-                            'pos_id' => $transaksiId,
-                            'product_id' => $item['product'],
-                            'quantity' => $item['qty'] * $value['qty'],
+                            'pos_id'        => $transaksiId,
+                            'product_id'    => $item['product'],
+                            'quantity'      => $item['qty'] * $value['qty'],
                         ]);
                     }
                 }
@@ -437,38 +436,38 @@ class PosController extends Controller
                 foreach ($data['jus'] as $key => $value) {
                     $production = new Production([
                         'production_number' => Production::getOrderNumber(),
-                        'product_id' => $value['productId'],
-                        'production_date' => now(),
-                        'status' => 'complete',
-                        'created_by' => Auth::user()->id_user,
-                        'quantity' => $value['qty'],
-                        'staff_id' => Auth::user()->id_user,
+                        'product_id'        => $value['productId'],
+                        'production_date'   => now(),
+                        'status'            => 'complete',
+                        'created_by'        => Auth::user()->id_user,
+                        'quantity'          => $value['qty'],
+                        'staff_id'          => Auth::user()->id_user,
                     ]);
                     $production->save();
                     if (isset($value['product_receipt_id'])) {
                         foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
                             $productionDetail = new ProductionDetail([
                                 'production_id' => $production->id,
-                                'product_id' => $productReceiptId,
-                                'quantity' => $value['product_receipt_qty'][$key],
+                                'product_id'    => $productReceiptId,
+                                'quantity'      => $value['product_receipt_qty'][$key],
                             ]);
                             $productionDetail->save();
                         }
                     }
 
                     PosDetailModel::insert([
-                        'pos_id' => $transaksiId,
+                        'pos_id'     => $transaksiId,
                         'product_id' => $value['productId'],
-                        'price' => $value['price'],
-                        'quantity' => $value['qty'],
-                        'discount' => $value['discount'],
-                        'subtotal' => $value['price'] * $value['qty'],
-                        'hpp' => $value['hpp'],
-                        'exp' => $value['price'] - $value['hpp'],
-                        'exp_value' => ($value['price'] - $value['hpp']) * $settingExp->value_exp,
+                        'price'      => $value['price'],
+                        'quantity'   => $value['qty'],
+                        'discount'   => $value['discount'],
+                        'subtotal'   => $value['price'] * $value['qty'],
+                        'hpp'        => $value['hpp'],
+                        'exp'        => $value['price'] - $value['hpp'],
+                        'exp_value'  => ($value['price'] - $value['hpp']) * $settingExp->value_exp,
                         'created_at' => now(),
                         'updated_at' => now(),
-                        'type' => 'product',
+                        'type'       => 'product',
                         'created_by' => $userId,
                     ]);
                 }
@@ -487,8 +486,8 @@ class PosController extends Controller
             DB::disconnect();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil disimpan',
+                'success'      => true,
+                'message'      => 'Transaksi berhasil disimpan',
                 'transaksi_id' => $transaksiId,
             ]);
         } catch (\Throwable $e) {
@@ -497,7 +496,7 @@ class PosController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -505,9 +504,9 @@ class PosController extends Controller
     public function payment($id)
     {
         $data['alpinejs'] = true;
-        $data['data'] = PosModel::with('customer')->findOrFail($id);
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
-        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['data']     = PosModel::with('customer')->findOrFail($id);
+        $data['detail']   = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['tier']     = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         $data['deposito'] = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
         // dd($data);
         return view('pos::pos.payment', $data);
@@ -517,19 +516,19 @@ class PosController extends Controller
     {
         // $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
-        $data['setting'] = SettingNota::first();
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['setting']     = SettingNota::first();
+        $data['detail']      = PosDetailModel::with('product')->where('pos_id', $id)->get();
         return view('pos::pos.print-list-payment', $data);
     }
 
     public function printDraftPayment($id)
     {
-        $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
+        $data['data']        = PosModel::with('customer', 'user')->findOrFail($id);
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
-        $data['setting'] = SettingNota::first();
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
-        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
-        $data['deposito'] = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
+        $data['setting']     = SettingNota::first();
+        $data['detail']      = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['tier']        = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['deposito']    = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
         // dd($data);
         return view('pos::pos.print2', $data);
     }
@@ -537,14 +536,14 @@ class PosController extends Controller
     public function uploadReceipt(Request $request)
     {
         $image = $request->input('image');
-        if (!$image) {
+        if (! $image) {
             return response()->json(['error' => 'No image'], 400);
         }
 
         // Pisahkan data:image/png;base64,
-        $image_parts = explode(";base64,", $image);
+        $image_parts  = explode(";base64,", $image);
         $image_base64 = base64_decode($image_parts[1]);
-        $fileName = 'receipt_' . time() . '.png';
+        $fileName     = 'receipt_' . time() . '.png';
 
         // Simpan di public/storage/receipts
         $filePath = public_path('storage/receipts/' . $fileName);
@@ -557,7 +556,7 @@ class PosController extends Controller
 
     public function paymentNotification($id)
     {
-        $data['data'] = Payment::with('paymentMethod', 'pos')->findOrFail($id);
+        $data['data']         = Payment::with('paymentMethod', 'pos')->findOrFail($id);
         $data['totalPayment'] = Payment::where('pos_id', $data['data']->pos_id)->sum('total');
         return view('pos::pos.payment-success2', $data);
     }
@@ -565,10 +564,10 @@ class PosController extends Controller
     public function printNota($id)
     {
         $data['payment'] = Payment::findOrFail($id);
-        $data['data'] = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+        $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
         $data['setting'] = SettingNota::first();
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
-        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['detail']  = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
+        $data['tier']    = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         // dd($data);
         return view('pos::pos.print2', $data);
     }
@@ -577,10 +576,10 @@ class PosController extends Controller
     {
         $data['payment'] = Payment::where('uuid', $id)->first();
         if (isset($data['payment'])) {
-            $data['data'] = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+            $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
             $data['setting'] = SettingNota::first();
-            $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
-            $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+            $data['detail']  = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
+            $data['tier']    = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
             // dd($data);
             return view('pos::pos.print2', $data);
         } else {
@@ -591,13 +590,13 @@ class PosController extends Controller
     public function cekNotaDraft($id)
     {
         $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
-        if (!isset($data['data'])) {
+        if (! isset($data['data'])) {
             abort(404);
         }
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
-        $data['setting'] = SettingNota::first();
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $data['data']->id)->get();
-        $data['tier'] = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
+        $data['setting']     = SettingNota::first();
+        $data['detail']      = PosDetailModel::with('product')->where('pos_id', $data['data']->id)->get();
+        $data['tier']        = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         // dd($data);
         return view('pos::pos.print2', $data);
     }
@@ -625,13 +624,13 @@ class PosController extends Controller
             ->filter(function ($q) use ($request) {
                 $search = trim($request->input('search.value'));
 
-                if (!empty($search)) {
+                if (! empty($search)) {
                     $q->where(function ($sub) use ($search) {
                         $sub->whereHas('customer', function ($customerQuery) use ($search) {
                             $customerQuery->where('name', 'LIKE', "%{$search}%");
                         });
                         $possibleDates = [];
-                        $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
+                        $formats       = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
                         foreach ($formats as $format) {
                             $date = \DateTime::createFromFormat($format, $search);
                             if ($date) {
@@ -639,7 +638,7 @@ class PosController extends Controller
                                 break;
                             }
                         }
-                        if (!empty($possibleDates)) {
+                        if (! empty($possibleDates)) {
                             foreach ($possibleDates as $dateStr) {
                                 $sub->orWhereDate('date', $dateStr);
                             }
@@ -650,10 +649,10 @@ class PosController extends Controller
             }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $hasParcel = $item->details->contains(fn($detail) => isset($detail->product) && $detail->type === 'parcel');
-                $iconHtml = $hasParcel ? '<i class="bi bi-box-seam text-success" title="Ada Parcel"></i>' : '';
-                $html = '<div class="d-flex align-items-center">';
-                $html .= '<div class="ms-5">';
+                $hasParcel  = $item->details->contains(fn($detail) => isset($detail->product) && $detail->type === 'parcel');
+                $iconHtml   = $hasParcel ? '<i class="bi bi-box-seam text-success" title="Ada Parcel"></i>' : '';
+                $html       = '<div class="d-flex align-items-center">';
+                $html      .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
                     $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a> ';
                 } else {
@@ -672,9 +671,9 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $date = date('d M Y H:i', strtotime($item->created_at));
+                $date  = date('d M Y H:i', strtotime($item->created_at));
                 $badge = match ($item->status) {
-                    'paid' => '<span class="badge badge-light-success">Paid</span>',
+                    'paid'  => '<span class="badge badge-light-success">Paid</span>',
                     'draft' => '<span class="badge badge-light-danger">Draft</span>',
                     default => '<span class="badge badge-light-warning">' . e($item->status) . '</span>'
                 };
@@ -682,7 +681,7 @@ class PosController extends Controller
                 return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}";
             })
             ->addColumn('action', function ($item) {
-                $html = '';
+                $html  = '';
                 $html .= '
                     <div class="dropstart">
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
@@ -703,7 +702,7 @@ class PosController extends Controller
                                 </a>
                             </li>';
                 }
-                if (!in_array($item->status, ['paid'])) {
+                if (! in_array($item->status, ['paid'])) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
@@ -717,7 +716,7 @@ class PosController extends Controller
                                     <i class="fa fa-receipt"></i>
                                 </a>
                             </li>';
-                if (!in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
+                if (! in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">

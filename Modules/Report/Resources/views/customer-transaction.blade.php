@@ -14,9 +14,6 @@
                             <th class="text-start min-w-150px">Nama Pelanggan</th>
                             <th class="text-start min-w-50px">Jenis Kelamin</th>
                             <th class="text-start min-w-50px">Usia</th>
-                            <th class="text-start min-w-150px">Kota / Kab</th>
-                            <th class="text-start min-w-150px">Kecamatan</th>
-                            <th class="text-start min-w-150px">Kelurahan</th>
                             <th class="text-start min-w-150px">Chanel</th>
                             <th class="text-start min-w-150px">Total Belanja (Rp)</th>
                             <th class="text-start min-w-150px">Margin (Rp)</th>
@@ -29,7 +26,7 @@
             <!--end::Card body-->
         </div>
     </div>
-    @section('script')
+@section('script')
     <script type="text/javascript">
         var dataTable;
         $.ajaxSetup({
@@ -76,18 +73,6 @@
                         name: 'age'
                     },
                     {
-                        data: 'city_name',
-                        name: 'city_name'
-                    },
-                    {
-                        data: 'district_name',
-                        name: 'district_name'
-                    },
-                    {
-                        data: 'village_name',
-                        name: 'village_name'
-                    },
-                    {
                         data: 'branch_name',
                         name: 'branch_name'
                     },
@@ -120,17 +105,16 @@
             }
         }
 
-      
 
- 
 
-        
+
+
+
         $("#date").flatpickr({
             altInput: !0,
             altFormat: "d F, Y",
             dateFormat: "Y-m-d"
         });
-
     </script>
 @endsection
 
