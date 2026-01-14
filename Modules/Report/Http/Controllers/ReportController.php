@@ -429,19 +429,30 @@ class ReportController extends Controller
 
         // Query utama
         $query = DB::table('transaction_stock as A')
-            ->select(
-                'A.product_id',
-                'B.parent_id',
-                'B.name',
+            ->select([
+                DB::raw('COALESCE(pc.parent_id, A.product_id) as product_id'),
+                'PARENT.name as name',
                 'C.abbreviation',
-                'B.hpp',
+                'PARENT.hpp',
                 DB::raw('SUM(A.quantity) as total_stock'),
-                DB::raw('(SUM(A.quantity) * B.hpp) as total_hpp')
+                DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
+            ])
+            ->join('products as CHILD', 'A.product_id', '=', 'CHILD.id')
+            ->leftJoin('product_child as pc', 'CHILD.id', '=', 'pc.product_id')
+            ->join(
+                DB::raw('products as PARENT'),
+                DB::raw('PARENT.id'),
+                '=',
+                DB::raw('COALESCE(pc.parent_id, CHILD.id)')
             )
-            ->join('products as B', 'A.product_id', '=', 'B.id')
-            ->join('product_units as C', 'B.product_unit', '=', 'C.id')
-            ->where('B.tipe', '!=', 'parcel')
-            ->groupBy('A.product_id', 'B.parent_id', 'B.name', 'C.abbreviation', 'B.hpp')
+            ->join('product_units as C', 'PARENT.product_unit', '=', 'C.id')
+            ->where('PARENT.tipe', '!=', 'parcel')
+            ->groupBy(
+                DB::raw('COALESCE(pc.parent_id, A.product_id)'),
+                'PARENT.name',
+                'C.abbreviation',
+                'PARENT.hpp'
+            )
             ->having('total_stock', '>', 0);
 
         // GRAND TOTAL HPP (semua baris yang tampil)
