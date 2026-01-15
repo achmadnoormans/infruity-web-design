@@ -116,53 +116,32 @@
             <span x-text="formatRupiah(totalHargaKeseluruhan)"></span>
         </div>
     </div>
-    <div class="row mt-3">
-        {{-- <div class="col">
-        </div> --}}
-        {{-- <div class="col">
-            <!-- Di elemen root Alpine.js, misalnya -->
-            <div x-data="{ loading: false }">
-                <button class="btn btn-sm btn-primary w-100"
-                    @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
-                    <template x-if="!loading">
-                        <span>Bayar</span>
-                    </template>
-                    <template x-if="loading">
-                        <span>
-                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                            Memproses...
-                        </span>
-                    </template>
-                </button>
-            </div>
-        </div> --}}
-    </div>
-    <div x-data="{ loading: false }">
-        <button class="btn btn-primary rounded-circle shadow-lg position-fixed"
-            style="bottom: 90px; right: 85px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
-            @click="loading = true; saveTransaction(() => loading = false)" :disabled="loading">
-            <template x-if="!loading">
-                <i class="bi bi-save"></i>
-            </template>
-            <template x-if="loading">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            </template>
-        </button>
-    </div>
-    <div x-data="{ loading: false }">
-        <button class="btn btn-success rounded-circle shadow-lg position-fixed"
-            style="bottom: 90px; right: 30px; width: 50px; height: 50px; z-index: 1050; display: flex; align-items: center; justify-content: center;"
-            @click="loading = true; goToPayment(() => loading = false)" :disabled="loading">
-            <template x-if="!loading">
-                <i class="bi bi-cash-stack"></i>
-            </template>
-            <template x-if="loading">
-                <span>
-                    <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                    Memproses...
-                </span>
-            </template>
-        </button>
+    <div class="row mt-5 gap-2">
+        <div class="col" x-data="{ loading: false }">
+            <button class="btn btn-primary w-100" @click="loading = true; saveTransaction(() => loading = false)"
+                :disabled="loading">
+                <template x-if="!loading">
+                    <span><i class="bi bi-save me-2"></i> Simpan</span>
+                </template>
+                <template x-if="loading">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                </template>
+            </button>
+        </div>
+        <div class="col" x-data="{ loading: false }">
+            <button class="btn btn-success w-100" @click="loading = true; goToPayment(() => loading = false)"
+                :disabled="loading">
+                <template x-if="!loading">
+                    <span><i class="bi bi-cash-stack me-2"></i> Bayar</span>
+                </template>
+                <template x-if="loading">
+                    <span>
+                        <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                        Memproses...
+                    </span>
+                </template>
+            </button>
+        </div>
     </div>
 </div>
 

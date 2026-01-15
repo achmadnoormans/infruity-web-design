@@ -146,7 +146,17 @@
                 </div>
             </div>
         </div>
-        <div class="position-fixed bottom-0 start-0 w-100 bg-white shadow-lg p-3" style="z-index: 1000;">
+        <style>
+            @media (min-width: 992px) {
+                .payment-action-bar {
+                    left: 265px !important;
+                    /* Aside width approximate offset */
+                    width: calc(100% - 265px) !important;
+                }
+            }
+        </style>
+        <div class="payment-action-bar position-fixed bottom-0 start-0 w-100 bg-white shadow-lg p-3"
+            style="z-index: 1000;">
             <div class="card-body mb-3">
                 <div class="row">
                     <div class="col-9">
