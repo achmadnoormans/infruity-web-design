@@ -44,10 +44,25 @@ class PosController extends Controller
      */
     public function create()
     {
-        $data['alpinejs']       = true;
-        $data['data']           = null;
-        $data['detail']         = null;
-        $data['invoice_number'] = PosModel::getOrderNumber();
+        $data['alpinejs'] = true;
+
+        // Cek apakah ada temp transaksi untuk user ini
+        $draft = PosModel::with(['customer', 'details', 'details.product', 'details.product.unit'])
+            ->where('created_by', Auth::id())
+            ->where('status', 'temp')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($draft) {
+            $data['data']           = $draft;
+            $data['detail']         = $draft->details;
+            $data['invoice_number'] = $draft->invoice_number;
+        } else {
+            $data['data']           = null;
+            $data['detail']         = null;
+            $data['invoice_number'] = PosModel::getOrderNumber();
+        }
+
         return view('pos::pos.create2', $data);
     }
 

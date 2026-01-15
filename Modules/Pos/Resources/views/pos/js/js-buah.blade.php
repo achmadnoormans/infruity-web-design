@@ -25,6 +25,7 @@
             diskonGlobal: 0,
             ongkirGlobal: 0,
             diskonOngkir: 0,
+            autoSaveTimeout: null,
 
             // Add Product
             showAddModal: false,
@@ -63,11 +64,9 @@
                     self.setDiscountGlobal(data.discount || 0);
                 });
 
-                let url = '{{ Request::segment(3) }}';
-                if (url == 'edit' && !this._loaded) {
-                    console.log('masuk sini?');
-                    const data = @json($data ?? null);
-                    const detail = @json($detail ?? null);
+                const data = @json($data ?? null);
+                const detail = @json($detail ?? null);
+                if (data && !this._loaded) {
                     this.loadExistingData(data, detail);
                     this._loaded = true;
                 }
@@ -78,6 +77,23 @@
                     this.loadExistingOrderBook(data, detail);
                     this._loaded = true;
                 }
+
+                // Add watchers for auto-save
+                this.$watch('cart', () => this.autoSaveDraft());
+                this.$watch('parcel', () => this.autoSaveDraft());
+                this.$watch('jus', () => this.autoSaveDraft());
+                this.$watch('diskonGlobal', () => this.autoSaveDraft());
+                this.$watch('ongkirGlobal', () => this.autoSaveDraft());
+                this.$watch('diskonOngkir', () => this.autoSaveDraft());
+
+                // Add listeners for Select2 changes
+                ['#branch_id', '#branch_process_id', '#customer_id', '#courier_id', '#address_id'].forEach(selector => {
+                    $(selector).on('change', () => this.autoSaveDraft());
+                });
+
+                // Add listener for date and invoice (though invoice is read-only)
+                $('input[name="date"], textarea[name="note"], input[name="ongkir_date"], input[name="ongkir_time"]').on(
+                    'change input', () => this.autoSaveDraft());
             },
 
             setMinimalPurchase(value) {
@@ -748,6 +764,72 @@
                         console.error(err);
                         if (typeof doneCallback === 'function') doneCallback();
                     });
+            },
+
+            autoSaveDraft() {
+                if (this.cart.length === 0 && this.parcel.length === 0 && this.jus.length === 0) {
+                    return;
+                }
+
+                // Clear previous timeout
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                }
+
+                // Debounce auto-save
+                this.autoSaveTimeout = setTimeout(() => {
+                    console.log('Auto-saving draft...');
+                    const customerId = document.querySelector('select[name="customer_id"]').value;
+                    const transactionDate = document.querySelector('input[name="date"]').value;
+                    const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                    const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
+                    const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
+                    const note = document.querySelector('textarea[name="note"]').value;
+                    const courierId = document.querySelector('select[name="courier_id"]').value;
+                    const branchId = document.querySelector('select[name="branch_id"]').value;
+                    const branchProcessId = document.querySelector('select[name="branch_process_id"]').value;
+                    const ongkirAddress = document.querySelector('select[name="ongkir_address"]').value;
+
+                    const data = {
+                        customer_id: customerId,
+                        date: transactionDate,
+                        invoice_number: invoiceNumber,
+                        items: this.cart,
+                        parcel: this.parcel,
+                        jus: this.jus,
+                        subtotal: this.subtotal,
+                        discount: this.diskonGlobal,
+                        ongkir: this.ongkirGlobal,
+                        discount_ongkir: this.diskonOngkir,
+                        ongkir_date: ongkirDate,
+                        ongkir_time: ongkirTime,
+                        total: this.totalHargaKeseluruhan,
+                        status: 'temp',
+                        note: note,
+                        courier_id: courierId,
+                        ongkir_address: ongkirAddress,
+                        branch_id: branchId,
+                        branch_process_id: branchProcessId,
+                    };
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    fetch('/pos/save-transaction', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data),
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            console.log('Draft saved successfully');
+                        })
+                        .catch(err => {
+                            console.error('Auto-save failed:', err);
+                        });
+                }, 2000); // 2 second delay
             },
             // Save Order Book
             saveToOrderBook() {
@@ -1420,6 +1502,29 @@
                 if (data.branch) {
                     let branch = new Option(data.branch.name, data.branch.id, true, true);
                     $('#branch_id').append(branch).val(data.branch.id).trigger('change');
+                }
+
+                if (data.customer) {
+                    let c = {
+                        id: data.customer_id || 0,
+                        name: data.customer?.name || 'Pelanggan Umum',
+                        address: data.customer?.address || '-',
+                        phone: data.customer?.whatsapp || '-',
+                        tier_id: data.customer?.customer_tier?.tier_id || '',
+                        tier_name: data.customer?.customer_tier?.tier_name || '-',
+                        tier_style: data.customer?.customer_tier?.tier_style || 'badge-light-secondary'
+                    };
+
+                    let option = new Option(c.name, c.id, true, true);
+                    $(option).attr({
+                        'data-name': c.name,
+                        'data-address': c.address,
+                        'data-whatsapp': c.phone,
+                        'data-tier_id': c.tier_id,
+                        'data-tier_name': c.tier_name,
+                        'data-tier_style': c.tier_style
+                    });
+                    $('#customer_id').append(option).val(c.id).trigger('change');
                 }
             },
 
