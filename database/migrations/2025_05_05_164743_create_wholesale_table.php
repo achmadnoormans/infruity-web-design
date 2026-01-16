@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('order_number', 20); // Kolom untuk nomor pesanan
             $table->unsignedBigInteger('supplier_id');
             $table->date('order_date');
-            $table->enum('status', ['draft', 'posting'])->default('posting');
+            $table->enum('status', ['draft', 'posting', 'temp'])->default('posting');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

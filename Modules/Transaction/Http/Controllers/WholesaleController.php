@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductBranch;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\UserBranch;
@@ -667,9 +668,23 @@ class WholesaleController extends Controller
                     ]);
 
                     if ($item['sell'] != null) {
-                        $product        = Product::findOrFail($item['id']);
-                        $product->price = $item['sell'];
-                        $product->save();
+                        // $product        = Product::findOrFail($item['id']);
+                        // $product->price = $item['sell'];
+                        // $product->save();
+
+                        $branch = ProductBranch::where('product_id', $item['id'])
+                            ->where('branch_id', $data['branch_id'])
+                            ->first();
+                        if ($branch) {
+                            $branch->price = $item['sell'];
+                            $branch->save();
+                        } else {
+                            $branch             = new ProductBranch();
+                            $branch->product_id = $item['id'];
+                            $branch->branch_id  = $data['branch_id'];
+                            $branch->price      = $item['sell'];
+                            $branch->save();
+                        }
                     }
                 }
             }
