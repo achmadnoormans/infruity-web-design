@@ -1,228 +1,303 @@
-@section('script')
-    <script>
-        let selectedProduct = {}; // Global, satu kali saja
-        var tableSelectedProduct;
+<script>
+// Alpine.js Production App
+function productionApp() {
+    return {
+        // Data properties
+        ingredients: [],
+        availableIngredients: [],
+        availableRecipes: [],
+        selectedIngredient: null,
+        selectedRecipe: null,
+        selectedRecipeId: '',
+        ingredientQuantity: 0,
+        recipeMultiplier: 1,
+        searchIngredient: '',
+        productionQuantity: 1,
+        notes: '',
+        status: 'temp',
+        isLoadingIngredients: false,
 
-        $(document).ready(function() {
+        // Computed properties
+        get totalHpp() {
+            return this.ingredients.reduce((total, ingredient) => {
+                return total + (ingredient.hpp * ingredient.quantity);
+            }, 0);
+        },
 
-            var listDatatable = $('#kt_ecommerce_edit_order_product_table').DataTable({
-                processing: true,
-                serverSide: true,
-                scrollY: "400px",
-                scrollCollapse: true,
-                paging: false,
-                info: false,
-                ajax: {
-                    url: "{{ route('wholsale.product-table-data') }}",
-                    data: function(d) {
-                        d.searchValue = $('#search').val();
-                        d.url = "{{ request()->segment(1) }}";
-                    }
-                },
-                columns: [
-                    // {
-                    //     data: 'checkbox',
-                    //     orderable: false,
-                    //     searchable: false
-                    // },
-                    {
-                        data: 'name',
-                        name: 'name',
-                        render: function(data, type, row) {
-                            return `
-                            <div class="d-flex align-items-center"
-                                data-kt-ecommerce-edit-order-id="${row.id}"
-                                data-kt-ecommerce-edit-order-receipt="${row.receipt_id}"
-                                data-kt-ecommerce-edit-order-type="${row.type}"
-                                data-kt-ecommerce-edit-order-price="${row.price}"
-                                data-kt-ecommerce-edit-order-hpp="${row.hpp}">
-                                <div class="ms-5">
-                                    <a href="#" class="text-gray-800 text-hover-primary fs-5 fw-bold">${data}</a>
-                                </div>
-                            </div>`;
-                        }
-                    },
-                    {
-                        data: 'qty_remaining',
-                        name: 'qty_remaining',
-                        className: 'text-end',
-                    }
-                ],
-                language: {
-                    emptyTable: "Silahkan Search Product untuk menambahkan produk. (Product yang ditambahkan akan mempengaruhi receipt)"
-                }
+        get hppPerUnit() {
+            return this.productionQuantity > 0 ? this.totalHpp / this.productionQuantity : 0;
+        },
+
+        get recipeTotal() {
+            if (!this.selectedRecipe?.ingredients) return 0;
+            return this.selectedRecipe.ingredients.reduce((total, ingredient) => {
+                return total + (ingredient.hpp * ingredient.quantity);
+            }, 0);
+        },
+
+        // Initialize
+        init() {
+            this.loadAvailableIngredients();
+            this.loadAvailableRecipes();
+            this.loadExistingData();
+            
+            // Initialize quantity from HTML input
+            const quantityInput = document.getElementById('quantity');
+            if (quantityInput && quantityInput.value) {
+                this.productionQuantity = parseFloat(quantityInput.value) || 1;
+            }
+            
+            // Watch for production quantity changes
+            this.$watch('productionQuantity', (value) => {
+                document.getElementById('quantity').value = value;
             });
+        },
 
-            $('#search').on('keyup', function() {
-                listDatatable.search(this.value).draw();
-            });
-
-            let selectedReceiptId = null;
-            let selectedProductId = null;
-
-            $('#product_id').on('select2:select', function(e) {
-                const data = e.params.data;
-                selectedReceiptId = data.data.receipt_id;
-                selectedProductId = data.data.product_id; // simpan receipt_id di variabel global
-                $('#id_receipt').val(selectedReceiptId);
-                console.log(data);
-                console.log(selectedReceiptId, selectedProductId);
-            });
-
-            // Checkbox change event
-
-            $("#kt_ecommerce_edit_order_date").flatpickr({
-                altInput: !0,
-                altFormat: "d F, Y",
-                dateFormat: "Y-m-d"
-            });
-
-            $('#kt_ecommerce_edit_order_product_table').on('click', '.check-product', function() {
-                let calculationType = document.querySelector('input[name="calculation_type"]:checked')
-                    .value;
-                const row = $(this).closest('tr');
-                const checked = $(this).is(':checked');
-                const productId = row.find('[data-kt-ecommerce-edit-order-id]').data(
-                    'kt-ecommerce-edit-order-id');
-                const type = row.find('[data-kt-ecommerce-edit-order-id]').data(
-                    'kt-ecommerce-edit-order-type');
-                const price = row.find('[data-kt-ecommerce-edit-order-id]').data(
-                    'kt-ecommerce-edit-order-price');
-                const hpp = row.find('[data-kt-ecommerce-edit-order-id]').data(
-                    'kt-ecommerce-edit-order-hpp');
-                const productName = row.find('a.text-gray-800').text().trim();
-                // const productImage = row.find('.symbol-label').css('background-image').replace(
-                //     /^url\(["']?/, '').replace(/["']?\)$/, '');
-                // const price = row.find('[data-kt-ecommerce-edit-order-filter="price"]').text().trim();
-
-                selectedProduct = {
-                    id: productId,
-                    name: productName,
-                    // image: productImage,
-                    price: price,
-                    type: type,
-                };
-                console.log(selectedProduct);
-                if (calculationType == 'weight_to_price') {
-                    $('#inputProductId').val(productId);
-                    $('#inputSellPrice').val(price);
-                    $('#typeList').val(type);
-                    $('#inputQuantity').val('');
-                    $('#modalInputQty').modal('show');
-                } else {
-                    var url = `{{ route('production.save-ajax') }}`;
-                    var form = $('#modalInputPrcForm');
-                    form.attr('action', url);
-                    $('#methodFieldPrc').val('POST');
-                    $('#inputProductIdPrc').val(productId);
-                    $('#inputProductionIdPrc').val('{{ $data->id }}');
-                    $('#inputSellPricePrc').val(price);
-                    $('#typeList').val(type);
-                    $('#inputPrice').val('');
-                    $('#modalInputPrc').modal('show');
-                }
-
-                bindFormatNumber();
-            });
-
-        });
-
-        function deleteProduct(id) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Data yang dihapus tidak bisa dikembalikan!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal',
-                customClass: {
-                    confirmButton: 'btn btn-danger',
-                    cancelButton: 'btn btn-secondary'
-                },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/production/delete-product/${id}`, // Ganti dengan URL yang sesuai
-                        type: 'DELETE',
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            // Reload DataTable setelah berhasil menghapus data
-                            if (typeof tableSelectedProduct !== 'undefined') {
-                                tableSelectedProduct.ajax.reload(null, false);
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: xhr.responseJSON?.message ||
-                                    'Terjadi kesalahan saat menghapus data.'
-                            });
-                        }
+        // Load existing data if editing
+        loadExistingData() {
+            @if(isset($data) && isset($production_detail))
+                // Load existing ingredients data
+                @php
+                    $ingredientsData = $production_detail->map(function($item) {
+                        return [
+                            'id' => $item->product_id,
+                            'name' => $item->products->name,
+                            'quantity' => $item->quantity,
+                            'hpp' => $item->products->hpp,
+                            'unit' => $item->products->unit->abbreviation ?? 'pcs',
+                            'total' => $item->products->hpp * $item->quantity
+                        ];
                     });
-                }
+                @endphp
+                this.ingredients = @json($ingredientsData);
+                this.productionQuantity = {{ $data->quantity ?? 1 }};
+                this.status = '{{ $data->status ?? "temp" }}';
+            @endif
+        },
+
+        // Load available ingredients
+        async loadAvailableIngredients() {
+            try {
+                const response = await fetch('{{ route("ajax.getProduct") }}');
+                const data = await response.json();
+                this.availableIngredients = data.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    stock: item.stock || 0,
+                    hpp: item.hpp || 0,
+                    unit: item.unit?.abbreviation || 'pcs',
+                    category: item.category?.name || 'Umum'
+                }));
+            } catch (error) {
+                console.error('Error loading ingredients:', error);
+                this.showNotification('Error loading ingredients', 'error');
+            }
+        },
+
+        // Load available recipes
+        async loadAvailableRecipes() {
+            try {
+                const response = await fetch('{{ route("products.get-receipt") }}');
+                const data = await response.json();
+                this.availableRecipes = data;
+            } catch (error) {
+                console.error('Error loading recipes:', error);
+            }
+        },
+
+        // Search ingredients
+        searchIngredients() {
+            // This will be handled by the x-model binding automatically
+        },
+
+        // Open modals
+        openAddIngredientModal() {
+            const modal = new bootstrap.Modal(document.getElementById('modal-add-ingredient'));
+            modal.show();
+        },
+
+        openParcelModal() {
+            const modal = new bootstrap.Modal(document.getElementById('modal-load-recipe'));
+            modal.show();
+        },
+
+        loadFromRecipe() {
+            const modal = new bootstrap.Modal(document.getElementById('modal-load-recipe'));
+            modal.show();
+        },
+
+        // Select ingredient
+        selectIngredient(ingredient) {
+            this.selectedIngredient = ingredient;
+            this.ingredientQuantity = 0;
+            
+            // Close ingredient modal and open quantity modal
+            bootstrap.Modal.getInstance(document.getElementById('modal-add-ingredient')).hide();
+            const quantityModal = new bootstrap.Modal(document.getElementById('modal-input-quantity'));
+            quantityModal.show();
+        },
+
+        // Add ingredient to cart
+        addIngredientToCart() {
+            if (!this.selectedIngredient || !this.ingredientQuantity || this.ingredientQuantity <= 0) {
+                this.showNotification('Please enter valid quantity', 'error');
+                return;
+            }
+
+            // Check if ingredient already exists
+            const existingIndex = this.ingredients.findIndex(item => item.id === this.selectedIngredient.id);
+            
+            if (existingIndex >= 0) {
+                // Update existing ingredient
+                this.ingredients[existingIndex].quantity = parseFloat(this.ingredientQuantity);
+                this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[existingIndex].quantity;
+            } else {
+                // Add new ingredient
+                this.ingredients.push({
+                    id: this.selectedIngredient.id,
+                    name: this.selectedIngredient.name,
+                    quantity: parseFloat(this.ingredientQuantity),
+                    hpp: this.selectedIngredient.hpp,
+                    unit: this.selectedIngredient.unit,
+                    total: this.selectedIngredient.hpp * parseFloat(this.ingredientQuantity)
+                });
+            }
+
+            // Close modal and reset
+            bootstrap.Modal.getInstance(document.getElementById('modal-input-quantity')).hide();
+            this.selectedIngredient = null;
+            this.ingredientQuantity = 0;
+            
+            this.showNotification('Ingredient added successfully', 'success');
+        },
+
+        // Update ingredient quantity
+        updateQuantity(index, newQuantity) {
+            if (newQuantity < 0) return;
+            
+            this.ingredients[index].quantity = parseFloat(newQuantity) || 0;
+            this.ingredients[index].total = this.ingredients[index].hpp * this.ingredients[index].quantity;
+        },
+
+        // Remove ingredient
+        removeIngredient(index) {
+            this.ingredients.splice(index, 1);
+            this.showNotification('Ingredient removed', 'info');
+        },
+
+        // Clear all ingredients
+        clearIngredients() {
+            this.ingredients = [];
+            this.showNotification('All ingredients cleared', 'info');
+        },
+
+        // Set loading state
+        setLoadingIngredients(loading) {
+            this.isLoadingIngredients = loading;
+        },
+
+        // Load recipe details
+        async loadRecipeDetails() {
+            if (!this.selectedRecipeId) {
+                this.selectedRecipe = null;
+                return;
+            }
+
+            try {
+                const response = await fetch(`{{ url('production/get-receipt') }}/${this.selectedRecipeId}`);
+                const data = await response.json();
+                this.selectedRecipe = data;
+            } catch (error) {
+                console.error('Error loading recipe details:', error);
+                this.showNotification('Error loading recipe details', 'error');
+            }
+        },
+
+        // Load recipe to production
+        loadRecipeToProduction() {
+            if (!this.selectedRecipe || !this.recipeMultiplier || this.recipeMultiplier <= 0) {
+                this.showNotification('Please select recipe and enter valid multiplier', 'error');
+                return;
+            }
+
+            // Clear existing ingredients
+            this.ingredients = [];
+
+            // Add recipe ingredients with multiplier
+            this.selectedRecipe.ingredients.forEach(ingredient => {
+                this.ingredients.push({
+                    id: ingredient.id,
+                    name: ingredient.name,
+                    quantity: ingredient.quantity * this.recipeMultiplier,
+                    hpp: ingredient.hpp,
+                    unit: ingredient.unit,
+                    total: ingredient.hpp * (ingredient.quantity * this.recipeMultiplier)
+                });
             });
+
+            // Close modal and reset
+            bootstrap.Modal.getInstance(document.getElementById('modal-load-recipe')).hide();
+            this.selectedRecipe = null;
+            this.selectedRecipeId = '';
+            this.recipeMultiplier = 1;
+            
+            this.showNotification('Recipe loaded successfully', 'success');
+        },
+
+        // Refresh product list
+        refreshProduct() {
+            this.loadAvailableIngredients();
+            this.showNotification('Product list refreshed', 'info');
+        },
+
+        // Format currency
+        formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount || 0);
+        },
+
+        // Get status text
+        getStatusText(status) {
+            const statusMap = {
+                'temp': 'Draft Sementara',
+                'draft': 'Siap Produksi',
+                'posting': 'Selesai Produksi'
+            };
+            return statusMap[status] || 'Unknown';
+        },
+
+        // Show notification
+        showNotification(message, type = 'info') {
+            // You can integrate with your notification system here
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // Simple alert for now - replace with your notification system
+            if (type === 'error') {
+                alert('Error: ' + message);
+            }
         }
+    }
+}
 
-        function editProduct(id) {
-            var url = `{{ url('production/edit-product/${id}') }}`;
-            var urlUpdate = `{{ url('production/update-product/${id}') }}`;
+// Set submit type function
+function setSubmitType(type) {
+    document.getElementById('submit_type').value = type;
+}
 
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    console.log(response);
-                    let calculationType = document.querySelector('input[name="calculation_type"]:checked')
-                        .value;
-
-                    if (calculationType == 'weight_to_price') {
-                        $('#inputPriceEdit').val(response.data.products.price);
-                        $('#inputQuantityEdit').val(response.data.quantity);
-                        $('#inputSupplierEdit').val(response.data.supplier_id).trigger('change');
-
-                        // Set action dan method form
-                        var form = $('#kt_modal_add_customer_form');
-                        form.attr('action', urlUpdate);
-                        $('#methodField').val('PUT');
-                        $('#kt_modal_add_customer').modal('show');
-                    } else {
-                        var form = $('#modalInputPrcForm');
-                        form.attr('action', urlUpdate);
-                        $('#methodFieldPrc').val('PUT');
-                        $('#inputProductIdPrc').val(response.data.product_receipt_id);
-                        $('#inputProductReceiptPrc').val(response.data.id);
-                        $('#inputSellPricePrc').val(response.data.products.price);
-                        $('#inputQuantityPrc').val(response.data.quantity);
-                        $('#inputPrice').val(response.data.nominal);
-                        $('#modalInputPrc').modal('show');
-                    }
-                    // Set nilai input
-
-                    bindFormatNumber();
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: 'Terjadi kesalahan saat memuat data produk.'
-                    });
-                }
-            });
-        }
-
-        $("#kt_ecommerce_edit_order_form").submit(function() {
-            $(this).find(":submit").attr('disabled', 'disabled');
-            $(this).find(":submit").html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`
-            );
-        });
-
+// Document ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait for Alpine.js to be ready
+    document.addEventListener('alpine:init', function() {
+        console.log('Alpine.js initialized');
+    });
+    
+    // Initialize Select2 for product selection with a small delay to ensure Alpine is ready
+    setTimeout(function() {
         $('#product_id').select2({
-            placeholder: 'Select a product',
+            placeholder: 'Pilih Produk',
             ajax: {
                 url: '{{ route('products.get-receipt') }}',
                 dataType: 'json',
@@ -232,340 +307,411 @@
                 }),
                 processResults: data => ({
                     results: data.map(item => ({
-                        id: item.id,
-                        text: item.products.name,
-                        data: {
-                            receipt_id: item.id,
-                            product_id: item.product_id,
-                        }
+                        id: item.product_id,
+                        text: item.products?.name || 'Unknown Product'
                     }))
-                })
-            }
-        });
-
-
-        $('#staff_id').select2({
-            placeholder: 'Select a staff',
-            ajax: {
-                url: '{{ route('staff.get-staff') }}',
-                dataType: 'json',
-                delay: 250,
-                data: params => ({
-                    search: params.term
                 }),
-                processResults: data => ({
-                    results: data.map(item => ({
-                        id: item.id,
-                        text: item.name
-                    }))
-                })
+                cache: true
+            },
+            minimumInputLength: 0,
+            allowClear: true
+        }).on('select2:select', function(e) {
+            // Auto load ingredients when product is selected
+            const selectedProductId = e.params.data.id;
+            if (selectedProductId) {
+                // Add a small delay to ensure Alpine is ready
+                setTimeout(() => {
+                    loadRecipeIngredients(selectedProductId);
+                }, 100);
             }
-        });
-
-        $('#product_id').on('change', function() {
-            const productId = $(this).val();
-            const productionId = {{ $data->id }};
-            const url = `{{ url('production/get-detail/${productionId}') }}`;
-
-            // Nonaktifkan select sampai datatable selesai
-            $('#product_id').prop('disabled', true);
-
-            // Kirim request untuk menghapus detail dulu
-            $.ajax({
-                url: `/production/delete-detail/${productionId}`,
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    receipt_id: productId,
-                },
-                success: function(response) {
-                    if (typeof tableSelectedProduct !== 'undefined') {
-                        tableSelectedProduct.ajax.reload(null, false);
-                    }
-                },
-                error: function(xhr) {
-                    console.log(xhr);
+        }).on('select2:clear', function(e) {
+            // Clear ingredients when product is cleared
+            try {
+                const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
+                let productionApp = null;
+                
+                if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
+                    productionApp = alpineElement._x_dataStack[0];
+                } else if (alpineElement && alpineElement.__x && alpineElement.__x.$data) {
+                    productionApp = alpineElement.__x.$data;
                 }
-            });
-
-            // Destroy jika sudah ada
-            if ($.fn.DataTable.isDataTable('#kt_ecommerce_edit_order_selected_products_table')) {
-                $('#kt_ecommerce_edit_order_selected_products_table').DataTable().clear().destroy();
-            }
-
-            // Inisialisasi kembali DataTable
-            tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table')
-                .on('preXhr.dt', function() {
-                    $('#product_id').prop('disabled', true); // disable saat loading
-                })
-                .on('xhr.dt', function() {
-                    $('#product_id').prop('disabled', false); // enable setelah load selesai
-                })
-                .DataTable({
-                    processing: true,
-                    serverSide: false,
-                    info: false,
-                    paging: false,
-                    ajax: url,
-                    fixedColumns: {
-                        leftColumns: 0,
-                        rightColumns: 1
-                    },
-                    columnDefs: [{
-                        orderable: false,
-                        targets: -1
-                    }],
-                    columns: [{
-                            data: 'name',
-                            name: 'name'
-                        },
-                        {
-                            data: 'hpp',
-                            name: 'hpp'
-                        },
-                        {
-                            data: 'harga_jual',
-                            name: 'harga_jual'
-                        },
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        }
-                    ],
-                    language: {
-                        emptyTable: "Tidak ada produk yang dipilih."
+                
+                if (productionApp) {
+                    productionApp.ingredients = [];
+                    productionApp.productionQuantity = 1;
+                    const quantityInput = document.getElementById('quantity');
+                    if (quantityInput) {
+                        quantityInput.value = 1;
                     }
-                });
+                } else {
+                    // Fallback: clear table directly
+                    const tbody = document.getElementById('kt_ecommerce_edit_order_selected_products_body');
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="ki-duotone ki-information-5 fs-2x text-gray-400 mb-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    <div>Belum ada bahan baku yang dipilih</div>
+                                    <small class="text-gray-500">Pilih produk untuk memuat resep atau klik tombol + untuk menambah bahan baku</small>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    const quantityInput = document.getElementById('quantity');
+                    if (quantityInput) {
+                        quantityInput.value = 1;
+                    }
+                }
+            } catch (error) {
+                console.error('Error clearing ingredients:', error);
+            }
         });
+    }, 500); // Wait 500ms for Alpine to initialize
 
+    // Initialize Select2 for staff selection  
+    $('#staff_id').select2({
+        placeholder: 'Pilih Staff',
+        allowClear: true
+    });
 
-        function setSubmitType(type) {
-            document.getElementById('submit_type').value = type;
+    // Form submission handler
+    $('#kt_ecommerce_edit_order_form').on('submit', function(e) {
+        const submitButton = $(this).find('[type="submit"]:focus');
+        submitButton.find('.indicator-label').hide();
+        submitButton.find('.indicator-progress').show();
+        submitButton.prop('disabled', true);
+    });
+});
+
+// Function to load recipe ingredients
+async function loadRecipeIngredients(productId) {
+    console.log('Loading recipe ingredients for product ID:', productId);
+    
+    try {
+        // Get Alpine.js component instance using a more reliable method
+        let productionApp = null;
+        
+        // Try multiple ways to get the Alpine component
+        const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
+        
+        if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
+            productionApp = alpineElement._x_dataStack[0];
+        } else if (alpineElement && alpineElement.__x && alpineElement.__x.$data) {
+            productionApp = alpineElement.__x.$data;
+        } else if (window.Alpine && window.Alpine.store) {
+            // Fallback: try to access through Alpine store if available
+            console.log('Using fallback method to access Alpine data');
         }
-
-        function calculateQuantity() {
-            // Ambil value dari input price
-            let price = parseFloat(
-                document.getElementById('inputPrice').value.replace(/[.,]/g, '')
-            ) || 0;
-            let sellPrice = parseFloat(
-                document.getElementById('inputSellPricePrc').value.replace(/[.,]/g, '')
-            ) || 0;
-
-            // Cek biar nggak bagi nol
-            let result = 0;
-            if (sellPrice !== 0) {
-                result = price / sellPrice;
-            }
-
-            // Set hasil ke inputQuantityPrc, fix 2 angka desimal
-            document.getElementById('inputQuantityPrc').value = result.toFixed(2);
+        
+        if (!productionApp) {
+            console.error('Alpine.js component not found, using fallback approach');
+            // Use a fallback approach without Alpine
+            await loadRecipeIngredientsWithoutAlpine(productId);
+            return;
         }
-        document.getElementById('inputPrice').addEventListener('keyup', calculateQuantity);
-
-        //Weight to Price
-        $('#submitQty').on('click', function() {
-            const qty = parseFloat($('#inputQuantity').val());
-            const sellPrice = parseFloat(unformatNumber($('#inputSellPrice').val()));
-            const id = $('#inputProductId').val();
-
-            // if (!qty || qty <= 0) {
-            //     Swal.fire("Error", "Quantity harus diisi dan lebih dari 0.", "error");
-            //     return;
-            // }
-
-            // Kirim data ke server via AJAX
-            $.ajax({
-                url: "{{ route('production.save-ajax') }}",
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    product_id: id,
-                    qty: qty,
-                    sell_price: sellPrice,
-                    production_id: '{{ $data->id }}'
-                },
-                success: function(response) {
-                    $('#modalInputQty').modal('hide');
-                    // 6. Refresh DataTable
-                    if (typeof tableSelectedProduct !== 'undefined') {
-                        tableSelectedProduct.ajax.reload(null, false);
-                    }
-                },
-                error: function(xhr) {
-                    var msg = 'Terjadi kesalahan saat menyimpan data.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: msg
-                    });
-                }
+        
+        // Set loading state
+        if (typeof productionApp.setLoadingIngredients === 'function') {
+            productionApp.setLoadingIngredients(true);
+        } else {
+            productionApp.isLoadingIngredients = true;
+        }
+        
+        showLoadingNotification('Memuat bahan dari resep...');
+        
+        // First, find the receipt ID for this product
+        console.log('Fetching receipts...');
+        const receiptResponse = await fetch(`{{ route('products.get-receipt') }}`);
+        
+        if (!receiptResponse.ok) {
+            throw new Error(`Failed to fetch receipts: ${receiptResponse.status}`);
+        }
+        
+        const receipts = await receiptResponse.json();
+        console.log('Available receipts:', receipts);
+        
+        // Find receipt for this product
+        const receipt = receipts.find(r => r.product_id == productId);
+        console.log('Found receipt for product:', receipt);
+        
+        if (!receipt) {
+            showInfoNotification('Produk ini tidak memiliki resep');
+            return;
+        }
+        
+        // Now fetch the recipe data
+        console.log('Fetching recipe data for receipt ID:', receipt.id);
+        const response = await fetch(`{{ url('production/get-recipe-data') }}/${receipt.id}`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch recipe data: ${response.status}`);
+        }
+        
+        const recipeData = await response.json();
+        console.log('Recipe data received:', recipeData);
+        
+        if (recipeData.success && recipeData.ingredients && recipeData.ingredients.length > 0) {
+            // Clear existing ingredients
+            productionApp.ingredients = [];
+            
+            // Add recipe ingredients
+            recipeData.ingredients.forEach(ingredient => {
+                const ingredientData = {
+                    id: ingredient.product_id || ingredient.id,
+                    name: ingredient.name,
+                    quantity: ingredient.quantity || 0,
+                    hpp: parseFloat(ingredient.hpp || 0),
+                    unit: ingredient.unit || 'pcs',
+                    total: parseFloat(ingredient.quantity || 0) * parseFloat(ingredient.hpp || 0)
+                };
+                
+                console.log('Adding ingredient:', ingredientData);
+                productionApp.ingredients.push(ingredientData);
             });
+            
+            // Update production quantity if available
+            if (recipeData.yield_quantity) {
+                productionApp.productionQuantity = parseFloat(recipeData.yield_quantity);
+                const quantityInput = document.getElementById('quantity');
+                if (quantityInput) {
+                    quantityInput.value = recipeData.yield_quantity;
+                }
+            }
+            
+            showSuccessNotification(`Berhasil memuat ${recipeData.ingredients.length} bahan dari resep`);
+        } else {
+            const message = recipeData.message || 'Produk ini tidak memiliki resep atau resep kosong';
+            console.log('No ingredients found:', message);
+            showInfoNotification(message);
+        }
+        
+    } catch (error) {
+        console.error('Error loading recipe ingredients:', error);
+        showErrorNotification('Gagal memuat bahan dari resep: ' + error.message);
+    } finally {
+        // Always clear loading state
+        try {
+            const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
+            let productionApp = null;
+            
+            if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
+                productionApp = alpineElement._x_dataStack[0];
+            } else if (alpineElement && alpineElement.__x && alpineElement.__x.$data) {
+                productionApp = alpineElement.__x.$data;
+            }
+            
+            if (productionApp) {
+                if (typeof productionApp.setLoadingIngredients === 'function') {
+                    productionApp.setLoadingIngredients(false);
+                } else {
+                    productionApp.isLoadingIngredients = false;
+                }
+            }
+        } catch (e) {
+            console.log('Could not clear loading state:', e);
+        }
+    }
+}
+
+// Fallback function that works without Alpine.js
+async function loadRecipeIngredientsWithoutAlpine(productId) {
+    try {
+        showLoadingNotification('Memuat bahan dari resep...');
+        
+        // Fetch receipts
+        const receiptResponse = await fetch(`{{ route('products.get-receipt') }}`);
+        const receipts = await receiptResponse.json();
+        
+        // Find receipt for this product
+        const receipt = receipts.find(r => r.product_id == productId);
+        
+        if (!receipt) {
+            showInfoNotification('Produk ini tidak memiliki resep');
+            return;
+        }
+        
+        // Fetch recipe data
+        const response = await fetch(`{{ url('production/get-recipe-data') }}/${receipt.id}`);
+        const recipeData = await response.json();
+        
+        if (recipeData.success && recipeData.ingredients && recipeData.ingredients.length > 0) {
+            // Update the ingredients table directly
+            updateIngredientsTableDirectly(recipeData.ingredients);
+            
+            // Update production quantity
+            if (recipeData.yield_quantity) {
+                const quantityInput = document.getElementById('quantity');
+                if (quantityInput) {
+                    quantityInput.value = recipeData.yield_quantity;
+                }
+            }
+            
+            showSuccessNotification(`Berhasil memuat ${recipeData.ingredients.length} bahan dari resep`);
+        } else {
+            showInfoNotification('Produk ini tidak memiliki resep atau resep kosong');
+        }
+        
+    } catch (error) {
+        console.error('Error in fallback method:', error);
+        showErrorNotification('Gagal memuat bahan dari resep: ' + error.message);
+    }
+}
+
+// Function to update ingredients table directly (fallback)
+function updateIngredientsTableDirectly(ingredients) {
+    const tbody = document.getElementById('kt_ecommerce_edit_order_selected_products_body');
+    if (!tbody) return;
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    if (ingredients.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="ki-duotone ki-information-5 fs-2x text-gray-400 mb-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                    </i>
+                    <div>Belum ada bahan baku yang dipilih</div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Add ingredient rows
+    ingredients.forEach((ingredient, index) => {
+        console.log('tester');
+        const total = parseFloat(ingredient.quantity || 0) * parseFloat(ingredient.hpp || 0);
+        const row = `
+            <tr class="border-bottom border-gray-200">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="symbol symbol-50px me-3">
+                            <div class="symbol-label bg-light-primary">
+                                <i class="ki-duotone ki-package fs-2x text-primary">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-gray-800">${ingredient.name}</div>
+                            <div class="text-muted fs-7">${ingredient.unit}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div class="input-group input-group-sm" style="width: 120px;">
+                        <button class="btn btn-outline-secondary btn-sm" type="button">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <input type="number" class="form-control form-control-sm text-center" style="width:100px"
+                            value="${ingredient.quantity}" step="0.01" min="0">
+                        <button class="btn btn-outline-secondary btn-sm" type="button">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <span class="fw-bold text-gray-800">Rp ${new Intl.NumberFormat('id-ID').format(ingredient.hpp)}</span>
+                </td>
+                <td class="text-center">
+                    <span class="fw-bold text-primary">Rp ${new Intl.NumberFormat('id-ID').format(total)}</span>
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-sm btn-icon btn-light-danger" title="Hapus">
+                        <i class="ki-duotone ki-trash fs-5">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
+                    </button>
+                </td>
+            </tr>
+            <input type="hidden" name="ingredients[${index}][id]" value="${ingredient.id}">
+            <input type="hidden" name="ingredients[${index}][quantity]" value="${ingredient.quantity}">
+            <input type="hidden" name="ingredients[${index}][hpp]" value="${ingredient.hpp}">
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
+
+// Notification functions
+function showLoadingNotification(message) {
+    // You can integrate with your notification system here
+    console.log('LOADING: ' + message);
+    
+    // Simple implementation - replace with your notification system
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Memuat...',
+            text: message,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
         });
+    }
+}
 
-        $('#kt_modal_add_customer_form').on('submit', function(e) {
-            e.preventDefault();
-
-            var form = $(this);
-            var url = form.attr('action');
-            var submitBtn = $('#kt_modal_add_customer_submit');
-            // console.log(form.serialize());
-
-            // Show loading
-            submitBtn.prop('disabled', true);
-            submitBtn.find('.indicator-label').hide();
-            submitBtn.find('.indicator-progress').show();
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.',
-                        showConfirmButton: false,
-                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
-                    }).then(() => {
-                        // 1. Reset form
-                        form.trigger('reset');
-
-                        // 5. Tutup modal
-                        const modalEl = document.getElementById('kt_modal_add_customer');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        modalInstance.hide();
-
-                        if (typeof tableSelectedProduct !== 'undefined') {
-                            tableSelectedProduct.ajax.reload(null, false);
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    var msg = 'Terjadi kesalahan saat menyimpan data.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: msg
-                    });
-                },
-                complete: function() {
-                    // Reset loading state
-                    submitBtn.prop('disabled', false);
-                    submitBtn.find('.indicator-label').show();
-                    submitBtn.find('.indicator-progress').hide();
-                }
-            });
+function showSuccessNotification(message) {
+    console.log('SUCCESS: ' + message);
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.close(); // Close loading
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: message,
+            timer: 2000,
+            showConfirmButton: false
         });
+    } else {
+        alert('Success: ' + message);
+    }
+}
 
-        // Price to Weight
-        $('#modalInputPrcForm').on('submit', function(e) {
-            e.preventDefault();
-
-            var form = $(this);
-            var url = form.attr('action');
-            var submitBtn = $('#kt_modal_add_customer_submit_prc');
-            console.log(form.serialize());
-
-            // Show loading
-            submitBtn.prop('disabled', true);
-            submitBtn.find('.indicator-label').hide();
-            submitBtn.find('.indicator-progress').show();
-
-            $.ajax({
-                type: 'POST',
-                url: url,
-                data: form.serialize(), // gunakan FormData(form)[... jika pakai file]
-                success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message || 'Data berhasil disimpan.',
-                        showConfirmButton: false,
-                        timer: 1500 // notifikasi akan hilang otomatis setelah 1.5 detik
-                    }).then(() => {
-                        // 1. Reset form
-                        form.trigger('reset');
-
-                        // 5. Tutup modal
-                        const modalEl = document.getElementById('modalInputPrc');
-                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-                        modalInstance.hide();
-
-                        if (typeof tableSelectedProduct !== 'undefined') {
-                            tableSelectedProduct.ajax.reload(null, false);
-                        }
-                    });
-                },
-                error: function(xhr) {
-                    var msg = 'Terjadi kesalahan saat menyimpan data.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        msg = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: msg
-                    });
-                },
-                complete: function() {
-                    // Reset loading state
-                    submitBtn.prop('disabled', false);
-                    submitBtn.find('.indicator-label').show();
-                    submitBtn.find('.indicator-progress').hide();
-                }
-            });
+function showInfoNotification(message) {
+    console.log('INFO: ' + message);
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.close(); // Close loading
+        Swal.fire({
+            icon: 'info',
+            title: 'Informasi',
+            text: message,
+            timer: 3000,
+            showConfirmButton: false
         });
+    } else {
+        alert('Info: ' + message);
+    }
+}
 
-        // Additional JavaScript code for handling the modal and form submission
-        @if (isset($data))
-            const productionId = {{ $data->id }};
-            var url = `{{ url('production/get-detail/${productionId}') }}`;
-            tableSelectedProduct = $('#kt_ecommerce_edit_order_selected_products_table').DataTable({
-                processing: true,
-                serverSide: false,
-                info: false,
-                paging: false,
-                ajax: url,
-                fixedColumns: {
-                    leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
-                    rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
-                },
-                columnDefs: [{
-                    orderable: false,
-                    targets: -1 // Nonaktifkan sorting untuk kolom action
-                }], // Ganti dengan route untuk ambil data
-                columns: [{
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'hpp',
-                        name: 'hpp'
-                    },
-                    {
-                        data: 'harga_jual',
-                        name: 'harga_jual'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-                language: {
-                    emptyTable: "Tidak ada produk yang dipilih."
-                }
-            });
-        @endif
-    </script>
-@endsection
+function showErrorNotification(message) {
+    console.log('ERROR: ' + message);
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.close(); // Close loading
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: message
+        });
+    } else {
+        alert('Error: ' + message);
+    }
+}
+</script>
+

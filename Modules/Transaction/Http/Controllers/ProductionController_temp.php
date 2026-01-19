@@ -62,21 +62,16 @@ class ProductionController extends Controller
      * @param Request $request
      * @return Renderable
      */
-        public function store(Request $request)
+    public function store(Request $request)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'product_id'         => 'required|exists:products,id',
-            'submit_type'        => 'required|in:draft,posting,temp',
+            'submit_type'        => 'required|in:draft,posting',
             'production_date'    => 'required|date',
-            'production_number'  => 'required|string',
-            'ingredients'        => 'required|array|min:1',
-            'ingredients.*.id'   => 'required|exists:products,id',
-            'ingredients.*.quantity' => 'required|numeric|min:0',
-            'ingredients.*.hpp'  => 'required|numeric|min:0',
-            'quantity'           => 'required|numeric|min:1',
+            'product_receipt_id' => 'required|array',
+            'quantity'           => 'required',
             'staff_id'           => 'nullable|exists:staff,id',
-            'notes'              => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -87,67 +82,34 @@ class ProductionController extends Controller
 
         try {
             DB::beginTransaction();
-            
-            // Check if there's existing temp production to update
-            $production = Production::where('created_by', Auth::user()->id_user)
-                ->where('status', 'temp')
-                ->where('production_number', $request->production_number)
-                ->first();
-            
-            if (!$production) {
-                // Create new production
-                $production = new Production();
-                $production->production_number = $request->production_number;
-                $production->created_by = Auth::user()->id_user;
-            }
-            
-            // Update production data
-            $production->product_id = $request->product_id;
-            $production->production_date = $request->production_date;
-            $production->status = $request->submit_type;
-            $production->quantity = $request->quantity;
-            $production->staff_id = $request->staff_id;
-            $production->description = $request->notes;
+            $production                    = new Production();
+            $production->production_number = Production::getOrderNumber();
+            $production->product_id        = $request->product_id;
+            $production->production_date   = $request->production_date;
+            $production->status            = $request->submit_type;
+            $production->created_by        = Auth::user()->id_user;
+            $production->quantity          = $request->quantity;
+            $production->staff_id          = $request->staff_id;
             $production->save();
 
-            // Clear existing production details if updating
-            ProductionDetail::where('production_id', $production->id)->delete();
-
-            // Add new production details from ingredients array
-            foreach ($request->ingredients as $ingredient) {
-                $productionDetail = new ProductionDetail();
-                $productionDetail->production_id = $production->id;
-                $productionDetail->product_id = $ingredient['id'];
-                $productionDetail->quantity = $ingredient['quantity'];
+            $productionId = $production->id;
+            foreach ($request->product_receipt_id as $key => $product) {
+                $productionDetail                = new ProductionDetail();
+                $productionDetail->production_id = $productionId;
+                $productionDetail->product_id    = $product;
+                $productionDetail->quantity      = $request->ingredients_quantity[$key];
+                // dd($productionDetail);
                 $productionDetail->save();
             }
 
             DB::commit();
-            
-            // Handle different submit types like PosController
-            if ($request->submit_type == 'temp') {
-                return redirect()->back()->with('success', 'Data berhasil disimpan sebagai draft sementara');
-            } elseif ($request->submit_type == 'draft') {
-                return redirect()->route('production');
-            } else {
-                // posting - calculate and update HPP
-                $totalHpp = 0;
-                foreach ($request->ingredients as $ingredient) {
-                    $totalHpp += $ingredient['hpp'] * $ingredient['quantity'];
-                }
-                
-                Product::where('id', $request->product_id)->update([
-                    'hpp' => $totalHpp / $request->quantity, // HPP per unit
-                ]);
-                
-                return redirect('production')->with('success', 'Produksi berhasil diselesaikan');
-            }
-
         } catch (Exception $e) {
             DB::rollback();
             return redirect()->back()->withInput($request->all())
-                ->with('error', 'Produksi gagal: ' . $e->getMessage());
+                ->with('error', 'Produksi gagal' . $e->getMessage());
         }
+
+        return redirect('production')->with('success', 'Produksi berhasil');
     }
 
     /**
@@ -167,12 +129,10 @@ class ProductionController extends Controller
      */
     public function edit($id)
     {
-        $data['alpinejs'] = true;
         $data['data']              = Production::find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         // $data['selectedProduct']   = Product::find($data['data']->product_id);
         $data['receipt'] = Receipt::with('products')->where('product_id', $data['data']->product_id)->first();
-        $data['production_number'] = $data['data']->production_number; // Add the production number
         // dd($data);
         return view('transaction::production.create', $data);
     }
@@ -638,6 +598,5 @@ class ProductionController extends Controller
             ->make(true);
     }
 }
-
 
 

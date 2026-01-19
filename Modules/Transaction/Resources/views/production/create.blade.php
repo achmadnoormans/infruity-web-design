@@ -1,399 +1,278 @@
 @extends('template.root')
 
 @section('content')
-    <form id="kt_ecommerce_edit_order_form" class="form d-flex flex-column flex-lg-row"
-        action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
-        enctype="multipart/form-data" data-kt-redirect="">
-        @if (isset($data))
-            @method('PUT')
-        @endif
-        @csrf
-        <!--begin::Aside column-->
-        <div class="w-100 flex-lg-row-auto w-lg-300px mb-7 me-7 me-lg-10">
-            <!--begin::Order details-->
-            <div class="card card-flush py-4">
-                <!--begin::Card header-->
-                <div class="card-header">
-                    <div class="card-title">
-                        <h2>Detail Produksi</h2>
-                    </div>
-                </div>
-                <!--end::Card header-->
-                <!--begin::Card body-->
-                <div class="card-body pt-0">
-                    <div class="d-flex flex-column gap-10">
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Produksi ID</label>
-                            <!--end::Label-->
-                            <!--begin::Auto-generated ID-->
-                            <div class="fw-bold fs-3">#{{ isset($data) ? $data->code : '14364' }}</div>
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Nama Produksi</label>
-                            <!--end::Label-->
-                            <!--begin::Auto-generated ID-->
-                            <select name="product_id" id="product_id" class="form-select mb-2">
-                                @if (isset($receipt) && $receipt != null)
-                                    <option value="{{ $receipt->id }}" selected>{{ $receipt->products->name }}
-                                    </option>
-                                @endif
-                            </select>
-                            <input type="hidden" name="submit_type" id="submit_type" value="draft">
-                            <input type="hidden" name="id_receipt" id="id_receipt">
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">Jumlah</label>
-                            <!--end::Label-->
-                            <!--begin::Auto-generated ID-->
-                            <input type="number" name="quantity" id="quantity" class="form-control mb-2"
-                                placeholder="Masukkan Jumlah"
-                                value="{{ isset($data) ? $data->quantity : old('quantity') }}" />
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="required form-label">Tanggal Produksi</label>
-                            <!--end::Label-->
-                            <!--begin::Editor-->
-                            <input id="kt_ecommerce_edit_order_date" name="production_date" placeholder="Pilih tanggal"
-                                class="form-control mb-2" value="{{ old('production_date') ?? date('Y-m-d') }}" />
-                            <!--end::Editor-->
-                            <!--begin::Description-->
-                            <div class="text-muted fs-7">Atur tanggal produksi untuk diproses.</div>
-                            <!--end::Description-->
-                        </div>
-                        <!--end::Input group-->
-                        <!--begin::Input group-->
-                        <div class="fv-row">
-                            <!--begin::Label-->
-                            <label class="form-label">PIC / Penanggung Jawab</label>
-                            <!--end::Label-->
-                            <!--begin::Auto-generated ID-->
-                            <select name="staff_id" id="staff_id" class="form-select mb-2">
+    <style>
+        /* Animasi flying cart - produk terbang ke keranjang */
+        @keyframes flyToCart {
+            0% {
+                transform: scale(1) translateX(0) translateY(0);
+                opacity: 1;
+            }
 
-                            </select>
-                            <!--end::Input-->
-                        </div>
-                        <!--end::Input group-->
-                    </div>
-                </div>
-                <!--end::Card header-->
-            </div>
-            <!--end::Order details-->
-        </div>
-        <!--end::Aside column-->
-        <!--begin::Main column-->
-        <div class="d-flex flex-column flex-lg-row-fluid gap-7 gap-lg-10">
-            <!--begin::Order details-->
-            <div class="card card-flush py-4">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h2>Pilih Bahan</h2>
-                    </div>
-                </div>
-                <!--begin::Card body-->
-                <div class="card-body pt-0">
-                    <div class="d-flex flex-column gap-10">
-                        <!--begin::Input group-->
-                        <div class="fv-row mb-2">
-                            <!--begin::Label-->
-                            <label class="fs-6 fw-semibold mb-2">Type Perhitungan
-                                <span class="ms-1" data-bs-toggle="tooltip"
-                                    title="Pilih tipe perhitungan yang akan digunakan">
-                                    <i class="ki-duotone ki-information-5 text-gray-500 fs-6">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                </span></label>
-                            <!--End::Label-->
-                            <!--begin::Row-->
-                            <div class="row row-cols-2 row-cols-md-2 row-cols-lg-1 row-cols-xl-2 g-9" data-kt-buttons="true"
-                                data-kt-buttons-target="[data-kt-button='true']">
-                                <!--begin::Col-->
-                                <div class="col">
-                                    <!--begin::Option-->
-                                    <label
-                                        class="btn btn-outline btn-outline-dashed btn-active-light-primary d-flex text-start p-6"
-                                        data-kt-button="true">
-                                        <!--begin::Radio-->
-                                        <span
-                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                            <input class="form-check-input" type="radio" name="calculation_type"
-                                                value="weight_to_price" />
-                                        </span>
-                                        <!--end::Radio-->
-                                        <!--begin::Info-->
-                                        <span class="ms-5">
-                                            <span class="fs-4 fw-bold text-gray-800 d-block">Berat ke Harga</span>
-                                        </span>
-                                        <!--end::Info-->
-                                    </label>
-                                    <!--end::Option-->
-                                </div>
-                                <!--end::Col-->
-                                <!--begin::Col-->
-                                <div class="col">
-                                    <!--begin::Option-->
-                                    <label
-                                        class="btn btn-outline btn-outline-dashed btn-active-light-primary active d-flex text-start p-6"
-                                        data-kt-button="true">
-                                        <!--begin::Radio-->
-                                        <span
-                                            class="form-check form-check-custom form-check-solid form-check-sm align-items-start mt-1">
-                                            <input class="form-check-input" type="radio" name="calculation_type"
-                                                value="price_to_weight" checked="checked" />
-                                        </span>
-                                        <!--end::Radio-->
-                                        <!--begin::Info-->
-                                        <span class="ms-5">
-                                            <span class="fs-4 fw-bold text-gray-800 d-block">Harga ke Berat</span>
-                                        </span>
-                                        <!--end::Info-->
-                                    </label>
-                                    <!--end::Option-->
-                                </div>
-                                <!--end::Col-->
+            50% {
+                transform: scale(0.5) translateX(200px) translateY(-100px);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(0.1) translateX(400px) translateY(-200px);
+                opacity: 0;
+            }
+        }
+
+        .fly-to-cart {
+            animation: flyToCart 0.8s ease-in-out;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Animasi bounce untuk tombol */
+        @keyframes bounceScale {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .bounce-add {
+            animation: bounceScale 0.3s ease-in-out;
+        }
+
+        /* Animasi shake untuk badge */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake-badge {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Animasi pulse untuk badge */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-badge {
+            animation: pulse 0.4s ease-in-out;
+        }
+    </style>
+
+    <!--begin::Main column-->
+    <div class="w-100 flex-lg-row-auto me-7 me-lg-10" x-data="productionApp()" x-init="init()">
+        <form id="kt_ecommerce_edit_order_form" class="form"
+            action="{{ isset($data) ? url(Request::segment(1) . '/' . $data->id) : url(Request::segment(1)) }}" method="POST"
+            enctype="multipart/form-data" data-kt-redirect="">
+            @if (isset($data))
+                @method('PUT')
+            @endif
+            @csrf
+            
+            <!-- Header Information Card -->
+            <div class="card card-body mb-3">
+                <div class="d-flex flex-column gap-10 mb-3">
+                    <!--begin::Input group-->
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="fv-row">
+                                <!--begin::Label-->
+                                <label class="required form-label">Nomor Produksi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="text" class="form-control" name="production_number" 
+                                    value="{{ isset($data) ? $data->production_number : '#' . time() }}" readonly>
+                                <!--end::Input-->
                             </div>
-                            <!--end::Row-->
                         </div>
-                        <!--end::Input group-->
-                        <!--begin::Search products-->
-                        <div class="d-flex align-items-center position-relative mb-n7">
-                            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-4">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                            </i>
-                            <input type="text" data-kt-ecommerce-edit-order-filter="search"
-                                class="form-control form-control-solid w-100 w-lg-50 ps-12" id="search"
-                                placeholder="Cari Produk" />
+                        <div class="col-6">
+                            <div class="fv-row">
+                                <!--begin::Label-->
+                                <label class="required form-label">Tanggal Produksi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="date" class="form-control" name="production_date" 
+                                    value="{{ old('production_date') ?? date('Y-m-d') }}">
+                                <!--end::Input-->
+                            </div>
                         </div>
-                        <!--end::Search products-->
-                        <!--begin::Table-->
-                        <table class="table align-middle table-row-dashed fs-6 gy-5"
-                            id="kt_ecommerce_edit_order_product_table">
-                            <thead>
-                                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                                    {{-- <th class="w-25px pe-2"></th> --}}
-                                    <th class="min-w-200px">Produk</th>
-                                    <th class="min-w-100px text-end pe-5">Stok</th>
-                                </tr>
-                            </thead>
-                            <tbody class="fw-semibold text-gray-600">
-
-                            </tbody>
-                        </table>
-                        <!--end::Table-->
                     </div>
+                    <!--end::Input group-->
                 </div>
-                <!--end::Card header-->
-            </div>
-            <!--end::Order details-->
-            <!--begin::Order details-->
-            <div class="card card-flush py-4">
-                <!--begin::Card header-->
-                <div class="card-header">
-                    <div class="card-title">
-                        <h2>Pratinjau Produk</h2>
+                
+                <div class="d-flex flex-column gap-10 mb-3">
+                    <!--begin::Input group-->
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="fv-row">
+                                <!--begin::Label-->
+                                <label class="required form-label">Pilih Produk</label>
+                                <!--end::Label-->
+                                <!--begin::Select-->
+                                <select name="product_id" id="product_id" class="form-select">
+                                    @if (isset($receipt) && $receipt != null)
+                                        <option value="{{ $receipt->id }}" selected>{{ $receipt->products->name }}</option>
+                                    @else
+                                        <option value="">Pilih Produk</option>
+                                    @endif
+                                </select>
+                                <!--end::Select-->
+                            </div>
+                        </div>
+                        <div class="col-3 mt-8">
+                            <button type="button" @click="refreshProduct()"
+                                class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+                                <i class="fa-solid fa-refresh"></i>
+                            </button>
+                        </div>
                     </div>
+                    <!--end::Input group-->
                 </div>
-                <!--end::Card header-->
-                <!--begin::Card body-->
-                <div class="card-body pt-0">
-                    <div class="d-flex flex-column gap-10">
-                        <!--begin::Input group-->
+                
+                <div class="d-flex flex-column gap-10">
+                    <!--begin::Input group-->
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="fv-row">
+                                <!--begin::Label-->
+                                <label class="required form-label">Jumlah Produksi</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <input type="number" name="quantity" id="quantity" class="form-control"
+                                    placeholder="Masukkan Jumlah" step="0.01"
+                                    value="{{ isset($data) ? $data->quantity : old('quantity', 1) }}" />
+                                <!--end::Input-->
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="fv-row">
+                                <!--begin::Label-->
+                                <label class="form-label">PIC / Penanggung Jawab</label>
+                                <!--end::Label-->
+                                <!--begin::Select-->
+                                <select name="staff_id" id="staff_id" class="form-select">
+                                    <option value="">Pilih Staff</option>
+                                </select>
+                                <!--end::Select-->
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Input group-->
+                </div>
+                
+                <!-- Hidden inputs -->
+                <input type="hidden" name="submit_type" id="submit_type" value="temp">
+                <input type="hidden" name="id_receipt" id="id_receipt">
+                <input type="hidden" name="production_number" value="{{ $production_number }}">
+                
+                <!-- Dynamic ingredients inputs - populated by Alpine.js -->
+                <div id="ingredients-inputs">
+                    <template x-for="(ingredient, index) in ingredients" :key="ingredient.id">
                         <div>
-                            <!--begin::Label-->
-                            <label class="form-label">Tambah produk ke pesanan ini</label>
-                            <!--end::Label-->
-                            <!--begin::Selected products-->
-                            <div class="table table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-3 mb-5"
-                                    id="kt_ecommerce_edit_order_selected_products_table">
-                                    <thead>
-                                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-200px">Produk</th>
-                                            <th class="min-w-100px">Hpp</th>
-                                            <th class="min-w-100px">Total</th>
-                                            <th class="text-end"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="kt_ecommerce_edit_order_selected_products_body">
-                                        <td colspan="6">Pilih satu atau lebih produk dari daftar di bawah dengan
-                                            mencentang kotak centang.</td>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Tempat hidden input -->
-                            <div id="selected-products-hidden"></div>
+                            <input type="hidden" :name="'ingredients[' + index + '][id]'" :value="ingredient.id">
+                            <input type="hidden" :name="'ingredients[' + index + '][quantity]'" :value="ingredient.quantity">
+                            <input type="hidden" :name="'ingredients[' + index + '][hpp]'" :value="ingredient.hpp">
                         </div>
-                        <!--end::Input group-->
+                    </template>
+                </div>
+            </div>
+
+            <!-- Ingredients Selection Card -->
+            <div class="card card-body mb-3">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="fs-5 fw-bold d-flex">Bahan Baku yang Digunakan</span>
+                        <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button"
+                            class="btn btn-outline btn-outline-dashed btn-outline-primary dropdown-toggle"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" type="button" @click="openAddIngredientModal()">
+                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Tambah Bahan
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button" @click="loadFromRecipe()">
+                                    <i class="ki-duotone ki-book text-primary me-2 fs-5"></i> Dari Resep
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <!--end::Card header-->
-            </div>
-            <!--end::Order details-->
 
-            <div class="d-flex justify-content-end">
+                <!-- Ingredients Cart -->
+                @include('transaction::production.segment.ingredients-cart')
+            </div>
+
+            <!-- Summary Card -->
+            <div class="card card-body mb-3">
+                @include('transaction::production.segment.summary')
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-3">
                 <!--begin::Button-->
-                <a href="{{ url(Request::segment(1)) }}" id="kt_ecommerce_edit_order_cancel"
-                    class="btn btn-light me-5">Batal</a>
+                <a href="{{ url(Request::segment(1)) }}" class="btn btn-light">Batal</a>
                 <!--end::Button-->
 
-                <button type="submit" class="btn btn-primary me-2" onclick="setSubmitType('draft')">
-                    <span class="indicator-label">Draft</span>
+                <button type="submit" class="btn btn-secondary" onclick="setSubmitType('temp')">
+                    <span class="indicator-label">Simpan Draft</span>
+                    <span class="indicator-progress">Mohon tunggu...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                </button>
+
+                <button type="submit" class="btn btn-warning" onclick="setSubmitType('draft')">
+                    <span class="indicator-label">Siap Produksi</span>
                     <span class="indicator-progress">Mohon tunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
 
                 <button type="submit" class="btn btn-primary" onclick="setSubmitType('posting')">
-                    <span class="indicator-label">Posting</span>
+                    <span class="indicator-label">Selesai Produksi</span>
                     <span class="indicator-progress">Mohon tunggu...
                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                 </button>
                 <!--end::Button-->
             </div>
-        </div>
-        <!--end::Main column-->
-    </form>
+        </form>
 
-    <div class="modal fade" id="modalInputQty" tabindex="-1" aria-labelledby="modalInputQtyLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalInputQtyLabel">Masukkan Detail Produk</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="inputProductId">
-                    <input type="hidden" id="typeList">
-                    <div class="mb-3">
-                        <label for="inputQuantity" class="form-label">Jumlah</label>
-                        <input type="number" step="0.01" class="form-control" id="inputQuantity"
-                            placeholder="Masukkan jumlah">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="inputPrice" class="form-label">Harga Jual</label>
-                        <input type="text" class="form-control format-number" id="inputSellPrice"
-                            placeholder="Enter price" min="0">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitQty">Tambah Produk</button>
-                </div>
-            </div>
-        </div>
+        <!-- Modals -->
+        @include('transaction::production.segment.modal-ingredient')
+        @include('transaction::production.segment.modal-recipe')
     </div>
-    <!-- Modal for Quantity Input -->
-    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-labelledby="modalEditQtyLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form class="form" action="{{ url('production') }}" id="kt_modal_add_customer_form"
-                    data-kt-redirect="#">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalInputPrcLabel">Ubah Detail</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        @csrf
-                        <input type="hidden" name="_method" id="methodField" value="">
-                        <div class="mb-3">
-                            <label for="inputQuantity" class="form-label">Jumlah</label>
-                            <input type="number" class="form-control" id="inputQuantityEdit" name="qty"
-                                placeholder="Masukkan jumlah" step="0.01" name="qty">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="inputPrice" class="form-label">Harga Jual</label>
-                            <input type="text" class="form-control format-number" id="inputPriceEdit"
-                                name="sell_price" placeholder="Masukkan harga" min="0">
-                        </div>
-                    </div>
-                    <!--begin::Modal footer-->
-                    <div class="modal-footer flex-center">
-                        <!--begin::Button-->
-                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Tutup</button>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
-                            <span class="indicator-label">Simpan</span>
-                            <span class="indicator-progress">Please wait...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalInputPrc" tabindex="-1" aria-labelledby="modalEditQtyLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form class="form" action="{{ url('production') }}" id="modalInputPrcForm" data-kt-redirect="#">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalInputPrcLabel">Ubah Detail</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        @csrf
-                        <input type="hidden" name="_method" id="methodFieldPrc" value="">
-                        <input type="hidden" id="inputProductIdPrc" name="product_id">
-                        <input type="hidden" id="inputReceiptIdPrc" name="receipt_id">
-                        <input type="hidden" id="inputProductionIdPrc" name="production_id">
-                        <input type="hidden" id="typeList">
-                        <div class="mb-3">
-                            <label for="inputPrice" class="form-label">Masukkan Harga</label>
-                            <input type="text" class="form-control format-number" id="inputPrice"
-                                placeholder="Masukkan harga" min="0">
-                        </div>
-                        <div class="mb-3">
-                            <label for="inputQuantity" class="form-label">Jumlah</label>
-                            <input type="number" name="qty" step="0.01" class="form-control"
-                                id="inputQuantityPrc" placeholder="Masukkan jumlah" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="inputPrice" class="form-label">Harga Jual</label>
-                            <input type="text" name="sell_price" class="form-control format-number"
-                                id="inputSellPricePrc" placeholder="Masukkan harga" min="0" readonly>
-                        </div>
-                    </div>
-                    <!--begin::Modal footer-->
-                    <div class="modal-footer flex-center">
-                        <!--begin::Button-->
-                        <button type="button" data-bs-dismiss="modal" id="kt_modal_add_customer_cancel"
-                            class="btn btn-light me-3">Tutup</button>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit_prc" class="btn btn-primary">
-                            <span class="indicator-label">Simpan</span>
-                            <span class="indicator-progress">Please wait...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
-                    </div>
-                    <!--end::Modal footer-->
-
-                </form>
-            </div>
-        </div>
-    </div>
+    <!--end::Main column-->
+    
     @include('transaction::production.js-create')
 @endsection

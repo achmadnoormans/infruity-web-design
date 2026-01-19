@@ -347,6 +347,75 @@ class ProductReceiptController extends Controller
             ->make(true);
     }
 
+    /**
+     * Get recipe data for production auto-load
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRecipeData($id)
+    {
+        try {
+            // Find the receipt by receipt ID
+            $receipt = Receipt::with('products')->find($id);
+            
+            if (!$receipt) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recipe not found',
+                    'ingredients' => []
+                ], 404);
+            }
+
+            // Get recipe ingredients with proper relationships
+            $ingredients = ProductReceipt::with(['ingredients' => function($query) {
+                $query->with('unit');
+            }])
+            ->where('receipt_id', $id)
+            ->get()
+            ->map(function($item) {
+                // Ambil data dari product receipt dan product
+                $product = $item->ingredients; // ingredients adalah relasi ke product
+                $quantity = (float) $item->quantity; // qty dari detail receipt
+                $hpp = (float) ($product->hpp ?? 0); // hpp dari product
+                $total = $quantity * $hpp; // total = qty * hpp
+                
+                return [
+                    'id' => $item->product_receipt_id,
+                    'product_id' => $item->product_receipt_id,
+                    'name' => $product->name ?? 'Unknown',
+                    'quantity' => $quantity,
+                    'hpp' => $hpp,
+                    'unit' => $product->unit->abbreviation ?? 'pcs',
+                    'total' => $total,
+                    'product' => [
+                        'id' => $item->product_receipt_id,
+                        'name' => $product->name ?? 'Unknown',
+                        'hpp' => $hpp,
+                        'unit' => [
+                            'abbreviation' => $product->unit->abbreviation ?? 'pcs'
+                        ]
+                    ]
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'id' => $receipt->id,
+                'product_id' => $receipt->product_id,
+                'product_name' => $receipt->products->name ?? 'Unknown',
+                'yield_quantity' => 1, // Default yield quantity
+                'ingredients' => $ingredients
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading recipe: ' . $e->getMessage(),
+                'ingredients' => []
+            ], 500);
+        }
+    }
+
     public function get_data(Request $request)
     {
         $data = Receipt::with('products')->get();

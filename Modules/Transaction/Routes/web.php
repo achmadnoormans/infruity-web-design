@@ -63,8 +63,13 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('stock-out-type', StockOutTypeController::class)->names('stock-out-type')->except('show');
 
     Route::resource('production', ProductionController::class)->names('production')->except('show');
+    Route::get('production/{id}/payment', [ProductionController::class, 'payment'])->name('production.payment');
+    Route::post('production/save-completion', [ProductionController::class, 'saveCompletion'])->name('production.save-completion');
+    Route::get('production/{id}/completion-notification', [ProductionController::class, 'completionNotification'])->name('production.completion-notification');
+    Route::get('production/{id}/print', [ProductionController::class, 'printProduction'])->name('production.print');
     Route::get('products/get-receipt', [ProductReceiptController::class, 'getReceipt'])->name('products.get-receipt');
     Route::get('production/get-receipt/{id}', [ProductReceiptController::class, 'get_product'])->name('production.get-receipt');
+    Route::get('production/get-recipe-data/{id}', [ProductReceiptController::class, 'getRecipeData'])->name('production.get-recipe-data');
     Route::get('production/get-detail/{id}', [ProductionController::class, 'get_detail_product'])->name('production.get-receipt');
     Route::delete('production/delete-detail/{id}', [ProductionController::class, 'delete_detail'])->name('production.delete_detail');
     Route::post('production/update-product-id/{id}', [ProductionController::class, 'update_product_id'])->name('production.update_product_id');
