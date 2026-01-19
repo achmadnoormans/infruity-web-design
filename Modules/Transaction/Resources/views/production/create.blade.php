@@ -223,11 +223,11 @@
                                     <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Tambah Bahan
                                 </button>
                             </li>
-                            <li>
+                            {{-- <li>
                                 <button class="dropdown-item" type="button" @click="loadFromRecipe()">
                                     <i class="ki-duotone ki-book text-primary me-2 fs-5"></i> Dari Resep
                                 </button>
-                            </li>
+                            </li> --}}
                         </ul>
                     </div>
                 </div>
