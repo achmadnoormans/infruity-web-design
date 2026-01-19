@@ -66,6 +66,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('production/{id}/payment', [ProductionController::class, 'payment'])->name('production.payment');
     Route::post('production/save-completion', [ProductionController::class, 'saveCompletion'])->name('production.save-completion');
     Route::get('production/{id}/completion-notification', [ProductionController::class, 'completionNotification'])->name('production.completion-notification');
+    Route::get('production/{id}/detail', [ProductionController::class, 'show'])->name('production.detail');
     Route::get('production/{id}/print', [ProductionController::class, 'printProduction'])->name('production.print');
     Route::get('products/get-receipt', [ProductReceiptController::class, 'getReceipt'])->name('products.get-receipt');
     Route::get('production/get-receipt/{id}', [ProductReceiptController::class, 'get_product'])->name('production.get-receipt');

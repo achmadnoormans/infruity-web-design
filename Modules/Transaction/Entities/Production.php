@@ -54,4 +54,9 @@ class Production extends Model
     {
         return $this->belongsTo('Modules\Master\Entities\Staff', 'staff_id', 'id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo('App\User', 'created_by', 'id_user');
+    }
 }

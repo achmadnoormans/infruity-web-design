@@ -67,6 +67,8 @@
     <script type="text/javascript">
         var dataTable;
         $(document).ready(function() {
+            console.log('Initializing DataTable...');
+            
             dataTable = $('#production-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -75,30 +77,22 @@
                     rightColumns: 1
                 },
                 columnDefs: [{
-                        orderable: false,
-                        targets: -1 // Disable sorting for action column
-                    },
-                    {
-                        targets: [4], // Kolom ke-5 (status_raw)
-                        visible: false,
-                        searchable: false
-                    },
-                    {
-                        targets: [5], // Kolom ke-5 (status_raw)
-                        visible: false,
-                        searchable: false
-                    }
-                ],
+                    orderable: false,
+                    targets: -1 // Disable sorting for action column
+                }],
                 ajax: {
                     url: "{{ route('production-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                    },
+                    error: function(xhr, error, code) {
+                        console.error('DataTable AJAX Error:', error, code);
+                        console.error('Response:', xhr.responseText);
                     }
                 },
                 order: [
-                    [1, 'asc'], // Sort by status_raw ASC
-                    [2, 'desc'], // Then by order_date ASC (kolom ke-3)
-                    [0, 'desc']
+                    [2, 'desc'], // Sort by production_date DESC
+                    [0, 'desc']  // Then by name DESC
                 ],
                 columns: [{
                         data: 'name',
@@ -107,13 +101,7 @@
                     {
                         data: 'status',
                         name: 'status',
-                        className: 'text-center',
-                        render: function(data, type, row) {
-                            if (type === 'filter' || type === 'sort') {
-                                return row.status_raw;
-                            }
-                            return data;
-                        }
+                        className: 'text-center'
                     },
                     {
                         data: 'production_date',
@@ -122,18 +110,21 @@
                     },
                     {
                         data: 'action',
-                        name: 'action'
-                    },
-                    {
-                        data: 'status_raw', // hidden column used only for sorting
-                        name: 'status_raw'
-                    },
-                    {
-                        data: 'production_id',
-                        name: 'production_id'
+                        name: 'action',
+                        className: 'text-end',
+                        orderable: false,
+                        searchable: false
                     }
-                ]
+                ],
+                drawCallback: function(settings) {
+                    console.log('DataTable draw completed');
+                },
+                initComplete: function(settings, json) {
+                    console.log('DataTable initialization completed');
+                    console.log('Data received:', json);
+                }
             });
+            
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
@@ -141,7 +132,6 @@
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
                 let val = $(this).val();
-
                 if (val === 'all') val = ''; // kosongkan filter jika all
                 dataTable.column(1).search(val).draw();
             });

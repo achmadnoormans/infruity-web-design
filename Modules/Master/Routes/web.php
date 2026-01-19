@@ -65,6 +65,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/listProduct', [ProductController::class, 'listProduct'])->name('ajax.listProduct');
     Route::get('/ajax/getPaymentMethod', [PaymentMethodController::class, 'getPaymentMethod'])->name('ajax.getPaymentMethod');
     Route::get('/ajax/getBranch', [BranchController::class, 'getBranch'])->name('ajax.getBranch');
+    Route::get('/ajax/getStaff', [StaffController::class, 'getStaff'])->name('ajax.getStaff');
     Route::post('products/variant/store', [ProductController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('products/variants/get', [ProductController::class, 'getVariant'])->name('variants.get');
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');

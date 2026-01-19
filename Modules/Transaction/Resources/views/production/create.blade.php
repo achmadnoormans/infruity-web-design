@@ -146,12 +146,12 @@
                                 <!--end::Select-->
                             </div>
                         </div>
-                        <div class="col-3 mt-8">
+                        {{-- <div class="col-3 mt-8">
                             <button type="button" @click="refreshProduct()"
                                 class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
                                 <i class="fa-solid fa-refresh"></i>
                             </button>
-                        </div>
+                        </div> --}}
                     </div>
                     <!--end::Input group-->
                 </div>

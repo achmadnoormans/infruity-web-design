@@ -591,9 +591,16 @@ class ProductController extends Controller
     public function getProduct(Request $request)
     {
         $search = $request->input('search', '');
-        $query  = Product::select('id', 'name')
+        $query  = Product::with(['unit', 'category'])
+            ->select('id', 'name', 'sku as code', 'hpp', 'price', 'stock', 'product_unit', 'category_id')
             ->where('name', 'like', '%' . $search . '%')
-            ->get();
+            ->where('tipe', '!=', 'parcel') // Exclude parcel type
+            ->get()
+            ->map(function ($item) {
+                // Use hpp if available, otherwise use price
+                $item->hpp = $item->hpp ?: 0;
+                return $item;
+            });
 
         return response()->json($query);
     }

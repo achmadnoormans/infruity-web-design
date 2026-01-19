@@ -157,7 +157,23 @@ class ProductionController extends Controller
      */
     public function show($id)
     {
-        return view('transaction::show');
+        try {
+            $data['data'] = Production::with(['products', 'products.unit', 'staff', 'creator'])->findOrFail($id);
+            $data['production_detail'] = ProductionDetail::with(['products', 'products.unit', 'products.category'])->where('production_id', $id)->get();
+            
+            // Calculate totals with null safety
+            $data['total_hpp'] = $data['production_detail']->sum(function($item) {
+                return ($item->products->hpp ?? 0) * $item->quantity;
+            });
+            
+            $data['hpp_per_unit'] = $data['data']->quantity > 0 ? $data['total_hpp'] / $data['data']->quantity : 0;
+            
+            return view('transaction::production.show', $data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('production.index')->with('error', 'Data produksi tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('production.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -545,99 +561,68 @@ class ProductionController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Production::with('products')->whereNotNull('product_id')->get();
-        return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('name', function ($item) {
-                return '<div class="d-flex align-items-center">
-                            <div class="ms-5">
-                                <a href="' . url('production') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->production_number . '</a>
-                                <br>
-                                <span class="text-muted d-block">' . $item->products->name . '</span>
-                                <span class="text-muted d-block"> Qty : ' . toNumber($item->quantity) . '</span>
-                            </div>
+        try {
+            // Simple test first - get all production records
+            $productions = Production::with('products')->get();
+            
+            return DataTables::of($productions)
+                ->addColumn('name', function ($item) {
+                    $productName = $item->products ? $item->products->name : 'N/A';
+                    $quantity = number_format($item->quantity ?? 0, 0, ',', '.');
+                    
+                    return '<div class="d-flex align-items-center">
+                                <div class="ms-5">
+                                    <a href="' . route('production.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . ($item->production_number ?? 'N/A') . '</a>
+                                    <br>
+                                    <span class="text-muted d-block">' . $productName . '</span>
+                                    <span class="text-muted d-block">Qty: ' . $quantity . '</span>
+                                </div>
+                            </div>';
+                })
+                ->addColumn('production_date', function ($item) {
+                    return $item->production_date ? date('d/m/Y', strtotime($item->production_date)) : 'N/A';
+                })
+                ->addColumn('status', function ($item) {
+                    switch ($item->status) {
+                        case 'posting':
+                            return '<span class="badge badge-light-success">Completed</span>';
+                        case 'complete':
+                            return '<span class="badge badge-light-success">Complete</span>';
+                        case 'draft':
+                            return '<span class="badge badge-light-warning">Draft</span>';
+                        case 'temp':
+                            return '<span class="badge badge-light-info">Temp</span>';
+                        default:
+                            return '<span class="badge badge-light-secondary">' . ucfirst($item->status ?? 'Unknown') . '</span>';
+                    }
+                })
+                ->addColumn('action', function ($item) {
+                    return '
+                        <div class="btn-group" role="group">
+                            <a href="' . route('production.detail', $item->id) . '" class="btn btn-sm btn-light-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="' . route('production.edit', $item->id) . '" class="btn btn-sm btn-light-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
                         </div>';
-            })
-            ->addColumn('production_date', function ($item) {
-                return dateindo($item->production_date);
-            })
-            ->addColumn('status', function ($item) {
-                if ($item->status == 'posting') {
-                    return '<span class="badge badge-light-success">Completed</span>';
-                } elseif ($item->status == 'complete') {
-                    return '<span class="badge badge-light-success">Complete</span>';
-                } elseif ($item->status == 'draft') {
-                    return '<span class="badge badge-light-warning">Draft</span>';
-                } elseif ($item->status == 'temp') {
-                    return '<span class="badge badge-light-info">Temp</span>';
-                } else {
-                    return '<span class="badge badge-light-danger">Unknown</span>';
-                }
-            })
-            ->addColumn('status_raw', function ($item) {
-                return $item->status;
-            })
-            ->addColumn('action', function ($item) {
-                $html  = '';
-                $html .= '
-                    <div class="dropstart">
-                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
-                            <i class="bi bi-three-dots-vertical"></i>
-                        </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
-                            <li>
-                                <a class="dropdown-item" href="' . route('production.edit', $item->id) . '">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </li>';
+                })
+                ->rawColumns(['name', 'action', 'status'])
+                ->make(true);
                 
-                if (in_array($item->status, ['temp', 'draft'])) {
-                    $html .= '
-                            <li>
-                                <a class="dropdown-item" href="' . route('production.edit', $item->id) . '">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                            </li>';
-                }
-                
-                if ($item->status == 'draft') {
-                    $html .= '
-                            <li>
-                                <a class="dropdown-item" href="' . route('production.payment', $item->id) . '">
-                                    <i class="bi bi-check-circle"></i>
-                                </a>
-                            </li>';
-                }
-                
-                $html .= '
-                            <li>
-                                <a class="dropdown-item" href="' . route('production.print', $item->id) . '">
-                                    <i class="fa fa-print"></i>
-                                </a>
-                            </li>';
-                
-                if (!in_array($item->status, ['posting']) || Session('role')['id_role'] == 1) {
-                    $html .= '
-                            <li>
-                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </li>';
-                }
-
-                $html .= '
-                        </ul>
-                    </div>
-                    ';
-                return $html;
-            })
-            ->addColumn('production_id', function ($item) {
-                return $item->id;
-            })
-            ->rawColumns(['name', 'action', 'status', 'address'])
-            ->make(true);
+        } catch (\Exception $e) {
+            \Log::error('Production DataTable Error: ' . $e->getMessage());
+            return response()->json([
+                'draw' => intval($request->input('draw', 1)),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
+
 
 
 

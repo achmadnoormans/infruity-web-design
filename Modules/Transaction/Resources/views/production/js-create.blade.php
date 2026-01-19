@@ -12,10 +12,12 @@ function productionApp() {
         ingredientQuantity: 0,
         recipeMultiplier: 1,
         searchIngredient: '',
+        ingredientSearchTerm: '',
         productionQuantity: 1,
         notes: '',
         status: 'temp',
         isLoadingIngredients: false,
+        showAddIngredientModal: false,
 
         // Computed properties
         get totalHpp() {
@@ -33,6 +35,21 @@ function productionApp() {
             return this.selectedRecipe.ingredients.reduce((total, ingredient) => {
                 return total + (ingredient.hpp * ingredient.quantity);
             }, 0);
+        },
+
+        // Computed property for filtered ingredients
+        get filteredIngredients() {
+            if (!this.ingredientSearchTerm || this.ingredientSearchTerm.trim() === '') {
+                return this.availableIngredients;
+            }
+            
+            const searchTerm = this.ingredientSearchTerm.toLowerCase();
+            const filtered = this.availableIngredients.filter(ingredient => 
+                ingredient.name.toLowerCase().includes(searchTerm) ||
+                (ingredient.code && ingredient.code.toLowerCase().includes(searchTerm))
+            );
+            
+            return filtered;
         },
 
         // Initialize
@@ -80,14 +97,17 @@ function productionApp() {
             try {
                 const response = await fetch('{{ route("ajax.getProduct") }}');
                 const data = await response.json();
+                console.log('API Response:', data); // Temporary debug
                 this.availableIngredients = data.map(item => ({
                     id: item.id,
                     name: item.name,
+                    code: item.code || item.sku || '',
                     stock: item.stock || 0,
                     hpp: item.hpp || 0,
                     unit: item.unit?.abbreviation || 'pcs',
                     category: item.category?.name || 'Umum'
                 }));
+                console.log('Mapped ingredients:', this.availableIngredients); // Temporary debug
             } catch (error) {
                 console.error('Error loading ingredients:', error);
                 this.showNotification('Error loading ingredients', 'error');
@@ -107,13 +127,52 @@ function productionApp() {
 
         // Search ingredients
         searchIngredients() {
-            // This will be handled by the x-model binding automatically
+            // This will be handled by the computed filteredIngredients property
+        },
+
+        // Format number to Rupiah
+        toRupiah(amount) {
+            if (!amount) return 'Rp 0';
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        },
+
+        // Show notification
+        showNotification(message, type = 'info') {
+            // You can implement this with your preferred notification library
+            // For now, just use console.log
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // If you have a notification system like toastr, use it here
+            if (typeof toastr !== 'undefined') {
+                toastr[type](message);
+            }
         },
 
         // Open modals
         openAddIngredientModal() {
+            this.showAddIngredientModal = true;
+            this.loadAvailableIngredients();
+            this.ingredientSearchTerm = '';
             const modal = new bootstrap.Modal(document.getElementById('modal-add-ingredient'));
             modal.show();
+        },
+
+        // Format number to Rupiah
+        toRupiah(amount) {
+            if (!amount) return 'Rp 0';
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        },
+
+        // Show notification
+        showNotification(message, type = 'info') {
+            // You can implement this with your preferred notification library
+            // For now, just use console.log
+            console.log(`${type.toUpperCase()}: ${message}`);
+            
+            // If you have a notification system like toastr, use it here
+            if (typeof toastr !== 'undefined') {
+                toastr[type](message);
+            }
         },
 
         openParcelModal() {
@@ -138,7 +197,33 @@ function productionApp() {
         },
 
         // Add ingredient to cart
-        addIngredientToCart() {
+        addIngredientToCart(ingredient = null) {
+            // If ingredient is passed directly (from new modal), use it
+            if (ingredient) {
+                // Check if ingredient already exists
+                const existingIndex = this.ingredients.findIndex(item => item.id === ingredient.id);
+                
+                if (existingIndex >= 0) {
+                    // Update existing ingredient quantity by 1
+                    this.ingredients[existingIndex].quantity += 1;
+                    this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[existingIndex].quantity;
+                } else {
+                    // Add new ingredient with quantity 1
+                    this.ingredients.push({
+                        id: ingredient.id,
+                        name: ingredient.name,
+                        quantity: 1,
+                        hpp: ingredient.hpp,
+                        unit: ingredient.unit,
+                        total: ingredient.hpp * 1
+                    });
+                }
+                
+                this.showNotification('Ingredient added successfully', 'success');
+                return;
+            }
+            
+            // Original method for quantity modal
             if (!this.selectedIngredient || !this.ingredientQuantity || this.ingredientQuantity <= 0) {
                 this.showNotification('Please enter valid quantity', 'error');
                 return;
@@ -271,14 +356,15 @@ function productionApp() {
 
         // Show notification
         showNotification(message, type = 'info') {
-            // You can integrate with your notification system here
+            // You can implement this with your preferred notification library
+            // For now, just use console.log
             console.log(`${type.toUpperCase()}: ${message}`);
             
-            // Simple alert for now - replace with your notification system
-            if (type === 'error') {
-                alert('Error: ' + message);
+            // If you have a notification system like toastr, use it here
+            if (typeof toastr !== 'undefined') {
+                toastr[type](message);
             }
-        }
+        },
     }
 }
 
@@ -375,7 +461,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Select2 for staff selection  
     $('#staff_id').select2({
         placeholder: 'Pilih Staff',
-        allowClear: true
+        allowClear: true,
+        ajax: {
+            url: '{{ route("ajax.getStaff") }}',
+            dataType: 'json',
+            delay: 250,
+            data: params => ({
+                search: params.term
+            }),
+            processResults: data => ({
+                results: data.map(item => ({
+                    id: item.id,
+                    text: item.name
+                }))
+            }),
+            cache: true
+        },
+        minimumInputLength: 0
     });
 
     // Form submission handler
@@ -714,4 +816,5 @@ function showErrorNotification(message) {
     }
 }
 </script>
+
 

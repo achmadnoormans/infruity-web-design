@@ -22,77 +22,39 @@
                             <span class="path2"></span>
                         </i>
                         <input type="text" class="form-control form-control-lg ps-12" 
-                            placeholder="Ketik nama bahan baku..." x-model="searchIngredient" 
-                            @input="searchIngredients()">
+                            placeholder="Ketik nama bahan baku..." x-model="ingredientSearchTerm">
                     </div>
                 </div>
                 
                 <!-- Ingredients List -->
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Bahan Baku</th>
-                                <th class="text-center">Stok</th>
-                                <th class="text-center">HPP</th>
-                                <th class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="ingredient in availableIngredients" :key="ingredient.id">
-                                <tr class="cursor-pointer" @click="selectIngredient(ingredient)">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="symbol symbol-40px me-3">
-                                                <div class="symbol-label bg-light-success">
-                                                    <i class="ki-duotone ki-package fs-2 text-success">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold text-gray-800" x-text="ingredient.name"></div>
-                                                <div class="text-muted fs-7" x-text="ingredient.category"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-light-info" x-text="ingredient.stock + ' ' + ingredient.unit"></span>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="fw-bold text-primary" x-text="formatCurrency(ingredient.hpp)"></span>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-sm btn-light-primary" 
-                                            @click.stop="selectIngredient(ingredient)">
-                                            <i class="ki-duotone ki-plus fs-5">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            Pilih
-                                        </button>
-                                    </td>
-                                </tr>
-                            </template>
-                            
-                            <!-- Empty State -->
-                            <tr x-show="availableIngredients.length === 0">
-                                <td colspan="4" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="ki-duotone ki-information-5 fs-2x text-gray-400 mb-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                        <div>Tidak ada bahan baku ditemukan</div>
-                                        <small>Coba ubah kata kunci pencarian</small>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="scroll-y me-n7 pe-7" style="max-height: 300px;">
+                    <!-- Loading state -->
+                    <div x-show="!availableIngredients.length && !ingredientSearchTerm" class="text-center p-5">
+                        <div class="text-muted">
+                            <div class="spinner-border spinner-border-sm me-2"></div>
+                            Memuat bahan...
+                        </div>
+                    </div>
+                    
+                    <template x-for="ingredient in filteredIngredients" :key="ingredient.id">
+                        <div class="d-flex align-items-center p-3 border-bottom cursor-pointer hover-bg-light-primary" 
+                             @click="addIngredientToCart(ingredient)">
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-gray-800" x-text="ingredient.name"></div>
+                                <div class="text-muted fs-7" x-text="ingredient.code"></div>
+                                <div class="text-success fw-bold" x-text="toRupiah(ingredient.hpp)"></div>
+                            </div>
+                            <i class="ki-duotone ki-plus fs-2 text-primary"></i>
+                        </div>
+                    </template>
+                    
+                    <!-- No results message -->
+                    <div x-show="availableIngredients.length > 0 && filteredIngredients.length === 0" class="text-center p-5">
+                        <div class="text-muted">
+                            <i class="ki-duotone ki-search-list fs-3x mb-3"></i>
+                            <div>Tidak ada bahan yang ditemukan</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -134,7 +96,7 @@
                                 <div class="fw-bold text-gray-800" x-text="selectedIngredient?.name"></div>
                                 <div class="text-muted fs-7">
                                     Stok: <span x-text="selectedIngredient?.stock + ' ' + selectedIngredient?.unit"></span> | 
-                                    HPP: <span x-text="formatCurrency(selectedIngredient?.hpp)"></span>
+                                    HPP: <span x-text="toRupiah(selectedIngredient?.hpp)"></span>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +121,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="text-gray-600">Total Biaya Bahan:</span>
                             <span class="fw-bold text-success fs-4" 
-                                x-text="formatCurrency((selectedIngredient?.hpp || 0) * (ingredientQuantity || 0))"></span>
+                                x-text="toRupiah((selectedIngredient?.hpp || 0) * (ingredientQuantity || 0))"></span>
                         </div>
                     </div>
                 </div>
