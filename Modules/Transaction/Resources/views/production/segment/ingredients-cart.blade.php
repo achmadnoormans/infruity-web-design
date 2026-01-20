@@ -23,9 +23,10 @@
 
         <div id="ingredients-container">
             <template x-for="(ingredient, index) in ingredients" :key="ingredient.id">
-                <div class="card mb-3 p-4 ingredient-item">
+                <div class="card mb-3 p-4 ingredient-item cursor-pointer hover-bg-light-warning" 
+                     @click="openEditIngredientModal(ingredient, index)">
                     <!-- Mobile Layout (Stack Vertically) -->
-                    <div class="d-block d-lg-none" @click="selectIngredient(ingredient)">
+                    <div class="d-block d-lg-none">
                         <!-- Ingredient Name & Details -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
@@ -45,7 +46,7 @@
                     </div>
 
                     <!-- Desktop Layout (Horizontal) -->
-                    <div class="d-none d-lg-block" @click="selectIngredient(ingredient)">
+                    <div class="d-none d-lg-block">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
                                 <h6 class="mb-1 fw-bold" x-text="ingredient.name"></h6>
@@ -60,6 +61,16 @@
                                     <span x-text="formatCurrency(ingredient.total)"></span>
                                 </span>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Edit Indicator -->
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <div class="badge badge-light-warning" title="Klik untuk edit jumlah">
+                            <i class="ki-duotone ki-pencil fs-7 text-warning">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
                         </div>
                     </div>
                 </div>

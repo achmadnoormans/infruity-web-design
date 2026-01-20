@@ -84,6 +84,27 @@
         .pulse-badge {
             animation: pulse 0.4s ease-in-out;
         }
+
+        /* Ingredient item hover effects */
+        .ingredient-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .ingredient-item:hover {
+            border-color: #ffc700;
+            box-shadow: 0 4px 8px rgba(255, 199, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .hover-bg-light-warning:hover {
+            background-color: #fff8dd !important;
+        }
     </style>
 
     <!--begin::Main column-->
@@ -96,12 +117,13 @@
                     <div class="col-6">
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="required form-label">Nomor Produksi</label>
+                            <label class="required form-label">Pilih Cabang</label>
                             <!--end::Label-->
-                            <!--begin::Input-->
-                            <input type="text" class="form-control" name="production_number" 
-                                value="{{ $production_number }}" readonly>
-                            <!--end::Input-->
+                            <!--begin::Editor-->
+                            <select class="form-select" id="branch_id" name="branch_id">
+                                <option value="">Pilih Branch</option>
+                            </select>
+                            <!--end::Editor-->
                         </div>
                     </div>
                     <div class="col-6">
@@ -110,7 +132,7 @@
                             <label class="required form-label">Tanggal Produksi</label>
                             <!--end::Label-->
                             <!--begin::Input-->
-                            <input type="date" class="form-control" name="production_date" 
+                            <input type="date" class="form-control" name="production_date"
                                 value="{{ old('production_date') ?? date('Y-m-d') }}">
                             <!--end::Input-->
                         </div>
@@ -118,11 +140,11 @@
                 </div>
                 <!--end::Input group-->
             </div>
-            
+
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
                 <div class="row">
-                    <div class="col-9">
+                    <div class="col-12">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Pilih Produk</label>
@@ -138,16 +160,16 @@
                             <!--end::Select-->
                         </div>
                     </div>
-                    <div class="col-3 mt-8">
+                    {{-- <div class="col-3 mt-8">
                         <button type="button" @click="refreshProduct()"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
                             <i class="fa-solid fa-refresh"></i>
                         </button>
-                    </div>
+                    </div> --}}
                 </div>
                 <!--end::Input group-->
             </div>
-            
+
             <div class="d-flex flex-column gap-10">
                 <!--begin::Input group-->
                 <div class="row">
@@ -158,20 +180,19 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="number" name="quantity" id="quantity" class="form-control"
-                                placeholder="Masukkan Jumlah" step="0.01"
-                                x-model="productionQuantity" />
+                                placeholder="Masukkan Jumlah" step="0.01" x-model="productionQuantity" />
                             <!--end::Input-->
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="fv-row">
                             <!--begin::Label-->
-                            <label class="form-label">PIC / Penanggung Jawab</label>
+                            <label class="form-label">Harga Jual</label>
                             <!--end::Label-->
                             <!--begin::Select-->
-                            <select name="staff_id" id="staff_id" class="form-select">
-                                <option value="">Pilih Staff</option>
-                            </select>
+                            <input type="text" name="sell_price" id="sell_price" class="form-control format-number"
+                                placeholder="Masukkan Jumlah"/>
+                            <input type="hidden" name="production_number" id="production_number" class="form-control" value="{{ $production_number }}">
                             <!--end::Select-->
                         </div>
                     </div>
@@ -186,10 +207,17 @@
                 <div>
                     <span class="fs-5 fw-bold d-flex">Bahan Baku yang Digunakan</span>
                     <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
+                    <small class="text-muted d-block mt-1">
+                        <i class="ki-duotone ki-information-5 fs-7 text-info me-1">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                        Klik pada bahan untuk edit jumlah
+                    </small>
                 </div>
                 <div class="btn-group">
-                    <button type="button"
-                        class="btn btn-outline btn-outline-dashed btn-outline-primary dropdown-toggle"
+                    <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary dropdown-toggle"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-plus"></i>
                     </button>
@@ -217,6 +245,6 @@
         @include('transaction::production.segment.modal-recipe')
     </div>
     <!--end::Main column-->
-    
+
     @include('transaction::production.js-create')
 @endsection

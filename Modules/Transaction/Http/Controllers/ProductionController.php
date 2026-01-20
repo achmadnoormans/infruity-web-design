@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Modules\Master\Entities\Branch;
-use Modules\Master\Entities\UserBranch;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
+use Modules\Master\Entities\ProductBranch;
+use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductReceipt;
@@ -47,12 +48,12 @@ class ProductionController extends Controller
 
         if ($draft) {
             // Jika ada draft, load data draft
-            $data['data'] = $draft;
+            $data['data']              = $draft;
             $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $draft->id)->get();
             $data['production_number'] = $draft->production_number;
         } else {
             // Jika tidak ada draft, siapkan data kosong
-            $data['data'] = null;
+            $data['data']              = null;
             $data['production_detail'] = collect(); // Empty collection
             $data['production_number'] = Production::getOrderNumber();
         }
@@ -65,52 +66,57 @@ class ProductionController extends Controller
      * @param Request $request
      * @return Renderable
      */
-        public function store(Request $request)
+    public function store(Request $request)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'product_id'         => 'required|exists:products,id',
-            'submit_type'        => 'required|in:draft,posting,temp',
-            'production_date'    => 'required|date',
-            'production_number'  => 'required|string',
-            'ingredients'        => 'required|array|min:1',
-            'ingredients.*.id'   => 'required|exists:products,id',
+
+            'product_id'             => 'required|exists:products,id',
+            'production_number'      => 'required|string',
+            'submit_type'            => 'required|in:draft,posting,temp',
+            'production_date'        => 'required|date',
+            'ingredients'            => 'required|array|min:1',
+            'ingredients.*.id'       => 'required|exists:products,id',
             'ingredients.*.quantity' => 'required|numeric|min:0',
-            'ingredients.*.hpp'  => 'required|numeric|min:0',
-            'quantity'           => 'required|numeric|min:1',
-            'staff_id'           => 'nullable|exists:staff,id',
-            'notes'              => 'nullable|string',
+            'ingredients.*.hpp'      => 'required|numeric|min:0',
+            'quantity'               => 'required|numeric|min:1',
+            'branch_id'              => 'required|exists:branch,id',
+            'notes'                  => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            $errorMessages = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => 'Produksi gagal: ' . implode('. ', $errorMessages),
+                'errors'  => $validator->errors(),
+            ], 422);
         }
 
         try {
             DB::beginTransaction();
-            
+
             // Check if there's existing temp production to update
             $production = Production::where('created_by', Auth::user()->id_user)
                 ->where('status', 'temp')
                 ->where('production_number', $request->production_number)
                 ->first();
-            
-            if (!$production) {
+            if (! $production) {
                 // Create new production
-                $production = new Production();
+                $production                    = new Production();
                 $production->production_number = $request->production_number;
-                $production->created_by = Auth::user()->id_user;
+                $production->created_by        = Auth::user()->id_user;
             }
-            
+
             // Update production data
-            $production->product_id = $request->product_id;
+            $production->product_id      = $request->product_id;
             $production->production_date = $request->production_date;
-            $production->status = $request->submit_type;
-            $production->quantity = $request->quantity;
-            $production->staff_id = $request->staff_id;
-            $production->description = $request->notes;
+            $production->status          = $request->submit_type;
+            $production->quantity        = $request->quantity;
+            $production->staff_id        = $request->staff_id;
+            $production->description     = $request->notes;
+            $production->branch_id       = $request->branch_id;
+            $production->staff_id        = Auth::user()->id_user;
             $production->save();
 
             // Clear existing production details if updating
@@ -118,16 +124,14 @@ class ProductionController extends Controller
 
             // Add new production details from ingredients array
             foreach ($request->ingredients as $ingredient) {
-                $productionDetail = new ProductionDetail();
+                $productionDetail                = new ProductionDetail();
                 $productionDetail->production_id = $production->id;
-                $productionDetail->product_id = $ingredient['id'];
-                $productionDetail->quantity = $ingredient['quantity'];
-                $productionDetail->created_by = Auth::user()->id_user;
+                $productionDetail->product_id    = $ingredient['id'];
+                $productionDetail->quantity      = $ingredient['quantity'];
+                $productionDetail->created_by    = Auth::user()->id_user;
                 $productionDetail->save();
             }
 
-            DB::commit();
-            
             // Handle different submit types like PosController
             if ($request->submit_type == 'temp') {
                 return redirect()->back()->with('success', 'Data berhasil disimpan sebagai draft sementara');
@@ -139,20 +143,39 @@ class ProductionController extends Controller
                 foreach ($request->ingredients as $ingredient) {
                     $totalHpp += floatval($ingredient['hpp']) * floatval($ingredient['quantity']);
                 }
-                
+
                 // Update product HPP per unit
                 $hppPerUnit = $request->quantity > 0 ? $totalHpp / $request->quantity : 0;
                 Product::where('id', $request->product_id)->update([
                     'hpp' => $hppPerUnit,
                 ]);
-                
-                return redirect()->route('production.index')->with('success', 'Produksi berhasil diselesaikan');
+
+                $branch = ProductBranch::where('product_id', $request->product_id)
+                    ->where('branch_id', $request->branch_id)
+                    ->first();
+                if ($branch) {
+                    $branch->price = $request->sell_price;
+                    $branch->save();
+                } else {
+                    $branch             = new ProductBranch();
+                    $branch->product_id = $request->product_id;
+                    $branch->branch_id  = $request->branch_id;
+                    $branch->price      = $request->sell_price;
+                    $branch->save();
+                }
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produksi berhasil dibuat',
+                ], 200);
             }
 
         } catch (Exception $e) {
             DB::rollback();
-            return redirect()->back()->withInput($request->all())
-                ->with('error', 'Produksi gagal: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Produksi gagal: ' . $e->getMessage(),
+            ], 422);
         }
     }
 
@@ -164,16 +187,16 @@ class ProductionController extends Controller
     public function show($id)
     {
         try {
-            $data['data'] = Production::with(['products', 'products.unit', 'staff', 'creator'])->findOrFail($id);
+            $data['data']              = Production::with(['products', 'products.unit', 'staff', 'creator'])->findOrFail($id);
             $data['production_detail'] = ProductionDetail::with(['products', 'products.unit', 'products.category'])->where('production_id', $id)->get();
-            
+
             // Calculate totals with null safety
-            $data['total_hpp'] = $data['production_detail']->sum(function($item) {
+            $data['total_hpp'] = $data['production_detail']->sum(function ($item) {
                 return ($item->products->hpp ?? 0) * $item->quantity;
             });
-            
+
             $data['hpp_per_unit'] = $data['data']->quantity > 0 ? $data['total_hpp'] / $data['data']->quantity : 0;
-            
+
             return view('transaction::production.show', $data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('production.index')->with('error', 'Data produksi tidak ditemukan.');
@@ -189,13 +212,13 @@ class ProductionController extends Controller
      */
     public function edit($id)
     {
-        $data['alpinejs'] = true;
+        $data['alpinejs']          = true;
         $data['data']              = Production::find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         // $data['selectedProduct']   = Product::find($data['data']->product_id);
-        $data['receipt'] = Receipt::with('products')->where('product_id', $data['data']->product_id)->first();
+        $data['receipt']           = Receipt::with('products')->where('product_id', $data['data']->product_id)->first();
         $data['production_number'] = $data['data']->production_number; // Add the production number
-        // dd($data);
+                                                                       // dd($data);
         return view('transaction::production.create', $data);
     }
 
@@ -276,7 +299,7 @@ class ProductionController extends Controller
      */
     public function payment($id)
     {
-        $data['data'] = Production::with('products')->findOrFail($id);
+        $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.payment', $data);
     }
@@ -289,23 +312,23 @@ class ProductionController extends Controller
     public function saveCompletion(Request $request)
     {
         $data = $request->validate([
-            'production_id' => 'required|exists:production,id',
+            'production_id'   => 'required|exists:production,id',
             'completion_date' => 'required|date',
-            'notes' => 'nullable|string',
+            'notes'           => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $production = Production::findOrFail($data['production_id']);
-            $production->status = 'posting';
+            $production                  = Production::findOrFail($data['production_id']);
+            $production->status          = 'posting';
             $production->completion_date = $data['completion_date'];
-            $production->notes = $data['notes'] ?? null;
+            $production->notes           = $data['notes'] ?? null;
             $production->save();
 
             // Update HPP seperti di method update
             $productionDetail = ProductionDetail::with('products')->where('production_id', $data['production_id'])->get();
-            $hpp = 0;
+            $hpp              = 0;
             foreach ($productionDetail as $value) {
                 $hpp += $value->products->hpp * $value->quantity;
             }
@@ -316,8 +339,8 @@ class ProductionController extends Controller
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Produksi berhasil diselesaikan',
+                'success'       => true,
+                'message'       => 'Produksi berhasil diselesaikan',
                 'production_id' => $data['production_id'],
             ]);
         } catch (\Exception $e) {
@@ -325,7 +348,7 @@ class ProductionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyelesaikan produksi',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -337,7 +360,7 @@ class ProductionController extends Controller
      */
     public function completionNotification($id)
     {
-        $data['data'] = Production::with('products')->findOrFail($id);
+        $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.completion-success', $data);
     }
@@ -349,7 +372,7 @@ class ProductionController extends Controller
      */
     public function printProduction($id)
     {
-        $data['data'] = Production::with('products')->findOrFail($id);
+        $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.print', $data);
     }
@@ -395,7 +418,7 @@ class ProductionController extends Controller
             $newProduct       = ProductReceipt::where('receipt_id', $request->receipt_id)->get();
             $productionDetail = [];
             foreach ($newProduct as $key => $product) {
-                $productionDetail[]  = [
+                $productionDetail[] = [
                     'production_id' => $id,
                     'product_id'    => $product->product_receipt_id,
                     'quantity'      => $product->quantity,
@@ -570,12 +593,12 @@ class ProductionController extends Controller
         try {
             // Simple test first - get all production records
             $productions = Production::with('products')->get();
-            
+
             return DataTables::of($productions)
                 ->addColumn('name', function ($item) {
                     $productName = $item->products ? $item->products->name : 'N/A';
-                    $quantity = number_format($item->quantity ?? 0, 0, ',', '.');
-                    
+                    $quantity    = number_format($item->quantity ?? 0, 0, ',', '.');
+
                     return '<div class="d-flex align-items-center">
                                 <div class="ms-5">
                                     <a href="' . route('production.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . ($item->production_number ?? 'N/A') . '</a>
@@ -615,20 +638,16 @@ class ProductionController extends Controller
                 })
                 ->rawColumns(['name', 'action', 'status'])
                 ->make(true);
-                
+
         } catch (\Exception $e) {
             \Log::error('Production DataTable Error: ' . $e->getMessage());
             return response()->json([
-                'draw' => intval($request->input('draw', 1)),
-                'recordsTotal' => 0,
+                'draw'            => intval($request->input('draw', 1)),
+                'recordsTotal'    => 0,
                 'recordsFiltered' => 0,
-                'data' => [],
-                'error' => $e->getMessage()
+                'data'            => [],
+                'error'           => $e->getMessage(),
             ]);
         }
     }
 }
-
-
-
-

@@ -127,13 +127,21 @@
             </div>
             <!--end::Card body-->
         </div>
+
+        <a href="{{ url('production/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
+            style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+            <i class="ki-duotone ki-purchase fs-3x text-white">
+                <span class="path1"></span>
+                <span class="path2"></span>
+            </i>
+        </a>
     </div>
 @section('script')
     <script type="text/javascript">
         var dataTable;
         $(document).ready(function() {
             console.log('Initializing DataTable...');
-            
+
             dataTable = $('#production-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -157,7 +165,7 @@
                 },
                 order: [
                     [2, 'desc'], // Sort by production_date DESC
-                    [0, 'desc']  // Then by name DESC
+                    [0, 'desc'] // Then by name DESC
                 ],
                 columns: [{
                         data: 'name',
@@ -189,7 +197,7 @@
                     console.log('Data received:', json);
                 }
             });
-            
+
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();

@@ -140,3 +140,105 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Edit Ingredient Quantity -->
+<div class="modal fade" id="modal-edit-ingredient" tabindex="-1" aria-labelledby="modalEditIngredientLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditIngredientLabel">
+                    <i class="ki-duotone ki-pencil fs-2 text-warning me-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                    Edit Jumlah Bahan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Selected Ingredient Info -->
+                <div class="card card-flush bg-light-warning mb-4" x-show="editingIngredient">
+                    <div class="card-body py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-40px me-3">
+                                <div class="symbol-label bg-warning">
+                                    <i class="ki-duotone ki-package fs-2 text-white">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-gray-800" x-text="editingIngredient?.name"></div>
+                                <div class="text-muted fs-7">
+                                    HPP: <span x-text="formatCurrency(editingIngredient?.hpp)"></span> | 
+                                    Unit: <span x-text="editingIngredient?.unit"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Current Quantity Display -->
+                <div class="alert alert-info d-flex align-items-center mb-4" x-show="editingIngredient">
+                    <i class="ki-duotone ki-information-5 fs-2hx text-info me-4">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                    </i>
+                    <div class="d-flex flex-column">
+                        <h5 class="mb-1">Jumlah Saat Ini</h5>
+                        <span x-text="editingIngredient?.quantity + ' ' + editingIngredient?.unit"></span>
+                    </div>
+                </div>
+                
+                <!-- New Quantity Input -->
+                <div class="mb-4">
+                    <label class="form-label required">Jumlah Baru:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control form-control-lg" 
+                            x-model="editQuantity" step="0.01" min="0" 
+                            placeholder="0.00" @keyup.enter="updateIngredientQuantity()"
+                            id="edit-quantity-input">
+                        <span class="input-group-text" x-text="editingIngredient?.unit"></span>
+                    </div>
+                    <div class="form-text">Masukkan jumlah bahan yang baru</div>
+                </div>
+                
+                <!-- Total Cost Preview -->
+                <div class="card card-flush bg-light-success" x-show="editQuantity > 0">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-gray-600">Total Biaya Bahan:</span>
+                            <span class="fw-bold text-success fs-4" 
+                                x-text="formatCurrency((editingIngredient?.hpp || 0) * (editQuantity || 0))"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger me-2" @click="removeIngredientFromEdit()" 
+                    title="Hapus bahan ini">
+                    <i class="ki-duotone ki-trash fs-5 me-1">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                        <span class="path5"></span>
+                    </i>
+                    Hapus
+                </button>
+                <button type="button" class="btn btn-primary" @click="updateIngredientQuantity()" 
+                    :disabled="!editQuantity || editQuantity <= 0">
+                    <i class="ki-duotone ki-check fs-5 me-1">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                    Update Jumlah
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

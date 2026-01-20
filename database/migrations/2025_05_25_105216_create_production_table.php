@@ -18,9 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->decimal('quantity', 10, 2)->default(1);
             $table->date('production_date')->nullable();
-            $table->enum('status', ['draft', 'posting', 'complete'])->default('posting');
+            $table->enum('status', ['draft', 'posting', 'complete', 'temp'])->default('posting');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('staff_id')->nullable();
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
