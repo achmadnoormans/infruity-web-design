@@ -365,6 +365,108 @@ function productionApp() {
                 toastr[type](message);
             }
         },
+
+        // Save production function (similar to POS saveTransaction)
+        async saveProduction(submitType, callback) {
+            try {
+                // Validate required fields
+                if (!this.productionQuantity || this.productionQuantity <= 0) {
+                    this.showNotification('Jumlah produksi harus lebih dari 0', 'error');
+                    if (callback) callback();
+                    return;
+                }
+                
+                if (this.ingredients.length === 0) {
+                    this.showNotification('Minimal harus ada 1 bahan baku', 'error');
+                    if (callback) callback();
+                    return;
+                }
+                
+                const productSelect = document.getElementById('product_id');
+                if (!productSelect.value) {
+                    this.showNotification('Pilih produk terlebih dahulu', 'error');
+                    if (callback) callback();
+                    return;
+                }
+                
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                formData.append('production_number', document.querySelector('input[name="production_number"]').value);
+                formData.append('production_date', document.querySelector('input[name="production_date"]').value);
+                formData.append('product_id', productSelect.value);
+                formData.append('quantity', this.productionQuantity);
+                formData.append('submit_type', submitType);
+                formData.append('notes', this.notes || '');
+                
+                const staffSelect = document.getElementById('staff_id');
+                if (staffSelect.value) {
+                    formData.append('staff_id', staffSelect.value);
+                }
+                
+                // Add ingredients
+                this.ingredients.forEach((ingredient, index) => {
+                    formData.append(`ingredients[${index}][id]`, ingredient.id);
+                    formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
+                    formData.append(`ingredients[${index}][hpp]`, ingredient.hpp);
+                });
+                
+                // Submit form
+                const response = await fetch('{{ route("production.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Check if response is a redirect (Laravel redirect response)
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    
+                    // Handle JSON response
+                    const result = await response.json();
+                    if (result.success) {
+                        this.showNotification(result.message || 'Produksi berhasil disimpan', 'success');
+                        
+                        // Redirect based on submit type
+                        setTimeout(() => {
+                            if (submitType === 'temp') {
+                                // Stay on page for temp saves
+                                if (callback) callback();
+                            } else {
+                                // Redirect to index for draft and posting
+                                window.location.href = '{{ route("production.index") }}';
+                            }
+                        }, 1000);
+                    } else {
+                        this.showNotification(result.message || 'Gagal menyimpan produksi', 'error');
+                        if (callback) callback();
+                    }
+                } else {
+                    // Handle non-JSON responses (like Laravel validation errors)
+                    const text = await response.text();
+                    
+                    // Check if it's a redirect response
+                    if (text.includes('Redirecting to') || response.status === 302) {
+                        // Extract redirect URL or use fallback
+                        window.location.href = '{{ route("production.index") }}';
+                        return;
+                    }
+                    
+                    this.showNotification('Terjadi kesalahan saat menyimpan', 'error');
+                    if (callback) callback();
+                }
+                
+            } catch (error) {
+                console.error('Error saving production:', error);
+                this.showNotification('Terjadi kesalahan: ' + error.message, 'error');
+                if (callback) callback();
+            }
+        },
     }
 }
 

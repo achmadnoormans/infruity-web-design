@@ -5,34 +5,99 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Production" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pembelian" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="w-100 mw-150px">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
-                            <option></option>
-                            <option value="all">All</option>
-                            <option value='processing'>Processing</option>
-                            <option value='complete'>Complete</option>
-                        </select>
-                        <!--end::Select2-->
+                <div class="card-toolbar ms-auto">
+                    <div class="card-toolbar">
+                        <!--begin::Toolbar-->
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <!--begin::Filter-->
+                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                                data-kt-menu-placement="bottom-end">
+                                <i class="ki-duotone ki-filter fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i></button>
+                            <!--begin::Menu 1-->
+                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                                <!--begin::Header-->
+                                <div class="px-7 py-5">
+                                    <div class="fs-5 text-gray-900 fw-bold">Pilihan Filter</div>
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Separator-->
+                                <div class="separator border-gray-200"></div>
+                                <!--end::Separator-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div>
+                                        <label class="form-label fs-6 fw-semibold">Status:</label>
+                                        @php
+                                            $category = ['draft', 'paid', 'debt', 'canceled'];
+                                        @endphp
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Status"
+                                            data-kt-ecommerce-product-filter="status">
+                                            <option value="all">All</option>
+                                            @foreach ($category as $category)
+                                                <option value="{{ $category }}">{{ ucwords($category) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div>
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Cabang"
+                                            data-kt-ecommerce-product-filter="cabang">
+                                            <option value="all">All</option>
+                                            @foreach ($branches as $branch)
+                                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div class="input-group mw-350px">
+                                        <input class="form-control form-control-solid rounded rounded-end-0"
+                                            placeholder="Pilih range tanggal" id="kt_ecommerce_sales_flatpickr" />
+                                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Menu 1-->
+                            <!--end::Filter-->
+                        </div>
+                        <!--end::Toolbar-->
                     </div>
-                    <!--begin::Add wholesale-->
-                    <a href="{{ url(path: 'production/create') }}" class="btn btn-primary">Add Production</a>
-                    <!--end::Add wholesale-->
                 </div>
                 <!--end::Card toolbar-->
             </div>

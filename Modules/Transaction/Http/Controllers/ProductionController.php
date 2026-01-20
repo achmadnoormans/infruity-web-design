@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\Master\Entities\Product;
@@ -24,7 +26,8 @@ class ProductionController extends Controller
      */
     public function index()
     {
-        return view('transaction::production.index');
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
+        return view('transaction::production.index', $data);
     }
 
     /**
@@ -50,7 +53,7 @@ class ProductionController extends Controller
         } else {
             // Jika tidak ada draft, siapkan data kosong
             $data['data'] = null;
-            $data['production_detail'] = null;
+            $data['production_detail'] = collect(); // Empty collection
             $data['production_number'] = Production::getOrderNumber();
         }
 
@@ -119,6 +122,7 @@ class ProductionController extends Controller
                 $productionDetail->production_id = $production->id;
                 $productionDetail->product_id = $ingredient['id'];
                 $productionDetail->quantity = $ingredient['quantity'];
+                $productionDetail->created_by = Auth::user()->id_user;
                 $productionDetail->save();
             }
 
@@ -128,19 +132,21 @@ class ProductionController extends Controller
             if ($request->submit_type == 'temp') {
                 return redirect()->back()->with('success', 'Data berhasil disimpan sebagai draft sementara');
             } elseif ($request->submit_type == 'draft') {
-                return redirect()->route('production');
+                return redirect()->route('production.index');
             } else {
-                // posting - calculate and update HPP
+                // posting - calculate and update HPP using ingredients array data
                 $totalHpp = 0;
                 foreach ($request->ingredients as $ingredient) {
-                    $totalHpp += $ingredient['hpp'] * $ingredient['quantity'];
+                    $totalHpp += floatval($ingredient['hpp']) * floatval($ingredient['quantity']);
                 }
                 
+                // Update product HPP per unit
+                $hppPerUnit = $request->quantity > 0 ? $totalHpp / $request->quantity : 0;
                 Product::where('id', $request->product_id)->update([
-                    'hpp' => $totalHpp / $request->quantity, // HPP per unit
+                    'hpp' => $hppPerUnit,
                 ]);
                 
-                return redirect('production')->with('success', 'Produksi berhasil diselesaikan');
+                return redirect()->route('production.index')->with('success', 'Produksi berhasil diselesaikan');
             }
 
         } catch (Exception $e) {

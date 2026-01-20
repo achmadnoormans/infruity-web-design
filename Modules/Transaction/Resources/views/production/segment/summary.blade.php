@@ -52,6 +52,60 @@
         <textarea class="form-control form-control-sm" name="notes" rows="3" 
             placeholder="Tambahkan catatan untuk produksi ini..." x-model="notes"></textarea>
     </div>
+    
+    <!-- Action Buttons -->
+    <div class="mt-4 border-top pt-3">
+        <div class="d-flex justify-content-between mb-3">
+            <div>
+                <span>Total</span> <span x-text="ingredients.length"></span><span> Bahan</span>
+            </div>
+            <div class="fw-bold">
+                <span>HPP: </span>
+                <span x-text="formatCurrency(totalHpp)"></span>
+            </div>
+        </div>
+        <div class="row mt-3 gap-2">
+            <div class="col" x-data="{ loading: false }">
+                <button class="btn btn-secondary w-100" @click="loading = true; saveProduction('temp', () => loading = false)"
+                    :disabled="loading">
+                    <template x-if="!loading">
+                        <span><i class="bi bi-save me-2"></i> Simpan Draft</span>
+                    </template>
+                    <template x-if="loading">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </template>
+                </button>
+            </div>
+            {{-- <div class="col" x-data="{ loading: false }">
+                <button class="btn btn-warning w-100" @click="loading = true; saveProduction('draft', () => loading = false)"
+                    :disabled="loading">
+                    <template x-if="!loading">
+                        <span><i class="bi bi-clock me-2"></i> Siap Produksi</span>
+                    </template>
+                    <template x-if="loading">
+                        <span>
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            Memproses...
+                        </span>
+                    </template>
+                </button>
+            </div> --}}
+            <div class="col" x-data="{ loading: false }">
+                <button class="btn btn-primary w-100" @click="loading = true; saveProduction('posting', () => loading = false)"
+                    :disabled="loading">
+                    <template x-if="!loading">
+                        <span><i class="bi bi-check-circle me-2"></i> Selesai</span>
+                    </template>
+                    <template x-if="loading">
+                        <span>
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            Menyelesaikan...
+                        </span>
+                    </template>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
