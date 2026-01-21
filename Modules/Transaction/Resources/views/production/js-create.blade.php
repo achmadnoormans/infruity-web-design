@@ -18,6 +18,7 @@
             status: 'temp',
             isLoadingIngredients: false,
             showAddIngredientModal: false,
+            showSummaryDetails: false,
 
             // Edit modal properties
             editingIngredient: null,
