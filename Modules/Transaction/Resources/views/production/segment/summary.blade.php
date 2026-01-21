@@ -4,10 +4,10 @@
          <div class="d-flex justify-content-between align-items-center">
              <span class="fw-bold">
                  <template x-if="showSummaryDetails">
-                     <span><i class="bi bi-chevron-up me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)</span>
+                     <span><i class="bi bi-chevron-up me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan</span>)</span>
                  </template>
                  <template x-if="!showSummaryDetails">
-                     <span><i class="bi bi-chevron-down me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)</span>
+                     <span><i class="bi bi-chevron-down me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan</span>)</span>
                  </template>
              </span>
              {{-- <span class="badge badge-light-info fs-7" x-text="'Total: ' + ingredients.length + ' bahan'"></span> --}}

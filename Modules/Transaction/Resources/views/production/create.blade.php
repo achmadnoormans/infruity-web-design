@@ -238,7 +238,12 @@
                         Klik pada bahan untuk edit jumlah
                     </small>
                 </div>
-                <div class="btn-group">
+                <div>
+                    <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary" @click="openAddIngredientModal()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+                {{-- <div class="btn-group">
                     <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary dropdown-toggle"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-plus"></i>
@@ -250,7 +255,7 @@
                             </button>
                         </li>
                     </ul>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Ingredients Cart -->
