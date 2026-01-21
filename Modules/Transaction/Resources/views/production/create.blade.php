@@ -120,9 +120,9 @@
                             <label class="required form-label">Pilih Cabang</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                             <select class="form-select" id="branch_id" name="branch_id">
-                                 <option value="">Pilih Branch</option>
-                             </select>
+                            <select class="form-select" id="branch_id" name="branch_id">
+                                <option value="">Pilih Branch</option>
+                            </select>
                             <!--end::Editor-->
                         </div>
                     </div>
@@ -144,7 +144,7 @@
             <div class="d-flex flex-column gap-10 mb-3">
                 <!--begin::Input group-->
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-6">
                         <div class="fv-row">
                             <!--begin::Label-->
                             <label class="required form-label">Pilih Produk</label>
@@ -160,6 +160,19 @@
                             <!--end::Select-->
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Harga Jual</label>
+                            <!--end::Label-->
+                            <!--begin::Select-->
+                            <input type="text" name="sell_price" id="sell_price" class="form-control format-number"
+                                placeholder="Masukkan Jumlah" x-model="sellPrice" />
+                            <input type="hidden" name="production_number" id="production_number" class="form-control"
+                                value="{{ $production_number }}">
+                            <!--end::Select-->
+                        </div>
+                    </div>
                     {{-- <div class="col-3 mt-8">
                         <button type="button" @click="refreshProduct()"
                             class="btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
@@ -170,57 +183,34 @@
                 <!--end::Input group-->
             </div>
 
-             <div class="d-flex flex-column gap-10 mb-3">
-                 <!--begin::Input group-->
-                 <div class="row">
-                     <div class="col-6">
-                         <div class="fv-row">
-                             <!--begin::Label-->
-                             <label class="required form-label">Jumlah Produksi</label>
-                             <!--end::Label-->
-                             <!--begin::Input-->
-                             <input type="number" name="quantity" id="quantity" class="form-control"
-                                 placeholder="Masukkan Jumlah" step="0.01" x-model="productionQuantity" />
-                             <!--end::Input-->
-                         </div>
-                     </div>
-                     <div class="col-6">
-                         <div class="fv-row">
-                             <!--begin::Label-->
-                             <label class="form-label">Harga Jual</label>
-                             <!--end::Label-->
-                             <!--begin::Select-->
-                             <input type="text" name="sell_price" id="sell_price" class="form-control format-number"
-                                 placeholder="Masukkan Jumlah" x-model="sellPrice" />
-                             <input type="hidden" name="production_number" id="production_number" class="form-control" value="{{ $production_number }}">
-                             <!--end::Select-->
-                         </div>
-                     </div>
-                 </div>
-                 <!--end::Input group-->
-             </div>
-
-             <div class="d-flex flex-column gap-10">
-                 <!--begin::Input group-->
-                 <div class="row">
-                     <div class="col-12">
-                         <div class="fv-row">
-                             <!--begin::Label-->
-                             <label class="form-label">Biaya Jasa Produksi per Unit</label>
-                             <!--end::Label-->
-                             <!--begin::Input-->
-                             <input type="text" name="service_cost" id="service_cost" class="form-control format-number"
-                                 placeholder="Masukkan Biaya Jasa" x-model="serviceCost" x-init="
-                                 @if(isset($data) && $data->service_cost)
-                                     $el.value = '{{ number_format($data->service_cost, 0, ',', '.') }}';
-                                 @endif
-                                 "/>
-                             <!--end::Input-->
-                         </div>
-                     </div>
-                 </div>
-                 <!--end::Input group-->
-             </div>
+            <div class="d-flex flex-column gap-10 mb-3">
+                <!--begin::Input group-->
+                <div class="row">
+                    <div class="col-6">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="required form-label">Jumlah Produksi</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="number" name="quantity" id="quantity" class="form-control"
+                                placeholder="Masukkan Jumlah" step="0.01" x-model="productionQuantity" />
+                            <!--end::Input-->
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fv-row">
+                            <!--begin::Label-->
+                            <label class="form-label">Biaya Jasa Produksi per Unit</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <input type="text" name="service_cost" id="service_cost" class="form-control format-number"
+                                placeholder="Masukkan Biaya Jasa" x-model="serviceCost" x-init="@if (isset($data) && $data->service_cost) $el.value = '{{ number_format($data->service_cost, 0, ',', '.') }}'; @endif" />
+                            <!--end::Input-->
+                        </div>
+                    </div>
+                </div>
+                <!--end::Input group-->
+            </div>
         </div>
 
         <!-- Ingredients Selection Card -->
@@ -239,7 +229,8 @@
                     </small>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary" @click="openAddIngredientModal()">
+                    <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary"
+                        @click="openAddIngredientModal()">
                         <i class="fa fa-plus"></i>
                     </button>
                 </div>
