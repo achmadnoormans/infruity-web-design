@@ -11,6 +11,7 @@
             selectedRecipeId: '',
             ingredientQuantity: 0,
             recipeMultiplier: 1,
+            baseRecipeIngredients: [], // Store original recipe quantities
             searchIngredient: '',
             ingredientSearchTerm: '',
             productionQuantity: 1,
@@ -83,6 +84,8 @@
                 // Watch for production quantity changes
                 this.$watch('productionQuantity', (value) => {
                     document.getElementById('quantity').value = value;
+                    // Update ingredients quantities based on new production quantity
+                    this.updateIngredientsFromRecipe();
                 });
 
                 // Watch for service cost changes
@@ -116,13 +119,58 @@
                             ];
                         });
                     @endphp
-                    this.ingredients = @json($ingredientsData);
-                    this.productionQuantity = {{ $data->quantity ?? 1 }};
-                    this.serviceCost = {{ $data->service_cost ?? 0 }};
-                    this.status = '{{ $data->status ?? 'temp' }}';
+                    // Load existing ingredients - assume they are all from recipe initially
+                    this.ingredients = @json($ingredientsData).map(ingredient => ({
+                        ...ingredient,
+                        is_manual: false // Existing ingredients are treated as recipe ingredients initially
+                    }));
+
+                    // Extract base recipe ingredients from existing data for editing
+                    if (this.ingredients.length > 0 && this.productionQuantity > 0) {
+                        this.baseRecipeIngredients = this.ingredients.map(ingredient => ({
+                            id: ingredient.id,
+                            name: ingredient.name,
+                            base_quantity: ingredient.quantity / this.productionQuantity, // Calculate base quantity
+                            hpp: ingredient.hpp,
+                            unit: ingredient.unit,
+                            from_recipe: true // Mark as recipe ingredient for editing
+                        }));
+                        console.log('Loaded base recipe ingredients from existing data:', this.baseRecipeIngredients);
+                    } else {
+                        this.baseRecipeIngredients = [];
+                    }
 
                     // Note: sellPrice will be loaded from product price when product is selected
                 @endif
+            },
+
+            // Update ingredients quantities based on production quantity
+            updateIngredientsFromRecipe() {
+                if (this.baseRecipeIngredients.length === 0) return;
+
+                console.log('Updating recipe ingredients for production quantity:', this.productionQuantity);
+
+                // Start with manual ingredients only
+                let updatedIngredients = this.ingredients.filter(ing => ing.is_manual);
+
+                // Add recipe ingredients with updated quantities
+                this.baseRecipeIngredients.forEach(recipeIngredient => {
+                    const calculatedQuantity = recipeIngredient.base_quantity * this.productionQuantity;
+                    console.log(`Recipe ingredient ${recipeIngredient.name}: base=${recipeIngredient.base_quantity} × qty=${this.productionQuantity} = ${calculatedQuantity}`);
+
+                    updatedIngredients.push({
+                        id: recipeIngredient.id,
+                        name: recipeIngredient.name,
+                        quantity: calculatedQuantity,
+                        hpp: recipeIngredient.hpp,
+                        unit: recipeIngredient.unit,
+                        total: calculatedQuantity * recipeIngredient.hpp,
+                        is_manual: false // Mark as recipe ingredient
+                    });
+                });
+
+                this.ingredients = updatedIngredients;
+                console.log('Updated ingredients:', this.ingredients);
             },
 
             // Load available ingredients
@@ -304,14 +352,15 @@
                         this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[
                             existingIndex].quantity;
                     } else {
-                        // Add new ingredient with quantity 1
+                        // Add new ingredient with quantity 1 (manual ingredient)
                         this.ingredients.push({
                             id: ingredient.id,
                             name: ingredient.name,
                             quantity: 1,
                             hpp: ingredient.hpp,
                             unit: ingredient.unit,
-                            total: ingredient.hpp * 1
+                            total: ingredient.hpp * 1,
+                            is_manual: true // Mark as manual ingredient
                         });
                     }
 
@@ -334,14 +383,15 @@
                     this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[
                         existingIndex].quantity;
                 } else {
-                    // Add new ingredient
+                    // Add new ingredient (manual ingredient)
                     this.ingredients.push({
                         id: this.selectedIngredient.id,
                         name: this.selectedIngredient.name,
                         quantity: parseFloat(this.ingredientQuantity),
                         hpp: this.selectedIngredient.hpp,
                         unit: this.selectedIngredient.unit,
-                        total: this.selectedIngredient.hpp * parseFloat(this.ingredientQuantity)
+                        total: this.selectedIngredient.hpp * parseFloat(this.ingredientQuantity),
+                        is_manual: true // Mark as manual ingredient
                     });
                 }
 
@@ -800,20 +850,35 @@
                 // Clear existing ingredients
                 productionApp.ingredients = [];
 
-                // Add recipe ingredients
-                recipeData.ingredients.forEach(ingredient => {
-                    const ingredientData = {
-                        id: ingredient.product_id || ingredient.id,
-                        name: ingredient.name,
-                        quantity: ingredient.quantity || 0,
-                        hpp: parseFloat(ingredient.hpp || 0),
-                        unit: ingredient.unit || 'pcs',
-                        total: parseFloat(ingredient.quantity || 0) * parseFloat(ingredient.hpp || 0)
-                    };
+                // Store base recipe ingredients (only for recipe-based ingredients)
+                productionApp.baseRecipeIngredients = recipeData.ingredients.map(ingredient => ({
+                    id: ingredient.product_id || ingredient.id,
+                    name: ingredient.name,
+                    base_quantity: parseFloat(ingredient.quantity || 0),
+                    hpp: parseFloat(ingredient.hpp || 0),
+                    unit: ingredient.unit || 'pcs',
+                    from_recipe: true // Mark as recipe ingredient
+                }));
 
-                    console.log('Adding ingredient:', ingredientData);
-                    productionApp.ingredients.push(ingredientData);
+                // Calculate and add recipe ingredients
+                const manualIngredients = productionApp.ingredients.filter(ing => ing.is_manual);
+                productionApp.ingredients = manualIngredients; // Start with manual ingredients only
+
+                // Add recipe ingredients with calculated quantities
+                productionApp.baseRecipeIngredients.forEach(recipeIngredient => {
+                    const calculatedQuantity = recipeIngredient.base_quantity * productionApp.productionQuantity;
+                    productionApp.ingredients.push({
+                        id: recipeIngredient.id,
+                        name: recipeIngredient.name,
+                        quantity: calculatedQuantity,
+                        hpp: recipeIngredient.hpp,
+                        unit: recipeIngredient.unit,
+                        total: calculatedQuantity * recipeIngredient.hpp,
+                        is_manual: false // Mark as recipe ingredient
+                    });
                 });
+
+                console.log('Loaded recipe ingredients:', productionApp.ingredients);
 
                  // Update production quantity if available
                  if (recipeData.yield_quantity) {
