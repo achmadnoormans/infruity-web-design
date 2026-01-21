@@ -1,6 +1,6 @@
 <!-- Production Summary -->
 <div class="d-flex flex-column gap-4">
-    <div class="d-flex justify-content-between align-items-center">
+    {{-- <div class="d-flex justify-content-between align-items-center">
         <span class="fs-5 fw-bold">Ringkasan Produksi</span>
         <span class="badge badge-light-info fs-7" x-text="'Total: ' + ingredients.length + ' bahan'"></span>
     </div>
@@ -51,16 +51,16 @@
         <label class="form-label text-gray-600">Catatan Produksi:</label>
         <textarea class="form-control form-control-sm" name="notes" rows="3" 
             placeholder="Tambahkan catatan untuk produksi ini..." x-model="notes"></textarea>
-    </div>
+    </div> --}}
     
     <!-- Action Buttons -->
     <div class="mt-4 border-top pt-3">
         <div class="d-flex justify-content-between mb-3">
             <div>
-                <span>Total</span> <span x-text="ingredients.length"></span><span> Bahan</span>
+                <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan</span>)
             </div>
             <div class="fw-bold">
-                <span>HPP: </span>
+                <span></span>
                 <span x-text="formatCurrency(totalHpp)"></span>
             </div>
         </div>

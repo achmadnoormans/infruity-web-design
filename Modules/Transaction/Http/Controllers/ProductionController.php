@@ -134,9 +134,15 @@ class ProductionController extends Controller
 
             // Handle different submit types like PosController
             if ($request->submit_type == 'temp') {
-                return redirect()->back()->with('success', 'Data berhasil disimpan sebagai draft sementara');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produksi berhasil dibuat',
+                ], 200);
             } elseif ($request->submit_type == 'draft') {
-                return redirect()->route('production.index');
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produksi berhasil dibuat',
+                ], 200);
             } else {
                 // posting - calculate and update HPP using ingredients array data
                 $totalHpp = 0;
