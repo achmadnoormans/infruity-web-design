@@ -4,13 +4,14 @@
          <div class="d-flex justify-content-between align-items-center">
              <span class="fw-bold">
                  <template x-if="showSummaryDetails">
-                     <span><i class="bi bi-chevron-up me-2"></i> Sembunyikan Ringkasan Produksi</span>
+                     <span><i class="bi bi-chevron-up me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)</span>
                  </template>
                  <template x-if="!showSummaryDetails">
-                     <span><i class="bi bi-chevron-down me-2"></i> Tampilkan Ringkasan Produksi</span>
+                     <span><i class="bi bi-chevron-down me-2"></i> <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)</span>
                  </template>
              </span>
-             <span class="badge badge-light-info fs-7" x-text="'Total: ' + ingredients.length + ' bahan'"></span>
+             {{-- <span class="badge badge-light-info fs-7" x-text="'Total: ' + ingredients.length + ' bahan'"></span> --}}
+             <span class="badge badge-light-info fs-7" x-text="formatCurrency(totalHpp)"></span>
          </div>
      </button>
 
@@ -23,7 +24,7 @@
 
          <!-- Summary Items -->
          <div class="d-flex flex-column gap-3 mt-3">
-             <!-- Total Bahan -->
+             {{-- <!-- Total Bahan -->
              <div class="d-flex justify-content-between align-items-center">
                  <span class="text-gray-600">Total Bahan Baku:</span>
                  <span class="fw-bold text-gray-800" x-text="ingredients.length + ' item'"></span>
@@ -33,7 +34,7 @@
              <div class="d-flex justify-content-between align-items-center">
                  <span class="text-gray-600">Total HPP:</span>
                  <span class="fw-bold text-primary" x-text="formatCurrency(totalHpp)"></span>
-             </div>
+             </div> --}}
 
              <!-- Quantity Production -->
              <div class="d-flex justify-content-between align-items-center">
@@ -45,6 +46,12 @@
              <div class="d-flex justify-content-between align-items-center">
                  <span class="text-gray-600">HPP per Unit:</span>
                  <span class="fw-bold text-success" x-text="formatCurrency(hppPerUnit)"></span>
+             </div>
+
+             <!-- Biaya Jasa -->
+             <div class="d-flex justify-content-between align-items-center">
+                 <span class="text-gray-600">Biaya Jasa:</span>
+                 <span class="fw-bold text-success" x-text="formatCurrency(totalServiceCost / productionQuantity)"></span>
              </div>
          </div>
 
@@ -70,7 +77,7 @@
 
      <!-- Action Buttons -->
     <div class="mt-4 border-top pt-3">
-        <div class="d-flex justify-content-between mb-3">
+        {{-- <div class="d-flex justify-content-between mb-3">
              <div>
                  <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)
              </div>
@@ -78,7 +85,7 @@
                 <span></span>
                 <span x-text="formatCurrency(totalHpp)"></span>
             </div>
-        </div>
+        </div> --}}
         <div class="row mt-3 gap-2">
             <div class="col" x-data="{ loading: false }">
                 <button class="btn btn-secondary w-100" @click="loading = true; saveProduction('temp', () => loading = false)"
