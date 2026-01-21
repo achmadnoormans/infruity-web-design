@@ -14,6 +14,8 @@
             searchIngredient: '',
             ingredientSearchTerm: '',
             productionQuantity: 1,
+            serviceCost: 0,
+            sellPrice: 0,
             notes: '',
             status: 'temp',
             isLoadingIngredients: false,
@@ -27,13 +29,19 @@
 
             // Computed properties
             get totalHpp() {
-                return this.ingredients.reduce((total, ingredient) => {
+                const ingredientsCost = this.ingredients.reduce((total, ingredient) => {
                     return total + (ingredient.hpp * ingredient.quantity);
                 }, 0);
+                const serviceCost = this.serviceCost * this.productionQuantity;
+                return ingredientsCost + serviceCost;
             },
 
             get hppPerUnit() {
                 return this.productionQuantity > 0 ? this.totalHpp / this.productionQuantity : 0;
+            },
+
+            get totalServiceCost() {
+                return this.serviceCost * this.productionQuantity;
             },
 
             get recipeTotal() {
@@ -70,9 +78,25 @@
                     this.productionQuantity = parseFloat(quantityInput.value) || 1;
                 }
 
+                // Cost fields are initialized in loadExistingData()
+
                 // Watch for production quantity changes
                 this.$watch('productionQuantity', (value) => {
                     document.getElementById('quantity').value = value;
+                });
+
+                // Watch for service cost changes
+                this.$watch('serviceCost', (value) => {
+                    // Parse formatted number to numeric value
+                    const numericValue = parseFloat(value.toString().replace(/[^\d]/g, '')) || 0;
+                    this.serviceCost = numericValue;
+                });
+
+                // Watch for sell price changes
+                this.$watch('sellPrice', (value) => {
+                    // Parse formatted number to numeric value
+                    const numericValue = parseFloat(value.toString().replace(/[^\d]/g, '')) || 0;
+                    this.sellPrice = numericValue;
                 });
             },
 
@@ -94,7 +118,10 @@
                     @endphp
                     this.ingredients = @json($ingredientsData);
                     this.productionQuantity = {{ $data->quantity ?? 1 }};
+                    this.serviceCost = {{ $data->service_cost ?? 0 }};
                     this.status = '{{ $data->status ?? 'temp' }}';
+
+                    // Note: sellPrice will be loaded from product price when product is selected
                 @endif
             },
 
@@ -467,7 +494,8 @@
                         .value);
                     formData.append('production_date', document.querySelector('input[name="production_date"]')
                         .value);
-                    formData.append('sell_price', document.querySelector('input[name="sell_price"]').value);
+                    formData.append('sell_price', this.sellPrice || 0);
+                    formData.append('service_cost', this.serviceCost || 0);
                     formData.append('product_id', productSelect.value);
                     formData.append('quantity', this.productionQuantity);
                     formData.append('submit_type', submitType);
@@ -490,6 +518,7 @@
                         production_number: formData.get('production_number'),
                         product_id: formData.get('product_id'),
                         quantity: formData.get('quantity'),
+                        service_cost: formData.get('service_cost'),
                         submit_type: formData.get('submit_type'),
                         ingredients_count: this.ingredients.length,
                         csrf_token: formData.get('_token') ? 'present' : 'missing'
@@ -639,9 +668,26 @@
                     }
                 } catch (error) {
                     console.error('Error clearing ingredients:', error);
-                }
-            });
-        }, 500); // Wait 500ms for Alpine to initialize
+                 }
+             });
+
+             // Load sell price for editing if product is already selected
+             @if(isset($data) && isset($receipt) && $receipt && isset($receipt->products))
+                 setTimeout(() => {
+                     // Set Alpine.js sellPrice
+                     const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
+                     if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
+                         alpineElement._x_dataStack[0].sellPrice = {{ $receipt->products->price ?? 0 }};
+                     }
+
+                     // Set input field value
+                     const sellPriceInput = document.getElementById('sell_price');
+                     if (sellPriceInput) {
+                         sellPriceInput.value = '{{ number_format($receipt->products->price ?? 0, 0, ',', '.') }}';
+                     }
+                 }, 600);
+             @endif
+         }, 500); // Wait 500ms for Alpine to initialize
 
         // Initialize Select2 for staff selection  
         $('#branch_id').select2({
@@ -664,6 +710,14 @@
             },
             minimumInputLength: 0
         });
+
+        // Set branch_id for editing
+        @if(isset($data) && $data->branch_id && isset($data->branch))
+            setTimeout(() => {
+                const branchOption = new Option('{{ $data->branch->name }}', '{{ $data->branch_id }}', true, true);
+                $('#branch_id').append(branchOption).trigger('change');
+            }, 600);
+        @endif
 
         // Form submission handler
         $('#kt_ecommerce_edit_order_form').on('submit', function(e) {
@@ -761,16 +815,25 @@
                     productionApp.ingredients.push(ingredientData);
                 });
 
-                // Update production quantity if available
-                if (recipeData.yield_quantity) {
-                    productionApp.productionQuantity = parseFloat(recipeData.yield_quantity);
-                    const quantityInput = document.getElementById('quantity');
-                    if (quantityInput) {
-                        quantityInput.value = recipeData.yield_quantity;
-                    }
-                }
+                 // Update production quantity if available
+                 if (recipeData.yield_quantity) {
+                     productionApp.productionQuantity = parseFloat(recipeData.yield_quantity);
+                     const quantityInput = document.getElementById('quantity');
+                     if (quantityInput) {
+                         quantityInput.value = recipeData.yield_quantity;
+                     }
+                 }
 
-                showSuccessNotification(`Berhasil memuat ${recipeData.ingredients.length} bahan dari resep`);
+                 // Set sell price from product price
+                 if (receipt && receipt.products && receipt.products.price) {
+                     productionApp.sellPrice = parseFloat(receipt.products.price);
+                     const sellPriceInput = document.getElementById('sell_price');
+                     if (sellPriceInput) {
+                         sellPriceInput.value = new Intl.NumberFormat('id-ID').format(receipt.products.price);
+                     }
+                 }
+
+                 showSuccessNotification(`Berhasil memuat ${recipeData.ingredients.length} bahan dari resep`);
             } else {
                 const message = recipeData.message || 'Produk ini tidak memiliki resep atau resep kosong';
                 console.log('No ingredients found:', message);
@@ -836,6 +899,14 @@
                     const quantityInput = document.getElementById('quantity');
                     if (quantityInput) {
                         quantityInput.value = recipeData.yield_quantity;
+                    }
+                }
+
+                // Set sell price from product price
+                if (receipt && receipt.products && receipt.products.price) {
+                    const sellPriceInput = document.getElementById('sell_price');
+                    if (sellPriceInput) {
+                        sellPriceInput.value = new Intl.NumberFormat('id-ID').format(receipt.products.price);
                     }
                 }
 
@@ -1002,4 +1073,19 @@
             alert('Error: ' + message);
         }
     }
+
+    // Format number input handling
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle format-number class inputs with Alpine.js compatibility
+        document.querySelectorAll('.format-number').forEach(function(input) {
+            input.addEventListener('blur', function(e) {
+                // Re-apply formatting on blur
+                let value = e.target.value.replace(/[^\d]/g, '');
+                if (value) {
+                    value = new Intl.NumberFormat('id-ID').format(value);
+                    e.target.value = value;
+                }
+            });
+        });
+    });
 </script>

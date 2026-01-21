@@ -19,7 +19,10 @@ class Production extends Model
         'production_date',
         'status',
         'description',
+        'sell_price',
+        'service_cost',
         'staff_id',
+        'branch_id',
         'created_by',
         'updated_by'
     ];
@@ -53,6 +56,11 @@ class Production extends Model
     public function staff()
     {
         return $this->belongsTo('Modules\Master\Entities\Staff', 'staff_id', 'id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo('Modules\Master\Entities\Branch', 'branch_id', 'id');
     }
 
     public function creator()

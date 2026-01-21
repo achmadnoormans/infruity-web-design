@@ -20,13 +20,15 @@ return new class extends Migration
             $table->date('production_date')->nullable();
             $table->enum('status', ['draft', 'posting', 'complete', 'temp'])->default('posting');
             $table->text('description')->nullable();
+            $table->decimal('service_cost', 10, 2)->default(0);
+            $table->decimal('sell_price', 10, 2)->default(0);
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
-        
+
         // DB::table('production')->insert([
         //     [
         //         'production_number' => 'PRO' . now()->format('Ym') . '001',
@@ -36,7 +38,7 @@ return new class extends Migration
         //         'status' => 'posting',
         //         'created_at' => now(),
         //         'updated_at' => now(),
-        //     ],   
+        //     ],
         // ]);
     }
 

@@ -80,8 +80,10 @@ class ProductionController extends Controller
             'ingredients.*.quantity' => 'required|numeric|min:0',
             'ingredients.*.hpp'      => 'required|numeric|min:0',
             'quantity'               => 'required|numeric|min:1',
-            'branch_id'              => 'required|exists:branch,id',
+            'branch_id'              => 'nullable|exists:branch,id',
+            'sell_price'             => 'nullable',
             'notes'                  => 'nullable|string',
+            'service_cost'           => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -116,7 +118,11 @@ class ProductionController extends Controller
             $production->staff_id        = $request->staff_id;
             $production->description     = $request->notes;
             $production->branch_id       = $request->branch_id;
-            $production->staff_id        = Auth::user()->id_user;
+            $production->updated_by      = Auth::user()->id_user;
+            $production->service_cost    = preg_replace('/[^0-9]/', '', $request->service_cost);
+            if ($request->sell_price) {
+                $production->sell_price = preg_replace('/[^0-9]/', '', $request->sell_price);
+            }
             $production->save();
 
             // Clear existing production details if updating
@@ -219,7 +225,7 @@ class ProductionController extends Controller
     public function edit($id)
     {
         $data['alpinejs']          = true;
-        $data['data']              = Production::find($id);
+        $data['data']              = Production::with('branch')->find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         // $data['selectedProduct']   = Product::find($data['data']->product_id);
         $data['receipt']           = Receipt::with('products')->where('product_id', $data['data']->product_id)->first();
@@ -241,9 +247,11 @@ class ProductionController extends Controller
             'product_id'      => 'required|exists:receipt,id',
             'submit_type'     => 'required|in:draft,posting,temp',
             'production_date' => 'required|date',
-            // 'product_receipt_id' => 'required|array',
             'quantity'        => 'required',
             'staff_id'        => 'nullable|exists:staff,id',
+            'branch_id'       => 'nullable|exists:branch,id',
+            'sell_price'      => 'nullable',
+            'service_cost'    => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -263,6 +271,11 @@ class ProductionController extends Controller
             $production->created_by      = Auth::user()->id_user;
             $production->quantity        = $request->quantity;
             $production->staff_id        = $request->staff_id;
+            $production->branch_id       = $request->branch_id;
+            $production->service_cost    = $request->service_cost ?? 0;
+            if ($request->sell_price) {
+                $production->sell_price = preg_replace('/[^0-9]/', '', $request->sell_price);
+            }
             $production->save();
 
             // Jika status temp, redirect ke halaman yang sama untuk continue editing

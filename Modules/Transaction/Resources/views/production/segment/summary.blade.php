@@ -71,9 +71,9 @@
      <!-- Action Buttons -->
     <div class="mt-4 border-top pt-3">
         <div class="d-flex justify-content-between mb-3">
-            <div>
-                <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan</span>)
-            </div>
+             <div>
+                 <span>Total Biaya Produksi (</span> <span x-text="ingredients.length"></span><span> Bahan + Jasa</span>)
+             </div>
             <div class="fw-bold">
                 <span></span>
                 <span x-text="formatCurrency(totalHpp)"></span>
