@@ -534,7 +534,7 @@
                 </div>
                 <!--end:Menu item-->
             @endif
-            @if (check_access('parcel.index'))
+            {{-- @if (check_access('parcel.index'))
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
@@ -548,7 +548,7 @@
                     <!--end:Menu link-->
                 </div>
                 <!--end:Menu item-->
-            @endif
+            @endif --}}
         </div>
         <!--end:Menu sub-->
     </div>

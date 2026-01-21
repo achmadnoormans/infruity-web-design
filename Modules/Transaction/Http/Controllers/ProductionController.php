@@ -620,7 +620,7 @@ class ProductionController extends Controller
 
                     return '<div class="d-flex align-items-center">
                                 <div class="ms-5">
-                                    <a href="' . route('production.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . ($item->production_number ?? 'N/A') . '</a>
+                                    <a href="' . route('production.detail', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . ($item->production_number ?? 'N/A') . '</a>
                                     <br>
                                     <span class="text-muted d-block">' . $productName . '</span>
                                     <span class="text-muted d-block">Qty: ' . $quantity . '</span>
@@ -644,16 +644,33 @@ class ProductionController extends Controller
                             return '<span class="badge badge-light-secondary">' . ucfirst($item->status ?? 'Unknown') . '</span>';
                     }
                 })
-                ->addColumn('action', function ($item) {
-                    return '
-                        <div class="btn-group" role="group">
-                            <a href="' . route('production.detail', $item->id) . '" class="btn btn-sm btn-light-primary">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="' . route('production.edit', $item->id) . '" class="btn btn-sm btn-light-warning">
+                ->addColumn('action', function ($row) {
+                    $editUrl   = route('production.edit', $row->id);
+                    $deleteUrl = route('production.destroy', $row->id);
+                    $name      = e($row->name);
+
+                    $html  = '
+                <div class="dropstart">
+                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                    $html .= '
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="' . $editUrl . '" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                        </div>';
+                        </li>';
+                    $html .= '
+                        <li>
+                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </li>';
+                    $html .= '
+                    </ul>
+                </div>';
+                    return $html;
                 })
                 ->rawColumns(['name', 'action', 'status'])
                 ->make(true);
