@@ -34,6 +34,7 @@ class ProductController extends Controller
     public function get_stock()
     {
         $data['category'] = ProductCategory::all();
+        $data['branch']   = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('master::products.stock', $data);
     }
 
@@ -719,7 +720,7 @@ class ProductController extends Controller
                 $html = '
                     <div class="d-flex align-items-center">';
                 if (isset($product->image)) {
-                    $url = asset('storage/' . $product->image);
+                    $url   = asset('storage/' . $product->image);
                     $html .= '<img src="' . $url . '" alt="Product Image" width="50">';
                 } else {
                     $html .= '<a href="javascript:void(0)" class="symbol symbol-50px">
@@ -828,6 +829,11 @@ class ProductController extends Controller
                 $query->where('stock_available', '=', 0);
             }
         }
+        if ($request->has('branch')) {
+            if ($request->branch != 'all') {
+                $query->where('branch_id', $request->branch);
+            }
+        }
         $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()
@@ -911,7 +917,7 @@ class ProductController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
-                $html = '
+                $html  = '
                     <div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">
                             <a href="' . url('products/') . $product->product_id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"

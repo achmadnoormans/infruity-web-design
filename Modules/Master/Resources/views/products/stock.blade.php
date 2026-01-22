@@ -5,47 +5,94 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
                 <!--begin::Card title-->
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Product" />
+                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Produk" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
-                    <div class="w-100 mw-150px">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-                            data-placeholder="Status" data-kt-ecommerce-product-filter="status">
-                            <option value="all">Category</option>
-                            @foreach ($category as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        <!--end::Select2-->
+                <div class="card-toolbar ms-auto">
+                    <div class="card-toolbar">
+                        <!--begin::Toolbar-->
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <!--begin::Filter-->
+                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                                data-kt-menu-placement="bottom-end">
+                                <i class="ki-duotone ki-filter fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i></button>
+                            <!--begin::Menu 1-->
+                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                                <!--begin::Header-->
+                                <div class="px-7 py-5">
+                                    <div class="fs-5 text-gray-900 fw-bold">Pilihan Filter</div>
+                                </div>
+                                <!--end::Header-->
+                                <!--begin::Separator-->
+                                <div class="separator border-gray-200"></div>
+                                <!--end::Separator-->
+                                <!--begin::Content-->
+                                <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                    <!--begin::Input group-->
+                                    <div class="mb-3">
+                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Cabang"
+                                            data-kt-ecommerce-product-filter="branch">
+                                            <option value="all">Semua Cabang</option>
+                                            @foreach ($branch as $item)
+                                                <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fs-6 fw-semibold">Kategori:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Kategori"
+                                            data-kt-ecommerce-product-filter="kategori">
+                                            @foreach ($category as $category)
+                                                <option value="{{ $category->id }}">{{ ucwords($category->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fs-6 fw-semibold">Stok:</label>
+                                        <select class="form-select form-select-solid" data-control="select2"
+                                            data-hide-search="true" data-placeholder="Stok"
+                                            data-kt-ecommerce-product-filter="stock">
+                                            <option value="all">Semua</option>
+                                            <option value="ada">Ada</option>
+                                            <option value="kosong">Kosong</option>
+                                        </select>
+                                    </div>
+                                    <!--end::Input group-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Menu 1-->
+                            <!--end::Filter-->
+                        </div>
+                        <!--end::Toolbar-->
                     </div>
-                    <div class="w-100 mw-150px">
-                        <!--begin::Select2-->
-                        <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
-                            data-placeholder="Stock" data-kt-ecommerce-product-filter="stock">
-                            <option value="all">Stock</option>
-                            <option value="ada">Ada</option>
-                            <option value="kosong">Kosong</option>
-                        </select>
-                        <!--end::Select2-->
-                    </div>
+                    <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body pt-0">
+
+                <div id="keterangan" class="text-center">
+                    <p></p>
+                </div>
                 <!--begin::Table-->
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="products-table" width="100%">
                     <thead>
@@ -92,6 +139,8 @@
                     url: "{{ route('product-stock-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.branch = $('[data-kt-ecommerce-product-filter="branch"]').val();
+                        d.stock_kategori = $('[data-kt-ecommerce-product-filter="kategori"]').val();
                         d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
                     }
                 },
@@ -134,17 +183,23 @@
                 dataTable.search(this.value).draw();
             });
 
-            $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
-                let val = $(this).val();
-
-                if (val === 'all') val = ''; // kosongkan filter jika all
-                dataTable.column(3).search(val).draw();
-            });
-
             $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
             });
+
+            $('[data-kt-ecommerce-product-filter="branch"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+                updateKeterangan();
+            });
+
+            // Panggil keteranga di awal
+            updateKeterangan();
         });
+
+        function updateKeterangan() {
+            const branchText = $('[data-kt-ecommerce-product-filter="branch"] option:selected').text();
+            $('#keterangan p').html('Cabang: <span class="fw-bold">' + branchText + '</span>');
+        }
 
         function reloadDataTable() {
             // Pastikan dataTable sudah terinisialisasi sebelumnya

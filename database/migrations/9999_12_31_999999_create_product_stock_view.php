@@ -1,21 +1,21 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        $wilayah = file_get_contents(database_path('wilayah_indonesia.sql'));
-        $sql = file_get_contents(database_path('sql/views.sql'));
-        $report = file_get_contents(database_path('sql/report.sql'));
-        $function = file_get_contents(database_path('sql/function.sql'));
+        $wilayah       = file_get_contents(database_path('wilayah_indonesia.sql'));
+        $sql           = file_get_contents(database_path('sql/views.sql'));
+        $report        = file_get_contents(database_path('sql/report.sql'));
+        $function      = file_get_contents(database_path('sql/function.sql'));
+        $product_stock = file_get_contents(database_path('sql/product_stock.sql'));
 
         foreach (array_filter(array_map('trim', explode(';', $wilayah))) as $query) {
             if ($query) {
@@ -33,8 +33,14 @@ return new class extends Migration {
                 DB::statement($query);
             }
         }
-        $sql = File::get(database_path('sql/function.sql'));
-        DB::unprepared($sql);
+        foreach (array_filter(array_map('trim', explode(';', $product_stock))) as $query) {
+            if ($query) {
+                DB::statement($query);
+            }
+        }
+
+        $function = File::get(database_path('sql/function.sql'));
+        DB::unprepared($function);
     }
 
     /**
