@@ -33,10 +33,10 @@ FROM
 		created_at AS date,
 		`code` AS reff
 	FROM
-		stock_in 
+		stock_in
 	UNION ALL
 
-	-- STOCK OUT	
+	-- STOCK OUT
 	SELECT
 		0 AS branch_id,
 		product_id,
@@ -46,9 +46,9 @@ FROM
 		created_at,
 		`code`
 	FROM
-		stock_out 
+		stock_out
 	UNION ALL
-	
+
 	-- WHOLESALE
 	SELECT
 		branch_id,
@@ -63,11 +63,11 @@ FROM
 		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
 	WHERE
 		wholesale.`status` = 'posting'
-		AND product_id != 0 
+		AND product_id != 0
 	UNION ALL
-	
+
 	-- STOCK OUT TRANSACTION
-	SELECT	
+	SELECT
 		0 AS branch_id,
 		product_id,
 		- quantity,
@@ -76,9 +76,9 @@ FROM
 		created_at,
 		'stock-out'
 	FROM
-		stock_out_transaction 
+		stock_out_transaction
 	UNION ALL
-	
+
 	-- STOCK OPNAME
 	SELECT
 		0 AS branch_id,
@@ -89,9 +89,9 @@ FROM
 		created_at,
 		'stock-opname'
 	FROM
-		stock_opname 
+		stock_opname
 	UNION ALL
-	
+
 	-- PRODUCTION (PRODUCT RESEP)(+)
 	SELECT
 		branch_id,
@@ -102,9 +102,10 @@ FROM
 		created_at,
 		'produksi'
 	FROM
-		production 
+		production
+        WHERE production.`status` = 'posting'
 	UNION ALL
-	
+
 	-- DETAIL PRODUCTION (-)
 	SELECT
 		production.branch_id,
@@ -119,7 +120,7 @@ FROM
 		JOIN production ON production.id = production_detail.production_id
 		WHERE production.`status` = 'posting'
         UNION ALL
-				
+
 	-- DETAIL POS
 	SELECT
 		pos_transaction.branch_id,
@@ -134,14 +135,17 @@ FROM
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
     WHERE pos_transaction_detail.deleted_at IS NULL
 	AND pos_transaction.`status` != 'draft'
+    AND pos_transaction.deleted_at IS NULL
 	UNION ALL
+
+    -- DETAIL SORTIR
 	SELECT
 		sortir_transaction.branch_id,
 		sortir_transaction_detail.product_id,
 		- sortir_transaction_detail.quantity,
 		sortir_transaction_detail.price,
 		sortir_transaction_detail.created_at,
-		'sortir' 
+		'sortir'
 	FROM
 	sortir_transaction_detail
 	JOIN sortir_transaction ON sortir_transaction_detail.sortir_id = sortir_transaction.id

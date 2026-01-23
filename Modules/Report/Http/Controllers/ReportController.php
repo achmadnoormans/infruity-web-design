@@ -446,12 +446,17 @@ class ReportController extends Controller
                 DB::raw('COALESCE(pc.parent_id, CHILD.id)')
             )
             ->join('product_units as C', 'PARENT.product_unit', '=', 'C.id')
-            ->where('PARENT.tipe', '!=', 'parcel')
-            ->groupBy(
-                DB::raw('COALESCE(pc.parent_id, A.product_id)'),
-                'PARENT.name',
-                'C.abbreviation',
-                'PARENT.hpp'
+            ->where('PARENT.tipe', '!=', 'parcel');
+
+        if ($request->has('branch_id') && $request->branch_id != 'all') {
+            $query->where('A.branch_id', $request->branch_id);
+        }
+
+        $query->groupBy(
+            DB::raw('COALESCE(pc.parent_id, A.product_id)'),
+            'PARENT.name',
+            'C.abbreviation',
+            'PARENT.hpp'
             )
             ->having('total_stock', '>', 0);
 

@@ -18,7 +18,7 @@
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                {{-- <div class="card-toolbar ms-auto">
+                <div class="card-toolbar ms-auto">
                     <div class="card-toolbar">
                         <!--begin::Toolbar-->
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
@@ -80,7 +80,7 @@
                         </div>
                         <!--end::Toolbar-->
                     </div>
-                </div> --}}
+                </div>
                 <!--end::Card toolbar-->
             </div>
             <!--end::Card header-->
