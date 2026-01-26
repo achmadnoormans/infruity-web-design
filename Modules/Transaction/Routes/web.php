@@ -25,6 +25,7 @@ use Modules\Transaction\Http\Controllers\ProductionParcelController;
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock', [ProductController::class, 'get_stock'])->name('product-stock');
     Route::get('product-stock/{id}/show', [ProductController::class, 'show_stock'])->name('product-stock.show');
+    Route::get('product-transaction/{id}/show', [ProductController::class, 'show_transaction'])->name('product-transaction.show');
     Route::get('product-stock/available-stock', [ProductController::class, 'get_data_available'])->name('ajax.stock-available');
 
     Route::resource('wholesale', WholesaleController::class)->names('wholesale')->except('show');
@@ -100,9 +101,10 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('product-stock/data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
     Route::get('product-stock-data-show', [ProductController::class, 'get_data_stock_show'])->name('product-stock-data-show');
+    Route::get('product-transaction-data', [ProductController::class, 'get_data_transaction'])->name('product-transaction-data');
     Route::get('wholesale/data', [WholesaleController::class, 'get_data'])->name('wholesale-data');
     Route::get('sortir/data', [SortirController::class, 'get_data'])->name('sortir-data');
-    Route::get('transfer/data', [TransferController::class, 'get_data'])->name('transfer-data');    
+    Route::get('transfer/data', [TransferController::class, 'get_data'])->name('transfer-data');
     Route::get('stock-out/data', [StockOutController::class, 'get_data'])->name('stock-out.data');
     Route::get('stock-opname/data', [StockOpnameController::class, 'get_data'])->name('stock-opname.data');
     Route::get('stock-out-type/data', [StockOutTypeController::class, 'get_data'])->name('stock-out-type.data');

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductBranch;
+use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\ProductUnit;
@@ -222,6 +223,67 @@ class ProductController extends Controller
     {
         $data['data'] = Product::findOrFail($id);
         return view('master::products.stock-show', $data);
+    }
+
+    public function show_transaction($id)
+    {
+        $data['product'] = Product::findOrFail($id);
+        return view('master::products.show-transaction', $data);
+    }
+
+    public function get_data_transaction(Request $request)
+    {
+        $query = ProductHppRunning::where('product_id', $request->product_id)
+            ->orderBy('created_at', 'asc');
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('type', function ($item) {
+                if ($item->type == '+') {
+                    return '<span class="badge badge-light-success">' . $item->type . '</span>';
+                } else {
+                    return '<span class="badge badge-light-danger">' . $item->type . '</span>';
+                }
+            })
+            ->addColumn('remarks', function ($item) {
+                return $item->remarks ?? '-';
+            })
+            ->addColumn('qty', function ($item) {
+                return number_format($item->qty, 0, ',', '.');
+            })
+            ->addColumn('qty_berjalan_raw', function ($item) {
+                return number_format($item->qty_berjalan_raw, 0, ',', '.');
+            })
+            ->addColumn('qty_berjalan', function ($item) {
+                return number_format($item->qty_berjalan, 0, ',', '.');
+            })
+            ->addColumn('harga_satuan', function ($item) {
+                return $item->harga_satuan ? 'Rp ' . number_format($item->harga_satuan, 0, ',', '.') : '-';
+            })
+            ->addColumn('total_belanja', function ($item) {
+                return 'Rp ' . number_format($item->total_belanja, 0, ',', '.');
+            })
+            ->addColumn('total_non_belanja', function ($item) {
+                $value = $item->total_non_belanja;
+                if ($value < 0) {
+                    return '<span class="text-danger">Rp ' . number_format($value, 0, ',', '.') . '</span>';
+                }
+                return 'Rp ' . number_format($value, 0, ',', '.');
+            })
+            ->addColumn('hpp_berjalan', function ($item) {
+                return 'Rp ' . number_format($item->hpp_berjalan, 0, ',', '.');
+            })
+            ->addColumn('total_aset_berjalan', function ($item) {
+                return 'Rp ' . number_format($item->total_aset_berjalan, 0, ',', '.');
+            })
+            ->addColumn('qty_x_hpp', function ($item) {
+                return 'Rp ' . number_format($item->qty_x_hpp, 0, ',', '.');
+            })
+            ->addColumn('created_at', function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i:s');
+            })
+            ->rawColumns(['type', 'total_non_belanja'])
+            ->make(true);
     }
 
     /**
@@ -834,7 +896,7 @@ class ProductController extends Controller
                 $query->where('branch_id', $request->branch);
             }
         }
-        $data = $query->get();
+        $data = $query;
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
@@ -884,6 +946,9 @@ class ProductController extends Controller
                 return '
                     <a href="' . url('product-stock') . '/' . $item->id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
                         <i class="fa fa-eye"></i>
+                    </a>
+                    <a href="' . url('product-transaction') . '/' . $item->id . '/show' . '" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1" data-bs-toggle="tooltip" title="View">
+                        <i class="fa fa-print"></i>
                     </a>
                 ';
             })

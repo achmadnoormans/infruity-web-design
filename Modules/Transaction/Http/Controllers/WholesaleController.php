@@ -16,6 +16,7 @@ use Modules\Master\Entities\ProductBranch;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\UserBranch;
+use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\Wholesale;
 use Modules\Transaction\Entities\WholesaleProduct;
@@ -626,35 +627,35 @@ class WholesaleController extends Controller
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
 
-                    if ($data['status'] == 'posting') {
-                        $productStock = (float) (ProductStock::where('id', $item['id'])->value('stock_available') ?? 0);
-                        if ($productStock == 0) {
-                            Product::where("id", $item['id'])->update([
-                                'hpp'           => $item['price'],
-                                'total_belanja' => $item['total_input'],
-                            ]);
-                            $ProductChild = ProductChild::where('parent_id', $item['id']);
-                            Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
-                                'hpp'           => $item['price'],
-                                'total_belanja' => $item['total_input'],
-                            ]);
-                        } else {
-                            $newStock     = $productStock + $item['qty'];
-                            $totalAset    = Product::where("id", $item['id'])->value('hpp') * $productStock;
-                            $totalBelanja = $totalAset + $item['total_input'];
-                            $newHpp       = $totalBelanja / $newStock;
-                            // dd($newStock, $totalAset, $newHpp);
-                            Product::where("id", $item['id'])->update([
-                                'hpp'           => $newHpp,
-                                'total_belanja' => $totalBelanja,
-                            ]);
-                            $ProductChild = ProductChild::where('parent_id', $item['id']);
-                            Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
-                                'hpp'           => $newHpp,
-                                'total_belanja' => $totalBelanja,
-                            ]);
-                        }
-                    }
+                    // if ($data['status'] == 'posting') {
+                    //     $productStock = (float) (ProductStock::where('id', $item['id'])->value('stock_available') ?? 0);
+                    //     if ($productStock == 0) {
+                    //         Product::where("id", $item['id'])->update([
+                    //             'hpp'           => $item['price'],
+                    //             'total_belanja' => $item['total_input'],
+                    //         ]);
+                    //         $ProductChild = ProductChild::where('parent_id', $item['id']);
+                    //         Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
+                    //             'hpp'           => $item['price'],
+                    //             'total_belanja' => $item['total_input'],
+                    //         ]);
+                    //     } else {
+                    //         $newStock     = $productStock + $item['qty'];
+                    //         $totalAset    = Product::where("id", $item['id'])->value('hpp') * $productStock;
+                    //         $totalBelanja = $totalAset + $item['total_input'];
+                    //         $newHpp       = $totalBelanja / $newStock;
+                    //         // dd($newStock, $totalAset, $newHpp);
+                    //         Product::where("id", $item['id'])->update([
+                    //             'hpp'           => $newHpp,
+                    //             'total_belanja' => $totalBelanja,
+                    //         ]);
+                    //         $ProductChild = ProductChild::where('parent_id', $item['id']);
+                    //         Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
+                    //             'hpp'           => $newHpp,
+                    //             'total_belanja' => $totalBelanja,
+                    //         ]);
+                    //     }
+                    // }
 
                     WholesaleProduct::insert([
                         'wholesale_id' => $transaksiId,
@@ -685,6 +686,19 @@ class WholesaleController extends Controller
                             $branch->price      = $item['sell'];
                             $branch->save();
                         }
+                    }
+
+                    if ($data['status'] == 'posting') {
+                        $productHpp = ProductHppRunning::where('product_id', $item['id'])
+                            ->orderBy('created_at', 'desc')
+                            ->first();
+                        Product::where("id", $item['id'])->update([
+                            'hpp'           => $productHpp->hpp_berjalan ?? 0,
+                        ]);
+                        $ProductChild = ProductChild::where('parent_id', $item['id']);
+                        Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
+                            'hpp'           => $productHpp->hpp_berjalan ?? 0,
+                        ]);
                     }
                 }
             }

@@ -16,6 +16,7 @@ return new class extends Migration
         $report        = file_get_contents(database_path('sql/report.sql'));
         $function      = file_get_contents(database_path('sql/function.sql'));
         $product_stock = file_get_contents(database_path('sql/product_stock.sql'));
+        $product_hpp   = file_get_contents(database_path('sql/product_hpp.sql'));
 
         foreach (array_filter(array_map('trim', explode(';', $wilayah))) as $query) {
             if ($query) {
@@ -38,6 +39,11 @@ return new class extends Migration
                 DB::statement($query);
             }
         }
+        foreach (array_filter(array_map('trim', explode(';', $product_hpp))) as $query) {
+            if ($query) {
+                DB::statement($query);
+            }
+        }
 
         $function = File::get(database_path('sql/function.sql'));
         DB::unprepared($function);
@@ -49,6 +55,7 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement("DROP VIEW IF EXISTS product_stock");
+        DB::statement("DROP VIEW IF EXISTS product_hpp");
         DB::statement("DROP VIEW IF EXISTS transaction_stock");
         DB::statement("DROP VIEW IF EXISTS sortir_view");
         DB::statement("DROP VIEW IF EXISTS view_wholesale");
