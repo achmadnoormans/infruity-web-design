@@ -3,7 +3,7 @@ WITH RECURSIVE ordered_trx AS (
     SELECT
         ROW_NUMBER() OVER (
             PARTITION BY product_id
-            ORDER BY created_at
+            ORDER BY created_at, type DESC
         ) AS rn,
         product_id,
         created_at,
@@ -22,17 +22,23 @@ WITH RECURSIVE ordered_trx AS (
             p.created_at,
             p.quantity AS qty,
             p.price AS harga_satuan,
-            p.total_price AS total_belanja,
+
+            -- ⬇️ tetap kolom lama, tapi aman
+            CASE
+                WHEN p.total_price IS NULL OR p.total_price = 0
+                THEN p.quantity * p.price
+                ELSE p.total_price
+            END AS total_belanja,
+
             0 AS total_non_belanja,
             '+' AS type,
             'PENGADAAN' AS remarks
         FROM wholesale_product p
-        JOIN wholesale w ON p.wholesale_id = w.id
 
         UNION ALL
 
         -- =====================
-        -- BARANG BUANG (OUT)
+        -- BARANG BUANG / KELUAR (OUT)
         -- =====================
         SELECT
             b.product_id,
@@ -44,7 +50,6 @@ WITH RECURSIVE ordered_trx AS (
             '-' AS type,
             'BARANG BUANG' AS remarks
         FROM sortir_transaction_detail b
-        JOIN sortir_transaction s ON b.sortir_id = s.id
     ) x
 ),
 
@@ -63,12 +68,10 @@ running AS (
         type,
         remarks,
 
-        -- RAW (boleh minus)
         qty AS qty_berjalan_raw,
-
-        -- SAFE (tidak boleh minus)
         GREATEST(qty, 0) AS qty_berjalan,
 
+        -- aset awal
         CASE
             WHEN qty <= 0 THEN 0
             ELSE total_belanja + total_non_belanja
@@ -79,7 +82,7 @@ running AS (
     UNION ALL
 
     -- =====================
-    -- BARIS SELANJUTNYA
+    -- BARIS BERIKUTNYA
     -- =====================
     SELECT
         t.rn,
@@ -92,18 +95,30 @@ running AS (
         t.type,
         t.remarks,
 
-        -- RAW (akumulasi murni)
+        -- raw stok
         r.qty_berjalan_raw + t.qty AS qty_berjalan_raw,
 
-        -- SAFE (stok bisnis rule)
+        -- stok bisnis
         GREATEST(r.qty_berjalan + t.qty, 0) AS qty_berjalan,
 
-        -- aset ikut reset kalau stok habis
+        -- 🔥 AKUNTANSI VALID
         CASE
+            -- stok habis → reset
             WHEN r.qty_berjalan + t.qty <= 0 THEN 0
-            ELSE r.total_aset_berjalan
-                 + t.total_belanja
-                 + t.total_non_belanja
+
+            -- IN → aset naik dari total_belanja
+            WHEN t.qty > 0 THEN
+                r.total_aset_berjalan
+                + t.total_belanja
+                + t.total_non_belanja
+
+            -- OUT → aset turun pakai HPP berjalan
+            ELSE
+                r.total_aset_berjalan
+                - (
+                    ABS(t.qty)
+                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan, 0))
+                  )
         END AS total_aset_berjalan
     FROM running r
     JOIN ordered_trx t
@@ -117,7 +132,6 @@ SELECT
     remarks,
     ABS(qty) AS qty,
 
-    -- dua versi stok
     qty_berjalan_raw,
     qty_berjalan,
 
@@ -125,7 +139,7 @@ SELECT
     total_belanja,
     total_non_belanja,
 
-    -- HPP berjalan (dibulatkan ke atas)
+    -- HPP berjalan
     CASE
         WHEN qty_berjalan = 0 THEN 0
         ELSE CEILING(total_aset_berjalan / qty_berjalan)
@@ -142,6 +156,11 @@ SELECT
     created_at
 FROM running
 ORDER BY product_id, rn;
+
+
+-- =====================
+-- VIEW PRODUCT HPP
+-- =====================
 
 CREATE OR REPLACE VIEW product_hpp_branch AS
 WITH RECURSIVE ordered_trx AS (
