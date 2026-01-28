@@ -139,7 +139,7 @@ SELECT
     total_belanja,
     total_non_belanja,
 
-    -- HPP berjalan
+    -- 🔹 KOLOM LAMA (TETAP)
     CASE
         WHEN qty_berjalan = 0 THEN 0
         ELSE CEILING(total_aset_berjalan / qty_berjalan)
@@ -152,6 +152,22 @@ SELECT
         WHEN qty_berjalan = 0 THEN 0
         ELSE CEILING(total_aset_berjalan / qty_berjalan)
     END AS qty_x_hpp,
+
+    -- 🔹 KOLOM BARU (DITAMBAHKAN)
+    CASE
+        WHEN qty_berjalan = 0 THEN 0
+        ELSE total_aset_berjalan / qty_berjalan
+    END AS hpp_real,
+
+    -- opsional: buat audit selisih
+    (
+        qty_berjalan *
+        CASE
+            WHEN qty_berjalan = 0 THEN 0
+            ELSE CEILING(total_aset_berjalan / qty_berjalan)
+        END
+        - total_aset_berjalan
+    ) AS selisih_pembulatan,
 
     created_at
 FROM running
