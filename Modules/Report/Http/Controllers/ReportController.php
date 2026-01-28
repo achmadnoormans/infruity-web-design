@@ -435,7 +435,7 @@ class ReportController extends Controller
                 'C.abbreviation',
                 'PARENT.hpp',
                 DB::raw('SUM(A.quantity) as total_stock'),
-                DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
+                DB::raw('ROUND(SUM(A.quantity) * PARENT.hpp, -3) as total_hpp'),
             ])
             ->join('products as CHILD', 'A.product_id', '=', 'CHILD.id')
             ->leftJoin('product_child as pc', 'CHILD.id', '=', 'pc.product_id')
