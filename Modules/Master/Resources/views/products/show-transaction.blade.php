@@ -35,7 +35,6 @@
                             <th class="text-nowrap text-center min-w-130px">Total Non Belanja</th>
                             <th class="text-nowrap text-center min-w-120px">HPP Berjalan</th>
                             <th class="text-nowrap text-center min-w-120px">Total Aset</th>
-                            <th class="text-nowrap text-center min-w-100px">Qty x HPP</th>
                             <th class="text-nowrap text-center min-w-120px">Tanggal</th>
                         </tr>
                     </thead>
@@ -109,11 +108,6 @@
                     {
                         data: 'total_aset_berjalan',
                         name: 'total_aset_berjalan',
-                        className: 'text-end text-nowrap'
-                    },
-                    {
-                        data: 'qty_x_hpp',
-                        name: 'qty_x_hpp',
                         className: 'text-end text-nowrap'
                     },
                     {
