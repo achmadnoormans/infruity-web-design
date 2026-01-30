@@ -934,7 +934,7 @@ class ProductController extends Controller
                 return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . toNumber($product->price) . '">Rp.' . $product->price . '</span>';
             })
             ->addColumn('hpp', function ($product) {
-                return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp' . toNumber($product->hpp) . '</span>';
+                return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp' . tonumberround($product->hpp) . '</span>';
             })
             ->addColumn('stock_available', function ($product) {
                 return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';

@@ -142,7 +142,7 @@ SELECT
     -- 🔹 KOLOM LAMA (TETAP)
     CASE
         WHEN qty_berjalan = 0 THEN 0
-        ELSE CEILING(total_aset_berjalan / qty_berjalan)
+        ELSE (total_aset_berjalan / qty_berjalan)
     END AS hpp_berjalan,
 
     total_aset_berjalan,
@@ -164,7 +164,7 @@ SELECT
         qty_berjalan *
         CASE
             WHEN qty_berjalan = 0 THEN 0
-            ELSE CEILING(total_aset_berjalan / qty_berjalan)
+            ELSE (total_aset_berjalan / qty_berjalan)
         END
         - total_aset_berjalan
     ) AS selisih_pembulatan,
