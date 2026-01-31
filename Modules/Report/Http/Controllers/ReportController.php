@@ -435,7 +435,7 @@ class ReportController extends Controller
                 'C.abbreviation',
                 'PARENT.hpp',
                 DB::raw('SUM(A.quantity) as total_stock'),
-                DB::raw('ROUND(SUM(A.quantity) * PARENT.hpp, -3) as total_hpp'),
+                DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
             ])
             ->join('products as CHILD', 'A.product_id', '=', 'CHILD.id')
             ->leftJoin('product_child as pc', 'CHILD.id', '=', 'pc.product_id')
@@ -470,10 +470,10 @@ class ReportController extends Controller
                 return 'Rp' . number_format($row->total_hpp, 2, ',', '.');
             })
             ->editColumn('hpp', function ($row) {
-                return 'Rp' . number_format($row->hpp, 2, ',', '.');
+                return 'Rp' . number_format($row->hpp, 3, ',', '.');
             })
             ->editColumn('total_stock', function ($row) {
-                return number_format($row->total_stock, 2, ',', '.');
+                return number_format($row->total_stock, 3, ',', '.');
             })
             ->addColumn('action', function ($item) {
                 return '
