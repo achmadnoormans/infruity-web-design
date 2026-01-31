@@ -467,13 +467,13 @@ class ReportController extends Controller
 
         return DataTables::of($query)
             ->editColumn('total_hpp', function ($row) {
-                return 'Rp' . number_format($row->total_hpp, 2, ',', '.');
+                return 'Rp' . number_format($row->total_hpp, 0, ',', '.');
             })
             ->editColumn('hpp', function ($row) {
-                return 'Rp' . number_format($row->hpp, 3, ',', '.');
+                return 'Rp' . number_format($row->hpp, 0, ',', '.');
             })
             ->editColumn('total_stock', function ($row) {
-                return number_format($row->total_stock, 3, ',', '.');
+                return number_format($row->total_stock, 0, ',', '.');
             })
             ->addColumn('action', function ($item) {
                 return '
@@ -483,7 +483,7 @@ class ReportController extends Controller
                 ';
             })
             ->with([
-                'grand_total' => number_format($grandTotal, 2, ',', '.'),
+                'grand_total' => number_format($grandTotal, 0, ',', '.'),
             ])
             ->make(true);
     }
