@@ -457,7 +457,7 @@ class ReportController extends Controller
             'PARENT.name',
             'C.abbreviation',
             'PARENT.hpp'
-            )
+        )
             ->having('total_stock', '>', 0);
 
         // GRAND TOTAL HPP (semua baris yang tampil)
@@ -467,10 +467,10 @@ class ReportController extends Controller
 
         return DataTables::of($query)
             ->editColumn('total_hpp', function ($row) {
-                return 'Rp' . number_format($row->total_hpp, 0, ',', '.');
+                return 'Rp' . number_format($row->total_hpp, 2, ',', '.');
             })
             ->editColumn('hpp', function ($row) {
-                return 'Rp' . number_format($row->hpp, 0, ',', '.');
+                return 'Rp' . number_format($row->hpp, 2, ',', '.');
             })
             ->editColumn('total_stock', function ($row) {
                 return number_format($row->total_stock, 2, ',', '.');
@@ -483,7 +483,7 @@ class ReportController extends Controller
                 ';
             })
             ->with([
-                'grand_total' => number_format($grandTotal, 0, ',', '.'),
+                'grand_total' => number_format($grandTotal, 2, ',', '.'),
             ])
             ->make(true);
     }
