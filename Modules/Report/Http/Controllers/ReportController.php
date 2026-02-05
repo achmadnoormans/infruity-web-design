@@ -457,8 +457,8 @@ class ReportController extends Controller
             'PARENT.name',
             'C.abbreviation',
             'PARENT.hpp'
-        )
-            ->having('total_stock', '>', 0);
+        );
+            // ->having('total_stock', '>', 0);
 
         // GRAND TOTAL HPP (semua baris yang tampil)
         $grandTotal = DB::table(DB::raw("({$query->toSql()}) as sub"))

@@ -22,14 +22,11 @@ WITH RECURSIVE ordered_trx AS (
             p.created_at,
             p.quantity AS qty,
             p.price AS harga_satuan,
-
-            -- ⬇️ tetap kolom lama, tapi aman
             CASE
                 WHEN p.total_price IS NULL OR p.total_price = 0
                 THEN p.quantity * p.price
                 ELSE p.total_price
             END AS total_belanja,
-
             0 AS total_non_belanja,
             '+' AS type,
             'PENGADAAN' AS remarks
@@ -38,7 +35,7 @@ WITH RECURSIVE ordered_trx AS (
         UNION ALL
 
         -- =====================
-        -- BARANG BUANG / KELUAR (OUT)
+        -- BARANG BUANG (OUT)
         -- =====================
         SELECT
             b.product_id,
@@ -124,6 +121,17 @@ running AS (
     JOIN ordered_trx t
       ON t.product_id = r.product_id
      AND t.rn = r.rn + 1
+),
+
+final AS (
+    SELECT
+        *,
+        -- HPP REAL (asli, bisa NULL saat stok habis)
+        CASE
+            WHEN qty_berjalan = 0 THEN NULL
+            ELSE total_aset_berjalan / qty_berjalan
+        END AS hpp_real
+    FROM running
 )
 
 SELECT
@@ -139,25 +147,24 @@ SELECT
     total_belanja,
     total_non_belanja,
 
-    -- 🔹 KOLOM LAMA (TETAP)
-    CASE
-        WHEN qty_berjalan = 0 THEN 0
-        ELSE (total_aset_berjalan / qty_berjalan)
-    END AS hpp_berjalan,
+    -- 🔹 KOLOM LAMA (DIPERBAIKI, TIDAK JADI 0)
+    MAX(hpp_real) OVER (
+        PARTITION BY product_id
+        ORDER BY rn
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS hpp_berjalan,
 
     total_aset_berjalan,
 
+    -- 🔹 TETAP ADA (PERSIS SEPERTI QUERY AWAL)
     qty_berjalan *
     CASE
         WHEN qty_berjalan = 0 THEN 0
         ELSE CEILING(total_aset_berjalan / qty_berjalan)
     END AS qty_x_hpp,
 
-    -- 🔹 KOLOM BARU (DITAMBAHKAN)
-    CASE
-        WHEN qty_berjalan = 0 THEN 0
-        ELSE total_aset_berjalan / qty_berjalan
-    END AS hpp_real,
+    -- 🔹 KOLOM BARU (TETAP ADA)
+    hpp_real,
 
     -- opsional: buat audit selisih
     (
@@ -170,7 +177,7 @@ SELECT
     ) AS selisih_pembulatan,
 
     created_at
-FROM running
+FROM final
 ORDER BY product_id, rn;
 
 
