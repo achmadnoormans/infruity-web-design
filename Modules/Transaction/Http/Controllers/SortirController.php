@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Transaction\Http\Controllers;
 
 use Exception;
@@ -121,7 +122,6 @@ class SortirController extends Controller
 
     public function saveTransaction(Request $request)
     {
-        // dd($request->all());
         $data = $request->validate([
             'branch_id'      => 'required|exists:branch,id',
             'date'           => 'required|date',
@@ -133,43 +133,67 @@ class SortirController extends Controller
         ]);
 
         try {
-            $userId = Auth::id();
             DB::beginTransaction();
-            $cek = Sortir::where('invoice_number', $data['invoice_number'])->first();
-            if ($cek) {
-                $pos       = Sortir::find($cek->id);
-                $posDetail = SortirDetail::where('sortir_id', $cek->id);
-                SortirDetail::where('sortir_id', $cek->id)->delete();
-                $pos->delete();
-            }
-            // Simpan ke tabel sortir (buat dulu kalau belum ada)
-            $pos = new Sortir([
-                'uuid'           => Str::uuid(),
-                'branch_id'      => $data['branch_id'],
-                'date'           => $data['date'],
-                'invoice_number' => Sortir::getOrderNumber(),
-                'total'          => $data['total'],
-                'status'         => $data['status'] ?? 'draft',
-                'created_by'     => $userId,
-            ]);
-            $pos->save();
 
-            // Simpan item transaksi
+            $userId = Auth::id();
+
+            // =========================
+            // HEADER (UPDATE / CREATE)
+            // =========================
+            $pos = Sortir::updateOrCreate(
+                ['invoice_number' => $data['invoice_number']],
+                [
+                    'uuid'       => Str::uuid(),
+                    'branch_id'  => $data['branch_id'],
+                    'date'       => $data['date'],
+                    'total'      => $data['total'],
+                    'status'     => $data['status'] ?? 'draft',
+                    'created_by' => $userId,
+                ]
+            );
+
+            // Jika invoice baru (null), generate nomor
+            if (empty($pos->invoice_number)) {
+                $pos->invoice_number = Sortir::getOrderNumber();
+                $pos->save();
+            }
+
             $transaksiId = $pos->id;
+
+            // =========================
+            // DETAIL ITEM
+            // =========================
+            $existingProductIds = [];
+
             foreach ($data['items'] as $item) {
-                if (is_numeric($item['id'])) {
-                    SortirDetail::insert([
+
+                if (!is_numeric($item['id'])) {
+                    continue;
+                }
+
+                $existingProductIds[] = $item['id'];
+
+                SortirDetail::updateOrCreate(
+                    [
                         'sortir_id'  => $transaksiId,
                         'product_id' => $item['id'],
-                        'price'      => $item['price'],
-                        'quantity'   => $item['qty'],
-                        'discount'   => $item['discount'] ?? 0,
-                        'subtotal'   => $item['total_input'],
-                        'created_at' => now(),
+                    ],
+                    [
+                        'price'    => $item['price'],
+                        'quantity' => $item['qty'],
+                        'discount' => $item['discount'] ?? 0,
+                        'subtotal' => $item['total_input'],
                         'created_by' => $userId,
-                    ]);
-                }
+                    ]
+                );
             }
+
+            // =========================
+            // HAPUS ITEM YANG DIHAPUS DI UI
+            // =========================
+            SortirDetail::where('sortir_id', $transaksiId)
+                ->whereNotIn('product_id', $existingProductIds)
+                ->delete();
 
             DB::commit();
             DB::disconnect();
@@ -182,6 +206,7 @@ class SortirController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             DB::disconnect();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',

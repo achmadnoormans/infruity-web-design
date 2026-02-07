@@ -92,16 +92,16 @@ running AS (
         t.type,
         t.remarks,
 
-        -- raw stok
+        -- raw stok (boleh minus)
         r.qty_berjalan_raw + t.qty AS qty_berjalan_raw,
 
-        -- stok bisnis
+        -- stok bisnis (tidak boleh minus)
         GREATEST(r.qty_berjalan + t.qty, 0) AS qty_berjalan,
 
-        -- 🔥 AKUNTANSI VALID
+        -- 🔥 ASET TETAP DIHITUNG WALAU MINUS
         CASE
             -- stok habis → reset
-            WHEN r.qty_berjalan + t.qty <= 0 THEN 0
+            -- WHEN r.qty_berjalan + t.qty <= 0 THEN 0
 
             -- IN → aset naik dari total_belanja
             WHEN t.qty > 0 THEN
@@ -109,7 +109,7 @@ running AS (
                 + t.total_belanja
                 + t.total_non_belanja
 
-            -- OUT → aset turun pakai HPP berjalan
+            -- OUT → aset turun pakai HPP terakhir
             ELSE
                 r.total_aset_berjalan
                 - (
@@ -126,7 +126,7 @@ running AS (
 final AS (
     SELECT
         *,
-        -- HPP REAL (asli, bisa NULL saat stok habis)
+        -- HPP REAL (NULL jika stok 0)
         CASE
             WHEN qty_berjalan = 0 THEN NULL
             ELSE total_aset_berjalan / qty_berjalan
@@ -147,7 +147,7 @@ SELECT
     total_belanja,
     total_non_belanja,
 
-    -- 🔹 KOLOM LAMA (DIPERBAIKI, TIDAK JADI 0)
+    -- 🔹 HPP berjalan (tidak jadi 0 walau stok habis)
     MAX(hpp_real) OVER (
         PARTITION BY product_id
         ORDER BY rn
@@ -156,7 +156,7 @@ SELECT
 
     total_aset_berjalan,
 
-    -- 🔹 TETAP ADA (PERSIS SEPERTI QUERY AWAL)
+    -- nilai stok (tetap konsisten)
     qty_berjalan *
     CASE
         WHEN qty_berjalan = 0 THEN 0
@@ -166,7 +166,7 @@ SELECT
     -- 🔹 KOLOM BARU (TETAP ADA)
     hpp_real,
 
-    -- opsional: buat audit selisih
+    -- audit selisih pembulatan
     (
         qty_berjalan *
         CASE

@@ -16,12 +16,14 @@ class WholesaleProduct extends Model
 
     protected $table = 'wholesale_product';
     protected $primaryKey = 'id';
-    protected $fillable = ['wholesale_id', 'product_id', 'quantity'];
-    
-    protected static function newFactory()
-    {
-        return \Modules\Transaction\Database\factories\WholesaleProductFactory::new();
-    }
+    protected $fillable = [
+        'wholesale_id',
+        'product_id',
+        'price',
+        'quantity',
+        'total_price',
+        'created_by',
+    ];
 
     public function wholesale()
     {

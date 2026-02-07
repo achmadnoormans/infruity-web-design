@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Transaction\Http\Controllers;
 
 use Exception;
@@ -570,14 +571,14 @@ class WholesaleController extends Controller
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();
         return DataTables::of($data)
-        // ->addColumn('checkbox', function ($row) {
-        //     return '<div class="form-check form-check-sm form-check-custom form-check-solid">
-        //             <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
-        //         </div>';
-        // })
+            // ->addColumn('checkbox', function ($row) {
+            //     return '<div class="form-check form-check-sm form-check-custom form-check-solid">
+            //             <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
+            //         </div>';
+            // })
             ->addColumn('name', function ($row) {
                 return '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold check-product">'
-                . e($row->name) .
+                    . e($row->name) .
                     '</a>';
             })
             ->addColumn('qty_remaining', function ($row) {
@@ -601,107 +602,98 @@ class WholesaleController extends Controller
         ]);
 
         try {
-            $userId = Auth::id();
             DB::beginTransaction();
-            $cek = Wholesale::where('order_number', $data['invoice_number'])->first();
-            if ($cek) {
-                $pos       = Wholesale::find($cek->id);
-                $posDetail = WholesaleProduct::where('wholesale_id', $cek->id);
-                WholesaleProduct::where('wholesale_id', $cek->id)->delete();
-                $pos->delete();
-            }
-            // Simpan ke tabel sortir (buat dulu kalau belum ada)
-            $pos = new Wholesale([
-                'uuid'         => Str::uuid(),
-                'branch_id'    => $data['branch_id'],
-                'order_date'   => $data['date'],
-                'order_number' => $data['invoice_number'],
-                'status'       => $data['status'] ?? 'draft',
-                'created_by'   => $userId,
-            ]);
-            // dd($pos);
-            $pos->save();
 
-            // Simpan item transaksi
+            $userId = Auth::id();
+
+            // =========================
+            // HEADER (UPDATE / CREATE)
+            // =========================
+            $pos = Wholesale::updateOrCreate(
+                ['order_number' => $data['invoice_number']],
+                [
+                    'uuid'       => Str::uuid(),
+                    'branch_id'  => $data['branch_id'],
+                    'order_date' => $data['date'],
+                    'status'     => $data['status'] ?? 'draft',
+                    'created_by' => $userId,
+                ]
+            );
+
             $transaksiId = $pos->id;
+
+            // =========================
+            // DETAIL ITEM
+            // =========================
+            $existingProductIds = [];
+
             foreach ($data['items'] as $item) {
-                if (is_numeric($item['id'])) {
 
-                    // if ($data['status'] == 'posting') {
-                    //     $productStock = (float) (ProductStock::where('id', $item['id'])->value('stock_available') ?? 0);
-                    //     if ($productStock == 0) {
-                    //         Product::where("id", $item['id'])->update([
-                    //             'hpp'           => $item['price'],
-                    //             'total_belanja' => $item['total_input'],
-                    //         ]);
-                    //         $ProductChild = ProductChild::where('parent_id', $item['id']);
-                    //         Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
-                    //             'hpp'           => $item['price'],
-                    //             'total_belanja' => $item['total_input'],
-                    //         ]);
-                    //     } else {
-                    //         $newStock     = $productStock + $item['qty'];
-                    //         $totalAset    = Product::where("id", $item['id'])->value('hpp') * $productStock;
-                    //         $totalBelanja = $totalAset + $item['total_input'];
-                    //         $newHpp       = $totalBelanja / $newStock;
-                    //         // dd($newStock, $totalAset, $newHpp);
-                    //         Product::where("id", $item['id'])->update([
-                    //             'hpp'           => $newHpp,
-                    //             'total_belanja' => $totalBelanja,
-                    //         ]);
-                    //         $ProductChild = ProductChild::where('parent_id', $item['id']);
-                    //         Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
-                    //             'hpp'           => $newHpp,
-                    //             'total_belanja' => $totalBelanja,
-                    //         ]);
-                    //     }
-                    // }
+                if (!is_numeric($item['id'])) {
+                    continue;
+                }
 
-                    WholesaleProduct::insert([
+                $existingProductIds[] = $item['id'];
+
+                // INSERT / UPDATE DETAIL
+                WholesaleProduct::updateOrCreate(
+                    [
                         'wholesale_id' => $transaksiId,
                         'product_id'   => $item['id'],
-                        'price'        => $item['price'],
-                        'quantity'     => $item['qty'],
-                        // 'discount' => $item['discount'] ?? 0,
-                        'total_price'  => $item['total_input'],
-                        'created_at'   => now(),
-                        'created_by'   => $userId,
-                    ]);
+                    ],
+                    [
+                        'price'       => $item['price'],
+                        'quantity'    => $item['qty'],
+                        'total_price' => $item['total_input'],
+                        'created_by'  => $userId,
+                    ]
+                );
 
-                    if ($item['sell'] != null) {
-                        // $product        = Product::findOrFail($item['id']);
-                        // $product->price = $item['sell'];
-                        // $product->save();
+                // =========================
+                // UPDATE HARGA JUAL CABANG
+                // =========================
+                if (!empty($item['sell'])) {
+                    ProductBranch::updateOrCreate(
+                        [
+                            'product_id' => $item['id'],
+                            'branch_id'  => $data['branch_id'],
+                        ],
+                        [
+                            'price' => $item['sell'],
+                        ]
+                    );
+                }
 
-                        $branch = ProductBranch::where('product_id', $item['id'])
-                            ->where('branch_id', $data['branch_id'])
-                            ->first();
-                        if ($branch) {
-                            $branch->price = $item['sell'];
-                            $branch->save();
-                        } else {
-                            $branch             = new ProductBranch();
-                            $branch->product_id = $item['id'];
-                            $branch->branch_id  = $data['branch_id'];
-                            $branch->price      = $item['sell'];
-                            $branch->save();
-                        }
-                    }
+                // =========================
+                // UPDATE HPP SAAT POSTING
+                // =========================
+                if (($data['status'] ?? 'draft') === 'posting') {
 
-                    if ($data['status'] == 'posting') {
-                        $productHpp = ProductHppRunning::where('product_id', $item['id'])
-                            ->orderBy('created_at', 'desc')
-                            ->first();
-                        Product::where("id", $item['id'])->update([
-                            'hpp'           => $productHpp->hpp_berjalan ?? 0,
+                    $productHpp = ProductHppRunning::where('product_id', $item['id'])
+                        ->latest()
+                        ->first();
+
+                    if ($productHpp) {
+                        Product::where('id', $item['id'])->update([
+                            'hpp' => $productHpp->hpp_berjalan,
                         ]);
-                        $ProductChild = ProductChild::where('parent_id', $item['id']);
-                        Product::whereIn('id', $ProductChild->pluck('product_id')->toArray())->update([
-                            'hpp'           => $productHpp->hpp_berjalan ?? 0,
+
+                        $childIds = ProductChild::where('parent_id', $item['id'])
+                            ->pluck('product_id');
+
+                        Product::whereIn('id', $childIds)->update([
+                            'hpp' => $productHpp->hpp_berjalan,
                         ]);
                     }
                 }
             }
+
+            // =========================
+            // HAPUS ITEM YANG DIHILANGKAN
+            // =========================
+            WholesaleProduct::where('wholesale_id', $transaksiId)
+                ->whereNotIn('product_id', $existingProductIds)
+                ->delete();
 
             DB::commit();
             DB::disconnect();
@@ -714,6 +706,7 @@ class WholesaleController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             DB::disconnect();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
@@ -721,6 +714,7 @@ class WholesaleController extends Controller
             ], 500);
         }
     }
+
 
     public function get_data(Request $request)
     {
