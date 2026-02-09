@@ -96,7 +96,7 @@
                     <thead>
                         <tr>
                             <th colspan="4" class="text-end fs-5 fw-bold">
-                                Grand Total HPP: <span id="grand-total-cell"></span>
+                                Grand Total Aset: <span id="grand-total-cell"></span>
                             </th>
                         </tr>
                         <tr class="text-start text-gray-500 fw-bold fs-7">
@@ -104,7 +104,7 @@
                             <th class="text-start min-w-50px">Satuan</th>
                             <th class="text-start min-w-50px">Stock</th>
                             <th class="text-start min-w-50px">Hpp Satuan</th>
-                            <th class="text-start min-w-50px">Total Hpp</th>
+                            <th class="text-start min-w-50px">Total Aset</th>
                             <th></th>
                         </tr>
                     </thead>

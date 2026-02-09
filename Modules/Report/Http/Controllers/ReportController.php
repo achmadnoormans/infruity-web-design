@@ -427,6 +427,19 @@ class ReportController extends Controller
         $startDate = $request->start_date ?? date('Y-01-01');
         $endDate   = $request->end_date ?? date('Y-12-31');
 
+        $lastHpp = DB::table('product_hpp as ph')
+            ->select('ph.*')
+            ->join(
+                DB::raw('(
+                    SELECT product_id, MAX(created_at) AS last_created
+                    FROM product_hpp
+                    GROUP BY product_id
+                ) as last'),
+                function ($join) {
+                    $join->on('ph.product_id', '=', 'last.product_id')
+                        ->on('ph.created_at', '=', 'last.last_created');
+                }
+            );
         // Query utama
         $query = DB::table('transaction_stock as A')
             ->select([
@@ -435,7 +448,9 @@ class ReportController extends Controller
                 'C.abbreviation',
                 'PARENT.hpp',
                 DB::raw('SUM(A.quantity) as total_stock'),
-                DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
+                // DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
+
+                'hpp_last.total_aset_berjalan AS total_hpp',
             ])
             ->join('products as CHILD', 'A.product_id', '=', 'CHILD.id')
             ->leftJoin('product_child as pc', 'CHILD.id', '=', 'pc.product_id')
@@ -446,6 +461,14 @@ class ReportController extends Controller
                 DB::raw('COALESCE(pc.parent_id, CHILD.id)')
             )
             ->join('product_units as C', 'PARENT.product_unit', '=', 'C.id')
+
+            ->leftJoinSub($lastHpp, 'hpp_last', function ($join) {
+                $join->on(
+                    DB::raw('hpp_last.product_id'),
+                    '=',
+                    DB::raw('COALESCE(pc.parent_id, A.product_id)')
+                );
+            })
             ->where('PARENT.tipe', '!=', 'parcel');
 
         if ($request->has('branch_id') && $request->branch_id != 'all') {
