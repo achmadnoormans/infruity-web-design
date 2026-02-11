@@ -14,9 +14,6 @@ WITH RECURSIVE ordered_trx AS (
         type,
         remarks
     FROM (
-        -- =====================
-        -- PENGADAAN (IN)
-        -- =====================
         SELECT
             COALESCE(pc.parent_id, p.product_id) AS product_id,
             p.created_at,
@@ -36,46 +33,40 @@ WITH RECURSIVE ordered_trx AS (
 
         UNION ALL
 
-        -- =====================
-        -- BARANG BUANG (OUT)
-        -- =====================
         SELECT
-            COALESCE(pc.parent_id, b.product_id) AS product_id,
+            COALESCE(pc.parent_id, b.product_id),
             b.created_at,
-            b.quantity * -1 AS qty,
-            NULL AS harga_satuan,
-            0 AS total_belanja,
-            b.subtotal * -1 AS total_non_belanja,
-            '-' AS type,
-            'BARANG BUANG' AS remarks
+            b.quantity * -1,
+            NULL,
+            0,
+            0, -- kita nolkan dulu, akan dihitung ulang
+            '-',
+            'BARANG BUANG'
         FROM sortir_transaction_detail b
         LEFT JOIN product_child pc
             ON pc.product_id = b.product_id
 
         UNION ALL
 
-        -- =====================
-        -- PENJUALAN (OUT)
-        -- =====================
         SELECT
-            COALESCE(pc.parent_id, b.product_id) AS product_id,
+            COALESCE(pc.parent_id, b.product_id),
             b.created_at,
-            b.quantity * -1 AS qty,
-            NULL AS harga_satuan,
-            0 AS total_belanja,
-            (b.quantity * b.hpp) * -1 AS total_non_belanja,
-            '-' AS type,
-            'PENJUALAN' AS remarks
+            b.quantity * -1,
+            NULL,
+            0,
+            0, -- kita nolkan dulu
+            '-',
+            'PENJUALAN'
         FROM pos_transaction_detail b
+        JOIN pos_transaction pos ON b.pos_id = pos.id
         LEFT JOIN product_child pc
             ON pc.product_id = b.product_id
+        WHERE pos.deleted_at IS NULL
     ) x
 ),
 
 running AS (
-    -- =====================
-    -- BARIS PERTAMA
-    -- =====================
+
     SELECT
         rn,
         product_id,
@@ -88,21 +79,18 @@ running AS (
         remarks,
 
         qty AS qty_berjalan_raw,
-        GREATEST(qty, 0) AS qty_berjalan,
+        GREATEST(qty,0) AS qty_berjalan,
 
-        -- aset awal
         CASE
             WHEN qty <= 0 THEN 0
-            ELSE total_belanja + total_non_belanja
+            ELSE total_belanja
         END AS total_aset_berjalan
+
     FROM ordered_trx
     WHERE rn = 1
 
     UNION ALL
 
-    -- =====================
-    -- BARIS BERIKUTNYA
-    -- =====================
     SELECT
         t.rn,
         t.product_id,
@@ -110,29 +98,40 @@ running AS (
         t.qty,
         t.harga_satuan,
         t.total_belanja,
-        t.total_non_belanja,
+
+        -- 🔥 HITUNG ULANG total_non_belanja UNTUK OUT
+        CASE
+            WHEN t.qty < 0 AND r.qty_berjalan > 0 THEN
+                - (
+                    LEAST(ABS(t.qty), r.qty_berjalan)
+                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0))
+                  )
+            ELSE 0
+        END AS total_non_belanja,
+
         t.type,
         t.remarks,
 
-        r.qty_berjalan_raw + t.qty AS qty_berjalan_raw,
-        GREATEST(r.qty_berjalan + t.qty, 0) AS qty_berjalan,
+        r.qty_berjalan_raw + t.qty,
+        GREATEST(r.qty_berjalan + t.qty,0),
 
         CASE
-            -- stok habis → reset
-            -- WHEN r.qty_berjalan + t.qty <= 0 THEN 0
+            WHEN r.qty_berjalan = 0 AND t.qty > 0 THEN
+                t.total_belanja
 
-            -- IN → aset naik dari total_belanja
             WHEN t.qty > 0 THEN
-                r.total_aset_berjalan
-                + t.total_belanja
-                + t.total_non_belanja
-            ELSE
+                r.total_aset_berjalan + t.total_belanja
+
+            WHEN r.qty_berjalan > 0 THEN
                 r.total_aset_berjalan
                 - (
-                    ABS(t.qty)
-                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan, 0))
+                    LEAST(ABS(t.qty), r.qty_berjalan)
+                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0))
                   )
-        END AS total_aset_berjalan
+
+            ELSE 0
+        END
+
     FROM running r
     JOIN ordered_trx t
       ON t.product_id = r.product_id
@@ -140,9 +139,7 @@ running AS (
 ),
 
 final AS (
-    SELECT
-        *,
-        -- HPP REAL (NULL jika stok 0)
+    SELECT *,
         CASE
             WHEN qty_berjalan = 0 THEN NULL
             ELSE total_aset_berjalan / qty_berjalan
@@ -155,41 +152,24 @@ SELECT
     type,
     remarks,
     ABS(qty) AS qty,
-
     qty_berjalan_raw,
     qty_berjalan,
-
     harga_satuan,
     total_belanja,
     total_non_belanja,
 
-    -- 🔹 HPP berjalan (tidak jadi 0 walau stok habis)
-    MAX(hpp_real) OVER (
-        PARTITION BY product_id
-        ORDER BY rn
-        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    COALESCE(
+        hpp_real,
+        MAX(hpp_real) OVER (
+            PARTITION BY product_id
+            ORDER BY rn
+            ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+        )
     ) AS hpp_berjalan,
 
     total_aset_berjalan,
-
-    qty_berjalan *
-    CASE
-        WHEN qty_berjalan = 0 THEN 0
-        ELSE CEILING(total_aset_berjalan / qty_berjalan)
-    END AS qty_x_hpp,
-
-    hpp_real,
-
-    (
-        qty_berjalan *
-        CASE
-            WHEN qty_berjalan = 0 THEN 0
-            ELSE (total_aset_berjalan / qty_berjalan)
-        END
-        - total_aset_berjalan
-    ) AS selisih_pembulatan,
-
     created_at
+
 FROM final
 ORDER BY product_id, rn;
 
