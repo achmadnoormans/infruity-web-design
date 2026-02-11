@@ -18,7 +18,7 @@ WITH RECURSIVE ordered_trx AS (
         -- PENGADAAN (IN)
         -- =====================
         SELECT
-            p.product_id,
+            COALESCE(pc.parent_id, p.product_id) AS product_id,
             p.created_at,
             p.quantity AS qty,
             p.price AS harga_satuan,
@@ -31,6 +31,8 @@ WITH RECURSIVE ordered_trx AS (
             '+' AS type,
             'PENGADAAN' AS remarks
         FROM wholesale_product p
+        LEFT JOIN product_child pc
+            ON pc.product_id = p.product_id
 
         UNION ALL
 
@@ -38,7 +40,7 @@ WITH RECURSIVE ordered_trx AS (
         -- BARANG BUANG (OUT)
         -- =====================
         SELECT
-            b.product_id,
+            COALESCE(pc.parent_id, b.product_id) AS product_id,
             b.created_at,
             b.quantity * -1 AS qty,
             NULL AS harga_satuan,
@@ -47,6 +49,26 @@ WITH RECURSIVE ordered_trx AS (
             '-' AS type,
             'BARANG BUANG' AS remarks
         FROM sortir_transaction_detail b
+        LEFT JOIN product_child pc
+            ON pc.product_id = b.product_id
+
+        UNION ALL
+
+        -- =====================
+        -- PENJUALAN (OUT)
+        -- =====================
+        SELECT
+            COALESCE(pc.parent_id, b.product_id) AS product_id,
+            b.created_at,
+            b.quantity * -1 AS qty,
+            NULL AS harga_satuan,
+            0 AS total_belanja,
+            (b.quantity * b.hpp) * -1 AS total_non_belanja,
+            '-' AS type,
+            'PENJUALAN' AS remarks
+        FROM pos_transaction_detail b
+        LEFT JOIN product_child pc
+            ON pc.product_id = b.product_id
     ) x
 ),
 
@@ -92,13 +114,9 @@ running AS (
         t.type,
         t.remarks,
 
-        -- raw stok (boleh minus)
         r.qty_berjalan_raw + t.qty AS qty_berjalan_raw,
-
-        -- stok bisnis (tidak boleh minus)
         GREATEST(r.qty_berjalan + t.qty, 0) AS qty_berjalan,
 
-        -- 🔥 ASET TETAP DIHITUNG WALAU MINUS
         CASE
             -- stok habis → reset
             -- WHEN r.qty_berjalan + t.qty <= 0 THEN 0
@@ -108,8 +126,6 @@ running AS (
                 r.total_aset_berjalan
                 + t.total_belanja
                 + t.total_non_belanja
-
-            -- OUT → aset turun pakai HPP terakhir
             ELSE
                 r.total_aset_berjalan
                 - (
@@ -156,17 +172,14 @@ SELECT
 
     total_aset_berjalan,
 
-    -- nilai stok (tetap konsisten)
     qty_berjalan *
     CASE
         WHEN qty_berjalan = 0 THEN 0
         ELSE CEILING(total_aset_berjalan / qty_berjalan)
     END AS qty_x_hpp,
 
-    -- 🔹 KOLOM BARU (TETAP ADA)
     hpp_real,
 
-    -- audit selisih pembulatan
     (
         qty_berjalan *
         CASE
