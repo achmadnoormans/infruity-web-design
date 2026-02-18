@@ -62,6 +62,21 @@ WITH RECURSIVE ordered_trx AS (
         LEFT JOIN product_child pc
             ON pc.product_id = b.product_id
         WHERE pos.deleted_at IS NULL
+
+        UNION ALL
+
+        SELECT
+            COALESCE(pc.parent_id, p.product_id) AS product_id,
+            p.created_at,
+            p.difference AS qty,
+            p.avg_price AS harga_satuan,
+            0 AS total_belanja,
+            0 AS total_non_belanja,
+            '~' AS type,
+            'OPNAME' AS remarks
+        FROM stock_opname p
+        LEFT JOIN product_child pc
+            ON pc.product_id = p.product_id
     ) x
 ),
 
@@ -141,6 +156,7 @@ running AS (
 final AS (
     SELECT *,
         CASE
+            WHEN type = '~' THEN NULL  -- ⛔ jangan hitung ulang HPP saat opname
             WHEN qty_berjalan = 0 THEN NULL
             ELSE total_aset_berjalan / qty_berjalan
         END AS hpp_real
@@ -158,14 +174,18 @@ SELECT
     total_belanja,
     total_non_belanja,
 
-    COALESCE(
-        hpp_real,
-        MAX(hpp_real) OVER (
-            PARTITION BY product_id
-            ORDER BY rn
-            ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+    CASE
+    WHEN type = '~' THEN harga_satuan
+    ELSE
+        COALESCE(
+            hpp_real,
+            MAX(hpp_real) OVER (
+                PARTITION BY product_id
+                ORDER BY rn
+                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+            )
         )
-    ) AS hpp_berjalan,
+    END AS hpp_berjalan,
 
     total_aset_berjalan,
     created_at
