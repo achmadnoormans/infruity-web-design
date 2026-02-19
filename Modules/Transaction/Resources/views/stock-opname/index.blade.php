@@ -83,6 +83,22 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
+                                <label class="required form-label">Branch</label>
+                                <!--end::Label-->
+                                <!--begin::Input-->
+                                <select class="form-select mb-2" name="branch_id" id="branch_id"
+                                    data-placeholder="Select a branch">
+                                    <option value="">Pilih Branch</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
+                                <!--end::Input-->
+                            </div>
+                            <!--end::Input group-->
+                            <!--begin::Input group-->
+                            <div class="fv-row mb-7">
+                                <!--begin::Label-->
                                 <label class="required form-label">Product</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
@@ -251,8 +267,9 @@
 
                             // 2. Hapus input _method
                             form.find('input[name="_method"]').remove();
-                           $('select[name="product_id"]').val(null).trigger('change'); // Reset select2
-                           $('#product_id select').val(null).trigger('change');
+                            $('select[name="product_id"]').val(null).trigger(
+                            'change'); // Reset select2
+                            $('#product_id select').val(null).trigger('change');
 
                             // 3. Kembalikan action form ke default (untuk create)
                             form.attr('action',
@@ -450,7 +467,7 @@
 
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
             $('#product_id').select2({
-                placeholder: 'Select a product',
+                placeholder: 'Pilih Product',
                 dropdownParent: $('#kt_modal_add_customer'),
                 ajax: {
                     url: '{{ route('ajax.stock-available') }}',
@@ -472,6 +489,10 @@
                 $('input[name="quantity"]').val(data.stock_available || 0);
             });
 
+            $('#branch_id').select2({
+                placeholder: 'Pilih Cabang',
+                dropdownParent: $('#kt_modal_add_customer'),
+            });
         });
     </script>
 @endsection

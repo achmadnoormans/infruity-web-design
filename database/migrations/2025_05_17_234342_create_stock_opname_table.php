@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code');
             $table->date('date');
+            $table->unsignedBigInteger('branch_id');
             $table->unsignedBigInteger('product_id');
             $table->decimal('stock', 10, 2);
             $table->decimal('real_stock', 10, 2);

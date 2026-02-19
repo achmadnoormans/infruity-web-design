@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Modules\Master\Entities\Branch;
+use Modules\Master\Entities\UserBranch;
 use Exception;
 
 class StockOpnameController extends Controller
@@ -21,7 +23,8 @@ class StockOpnameController extends Controller
      */
     public function index()
     {
-        return view('transaction::stock-opname.index');
+        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
+        return view('transaction::stock-opname.index', $data);
     }
 
     /**
@@ -43,6 +46,7 @@ class StockOpnameController extends Controller
         // Validasi input
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
+            'branch_id' => 'required|exists:branch,id',
             'date' => 'required|date',
             'real_stock' => 'required|numeric',
         ]);
@@ -64,6 +68,7 @@ class StockOpnameController extends Controller
             $stock->code = StockOpname::getOrderNumber();
             $stock->product_id = $validated['product_id'];
             $stock->date = $validated['date'];
+            $stock->branch_id = $validated['branch_id'];
             $stock->avg_price = $avg_price ?? 0;
             $stock->stock = $stockAvailable;
             $stock->real_stock = $validated['real_stock'];

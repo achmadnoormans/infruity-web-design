@@ -81,7 +81,7 @@ FROM
 
 	-- STOCK OPNAME
 	SELECT
-		0 AS branch_id,
+		branch_id AS branch_id,
 		product_id,
 		difference,
 		avg_price,
