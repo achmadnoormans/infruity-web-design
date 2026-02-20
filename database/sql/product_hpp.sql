@@ -14,9 +14,10 @@ WITH RECURSIVE ordered_trx AS (
         type,
         remarks
     FROM (
+        -- ================= PENGADAAN =================
         SELECT
             COALESCE(pc.parent_id, p.product_id) AS product_id,
-            p.created_at,
+            p.created_at AS created_at,
             p.quantity AS qty,
             p.price AS harga_satuan,
             CASE
@@ -28,60 +29,60 @@ WITH RECURSIVE ordered_trx AS (
             '+' AS type,
             'PENGADAAN' AS remarks
         FROM wholesale_product p
-        LEFT JOIN product_child pc
-            ON pc.product_id = p.product_id
+        LEFT JOIN product_child pc ON pc.product_id = p.product_id
 
         UNION ALL
 
+        -- ================= BARANG BUANG =================
         SELECT
-            COALESCE(pc.parent_id, b.product_id),
+            COALESCE(pc.parent_id, b.product_id) AS product_id,
             b.created_at,
             b.quantity * -1,
             NULL,
             0,
-            0, -- kita nolkan dulu, akan dihitung ulang
+            0,
             '-',
             'BARANG BUANG'
         FROM sortir_transaction_detail b
-        LEFT JOIN product_child pc
-            ON pc.product_id = b.product_id
+        LEFT JOIN product_child pc ON pc.product_id = b.product_id
 
         UNION ALL
 
+        -- ================= PENJUALAN =================
         SELECT
             COALESCE(pc.parent_id, b.product_id),
             b.created_at,
             b.quantity * -1,
             NULL,
             0,
-            0, -- kita nolkan dulu
+            0,
             '-',
             'PENJUALAN'
         FROM pos_transaction_detail b
         JOIN pos_transaction pos ON b.pos_id = pos.id
-        LEFT JOIN product_child pc
-            ON pc.product_id = b.product_id
+        LEFT JOIN product_child pc ON pc.product_id = b.product_id
         WHERE pos.deleted_at IS NULL
 
         UNION ALL
 
+        -- ================= OPNAME =================
         SELECT
-            COALESCE(pc.parent_id, p.product_id) AS product_id,
+            COALESCE(pc.parent_id, p.product_id),
             p.created_at,
-            p.difference AS qty,
-            p.avg_price AS harga_satuan,
-            0 AS total_belanja,
-            0 AS total_non_belanja,
-            '~' AS type,
-            'OPNAME' AS remarks
+            p.difference,
+            p.avg_price,
+            0,
+            0,
+            '~',
+            'OPNAME'
         FROM stock_opname p
-        LEFT JOIN product_child pc
-            ON pc.product_id = p.product_id
+        LEFT JOIN product_child pc ON pc.product_id = p.product_id
     ) x
 ),
 
 running AS (
 
+    -- BARIS PERTAMA
     SELECT
         rn,
         product_id,
@@ -92,20 +93,15 @@ running AS (
         total_non_belanja,
         type,
         remarks,
-
         qty AS qty_berjalan_raw,
-        GREATEST(qty,0) AS qty_berjalan,
-
-        CASE
-            WHEN qty <= 0 THEN 0
-            ELSE total_belanja
-        END AS total_aset_berjalan
-
+        qty AS qty_berjalan,
+        CASE WHEN qty > 0 THEN total_belanja ELSE 0 END AS total_aset_berjalan
     FROM ordered_trx
     WHERE rn = 1
 
     UNION ALL
 
+    -- BARIS SELANJUTNYA
     SELECT
         t.rn,
         t.product_id,
@@ -114,37 +110,37 @@ running AS (
         t.harga_satuan,
         t.total_belanja,
 
-        -- 🔥 HITUNG ULANG total_non_belanja UNTUK OUT
+        -- COGS
         CASE
-            WHEN t.qty < 0 AND r.qty_berjalan > 0 THEN
-                - (
-                    LEAST(ABS(t.qty), r.qty_berjalan)
-                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0))
-                  )
+            WHEN t.qty < 0 AND r.qty_berjalan != 0 THEN
+                - (ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0)))
             ELSE 0
-        END AS total_non_belanja,
+        END,
 
         t.type,
         t.remarks,
 
         r.qty_berjalan_raw + t.qty,
-        GREATEST(r.qty_berjalan + t.qty,0),
+        r.qty_berjalan + t.qty,
 
+        -- PERHITUNGAN ASET
         CASE
-            WHEN r.qty_berjalan = 0 AND t.qty > 0 THEN
-                t.total_belanja
+            -- 🔥 CROSSING MINUS KE >= 0
+            WHEN t.qty > 0
+                 AND r.qty_berjalan_raw < 0
+                 AND (r.qty_berjalan_raw + t.qty) >= 0
+            THEN (r.qty_berjalan_raw + t.qty) * t.harga_satuan
 
-            WHEN t.qty > 0 THEN
-                r.total_aset_berjalan + t.total_belanja
+            -- PEMBELIAN NORMAL
+            WHEN t.qty > 0
+            THEN r.total_aset_berjalan + t.total_belanja
 
-            WHEN r.qty_berjalan > 0 THEN
-                r.total_aset_berjalan
-                - (
-                    LEAST(ABS(t.qty), r.qty_berjalan)
-                    * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0))
-                  )
+            -- TRANSAKSI MINUS
+            WHEN r.qty_berjalan != 0
+            THEN r.total_aset_berjalan
+                 - (ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0)))
 
-            ELSE 0
+            ELSE r.total_aset_berjalan
         END
 
     FROM running r
@@ -156,42 +152,57 @@ running AS (
 final AS (
     SELECT *,
         CASE
-            WHEN type = '~' THEN NULL  -- ⛔ jangan hitung ulang HPP saat opname
-            WHEN qty_berjalan = 0 THEN NULL
-            ELSE total_aset_berjalan / qty_berjalan
+            WHEN type = '~' THEN harga_satuan
+
+            -- recovery row (minus → >=0)
+            WHEN qty_berjalan_raw >= 0
+                 AND LAG(qty_berjalan_raw)
+                     OVER (PARTITION BY product_id ORDER BY rn) < 0
+            THEN harga_satuan
+
+            WHEN qty_berjalan != 0
+            THEN total_aset_berjalan / NULLIF(qty_berjalan,0)
+
+            ELSE NULL
         END AS hpp_real
     FROM running
 )
 
 SELECT
-    product_id,
-    type,
-    remarks,
-    ABS(qty) AS qty,
-    qty_berjalan_raw,
-    qty_berjalan,
-    harga_satuan,
-    total_belanja,
-    total_non_belanja,
+    f.product_id,
+    f.type,
+    f.remarks,
+    ABS(f.qty) AS qty,
+    f.qty_berjalan_raw,
+    f.qty_berjalan,
+    f.harga_satuan,
+    f.total_belanja,
+    f.total_non_belanja,
 
+    -- 🔥 HPP FINAL (MINUS FOLLOW RECOVERY)
     CASE
-    WHEN type = '~' THEN harga_satuan
-    ELSE
-        COALESCE(
-            hpp_real,
-            MAX(hpp_real) OVER (
-                PARTITION BY product_id
-                ORDER BY rn
-                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-            )
+        WHEN f.type = '~'
+        THEN f.harga_satuan
+
+        WHEN f.qty_berjalan_raw < 0
+        THEN (
+            SELECT f2.hpp_real
+            FROM final f2
+            WHERE f2.product_id = f.product_id
+              AND f2.rn > f.rn
+              AND f2.qty_berjalan_raw >= 0
+            ORDER BY f2.rn
+            LIMIT 1
         )
+
+        ELSE f.hpp_real
     END AS hpp_berjalan,
 
-    total_aset_berjalan,
-    created_at
+    f.total_aset_berjalan,
+    f.created_at
 
-FROM final
-ORDER BY product_id, rn;
+FROM final f
+ORDER BY f.product_id, f.rn;
 
 
 -- =====================
