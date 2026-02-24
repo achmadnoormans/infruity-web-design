@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Validator;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\Product;
 use Modules\Master\Entities\ProductBranch;
-use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Master\Entities\ProductCategory;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\ProductUnit;
 use Modules\Master\Entities\UserBranch;
+use Modules\Transaction\Entities\ProductHppRunning;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
@@ -892,8 +892,44 @@ class ProductController extends Controller
             }
         }
         if ($request->has('branch')) {
-            if ($request->branch != 'all') {
-                $query->where('branch_id', $request->branch);
+            $branch = $request->branch;
+
+            if ($branch && $branch != 'all') {
+                $query = DB::table('product_stock')
+                    ->where('branch_id', $branch);
+            } else {
+                $query = DB::table('product_stock')
+                    ->where('tipe', '!=', 'parcel')
+                    ->select(
+                        'id',
+                        'name',
+                        'sku',
+                        'limit',
+                        'hpp',
+                        'price',
+                        'tipe',
+                        'category_id',
+                        'product_unit',
+                        'unit',
+                        DB::raw('SUM(parent_stock) as parent_stock'),
+                        DB::raw('SUM(child_consumed) as child_consumed'),
+                        DB::raw('SUM(stock_available) as stock_available'),
+                        DB::raw('AVG(avg_hpp) as avg_hpp'),
+                        DB::raw('GROUP_CONCAT(DISTINCT child) as child'),
+                        'stock_status'
+                    )
+                    ->groupBy(
+                        'id',
+                        'name',
+                        'sku',
+                        'limit',
+                        'hpp',
+                        'price',
+                        'tipe',
+                        'category_id',
+                        'product_unit',
+                        'unit'
+                    );
             }
         }
         $data = $query;
