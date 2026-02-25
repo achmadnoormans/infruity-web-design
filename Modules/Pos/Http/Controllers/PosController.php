@@ -20,6 +20,7 @@ use Modules\Pos\Entities\Payment;
 use Modules\Pos\Entities\PosDetailModel;
 use Modules\Pos\Entities\PosModel;
 use Modules\Pos\Entities\SettingNota;
+use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductionParcelDetail;
@@ -384,6 +385,9 @@ class PosController extends Controller
                     $prosentase  = round(($item['total_input'] / $totalPrice) * 100, 2);
                     $posDiscount = $pos->discount * $prosentase / 100;
                     $product     = Product::find($item['id']);
+                    $productHpp  = ProductHppRunning::where('product_id', $item['id'])
+                        ->latest()
+                        ->first();
                     PosDetailModel::insert([
                         'pos_id'               => $transaksiId,
                         'product_id'           => $item['id'],
@@ -391,7 +395,8 @@ class PosController extends Controller
                         'quantity'             => $item['qty'],
                         'discount'             => $item['discount'] ?? 0,
                         'subtotal'             => $item['total_input'],
-                        'hpp'                  => $product->hpp,
+                        'hpp'                  => $productHpp ?? 0,
+                        'subtotal_hpp'         => ($product->hpp ?? 0) * $item['qty'],
                         'price_after_discount' => $item['price'] - $posDiscount,
                         'exp'                  => $item['price'] - $product->hpp,
                         'exp_value'            => ($item['price'] - $product->hpp) * $settingExp->value_exp,

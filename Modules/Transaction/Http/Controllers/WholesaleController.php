@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Transaction\Http\Controllers;
 
 use Exception;
@@ -17,6 +16,7 @@ use Modules\Master\Entities\ProductBranch;
 use Modules\Master\Entities\ProductChild;
 use Modules\Master\Entities\Supplier;
 use Modules\Master\Entities\UserBranch;
+use Modules\Pos\Entities\PosDetailModel;
 use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\Wholesale;
@@ -571,14 +571,14 @@ class WholesaleController extends Controller
         // $data = Product::whereNull('parent_id')->get();
         $data = $query->get();
         return DataTables::of($data)
-            // ->addColumn('checkbox', function ($row) {
-            //     return '<div class="form-check form-check-sm form-check-custom form-check-solid">
-            //             <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
-            //         </div>';
-            // })
+        // ->addColumn('checkbox', function ($row) {
+        //     return '<div class="form-check form-check-sm form-check-custom form-check-solid">
+        //             <input class="form-check-input" type="checkbox" value="' . $row->id . '" />
+        //         </div>';
+        // })
             ->addColumn('name', function ($row) {
                 return '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold check-product">'
-                    . e($row->name) .
+                . e($row->name) .
                     '</a>';
             })
             ->addColumn('qty_remaining', function ($row) {
@@ -629,7 +629,7 @@ class WholesaleController extends Controller
 
             foreach ($data['items'] as $item) {
 
-                if (!is_numeric($item['id'])) {
+                if (! is_numeric($item['id'])) {
                     continue;
                 }
 
@@ -652,7 +652,7 @@ class WholesaleController extends Controller
                 // =========================
                 // UPDATE HARGA JUAL CABANG
                 // =========================
-                if (!empty($item['sell'])) {
+                if (! empty($item['sell'])) {
                     ProductBranch::updateOrCreate(
                         [
                             'product_id' => $item['id'],
@@ -684,6 +684,16 @@ class WholesaleController extends Controller
                         Product::whereIn('id', $childIds)->update([
                             'hpp' => $productHpp->hpp_berjalan,
                         ]);
+
+                        if ((float) ($productHpp->qty_berjalan ?? 0) > 0) {
+                            $hppBerjalan = (float) $productHpp->hpp_berjalan;
+                            PosDetailModel::whereIn('product_id', $childIds)
+                                ->where('hpp', 0)
+                                ->update([
+                                    'hpp'          => $hppBerjalan,
+                                    'subtotal_hpp' => DB::raw($hppBerjalan . ' * quantity'),
+                                ]);
+                        }
                     }
                 }
             }
@@ -714,7 +724,6 @@ class WholesaleController extends Controller
             ], 500);
         }
     }
-
 
     public function get_data(Request $request)
     {
