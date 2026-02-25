@@ -139,6 +139,14 @@
             <span class="path2"></span>
         </i>
     </a>
+    <button type="button" onclick="resetWholesale()" class="btn btn-danger rounded-circle shadow-lg position-fixed"
+        title="Reset Transaksi Wholesale"
+        style="bottom: 60px; right: 100px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+        <i class="ki-duotone ki-trash-square fs-3x text-white">
+            <span class="path1"></span>
+            <span class="path2"></span>
+        </i>
+    </button>
 @section('script')
     <script type="text/javascript">
         var dataTable;
@@ -335,6 +343,48 @@
                                 title: 'Gagal',
                                 text: xhr.responseJSON?.message ||
                                     'Terjadi kesalahan saat menerima data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        function resetWholesale() {
+            Swal.fire({
+                title: 'Reset transaksi wholesale?',
+                text: 'Semua transaksi wholesale pada cabang yang Anda akses akan dihapus permanen.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, reset',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-danger',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('wholesale.reset') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Transaksi wholesale berhasil direset.'
+                            });
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message ||
+                                    'Terjadi kesalahan saat mereset transaksi wholesale.'
                             });
                         }
                     });
