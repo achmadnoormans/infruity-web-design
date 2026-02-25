@@ -383,6 +383,7 @@ class PosController extends Controller
                 if (is_numeric($item['id'])) {
                     $prosentase  = round(($item['total_input'] / $totalPrice) * 100, 2);
                     $posDiscount = $pos->discount * $prosentase / 100;
+                    $product     = Product::find($item['id']);
                     PosDetailModel::insert([
                         'pos_id'               => $transaksiId,
                         'product_id'           => $item['id'],
@@ -390,10 +391,10 @@ class PosController extends Controller
                         'quantity'             => $item['qty'],
                         'discount'             => $item['discount'] ?? 0,
                         'subtotal'             => $item['total_input'],
-                        'hpp'                  => isset($item['hpp']) ? $item['hpp'] * $item['qty'] : 0,
+                        'hpp'                  => $product->hpp,
                         'price_after_discount' => $item['price'] - $posDiscount,
-                        'exp'                  => $item['price'] - $item['hpp'],
-                        'exp_value'            => ($item['price'] - $item['hpp']) * $settingExp->value_exp,
+                        'exp'                  => $item['price'] - $product->hpp,
+                        'exp_value'            => ($item['price'] - $product->hpp) * $settingExp->value_exp,
                         'created_at'           => now(),
                         'updated_at'           => now(),
                         'type'                 => 'product',
