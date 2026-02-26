@@ -735,7 +735,13 @@ class WholesaleController extends Controller
                                 ->where('hpp', 0)
                                 ->update([
                                     'hpp'          => $hppBerjalan,
-                                    'subtotal_hpp' => DB::raw($hppBerjalan . ' * quantity'),
+                                    'subtotal_hpp' => DB::raw(
+                                        'CASE 
+                                            WHEN COALESCE(debt_quantity, 0) > 0 
+                                                THEN COALESCE(subtotal_hpp, 0) + (' . $hppBerjalan . ' * debt_quantity)
+                                            ELSE ' . $hppBerjalan . ' * quantity
+                                        END'
+                                    ),
                                 ]);
                         }
                     }

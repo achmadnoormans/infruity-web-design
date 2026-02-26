@@ -67,6 +67,63 @@ class Product extends Model
         );
     }
 
+    /**
+     * Get all child products (variants) of this product
+     */
+    public function children()
+    {
+        return $this->hasMany(ProductChild::class, 'parent_id', 'id');
+    }
+
+    /**
+     * Get all child products with their Product data
+     */
+    public function childProducts()
+    {
+        return $this->hasMany(ProductChild::class, 'parent_id', 'id')->with('product');
+    }
+
+    /**
+     * Get the parent product if this product is a child
+     */
+    public function parent()
+    {
+        return $this->belongsTo(ProductChild::class, 'id', 'product_id');
+    }
+
+    /**
+     * Get parent product info if this product has a parent
+     */
+    public function parentProduct()
+    {
+        return $this->hasOne(ProductChild::class, 'product_id', 'id')->with('product');
+    }
+
+    /**
+     * Check if this product has children (variants)
+     */
+    public function hasChildren()
+    {
+        return $this->children()->count() > 0;
+    }
+
+    /**
+     * Check if this product is a child of another product
+     */
+    public function hasParent()
+    {
+        return ProductChild::where('product_id', $this->id)->exists();
+    }
+
+    /**
+     * Get the parent product ID if this product is a child
+     */
+    public function getParentId()
+    {
+        $child = ProductChild::where('product_id', $this->id)->first();
+        return $child ? $child->parent_id : null;
+    }
+
     public static function generateProductName($baseName)
     {
         // Ambil semua produk yang nama depannya sama persis

@@ -385,26 +385,56 @@ class PosController extends Controller
                     $prosentase  = round(($item['total_input'] / $totalPrice) * 100, 2);
                     $posDiscount = $pos->discount * $prosentase / 100;
                     $product     = Product::find($item['id']);
-                    $productHpp  = ProductHppRunning::where('product_id', $item['id'])
+
+                    // Ambil parent/child dari product yang dipilih
+                    $childProducts = $product->childProducts()->get();
+                    $parentId      = $product->getParentId();
+
+                    // Jika product memiliki parent, gunakan parent_id untuk HPP, jika tidak gunakan product itu sendiri
+                    $hppProductId = $parentId ?? $product->id;
+                    $productHpp   = ProductHppRunning::where('product_id', $hppProductId)
                         ->latest()
                         ->first();
-                    PosDetailModel::insert([
+                    $currentStock = $productHpp ? $productHpp->qty_berjalan : 0;
+                    $hppValue     = $productHpp ? ($productHpp->hpp_berjalan ?? 0) : 0;
+
+                    $posDetail = PosDetailModel::create([
                         'pos_id'               => $transaksiId,
                         'product_id'           => $item['id'],
                         'price'                => $item['price'],
                         'quantity'             => $item['qty'],
                         'discount'             => $item['discount'] ?? 0,
-                        'subtotal'             => $item['total_input'],
-                        'hpp'                  => $productHpp ?? 0,
-                        'subtotal_hpp'         => ($product->hpp ?? 0) * $item['qty'],
+                        'subtotal'             => $item['total_input'],                        
                         'price_after_discount' => $item['price'] - $posDiscount,
-                        'exp'                  => $item['price'] - $product->hpp,
-                        'exp_value'            => ($item['price'] - $product->hpp) * $settingExp->value_exp,
+                        'exp'                  => $item['price'] - $hppValue,
+                        'exp_value'            => ($item['price'] - $hppValue) * $settingExp->value_exp,
                         'created_at'           => now(),
                         'updated_at'           => now(),
                         'type'                 => 'product',
                         'created_by'           => $userId,
                     ]);
+
+                    if ($currentStock <= 0) {
+                        $posDetail->update([
+                            'hpp'           => 0,
+                            'debt_quantity' => 0,
+                            'subtotal_hpp'  => 0,
+                        ]);
+                    } else {
+                        if ($currentStock < $posDetail->quantity) {
+                            $posDetail->update([
+                                'hpp'           => 0,
+                                'debt_quantity' => $posDetail->quantity - $currentStock,
+                                'subtotal_hpp'  => ($productHpp->hpp_berjalan ?? 0) * $currentStock,
+                            ]);
+                        } else {
+                            $posDetail->update([
+                                'hpp'           => $productHpp->hpp_berjalan ?? 0,
+                                'debt_quantity' => 0,
+                                'subtotal_hpp'  => ($productHpp->hpp_berjalan ?? 0) * $posDetail->quantity,
+                            ]);
+                        }
+                    }
                 }
             }
 

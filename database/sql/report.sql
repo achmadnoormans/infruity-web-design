@@ -21,7 +21,7 @@ FROM
 	pos_transaction AS A
 	LEFT JOIN (
 	    SELECT
-            pos_id, SUM( subtotal ) AS total, SUM( hpp ) AS total_hpp
+            pos_id, SUM( subtotal ) AS total, SUM( subtotal_hpp ) AS total_hpp
         FROM
             pos_transaction_detail
             WHERE deleted_at IS NULL

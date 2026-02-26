@@ -12,7 +12,23 @@ class PosDetailModel extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'pos_id',
+        'product_id',
+        'parcel_id',
+        'price',
+        'quantity',
+        'debt_quantity',
+        'discount',
+        'subtotal',
+        'price_after_discount',
+        'hpp',
+        'subtotal_hpp',
+        'exp',
+        'exp_value',
+        'type',
+        'created_by',
+    ];
     protected $table = 'pos_transaction_detail';
 
     public function product()

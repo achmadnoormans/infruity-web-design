@@ -898,7 +898,15 @@
                         body: JSON.stringify(data),
                     })
                     .then(async (res) => {
-                        const json = await res.json();
+                        const text = await res.text();
+                        let json = {};
+                        try {
+                            json = text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            json = {
+                                message: 'Response server tidak valid. Periksa kemungkinan debug/dd di backend.'
+                            };
+                        }
 
                         // Jika server mengembalikan error (HTTP bukan 200)
                         if (!res.ok) {
@@ -936,6 +944,7 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         console.error(err);
+                        if (typeof doneCallback === 'function') doneCallback();
                     });
             },
             // Pembayaran
@@ -1006,7 +1015,15 @@
                         body: JSON.stringify(data),
                     })
                     .then(async (res) => {
-                        const json = await res.json();
+                        const text = await res.text();
+                        let json = {};
+                        try {
+                            json = text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            json = {
+                                message: 'Response server tidak valid. Periksa kemungkinan debug/dd di backend.'
+                            };
+                        }
 
                         // Jika server mengembalikan error (HTTP bukan 200)
                         if (!res.ok) {
@@ -1043,6 +1060,7 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         console.error(err);
+                        if (typeof doneCallback === 'function') doneCallback();
                     });
             },
 
