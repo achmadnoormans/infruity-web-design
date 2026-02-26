@@ -352,8 +352,8 @@
 
         function resetWholesale() {
             Swal.fire({
-                title: 'Reset transaksi wholesale?',
-                text: 'Semua transaksi wholesale pada cabang yang Anda akses akan dihapus permanen.',
+                title: 'Reset transaksi?',
+                text: 'Semua transaksi yang digunakan untuk ujicoba akan dihapus.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, reset',
@@ -375,7 +375,9 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: response.message || 'Transaksi wholesale berhasil direset.'
+                                text: response.message || 'Transaksi wholesale berhasil direset.',
+                                showConfirmButton: false,
+                                timer: 1500,
                             });
                             reloadDataTable();
                         },
