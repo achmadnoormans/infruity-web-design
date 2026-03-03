@@ -228,6 +228,7 @@ class ProductController extends Controller
     public function show_transaction($id)
     {
         $data['product'] = Product::findOrFail($id);
+        $data['report'] = DB::table('report_total_belanja')->first();
         return view('master::products.show-transaction', $data);
     }
 
@@ -278,6 +279,15 @@ class ProductController extends Controller
             })
             ->addColumn('qty_x_hpp', function ($item) {
                 return 'Rp ' . number_format($item->qty_x_hpp, 0, ',', '.');
+            })
+            ->editColumn('covered_qty', function ($item) {
+                return 'Rp ' . number_format($item->covered_qty, 0, ',', '.');
+            })
+            ->editColumn('cogs', function ($item) {
+                return 'Rp ' . number_format($item->cogs, 0, ',', '.');
+            })
+            ->editColumn('recovered_cogs', function ($item) {
+                return 'Rp ' . number_format($item->recovered_cogs, 0, ',', '.');
             })
             ->addColumn('created_at', function ($item) {
                 return \Carbon\Carbon::parse($item->created_at)->format('d M Y H:i:s');

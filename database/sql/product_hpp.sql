@@ -17,7 +17,7 @@ WITH RECURSIVE ordered_trx AS (
         -- ================= PENGADAAN =================
         SELECT
             COALESCE(pc.parent_id, p.product_id) AS product_id,
-            p.created_at AS created_at,
+            p.created_at,
             p.quantity AS qty,
             p.price AS harga_satuan,
             CASE
@@ -35,9 +35,9 @@ WITH RECURSIVE ordered_trx AS (
 
         -- ================= BARANG BUANG =================
         SELECT
-            COALESCE(pc.parent_id, b.product_id) AS product_id,
+            COALESCE(pc.parent_id, b.product_id),
             b.created_at,
-            b.quantity * -1,
+            -b.quantity,
             NULL,
             0,
             0,
@@ -50,33 +50,33 @@ WITH RECURSIVE ordered_trx AS (
 
         -- ================= PENJUALAN =================
         SELECT
-            COALESCE(pc.parent_id, b.product_id),
-            b.created_at,
-            b.quantity * -1,
+            COALESCE(pc.parent_id, d.product_id),
+            d.created_at,
+            -d.quantity,
             NULL,
             0,
             0,
             '-',
             'PENJUALAN'
-        FROM pos_transaction_detail b
-        JOIN pos_transaction pos ON b.pos_id = pos.id
-        LEFT JOIN product_child pc ON pc.product_id = b.product_id
+        FROM pos_transaction_detail d
+        JOIN pos_transaction pos ON d.pos_id = pos.id
+        LEFT JOIN product_child pc ON pc.product_id = d.product_id
         WHERE pos.deleted_at IS NULL
 
         UNION ALL
 
         -- ================= OPNAME =================
         SELECT
-            COALESCE(pc.parent_id, p.product_id),
-            p.created_at,
-            p.difference,
-            p.avg_price,
+            COALESCE(pc.parent_id, o.product_id),
+            o.created_at,
+            o.difference,
+            o.avg_price,
             0,
             0,
             '~',
             'OPNAME'
-        FROM stock_opname p
-        LEFT JOIN product_child pc ON pc.product_id = p.product_id
+        FROM stock_opname o
+        LEFT JOIN product_child pc ON pc.product_id = o.product_id
     ) x
 ),
 
@@ -110,10 +110,10 @@ running AS (
         t.harga_satuan,
         t.total_belanja,
 
-        -- COGS
+        -- total_non_belanja (COGS dasar)
         CASE
             WHEN t.qty < 0 AND r.qty_berjalan != 0 THEN
-                - (ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0)))
+                ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0))
             ELSE 0
         END,
 
@@ -123,32 +123,27 @@ running AS (
         r.qty_berjalan_raw + t.qty,
         r.qty_berjalan + t.qty,
 
-        -- PERHITUNGAN ASET (ANTI MINUS + HANDLE OPNAME)
-    GREATEST(0,
-        CASE
+        -- total aset berjalan
+        GREATEST(0,
+            CASE
+                WHEN t.type = '~'
+                THEN (r.qty_berjalan + t.qty) * t.harga_satuan
 
-            -- 🔥 OPNAME (reset ke avg_price × qty baru)
-            WHEN t.type = '~'
-            THEN (r.qty_berjalan + t.qty) * t.harga_satuan
+                WHEN t.qty > 0
+                     AND r.qty_berjalan_raw < 0
+                     AND (r.qty_berjalan_raw + t.qty) >= 0
+                THEN (r.qty_berjalan_raw + t.qty) * t.harga_satuan
 
-            -- 🔥 CROSSING MINUS KE >= 0
-            WHEN t.qty > 0
-                AND r.qty_berjalan_raw < 0
-                AND (r.qty_berjalan_raw + t.qty) >= 0
-            THEN (r.qty_berjalan_raw + t.qty) * t.harga_satuan
+                WHEN t.qty > 0
+                THEN r.total_aset_berjalan + t.total_belanja
 
-            -- PEMBELIAN NORMAL
-            WHEN t.qty > 0
-            THEN r.total_aset_berjalan + t.total_belanja
+                WHEN r.qty_berjalan != 0
+                THEN r.total_aset_berjalan
+                     - (ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0)))
 
-            -- TRANSAKSI MINUS
-            WHEN r.qty_berjalan != 0
-            THEN r.total_aset_berjalan
-                - (ABS(t.qty) * (r.total_aset_berjalan / NULLIF(r.qty_berjalan,0)))
-
-            ELSE r.total_aset_berjalan
-        END
-    )
+                ELSE r.total_aset_berjalan
+            END
+        )
 
     FROM running r
     JOIN ordered_trx t
@@ -157,19 +152,12 @@ running AS (
 ),
 
 final AS (
-    SELECT *,
+    SELECT
+        *,
         CASE
             WHEN type = '~' THEN harga_satuan
-
-            -- recovery row (minus → >=0)
-            WHEN qty_berjalan_raw >= 0
-                 AND LAG(qty_berjalan_raw)
-                     OVER (PARTITION BY product_id ORDER BY rn) < 0
-            THEN harga_satuan
-
             WHEN qty_berjalan != 0
             THEN total_aset_berjalan / NULLIF(qty_berjalan,0)
-
             ELSE NULL
         END AS hpp_real
     FROM running
@@ -186,13 +174,74 @@ SELECT
     f.total_belanja,
     f.total_non_belanja,
 
-    -- 🔥 HPP FINAL (MINUS FOLLOW RECOVERY)
+    -- ================= COVERED QTY =================
     CASE
-        WHEN f.type = '~'
-        THEN f.harga_satuan
+        WHEN f.qty < 0 THEN
+            LEAST(
+                ABS(f.qty),
+                GREATEST(
+                    LAG(f.qty_berjalan_raw)
+                        OVER (PARTITION BY f.product_id ORDER BY f.rn),
+                    0
+                )
+            )
+        ELSE 0
+    END AS covered_qty,
 
-        WHEN f.qty_berjalan_raw < 0
-        THEN (
+    -- ================= COGS NORMAL =================
+    CASE
+        WHEN f.qty < 0 THEN
+            LEAST(
+                ABS(f.qty),
+                GREATEST(
+                    LAG(f.qty_berjalan_raw)
+                        OVER (PARTITION BY f.product_id ORDER BY f.rn),
+                    0
+                )
+            )
+            *
+            LAG(f.hpp_real)
+                OVER (PARTITION BY f.product_id ORDER BY f.rn)
+        ELSE 0
+    END AS cogs,
+
+    -- ================= RECOVERED COGS =================
+    CASE
+        WHEN f.qty < 0 THEN
+            GREATEST(
+                ABS(f.qty)
+                -
+                LEAST(
+                    ABS(f.qty),
+                    GREATEST(
+                        LAG(f.qty_berjalan_raw)
+                            OVER (PARTITION BY f.product_id ORDER BY f.rn),
+                        0
+                    )
+                ),
+                0
+            )
+            *
+            CASE
+                WHEN f.qty_berjalan_raw < 0 THEN
+                    (
+                        SELECT f2.hpp_real
+                        FROM final f2
+                        WHERE f2.product_id = f.product_id
+                          AND f2.rn > f.rn
+                          AND f2.qty_berjalan_raw >= 0
+                        ORDER BY f2.rn
+                        LIMIT 1
+                    )
+                ELSE 0
+            END
+        ELSE 0
+    END AS recovered_cogs,
+
+    CASE
+        WHEN f.qty_berjalan_raw >= 0
+        THEN f.hpp_real
+        ELSE (
             SELECT f2.hpp_real
             FROM final f2
             WHERE f2.product_id = f.product_id
@@ -201,10 +250,7 @@ SELECT
             ORDER BY f2.rn
             LIMIT 1
         )
-
-        ELSE f.hpp_real
     END AS hpp_berjalan,
-
     f.total_aset_berjalan,
     f.created_at
 
