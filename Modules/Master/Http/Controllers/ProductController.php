@@ -228,7 +228,7 @@ class ProductController extends Controller
     public function show_transaction($id)
     {
         $data['product'] = Product::findOrFail($id);
-        $data['report'] = DB::table('report_total_belanja')->first();
+        $data['report']  = DB::table('report_total_belanja')->first();
         return view('master::products.show-transaction', $data);
     }
 
@@ -417,6 +417,17 @@ class ProductController extends Controller
                         $variant->created_by   = Auth::user()->id_user;
                         $variant->description  = strip_tags($request->description ?? '');
                         $variant->save();
+                        $variantId = $variant->id;
+
+                        $listBranch = Branch::all();
+                        foreach ($listBranch as $key => $item) {
+                            $branch             = new ProductBranch();
+                            $branch->product_id = $variantId;
+                            $branch->branch_id  = $item->id;
+                            $branch->price      = $request->variant['price'][$key] ?? 0;
+                            $branch->save();
+                        }
+
                     }
 
                     $child             = new ProductChild();
