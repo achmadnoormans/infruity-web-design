@@ -129,6 +129,26 @@
     </a>
 @section('script')
     <script type="text/javascript">
+        // Cek apakah ada produk dengan stock kosong
+        @if(isset($hasEmptyStock) && $hasEmptyStock)
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Peringatan Stok Kosong!',
+                    html: 'Terdapat <strong>{{ $emptyStockCount }}</strong> produk dengan stok kosong pada cabang Anda.<br><br>' +
+                          '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' +
+                          '@foreach($emptyStockProducts as $product)' +
+                          '<span class="badge badge-light-danger me-1 mb-1">{{ $product->name }}</span>' +
+                          '@endforeach' +
+                          '{{ $emptyStockCount > 10 ? "<br><small>...dan " . ($emptyStockCount - 10) . " produk lainnya</small>" : "" }}' +
+                          '</div>',
+                    icon: 'warning',
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#f1416c',
+                    allowOutsideClick: false
+                });
+            });
+        @endif
+
         var dataTable;
         $(document).ready(function() {
             dataTable = $('#pos-table').DataTable({

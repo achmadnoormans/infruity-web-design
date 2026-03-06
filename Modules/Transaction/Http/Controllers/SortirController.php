@@ -28,7 +28,19 @@ class SortirController extends Controller
      */
     public function index()
     {
-        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
+        $userBranches = UserBranch::getUserBranch();
+        $data['branches'] = Branch::whereIn('id', $userBranches)->get();
+
+        // Cek product_stock yang kosong pada branch yang dimiliki user
+        $emptyStockProducts = DB::table('product_stock')
+            ->whereIn('branch_id', $userBranches)
+            ->where('stock_available', '<=', 0)
+            ->get();
+
+        $data['hasEmptyStock'] = $emptyStockProducts->isNotEmpty();
+        $data['emptyStockCount'] = $emptyStockProducts->count();
+        $data['emptyStockProducts'] = $emptyStockProducts->take(10);
+
         return view('transaction::sortir.index2', $data);
     }
 

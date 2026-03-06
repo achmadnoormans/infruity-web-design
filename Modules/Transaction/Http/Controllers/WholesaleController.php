@@ -32,7 +32,19 @@ class WholesaleController extends Controller
      */
     public function index()
     {
-        $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
+        $userBranches = UserBranch::getUserBranch();
+        $data['branches'] = Branch::whereIn('id', $userBranches)->get();
+
+        // Cek product_stock yang kosong pada branch yang dimiliki user
+        $emptyStockProducts = DB::table('product_stock')
+            ->whereIn('branch_id', $userBranches)
+            ->where('stock_available', '<=', 0)
+            ->get();
+
+        $data['hasEmptyStock'] = $emptyStockProducts->isNotEmpty();
+        $data['emptyStockCount'] = $emptyStockProducts->count();
+        $data['emptyStockProducts'] = $emptyStockProducts->take(10);
+
         return view('transaction::wholesale.index', $data);
     }
 
@@ -736,8 +748,8 @@ class WholesaleController extends Controller
                                 ->update([
                                     'hpp'          => $hppBerjalan,
                                     'subtotal_hpp' => DB::raw(
-                                        'CASE 
-                                            WHEN COALESCE(debt_quantity, 0) > 0 
+                                        'CASE
+                                            WHEN COALESCE(debt_quantity, 0) > 0
                                                 THEN COALESCE(subtotal_hpp, 0) + (' . $hppBerjalan . ' * debt_quantity)
                                             ELSE ' . $hppBerjalan . ' * quantity
                                         END'
