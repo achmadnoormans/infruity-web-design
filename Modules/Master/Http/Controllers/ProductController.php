@@ -904,53 +904,66 @@ class ProductController extends Controller
 
     public function get_data_stock(Request $request)
     {
-        $query = DB::table('product_stock')->where('tipe', '!=', 'parcel')->orderBy('stock_available', 'desc');
+        $branch = $request->branch;
+        
+        // Handle sorting from DataTables
+        $orderColumnIndex = 2; // default stock_available
+        $orderDirection = 'desc';
+        if ($request->has('order') && !empty($request->order)) {
+            $orderColumnIndex = $request->order[0]['column'];
+            $orderDirection = $request->order[0]['dir'];
+        }
+        
+        $columns = ['name', 'hpp', 'stock_available', 'category_id'];
+        $orderColumn = isset($columns[$orderColumnIndex]) ? $columns[$orderColumnIndex] : 'stock_available';
+        
+        if ($branch && $branch != 'all') {
+            // Single branch query
+            $query = DB::table('product_stock')
+                ->where('branch_id', $branch)
+                ->orderBy($orderColumn, $orderDirection);
+        } else {
+            // All branches with aggregation
+            $query = DB::table('product_stock')
+                ->where('tipe', '!=', 'parcel')
+                ->select(
+                    'id',
+                    'name',
+                    'sku',
+                    'limit',
+                    'hpp',
+                    'price',
+                    'tipe',
+                    'category_id',
+                    'product_unit',
+                    'unit',
+                    DB::raw('SUM(parent_stock) as parent_stock'),
+                    DB::raw('SUM(child_consumed) as child_consumed'),
+                    DB::raw('SUM(stock_available) as stock_available'),
+                    DB::raw('AVG(avg_hpp) as avg_hpp'),
+                    DB::raw('GROUP_CONCAT(DISTINCT child) as child'),
+                    'stock_status'
+                )
+                ->groupBy(
+                    'id',
+                    'name',
+                    'sku',
+                    'limit',
+                    'hpp',
+                    'price',
+                    'tipe',
+                    'category_id',
+                    'product_unit',
+                    'unit'
+                )
+                ->orderBy($orderColumn, $orderDirection);
+        }
+        
         if ($request->has('stock_filter')) {
             if ($request->stock_filter === 'ada') {
                 $query->where('stock_available', '>', 0);
             } elseif ($request->stock_filter === 'kosong') {
                 $query->where('stock_available', '=', 0);
-            }
-        }
-        if ($request->has('branch')) {
-            $branch = $request->branch;
-
-            if ($branch && $branch != 'all') {
-                $query = DB::table('product_stock')
-                    ->where('branch_id', $branch);
-            } else {
-                $query = DB::table('product_stock')
-                    ->where('tipe', '!=', 'parcel')
-                    ->select(
-                        'id',
-                        'name',
-                        'sku',
-                        'limit',
-                        'hpp',
-                        'price',
-                        'tipe',
-                        'category_id',
-                        'product_unit',
-                        'unit',
-                        DB::raw('SUM(parent_stock) as parent_stock'),
-                        DB::raw('SUM(child_consumed) as child_consumed'),
-                        DB::raw('SUM(stock_available) as stock_available'),
-                        DB::raw('AVG(avg_hpp) as avg_hpp'),
-                        DB::raw('GROUP_CONCAT(DISTINCT child) as child'),
-                        'stock_status'
-                    )
-                    ->groupBy(
-                        'id',
-                        'name',
-                        'sku',
-                        'limit',
-                        'hpp',
-                        'price',
-                        'tipe',
-                        'category_id',
-                        'product_unit',
-                        'unit'
-                    );
             }
         }
         $data = $query;

@@ -104,10 +104,10 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="min-w-200px">Product</th>
-                            <th class="text-end min-w-70px">Hpp</th>
-                            <th class="text-end min-w-70px">Stock</th>
-                            <th class="d-none">Category</th>
+                            <th class="min-w-200px" data-data="name">Product</th>
+                            <th class="text-end min-w-70px" data-data="hpp">Hpp</th>
+                            <th class="text-end min-w-70px" data-data="stock_available">Stock</th>
+                            <th class="d-none" data-data="category">Category</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -125,15 +125,27 @@
             dataTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
+                ordering: true,
+                orderCellsTop: true, // Header sorting di baris pertama
                 scrollX: true, // Aktifkan scroll horizontal
                 fixedColumns: {
                     leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
                     rightColumns: 1 // Membekukan 1 kolom di sisi kanan (kolom action)
                 },
-                columnDefs: [{
-                    orderable: false,
-                    targets: -1 // Nonaktifkan sorting untuk kolom action
-                }],
+                columnDefs: [
+                    {
+                        orderable: true,
+                        targets: [0, 1, 2] // Aktifkan sorting untuk kolom Product, Hpp, Stock
+                    },
+                    {
+                        orderable: false,
+                        targets: -1 // Nonaktifkan sorting untuk kolom action
+                    },
+                    {
+                        searchable: false,
+                        targets: -1 // Nonaktifkan search untuk kolom action
+                    }
+                ],
                 // responsive: true,
                 ajax: {
                     url: "{{ route('product-stock-data') }}",
@@ -151,32 +163,36 @@
                     // },
                     {
                         data: 'name',
-                        name: 'name'
+                        name: 'name',
+                        orderable: true
                     },
                     {
                         data: 'hpp',
                         name: 'hpp',
-                        className: 'text-end'
+                        className: 'text-end',
+                        orderable: true
                     },
                     {
                         data: 'stock_available',
                         name: 'stock_available',
-                        className: 'text-end'
+                        className: 'text-end',
+                        orderable: true
                     },
                     {
                         data: 'category',
                         name: 'category',
-                        visible: false
+                        visible: false,
+                        orderable: false
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: false
                     },
-
                 ],
                 order: [
                     [2, 'desc']
-                ] // Order by quantity column (index 1) in descending order
+                ] // Urutkan berdasarkan kolom Stock (index 2) descending
             });
             // Search manual lewat input
             $('#search').on('keyup', function() {

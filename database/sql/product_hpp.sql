@@ -65,6 +65,21 @@ WITH RECURSIVE ordered_trx AS (
 
         UNION ALL
 
+        -- ================= PRODUKSI =================
+        SELECT
+            COALESCE(pc.parent_id, d.product_id),
+            d.created_at,
+            -d.quantity,
+            NULL,
+            0,
+            0,
+            '-',
+            'PRODUKSI'
+        FROM production_detail d
+        LEFT JOIN product_child pc ON pc.product_id = d.product_id
+
+        UNION ALL
+
         -- ================= OPNAME =================
         SELECT
             COALESCE(pc.parent_id, o.product_id),
