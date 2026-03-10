@@ -65,7 +65,7 @@ WITH RECURSIVE ordered_trx AS (
 
         UNION ALL
 
-        -- ================= PRODUKSI =================
+        -- ================= PRODUKSI DETAIL=================
         SELECT
             COALESCE(pc.parent_id, d.product_id),
             d.created_at,
@@ -74,8 +74,24 @@ WITH RECURSIVE ordered_trx AS (
             0,
             0,
             '-',
-            'PRODUKSI'
+            'BAHAN PRODUKSI'
         FROM production_detail d
+        LEFT JOIN product_child pc ON pc.product_id = d.product_id
+
+        UNION ALL
+
+        -- ================= PRODUKSI =================
+        SELECT
+                COALESCE(pc.parent_id, d.product_id),
+                d.created_at,
+                d.quantity,
+                p.hpp,
+                d.quantity * p.hpp AS total_belanja,
+                0,
+                '+',
+                'PRODUKSI'
+        FROM production d
+        LEFT JOIN products as p ON d.product_id = p.id
         LEFT JOIN product_child pc ON pc.product_id = d.product_id
 
         UNION ALL
