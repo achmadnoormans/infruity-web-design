@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-250px ps-12" placeholder="Search Transaction" />
+                            class="form-control form-control-solid w-250px ps-12" placeholder="Cari Transaksi" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -21,7 +21,7 @@
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_add_customer">Add Transaction</button>
+                        data-bs-target="#kt_modal_add_customer">Tambah Transaksi</button>
                     <!--end::Add product-->
                 </div>
                 <!--end::Card toolbar-->
@@ -40,9 +40,9 @@
                                         value="1" />
                                 </div>
                             </th> --}}
-                            <th class="text-start min-w-100px">Name</th>
-                            <th class="text-end min-w-70px">Quantity</th>
-                            <th class="text-end min-w-70px">Actions</th>
+                            <th class="text-start min-w-100px">Nama</th>
+                            <th class="text-end min-w-70px">Jumlah</th>
+                            <th class="text-end min-w-70px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -64,7 +64,7 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Add a Transaction</h2>
+                        <h2 class="fw-bold">Tambah Transaksi</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
@@ -83,11 +83,11 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required form-label">Branch</label>
+                                <label class="required form-label">Cabang</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="branch_id" id="branch_id"
-                                    data-placeholder="Select a branch">
+                                    data-placeholder="Pilih Cabin">
                                     <option value="">Pilih Branch</option>
                                     @foreach ($branches as $branch)
                                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -99,11 +99,11 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required form-label">Product</label>
+                                <label class="required form-label">Produk</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <select class="form-select mb-2" name="product_id" id="product_id"
-                                    data-placeholder="Select a product">
+                                    data-placeholder="Pilih Produk">
                                     <option value="">Pilih Product</option>
                                 </select>
                                 <!--end::Input-->
@@ -123,7 +123,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Stock</label>
+                                <label class="fs-6 fw-semibold mb-2">Stok</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
@@ -134,7 +134,7 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-15">
                                 <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Real Stock</label>
+                                <label class="fs-6 fw-semibold mb-2">Stok Nyata</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
                                 <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
@@ -154,7 +154,7 @@
                         <!--begin::Button-->
                         <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
                             <span class="indicator-label">Simpan</span>
-                            <span class="indicator-progress">Please wait...
+                            <span class="indicator-progress">Mohon tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
                         <!--end::Button-->
@@ -297,7 +297,7 @@
 
                             // 4. Kembalikan judul modal (opsional)
                             $('#kt_modal_add_customer_header h2').text(
-                                'Tambah transaction');
+                                'Tambah Transaksi');
 
                             // 5. Tutup modal
                             const modal = bootstrap.Modal.getInstance(document
@@ -392,20 +392,26 @@
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
-                    // Isi form dengan data produk yang ada
+                    
+                    // Clear and reset product_id select2 first
+                    var $productSelect = $('select[name="product_id"]');
+                    $productSelect.empty();
+                    $productSelect.append(new Option('Pilih Product', '', false, false));
+                    $productSelect.append(new Option(response.name, response.product_id, true, true));
+                    $productSelect.val(response.product_id).trigger('change');
+                    
                     // Set flatpickr date
                     var fp = $('#date')[0]._flatpickr;
                     if (fp) {
                         fp.setDate(response.date);
                     }
-                    $('input[name="quantity"]').val(response.quantity);
-                    $('select[name="product_id"]').append(
-                        $('<option>', {
-                            value: response.product_id,
-                            text: response.name
-                        })
-                    ).val(response.product_id).trigger('change');
-                    $('select[name="type"]').val(response.type_id).trigger('change');
+                    
+                    // Set form fields - use 'stock' from database, not 'quantity'
+                    $('input[name="quantity"]').val(response.stock);
+                    $('input[name="real_stock"]').val(response.real_stock);
+                    
+                    // Set branch_id
+                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
@@ -415,8 +421,11 @@
                         '<input type="hidden" name="_method" value="PUT">'
                     ); // Menambahkan input _method untuk PUT
 
-                    // --- DISABLE semua input/select/textarea di form supaya read-only ---
+                    // --- ENABLE semua input/select/textarea di form untuk edit ---
                     form.find('input, select, textarea, button[type="submit"]').prop('disabled', false);
+
+                    // Ubah judul modal
+                    $('#kt_modal_add_customer_header h2').text('Edit Transaksi');
 
                     // Tampilkan modal untuk edit produk
                     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
@@ -438,34 +447,39 @@
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
-                    // Isi form dengan data produk yang ada
+                    
+                    // Clear and reset product_id select2 first
+                    var $productSelect = $('select[name="product_id"]');
+                    $productSelect.empty();
+                    $productSelect.append(new Option('Pilih Product', '', false, false));
+                    $productSelect.append(new Option(response.name, response.product_id, true, true));
+                    $productSelect.val(response.product_id).trigger('change');
+                    
                     // Set flatpickr date
                     var fp = $('#date')[0]._flatpickr;
                     if (fp) {
                         fp.setDate(response.date);
                     }
+                    
+                    // Set form fields - use 'stock' from database, not 'quantity'
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
-                    $('select[name="product_id"]').append(
-                        $('<option>', {
-                            value: response.product_id,
-                            text: response.name
-                        })
-                    ).val(response.product_id).trigger('change');
-                    $('select[name="type"]').val(response.type_id).trigger('change');
+                    
+                    // Set branch_id
+                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
 
-                    // Ubah action form untuk update
+                    // Ubah action form untuk view (no action)
                     var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', `#`); // URL untuk update produk
-                    form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
-                    form.append(
-                        ''
-                    ); // Menambahkan input _method untuk PUT
+                    form.attr('action', '#');
+                    form.find('input[name="_method"]').remove();
 
                     // --- DISABLE semua input/select/textarea di form supaya read-only ---
                     form.find('input, select, textarea, button[type="submit"]').prop('disabled', true);
 
-                    // Tampilkan modal untuk edit produk
+                    // Ubah judul modal untuk view
+                    $('#kt_modal_add_customer_header h2').text('Lihat Transaksi');
+
+                    // Tampilkan modal untuk view produk
                     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
                     modal.show();
                 },
@@ -487,7 +501,7 @@
 
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
             $('#product_id').select2({
-                placeholder: 'Pilih Product',
+                placeholder: 'Pilih Produk',
                 dropdownParent: $('#kt_modal_add_customer'),
                 ajax: {
                     url: '{{ route('ajax.stock-available') }}',

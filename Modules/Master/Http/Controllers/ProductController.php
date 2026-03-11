@@ -228,7 +228,7 @@ class ProductController extends Controller
     public function show_transaction($id)
     {
         $data['product'] = Product::findOrFail($id);
-        $data['report']  = DB::table('report_total_belanja')->first();
+        $data['report']  = DB::table('report_total_belanja')->where('product_id', $id)->first();
         return view('master::products.show-transaction', $data);
     }
 

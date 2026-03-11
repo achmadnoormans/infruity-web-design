@@ -34,7 +34,7 @@ class SortirController extends Controller
         // Cek product_stock yang kosong pada branch yang dimiliki user
         $emptyStockProducts = DB::table('product_stock')
             ->whereIn('branch_id', $userBranches)
-            ->where('stock_available', '<=', 0)
+            ->where('stock_available', '<', 0)
             ->get();
 
         $data['hasEmptyStock'] = $emptyStockProducts->isNotEmpty();
