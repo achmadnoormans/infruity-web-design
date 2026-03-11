@@ -727,18 +727,24 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $products  = Product::whereNotIn('tipe', ['parcel', 'non-pos', 'kemasan'])->get();
+            $products  = Product::whereNotIn('tipe', ['parcel'])->get();
             $branchIds = Branch::pluck('id');
 
-            // Nonaktifkan FK constraints untuk truncate aman
-            Schema::disableForeignKeyConstraints();
-            DB::statement('DELETE FROM product_branch');
-            Schema::enableForeignKeyConstraints();
+            // Ambil semua kombinasi product-branch yang sudah ada
+            $existingCombinations = ProductBranch::select('product_id', 'branch_id')->get()
+                ->map(fn($item) => $item->product_id . '_' . $item->branch_id)
+                ->toArray();
 
             $productBranch = [];
 
             foreach ($products as $product) {
                 foreach ($branchIds as $branchId) {
+                    // Cek jika kombinasi product-branch sudah ada, skip jika sudah ada
+                    $combinationKey = $product->id . '_' . $branchId;
+                    if (in_array($combinationKey, $existingCombinations)) {
+                        continue;
+                    }
+
                     $productBranch[] = [
                         'product_id' => $product->id,
                         'branch_id'  => $branchId,
@@ -749,12 +755,15 @@ class ProductController extends Controller
                 }
             }
 
-            // Gunakan insert untuk multiple data
-            ProductBranch::insert($productBranch);
+            // Insert hanya data yang belum ada
+            if (!empty($productBranch)) {
+                ProductBranch::insert($productBranch);
+            }
 
             DB::commit();
 
-            return response()->json(['message' => 'Berhasil menggenerate harga cabang']);
+            $count = count($productBranch);
+            return response()->json(['message' => "Berhasil menggenerate harga cabang. $count data ditambahkan."]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -905,7 +914,7 @@ class ProductController extends Controller
     public function get_data_stock(Request $request)
     {
         $branch = $request->branch;
-        
+
         // Handle sorting from DataTables
         $orderColumnIndex = 2; // default stock_available
         $orderDirection = 'desc';
@@ -913,10 +922,10 @@ class ProductController extends Controller
             $orderColumnIndex = $request->order[0]['column'];
             $orderDirection = $request->order[0]['dir'];
         }
-        
+
         $columns = ['name', 'hpp', 'stock_available', 'category_id'];
         $orderColumn = isset($columns[$orderColumnIndex]) ? $columns[$orderColumnIndex] : 'stock_available';
-        
+
         if ($branch && $branch != 'all') {
             // Single branch query
             $query = DB::table('product_stock')
@@ -958,7 +967,7 @@ class ProductController extends Controller
                 )
                 ->orderBy($orderColumn, $orderDirection);
         }
-        
+
         if ($request->has('stock_filter')) {
             if ($request->stock_filter === 'ada') {
                 $query->where('stock_available', '>', 0);
