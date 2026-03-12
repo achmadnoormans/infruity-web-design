@@ -233,8 +233,31 @@ SELECT
             *
             LAG(f.hpp_real)
                 OVER (PARTITION BY f.product_id ORDER BY f.rn)
+
+        WHEN f.type='~' THEN
+            -(
+                (f.qty_berjalan_raw
+                - LAG(f.qty_berjalan_raw)
+                    OVER (PARTITION BY f.product_id ORDER BY f.rn))
+                *
+                LAG(f.hpp_real)
+                    OVER (PARTITION BY f.product_id ORDER BY f.rn)
+            )
+
         ELSE 0
     END AS cogs,
+    
+    -- ================= OPNAME VALUE =================
+    CASE
+        WHEN f.type='~' THEN
+            (f.qty_berjalan_raw
+            - LAG(f.qty_berjalan_raw)
+                OVER (PARTITION BY f.product_id ORDER BY f.rn))
+            *
+            LAG(f.hpp_real)
+                OVER (PARTITION BY f.product_id ORDER BY f.rn)
+        ELSE 0
+    END AS opname,
 
     -- ================= RECOVERED COGS =================
     CASE

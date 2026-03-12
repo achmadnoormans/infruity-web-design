@@ -13,9 +13,11 @@ SELECT
 
     SUM(CASE WHEN p.type='+' THEN p.total_belanja ELSE 0 END) AS total_belanja,
 
-    SUM(CASE WHEN p.type='-' THEN p.cogs ELSE 0 END) AS total_cogs,
+    SUM(CASE WHEN p.type IN ('-','~') THEN p.cogs ELSE 0 END) AS total_cogs,
 
     SUM(p.recovered_cogs) AS total_recovered_cogs,
+
+    SUM(CASE WHEN p.type='~' THEN p.opname ELSE 0 END) AS total_opname,
 
     lr.total_aset_berjalan AS last_asset,
 
