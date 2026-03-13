@@ -240,11 +240,22 @@ class ProductController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('type', function ($item) {
-                if ($item->type == '+') {
-                    return '<span class="badge badge-light-success">' . $item->type . '</span>';
-                } else {
-                    return '<span class="badge badge-light-danger">' . $item->type . '</span>';
+                $html = '';
+                switch ($item->type) {
+                    case '+':
+                        $html .= '<span class="badge badge-light-success">' . $item->type . '</span>';
+                        break;
+
+                    case '-':
+                        $html .= '<span class="badge badge-light-danger">' . $item->type . '</span>';
+                        break;
+
+                    default:
+                        $html .= '<span class="badge badge-light-primary">' . $item->type . '</span>';
+                        break;
                 }
+
+                return $html;
             })
             ->addColumn('remarks', function ($item) {
                 return $item->remarks ?? '-';
@@ -279,9 +290,6 @@ class ProductController extends Controller
             })
             ->addColumn('qty_x_hpp', function ($item) {
                 return 'Rp ' . number_format($item->qty_x_hpp, 0, ',', '.');
-            })
-            ->editColumn('covered_qty', function ($item) {
-                return 'Rp ' . number_format($item->covered_qty, 0, ',', '.');
             })
             ->editColumn('cogs', function ($item) {
                 return 'Rp ' . number_format($item->cogs, 0, ',', '.');

@@ -25,7 +25,6 @@
                 <table class="table table-bordered align-middle fs-6 gy-5 nowrap" id="product-transaction-table" width="100%">
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            <th class="text-nowrap min-w-70px">Product ID</th>
                             <th class="text-nowrap min-w-70px">Type</th>
                             <th class="text-nowrap min-w-150px">Keterangan</th>
                             <th class="text-nowrap text-center min-w-70px">Qty</th>
@@ -134,11 +133,6 @@
                     }
                 },
                 columns: [
-                    {
-                        data: 'product_id',
-                        name: 'product_id',
-                        className: 'text-center text-nowrap'
-                    },
                     {
                         data: 'type',
                         name: 'type',
