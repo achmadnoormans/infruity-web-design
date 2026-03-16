@@ -67,11 +67,121 @@ class WholesaleController extends Controller
     // }
     public function create()
     {
-        $data['alpinejs']       = true;
-        $data['data']           = null;
-        $data['detail']         = null;
-        $data['invoice_number'] = Wholesale::getOrderNumber();
+        $data['alpinejs'] = true;
+
+        // Cek apakah ada temp transaksi untuk user ini
+        $draft = Wholesale::with(['products', 'products.product', 'products.product.unit'])
+            ->where('created_by', Auth::user()->id_user)
+            ->where('status', 'temp')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($draft) {
+            $data['data']           = $draft;
+            $data['detail']         = $draft->products;
+            $data['invoice_number'] = $draft->order_number;
+        } else {
+            $data['data']           = null;
+            $data['detail']         = null;
+            $data['invoice_number'] = Wholesale::getOrderNumber();
+        }
+
         return view('transaction::wholesale.create2', $data);
+    }
+
+    /**
+     * Save temp wholesale data for auto-save functionality.
+     * @param Request $request
+     * @return Renderable
+     */
+    public function saveTemp(Request $request)
+    {
+        // dd($request->all());
+        $data = $request->validate([
+            'order_date'  => 'required|date',
+            'description' => 'nullable|string|max:255',
+            'products'   => 'required|array',
+            'invoice_number' => 'nullable|string',
+        ]);
+
+        try {
+            $userId = Auth::user()->id_user;
+            DB::beginTransaction();
+
+            // Cek apakah sudah ada temp draft untuk user ini
+            $existingDraft = Wholesale::where('created_by', $userId)
+                ->where('status', 'temp')
+                ->where('id', '!=', $request->wholesale_id ?? 0)
+                ->first();
+
+            // Jika ada draft lain yang bukan yang sedang diedit, hapus
+            if ($existingDraft) {
+                WholesaleProduct::where('wholesale_id', $existingDraft->id)->delete();
+                $existingDraft->delete();
+            }
+
+            // Cek apakah akan update atau create baru
+            if (!empty($request->wholesale_id)) {
+                $wholesale = Wholesale::find($request->wholesale_id);
+                if (!$wholesale) {
+                    $wholesale = new Wholesale();
+                    $wholesale->order_number = Wholesale::getOrderNumber();
+                }
+            } else {
+                // Cek jika ada draft tanpa ID yang sudah ada
+                $draft = Wholesale::where('created_by', $userId)
+                    ->where('status', 'temp')
+                    ->first();
+                
+                if ($draft) {
+                    $wholesale = $draft;
+                } else {
+                    $wholesale = new Wholesale();
+                    $wholesale->order_number = Wholesale::getOrderNumber();
+                }
+            }
+
+            $wholesale->order_date   = $data['order_date'];
+            $wholesale->description  = $data['description'] ?? null;
+            $wholesale->status       = 'temp';
+            $wholesale->created_by   = $userId;
+            $wholesale->save();
+
+            $wholesaleId = $wholesale->id;
+
+            // Hapus produk lama dan ganti dengan yang baru
+            WholesaleProduct::where('wholesale_id', $wholesaleId)->delete();
+
+            foreach ($data['products'] as $product) {
+                $wholesaleDetail               = new WholesaleProduct();
+                $wholesaleDetail->wholesale_id = $wholesaleId;
+                $wholesaleDetail->quantity     = $product['qty'];
+                $wholesaleDetail->price        = $product['price'];
+                $wholesaleDetail->total_price  = $product['price'] * $product['qty'];
+                if (isset($product['type']) && $product['type'] == 'product') {
+                    $wholesaleDetail->product_id = $product['id'];
+                } else {
+                    $wholesaleDetail->category_id = $product['id'] ?? null;
+                }
+                $wholesaleDetail->supplier_id = $product['supplier_id'] ?? null;
+                $wholesaleDetail->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil disimpan sementara',
+                'wholesale_id' => $wholesale->id,
+                'invoice_number' => $wholesale->order_number,
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -654,33 +764,77 @@ class WholesaleController extends Controller
             'items'          => 'required|array',
             'total'          => 'required|numeric',
             'subtotal'       => 'required|numeric',
-            'status'         => 'nullable|in:draft,posting',
+            'status'         => 'nullable|in:temp,draft,posting',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $userId = Auth::id();
+            // Use consistent user ID (id_user)
+            $userId = Auth::user()->id_user;
 
             // =========================
             // HEADER (UPDATE / CREATE)
             // =========================
-            $pos = Wholesale::updateOrCreate(
-                ['order_number' => $data['invoice_number']],
-                [
-                    'uuid'       => Str::uuid(),
-                    'branch_id'  => $data['branch_id'],
-                    'order_date' => $data['date'],
-                    'status'     => $data['status'] ?? 'draft',
-                    'created_by' => $userId,
-                ]
-            );
+            
+            // Jika status adalah temp, cek apakah ada existing temp draft untuk user ini
+            $existingTempDraft = null;
+            if (($data['status'] ?? 'draft') === 'temp') {
+                $existingTempDraft = Wholesale::where('created_by', $userId)
+                    ->where('status', 'temp')
+                    ->when(!empty($data['invoice_number']), function($query) use ($data) {
+                        return $query->where('order_number', '!=', $data['invoice_number']);
+                    })
+                    ->first();
 
-            $transaksiId = $pos->id;
+                // Jika ada temp draft lain, hapus
+                if ($existingTempDraft) {
+                    WholesaleProduct::where('wholesale_id', $existingTempDraft->id)->delete();
+                    $existingTempDraft->delete();
+                    $existingTempDraft = null;
+                }
+            }
+
+            $wholesaleData = [
+                'branch_id'  => $data['branch_id'],
+                'order_date' => $data['date'],
+                'status'     => $data['status'] ?? 'draft',
+                'created_by' => $userId,
+            ];
+
+            // Update atau create berdasarkan invoice_number
+            if (!empty($data['invoice_number'])) {
+                $wholesale = Wholesale::updateOrCreate(
+                    ['order_number' => $data['invoice_number']],
+                    $wholesaleData
+                );
+            } else {
+                // Cek jika ada draft existing untuk diupdate
+                $draft = Wholesale::where('created_by', $userId)
+                    ->where('status', 'temp')
+                    ->first();
+                
+                if ($draft) {
+                    $wholesale = $draft;
+                    $wholesale->update($wholesaleData);
+                } else {
+                    $wholesale = Wholesale::create($wholesaleData);
+                    // Generate order number
+                    $wholesale->order_number = Wholesale::getOrderNumber();
+                    $wholesale->save();
+                }
+            }
+
+            $transaksiId = $wholesale->id;
 
             // =========================
             // DETAIL ITEM
             // =========================
+            // Hapus item lama dan ganti dengan yang baru (khusus untuk temp/draft)
+            if (in_array($data['status'] ?? 'draft', ['temp', 'draft'])) {
+                WholesaleProduct::where('wholesale_id', $transaksiId)->delete();
+            }
+
             $existingProductIds = [];
 
             foreach ($data['items'] as $item) {
@@ -691,6 +845,11 @@ class WholesaleController extends Controller
 
                 $existingProductIds[] = $item['id'];
 
+                // Calculate total_price if not provided
+                $price = $item['price'] ?? 0;
+                $qty = $item['qty'] ?? 1;
+                $totalInput = $item['total_input'] ?? ($price * $qty);
+
                 // INSERT / UPDATE DETAIL
                 WholesaleProduct::updateOrCreate(
                     [
@@ -698,9 +857,9 @@ class WholesaleController extends Controller
                         'product_id'   => $item['id'],
                     ],
                     [
-                        'price'       => $item['price'],
-                        'quantity'    => $item['qty'],
-                        'total_price' => $item['total_input'],
+                        'price'       => $price,
+                        'quantity'    => $qty,
+                        'total_price' => $totalInput,
                         'created_by'  => $userId,
                     ]
                 );
@@ -774,6 +933,8 @@ class WholesaleController extends Controller
                 'success'      => true,
                 'message'      => 'Transaksi berhasil disimpan',
                 'transaksi_id' => $transaksiId,
+                'invoice_number' => $wholesale->order_number,
+                'status'       => $wholesale->status,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -819,7 +980,7 @@ class WholesaleController extends Controller
                 } elseif ($item->status == 'posting') {
                     return '<span class="badge badge-light-success">Posting</span>';
                 } else {
-                    return '<span class="badge badge-light-danger">Unknown</span>';
+                    return '<span class="badge badge-light-danger">Autosave</span>';
                 }
             })
             ->addColumn('status_raw', function ($item) {

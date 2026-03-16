@@ -21,6 +21,7 @@ class Wholesale extends Model
         'order_date',
         'status',
         'total_amount',
+        'description',
         'created_by',
         'updated_by',
     ];
@@ -38,6 +39,11 @@ class Wholesale extends Model
     {
         return $this->hasMany('Modules\Transaction\Entities\WholesaleProduct', 'wholesale_id');
     }
+    // Alias for products (to match the detail variable name used in views)
+    public function getDetailAttribute()
+    {
+        return $this->products;
+    }
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
@@ -48,7 +54,7 @@ class Wholesale extends Model
         $query = DB::table('view_wholesale')
             ->select('*')
             ->whereIn('branch_id', UserBranch::getUserBranch())
-            ->orderBy('order_date', 'desc');
+            ->orderBy('created_at', 'desc');
 
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('order_date', [$request->start_date, $request->end_date]);

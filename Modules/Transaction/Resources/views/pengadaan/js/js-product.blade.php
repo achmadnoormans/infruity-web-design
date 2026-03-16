@@ -55,19 +55,39 @@
             // Animation states
             badgeAnimation: false,
             priceAnimation: false,
+            autoSaveTimeout: null,
+            currentInvoiceNumber: '',
 
             init() {
                 const self = this; // simpan konteks Alpine
-                let url = '{{ Request::segment(3) }}';
-                if ((url == 'edit' || url == 'show' )&& !this._loaded) {
-                    const data = @json($data ?? null);
-                    const detail = @json($detail ?? null);
+                
+                // Check if there's existing data from create() or edit() method
+                const data = @json($data ?? null);
+                const detail = @json($detail ?? null);
+                
+                console.log('Init - data:', data);
+                console.log('Init - detail:', detail);
+                
+                // Load existing data if available
+                if (data && !this._loaded) {
+                    console.log('Loading existing data...');
                     this.loadExistingData(data, detail);
-                    // console.log('loadExisting', url, data, detail);
                     this._loaded = true;
+                }
 
-                    // console.log('cart =>', this.cart);
-                    // console.log('parcel =>', this.parcel);
+                // Auto-save using watchers - similar to PosController
+                this.$watch('cart', () => this.autoSaveTemp());
+                this.$watch('diskonGlobal', () => this.autoSaveTemp());
+                
+                // Listen to form changes
+                $('input[name="date"]').on('change input', () => this.autoSaveTemp());
+                $('#branch_id').on('change', () => this.autoSaveTemp());
+            },
+
+            // Manual trigger for testing
+            manualSaveTemp() {
+                if (this.cart.length > 0) {
+                    this.autoSaveTemp();
                 }
             },
 
@@ -834,28 +854,45 @@
 
             loadExistingData(data, detail) {
                 // Load existing cart items
-                console.log('data', data);
-                console.log('detail', detail);
-                detail.map(item => {
-                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
-                        .price) : item.product_id;
-                    let productName = item.type == 'parcel' ? item.product.description : item.product.name;
-                    const obj = {
-                        id: id,
-                        name: productName,
-                        price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
-                        hpp: parseFloat(item.hpp || 0),
-                        sell: this.sanitizeNumber(Number(item.product.price || 0)),
-                        qty: this.sanitizeNumber(Number(item.quantity)),
-                        unit: item.product.unit.abbreviation,
-                        discount: this.sanitizeNumber(Number(item.discount || 0)),
-                        discountPercent: item.discountPercent || 0,
-                        fee: item.product.fee || 0,
-                        total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
-                        typeProduct: item.type || 'product',
-                    };
-                    this.cart.push(obj);
-                });
+                console.log('loadExistingData - data:', data);
+                console.log('loadExistingData - detail:', detail);
+                
+                if (detail) {
+                    detail.map(item => {
+                        let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
+                            .price) : item.product_id;
+                        let productName = item.type == 'parcel' ? item.product.description : item.product.name;
+                        const obj = {
+                            id: id,
+                            name: productName,
+                            price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
+                            hpp: parseFloat(item.hpp || 0),
+                            sell: this.sanitizeNumber(Number(item.product.price || 0)),
+                            qty: this.sanitizeNumber(Number(item.quantity)),
+                            unit: item.product.unit.abbreviation,
+                            discount: this.sanitizeNumber(Number(item.discount || 0)),
+                            discountPercent: item.discountPercent || 0,
+                            fee: item.product.fee || 0,
+                            total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
+                            typeProduct: item.type || 'product',
+                        };
+                        this.cart.push(obj);
+                    });
+                }
+
+                // Set invoice number
+                if (data.order_number) {
+                    this.currentInvoiceNumber = data.order_number;
+                    const invoiceInput = document.querySelector('input[name="invoice_number"]');
+                    if (invoiceInput) {
+                        invoiceInput.value = data.order_number;
+                    }
+                }
+
+                // Set global discount
+                if (data.discount) {
+                    this.diskonGlobal = parseFloat(data.discount || 0);
+                }
 
                 if (data.branch) {
                     let option = new Option(data.branch.name, data.branch.id, true, true);
@@ -868,6 +905,72 @@
                 }
 
                 this.payment = data.paid;
+            },
+
+            // Auto-save function for temp draft (debounced like PosController)
+            autoSaveTemp() {
+                if (this.cart.length === 0) {
+                    return;
+                }
+
+                // Clear previous timeout
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                }
+
+                // Debounce auto-save
+                this.autoSaveTimeout = setTimeout(() => {
+                    console.log('Auto-saving draft...');
+                    
+                    const transactionDate = document.querySelector('input[name="date"]')?.value;
+                    const invoiceNumber = document.querySelector('input[name="invoice_number"]')?.value;
+                    const branchId = document.querySelector('select[name="branch_id"]')?.value;
+
+                    if (!branchId) {
+                        console.log('Auto-save skipped: no branch selected');
+                        return;
+                    }
+
+                    const data = {
+                        date: transactionDate,
+                        invoice_number: this.currentInvoiceNumber || invoiceNumber || '',
+                        branch_id: branchId,
+                        items: this.cart,
+                        subtotal: this.subtotal,
+                        total: this.totalHargaKeseluruhan,
+                        status: 'temp',
+                    };
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (!csrfToken) {
+                        console.error('Auto-save: CSRF token not found');
+                        return;
+                    }
+
+                    fetch('{{ route("wholesale.save-transaction") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(async res => {
+                        const json = await res.json().catch(() => ({}));
+                        console.log('Auto-save response:', res.status, json);
+                        if (res.ok && json.success) {
+                            this.currentInvoiceNumber = json.invoice_number;
+                            const invoiceInput = document.querySelector('input[name="invoice_number"]');
+                            if (invoiceInput && json.invoice_number) {
+                                invoiceInput.value = json.invoice_number;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Auto-save error:', error);
+                    });
+                }, 5000); // 1 second delay
             },
 
             transactionInput() {

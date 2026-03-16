@@ -19,6 +19,8 @@ class WholesaleProduct extends Model
     protected $fillable = [
         'wholesale_id',
         'product_id',
+        'category_id',
+        'supplier_id',
         'price',
         'quantity',
         'total_price',
