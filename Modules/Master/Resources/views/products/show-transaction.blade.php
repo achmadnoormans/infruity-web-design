@@ -26,18 +26,17 @@
                     <thead>
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-nowrap min-w-70px">Type</th>
-                            <th class="text-nowrap min-w-150px">Keterangan</th>
+                            <th class="text-nowrap min-w-150px">Remarks</th>
                             <th class="text-nowrap text-center min-w-70px">Qty</th>
-                            <th class="text-nowrap text-center min-w-100px">Stok Raw</th>
-                            <th class="text-nowrap text-center min-w-100px">Stok Berjalan</th>
-                            <th class="text-nowrap text-center min-w-120px">Harga Satuan</th>
+                            <th class="text-nowrap text-center min-w-120px">Harga Beli</th>
                             <th class="text-nowrap text-center min-w-120px">Total Belanja</th>
-                            <th class="text-nowrap text-center min-w-130px">Total Non Belanja</th>
                             <th class="text-nowrap text-center min-w-100px">Covered Qty</th>
                             <th class="text-nowrap text-center min-w-120px">COGS</th>
                             <th class="text-nowrap text-center min-w-120px">Recovered COGS</th>
-                            <th class="text-nowrap text-center min-w-120px">HPP Berjalan</th>
+                            <th class="text-nowrap text-center min-w-120px">Saldo Qty</th>
+                            <th class="text-nowrap text-center min-w-120px">Pending Qty</th>
                             <th class="text-nowrap text-center min-w-120px">Total Aset</th>
+                            <th class="text-nowrap text-center min-w-120px">HPP Berjalan</th>
                             <th class="text-nowrap text-center min-w-120px">Tanggal</th>
                         </tr>
                     </thead>
@@ -149,16 +148,6 @@
                         className: 'text-end text-nowrap'
                     },
                     {
-                        data: 'qty_berjalan_raw',
-                        name: 'qty_berjalan_raw',
-                        className: 'text-end text-nowrap'
-                    },
-                    {
-                        data: 'qty_berjalan',
-                        name: 'qty_berjalan',
-                        className: 'text-end text-nowrap'
-                    },
-                    {
                         data: 'harga_satuan',
                         name: 'harga_satuan',
                         className: 'text-end text-nowrap'
@@ -166,11 +155,6 @@
                     {
                         data: 'total_belanja',
                         name: 'total_belanja',
-                        className: 'text-end text-nowrap'
-                    },
-                    {
-                        data: 'total_non_belanja',
-                        name: 'total_non_belanja',
                         className: 'text-end text-nowrap'
                     },
                     {
@@ -189,13 +173,31 @@
                         className: 'text-end text-nowrap',
                     },
                     {
-                        data: 'hpp_berjalan',
-                        name: 'hpp_berjalan',
-                        className: 'text-end text-nowrap'
+                        data: 'qty_berjalan',
+                        name: 'qty_berjalan',
+                        className: 'text-end text-nowrap',
                     },
+
+                    {
+                        data: 'qty_berjalan',
+                        name: 'qty_berjalan',
+                        className: 'text-end text-nowrap',
+                        render: function(data) {
+                            if (data < 0) {
+                                return Math.abs(data).toLocaleString('id-ID');
+                            }
+                            return '0';
+                        }
+                    },
+
                     {
                         data: 'total_aset_berjalan',
                         name: 'total_aset_berjalan',
+                        className: 'text-end text-nowrap'
+                    },
+                    {
+                        data: 'hpp_berjalan',
+                        name: 'hpp_berjalan',
                         className: 'text-end text-nowrap'
                     },
                     {
