@@ -793,13 +793,21 @@ class ProductController extends Controller
         //     return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
         // }
         $query = Product::query()
-            ->with('category')
-            ->where('tipe', '!=', 'parcel');
+            ->with(['category', 'childProducts.product'])
+            ->where('tipe', '!=', 'parcel')
+            ->orderByRaw('CASE WHEN parent_id IS NULL THEN 0 ELSE 1 END ASC')  // Parent products first
+            ->orderBy('parent_id', 'asc')
+            ->orderBy('id', 'asc');
 
         if ($request->has('branch_filter') && $request->branch_filter != 0) {
-            $query = $query->join('product_branch', 'products.id', '=', 'product_branch.product_id')
+            $query = $query->leftJoin('product_branch', 'products.id', '=', 'product_branch.product_id')
                 ->where('product_branch.branch_id', $request->branch_filter)
-                ->select('products.*', 'product_branch.price as price');
+                ->select('products.id', 'products.name', 'products.description', 'products.category_id',
+                         'products.product_unit', 'products.status', 'products.hpp', 'products.fee',
+                         'products.created_by', 'products.tipe', 'products.image', 'products.stock',
+                         'products.limit', 'products.handling', 'products.sku', 'products.barcode',
+                         'products.parent_id', 'products.is_variant',
+                         DB::raw('COALESCE(product_branch.price, products.price) as price'));
         }
 
         $data = $query;
@@ -827,14 +835,47 @@ class ProductController extends Controller
                             <span class="symbol-label" style="background-image:url(assets/media/svg/files/blank-image.svg);"></span>
                         </a>';
                 }
-                $html .= '<div class="ms-5">
+
+                // Check if this product is a child (has parent_id) or has children
+                $isChild = !empty($product->parent_id);
+                $hasChildren = $product->childProducts && $product->childProducts->count() > 0;
+
+                // Tree structure visual
+                if ($isChild) {
+                    // Child product - add indentation and connector
+                    $html .= '<div class="d-flex align-items-center ps-4" style="border-left: 2px solid #e0e0e0;">
+                        <span class="me-2" style="color: #7e8299;">├─</span>
+                        <div>
+                            <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
+                               data-kt-ecommerce-product-filter="product_name">
+                                ' . e($product->name) . '
+                            </a>
+                            <span class="badge badge-secondary ms-2">Variant</span>
+                        </div>
+                    </div>';
+                } elseif ($hasChildren) {
+                    // Parent product with children
+                    $html .= '<div class="d-flex align-items-center">
+                        <div>
+                            <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
+                               data-kt-ecommerce-product-filter="product_name">
+                                ' . e($product->name) . '
+                            </a>
+                            <span class="badge badge-primary ms-2">Parent</span>
+                        </div>
+                    </div>';
+                } else {
+                    // Regular product (no children)
+                    $html .= '<div class="d-flex align-items-center">
+                        <div>
                             <a href="' . url('products') . '/' . $product->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>
                         </div>
-                    </div>
-                ';
+                    </div>';
+                }
+
                 return $html;
             })
             ->addColumn('price', function ($product) {
@@ -917,6 +958,37 @@ class ProductController extends Controller
             })
             ->rawColumns(['name', 'action', 'price', 'status'])
             ->make(true);
+    }
+
+    /**
+     * Get child products (variants) for a parent product
+     */
+    public function get_child_data(Request $request)
+    {
+        $parentId = $request->parent_id;
+
+        if (!$parentId) {
+            return response()->json(['data' => []]);
+        }
+
+        // Get children from product_child relationship
+        $children = ProductChild::with(['product.unit'])
+            ->where('parent_id', $parentId)
+            ->get();
+
+        $data = [];
+        foreach ($children as $child) {
+            if ($child->product) {
+                $data[] = [
+                    'id' => $child->product->id,
+                    'name' => $child->product->name,
+                    'price' => $child->product->price,
+                    'unit' => $child->product->unit
+                ];
+            }
+        }
+
+        return response()->json(['data' => $data]);
     }
 
     public function get_data_stock(Request $request)

@@ -47,7 +47,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('customers/{id}/show', [CustomerController::class, 'show'])->name('customers.show');
     Route::resource('staff', StaffController::class)->names('staff')->except('show');
     Route::get('staff/show/{id}', [StaffController::class,'show'])->name('staff.show');
-    Route::resource('branch', BranchController::class)->names('branch')->except('show');    
+    Route::resource('branch', BranchController::class)->names('branch')->except('show');
     Route::resource('payment-method', PaymentMethodController::class)->names('payment-method')->except('show');
     Route::resource('account', AccountController::class)->names('account')->except('show');
 });
@@ -79,6 +79,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     // Datatable
     Route::get('products/data', [ProductController::class, 'get_data'])->name('products-data');
+    Route::get('products/child-data', [ProductController::class, 'get_child_data'])->name('products-child-data');
     Route::get('products/stock-data', [ProductController::class, 'get_data_stock'])->name('product-stock-data');
     Route::get('category/data', [ProductCategoryController::class, 'get_data'])->name('category-data');
     Route::get('unit/data', [ProductUnitController::class, 'get_data'])->name('unit-data');
