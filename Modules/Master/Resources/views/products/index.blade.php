@@ -1,6 +1,23 @@
 @extends('template.root')
 
 @section('content')
+    <style>
+        .tree-line {
+            display: inline-flex;
+            align-items: center;
+            min-width: 30px;
+        }
+        .tree-connector {
+            color: #7e8299;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .tree-indent {
+            display: inline-block;
+            width: 20px;
+        }
+    </style>
     {{-- @livewire('product-table') --}}
     <div>
         <div class="card card-flush">
@@ -119,6 +136,13 @@
 
     <script type="text/javascript">
         var dataTable;
+
+        // Format number helper function
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
         $(document).ready(function() {
             dataTable = $('#products-table').DataTable({
                 processing: true,
