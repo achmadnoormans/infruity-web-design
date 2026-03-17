@@ -528,12 +528,6 @@
                 // return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
                 return this.cart.length;
             },
-            totalHargaKeseluruhan() {
-                return this.cart.reduce((sum, item) => {
-                    const total = (item.total_input || (item.price * item.qty)) - (item.discount || 0);
-                    return sum + total;
-                }, 0).toLocaleString('id-ID');
-            },
 
 
             showCartModal: false, // di dalam return {...}
@@ -1494,7 +1488,7 @@
                     }
                 });
 
-                this.diskonGlobal = data.discount;
+                this.diskonGlobal = parseFloat(data.discount || 0);
                 this.ongkirGlobal = parseFloat(data.ongkir || 0);
 
                 $('#note').val(data.note);

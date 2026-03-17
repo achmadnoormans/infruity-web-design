@@ -327,7 +327,7 @@ class PosController extends Controller
             'parcel'            => 'nullable|array',
             'jus'               => 'nullable|array',
             'subtotal'          => 'required|numeric',
-            'discount'          => 'required|numeric',
+            'discount'          => 'nullable|numeric',
             'ongkir'            => 'required|numeric',
             'discount_ongkir'   => 'required|numeric',
             'total'             => 'required|numeric',
