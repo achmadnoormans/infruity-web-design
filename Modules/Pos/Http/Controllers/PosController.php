@@ -666,7 +666,8 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details')->whereIn('branch_id', UserBranch::getUserBranch());
+        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
+        // ->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -740,8 +741,12 @@ class PosController extends Controller
                     'draft' => '<span class="badge badge-light-danger">Draft</span>',
                     default => '<span class="badge badge-light-warning">' . e($item->status) . '</span>'
                 };
+                $branchLabel = '';
+                if ($item->branch) {
+                    $branchLabel = '<span class="badge badge-light-primary ms-1">' . e($item->branch->name) . '</span>';
+                }
 
-                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}";
+                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}{$branchLabel}";
             })
             ->addColumn('action', function ($item) {
                 $html  = '';
