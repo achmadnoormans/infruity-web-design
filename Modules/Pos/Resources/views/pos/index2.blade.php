@@ -131,16 +131,25 @@
     <script type="text/javascript">
         // Cek apakah ada produk dengan stock kosong
         @if(isset($hasEmptyStock) && $hasEmptyStock)
+            @php
+                $emptyStockBadges = $emptyStockProducts->map(function ($product) {
+                    return '<span class="badge badge-light-danger me-1 mb-1">' . e($product->name) . '</span>';
+                })->implode('');
+
+                $remainingEmptyStockHtml = $emptyStockCount > 10
+                    ? '<br><small>...dan ' . ($emptyStockCount - 10) . ' produk lainnya</small>'
+                    : '';
+
+                $emptyStockAlertHtml = 'Terdapat <strong>' . $emptyStockCount . '</strong> produk dengan stok kosong pada cabang Anda.<br><br>' .
+                    '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' .
+                    $emptyStockBadges .
+                    $remainingEmptyStockHtml .
+                    '</div>';
+            @endphp
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: 'Peringatan Stok Kosong!',
-                    html: 'Terdapat <strong>{{ $emptyStockCount }}</strong> produk dengan stok kosong pada cabang Anda.<br><br>' +
-                          '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' +
-                          '@foreach($emptyStockProducts as $product)' +
-                          '<span class="badge badge-light-danger me-1 mb-1">{{ $product->name }}</span>' +
-                          '@endforeach' +
-                          '{{ $emptyStockCount > 10 ? "<br><small>...dan " . ($emptyStockCount - 10) . " produk lainnya</small>" : "" }}' +
-                          '</div>',
+                    html: @json($emptyStockAlertHtml),
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',
                     confirmButtonColor: '#f1416c',

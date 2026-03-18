@@ -58,6 +58,7 @@
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Kategori"
                                             data-kt-ecommerce-product-filter="kategori">
+                                            <option value="all">Semua Kategori</option>
                                             @foreach ($category as $category)
                                                 <option value="{{ $category->id }}">{{ ucwords($category->name) }}</option>
                                             @endforeach
@@ -200,6 +201,10 @@
             });
 
             $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $('[data-kt-ecommerce-product-filter="kategori"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
             });
 
