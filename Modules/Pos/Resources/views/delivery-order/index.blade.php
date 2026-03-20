@@ -5,25 +5,25 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
+            <div class="card-header align-items-center py-3 gap-2 flex-nowrap">
                 <!--begin::Card title-->
-                <div class="card-title">
+                <div class="card-title flex-grow-1 min-w-0 me-2">
                     <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1">
+                    <div class="d-flex align-items-center position-relative my-1 w-100">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Kiriman" />
+                            class="form-control form-control-solid w-100 ps-12" placeholder="Cari Kiriman" />
                     </div>
                     <!--end::Search-->
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar ms-auto">
+                <div class="card-toolbar flex-shrink-0 ms-0">
                     <div class="card-toolbar">
                         <!--begin::Toolbar-->
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <div class="d-flex align-items-center gap-2 flex-nowrap" data-kt-user-table-toolbar="base">
                             <!--begin::Filter-->
-                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                            <button type="button" class="btn btn-light-primary px-3" data-kt-menu-trigger="click"
                                 data-kt-menu-placement="bottom-end">
                                 <i class="ki-duotone ki-filter fs-2">
                                     <span class="path1"></span>
@@ -67,10 +67,10 @@
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Cabang"
                                             data-kt-ecommerce-product-filter="cabang">
-                                            <option value="all">All</option>
                                             @foreach ($branches as $branch)
                                                 <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
                                             @endforeach
+                                            <option value="all">All</option>
                                         </select>
                                     </div>
                                     <!--end::Input group-->
@@ -98,7 +98,7 @@
                         </div>
                         <!--end::Toolbar-->
                     </div>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    <button type="button" class="btn btn-primary px-3" data-bs-toggle="modal"
                         data-bs-target="#kt_modal_add_customer">
                         <i class="bi bi-gear"></i>
                     </button>
@@ -108,6 +108,19 @@
             <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body pt-0">
+                <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 mb-4 px-4 py-3 rounded-3 bg-light border border-gray-200">
+                    <div class="fs-8 fw-semibold text-uppercase text-muted me-1">Filter aktif</div>
+                    <div class="d-inline-flex align-items-center flex-wrap gap-1 px-3 py-2 rounded-3 bg-white border border-gray-200">
+                        <span class="fs-8 text-muted">Cabang</span>
+                        <span class="text-gray-400">:</span>
+                        <span id="active-branch-label" class="fs-7 fw-bold text-gray-900"></span>
+                    </div>
+                    <div class="d-inline-flex align-items-center flex-wrap gap-1 px-3 py-2 rounded-3 bg-white border border-gray-200">
+                        <span class="fs-8 text-muted">Tanggal</span>
+                        <span class="text-gray-400">:</span>
+                        <span id="active-date-label" class="fs-7 fw-bold text-gray-900"></span>
+                    </div>
+                </div>
                 <!--begin::Table-->
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="pos-table" width="100%">
                     <thead>
@@ -191,6 +204,46 @@
     <script type="text/javascript">
         var dataTable;
         $(document).ready(function() {
+            const $branchFilter = $('[data-kt-ecommerce-product-filter="cabang"]');
+            const $dateFilter = $('#kt_ecommerce_sales_flatpickr');
+            const $activeBranchLabel = $('#active-branch-label');
+            const $activeDateLabel = $('#active-date-label');
+
+            function formatDateLabel(dateString) {
+                if (!dateString) {
+                    return '';
+                }
+
+                const parts = dateString.split('-');
+                if (parts.length !== 3) {
+                    return dateString;
+                }
+
+                return [parts[2], parts[1], parts[0]].join('/');
+            }
+
+            function getSelectedDateLabel() {
+                const range = $dateFilter.val();
+
+                if (!range) {
+                    return 'Semua tanggal';
+                }
+
+                const dates = range.split(' to ').filter(Boolean);
+
+                if (dates.length === 1) {
+                    return formatDateLabel(dates[0]);
+                }
+
+                return `${formatDateLabel(dates[0])} - ${formatDateLabel(dates[1])}`;
+            }
+
+            function updateActiveFilterInfo() {
+                const selectedBranch = $branchFilter.find('option:selected').text().trim() || 'Semua cabang';
+                $activeBranchLabel.text(selectedBranch);
+                $activeDateLabel.text(getSelectedDateLabel());
+            }
+
             dataTable = $('#pos-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -253,18 +306,28 @@
             });
 
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
+                updateActiveFilterInfo();
                 dataTable.draw(); // trigger fetch ulang dari server
             });
 
-            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+            const salesFlatpickr = $("#kt_ecommerce_sales_flatpickr").flatpickr({
                 altInput: !0,
                 altFormat: "d/m/Y",
                 dateFormat: "Y-m-d",
                 mode: "range",
                 onChange: function(e, t, n) {
+                    updateActiveFilterInfo();
                     dataTable.draw();
                 }
             });
+
+            $('#kt_ecommerce_sales_flatpickr_clear').on('click', function() {
+                salesFlatpickr.clear(false);
+                updateActiveFilterInfo();
+                dataTable.draw();
+            });
+
+            updateActiveFilterInfo();
         });
 
         function reloadDataTable() {
