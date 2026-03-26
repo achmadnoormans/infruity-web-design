@@ -69,7 +69,18 @@ class PosController extends Controller
         $data['alpinejs'] = true;
 
         // Cek apakah ada temp transaksi untuk user ini
-        $draft = PosModel::with(['customer', 'details', 'details.product', 'details.product.unit'])
+        $draft = PosModel::with([
+            'customer',
+            'courier',
+            'branch',
+            'branch_proses',
+            'details',
+            'details.parcel',
+            'details.product',
+            'details.product.unit',
+            'details.product.productionParcelDetails',
+            'details.product.productionParcelDetails.product',
+        ])
             ->where('created_by', Auth::id())
             ->where('status', 'temp')
             ->orderBy('id', 'desc')
@@ -372,7 +383,7 @@ class PosController extends Controller
             'parcel'            => 'nullable|array',
             'jus'               => 'nullable|array',
             'subtotal'          => 'required|numeric',
-            'discount'          => 'required|numeric',
+            'discount'          => 'nullable|numeric',
             'ongkir'            => 'required|numeric',
             'discount_ongkir'   => 'required|numeric',
             'total'             => 'required|numeric',
@@ -390,30 +401,29 @@ class PosController extends Controller
 
         try {
             $userId = Auth::id();
+            $isTempSave = ($data['status'] ?? null) === 'temp';
             DB::beginTransaction();
-            $cek  = PosModel::where('invoice_number', $data['invoice_number'])->first();
-            $uuid = Str::uuid();
-            $date = $data['date'];
-            if ($cek) {
-                $pos       = PosModel::find($cek->id);
-                $uuid      = $pos->uuid;
-                $date      = $pos->date;
-                $posDetail = PosDetailModel::where('pos_id', $cek->id);
-                $posDetail = $posDetail->where('parcel_id', '!=', null)->get();
-                foreach ($posDetail as $key => $value) {
-                    $productId = $value->product_id;
-                    $product   = Product::find($productId);
-                    $product->delete();
-                }
-                PosDetailModel::where('pos_id', $cek->id)->forceDelete();
-                $pos->forceDelete();
+            $invoiceNumber = $data['invoice_number'] ?? null;
+            $pos = null;
+
+            if (!empty($invoiceNumber)) {
+                $pos = PosModel::where('created_by', $userId)
+                    ->where('invoice_number', $invoiceNumber)
+                    ->lockForUpdate()
+                    ->first();
             }
-            // Simpan ke tabel transaksi (buat dulu kalau belum ada)
-            $pos = new PosModel([
-                'uuid'              => $uuid,
+
+            if ($pos) {
+                $this->clearExistingPosRelations($pos->id);
+            } else {
+                $pos = new PosModel();
+                $pos->uuid = Str::uuid();
+            }
+
+            $pos->fill([
                 'customer_id'       => $data['customer_id'],
-                'date'              => $date,
-                'invoice_number'    => $data['invoice_number'],
+                'date'              => $data['date'],
+                'invoice_number'    => $invoiceNumber,
                 'subtotal'          => $data['subtotal'],
                 'total'             => $data['total'],
                 'discount'          => $data['discount'],
@@ -432,6 +442,7 @@ class PosController extends Controller
                 'branch_process_id' => $data['branch_process_id'] ?? null,
             ]);
             $pos->save();
+            $this->deleteDuplicatePosDrafts($userId, $invoiceNumber, $pos->id);
 
             // Simpan item transaksi
             $transaksiId = $pos->id;
@@ -542,24 +553,26 @@ class PosController extends Controller
 
             if (isset($data['jus'])) {
                 foreach ($data['jus'] as $key => $value) {
-                    $production = new Production([
-                        'production_number' => Production::getOrderNumber(),
-                        'product_id'        => $value['productId'],
-                        'production_date'   => now(),
-                        'status'            => 'complete',
-                        'created_by'        => Auth::user()->id_user,
-                        'quantity'          => $value['qty'],
-                        'staff_id'          => Auth::user()->id_user,
-                    ]);
-                    $production->save();
-                    if (isset($value['product_receipt_id'])) {
-                        foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
-                            $productionDetail = new ProductionDetail([
-                                'production_id' => $production->id,
-                                'product_id'    => $productReceiptId,
-                                'quantity'      => $value['product_receipt_qty'][$key],
-                            ]);
-                            $productionDetail->save();
+                    if (!$isTempSave) {
+                        $production = new Production([
+                            'production_number' => Production::getOrderNumber(),
+                            'product_id'        => $value['productId'],
+                            'production_date'   => now(),
+                            'status'            => 'complete',
+                            'created_by'        => Auth::user()->id_user,
+                            'quantity'          => $value['qty'],
+                            'staff_id'          => Auth::user()->id_user,
+                        ]);
+                        $production->save();
+                        if (isset($value['product_receipt_id'])) {
+                            foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
+                                $productionDetail = new ProductionDetail([
+                                    'production_id' => $production->id,
+                                    'product_id'    => $productReceiptId,
+                                    'quantity'      => $value['product_receipt_qty'][$key],
+                                ]);
+                                $productionDetail->save();
+                            }
                         }
                     }
 
@@ -581,7 +594,7 @@ class PosController extends Controller
                 }
             }
 
-            if (preg_match('/ORD\d+/i', $data['invoice_number'])) {
+            if (!$isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {
                 $orderBook = OrderBook::where('invoice_number', $data['invoice_number'])->first();
                 if ($orderBook) {
                     $orderBook->status = 'done';
@@ -597,6 +610,7 @@ class PosController extends Controller
                 'success'      => true,
                 'message'      => 'Transaksi berhasil disimpan',
                 'transaksi_id' => $transaksiId,
+                'invoice_number' => $pos->invoice_number,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -606,6 +620,39 @@ class PosController extends Controller
                 'message' => 'Gagal menyimpan transaksi',
                 'error'   => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    private function clearExistingPosRelations(int $posId): void
+    {
+        $parcelProductIds = PosDetailModel::where('pos_id', $posId)
+            ->whereNotNull('parcel_id')
+            ->pluck('product_id')
+            ->filter()
+            ->all();
+
+        if (!empty($parcelProductIds)) {
+            Product::whereIn('id', $parcelProductIds)->delete();
+        }
+
+        ProductionParcelDetail::where('pos_id', $posId)->delete();
+        PosDetailModel::where('pos_id', $posId)->forceDelete();
+    }
+
+    private function deleteDuplicatePosDrafts(int $userId, ?string $invoiceNumber, int $keepPosId): void
+    {
+        if (empty($invoiceNumber)) {
+            return;
+        }
+
+        $duplicates = PosModel::where('created_by', $userId)
+            ->where('invoice_number', $invoiceNumber)
+            ->where('id', '!=', $keepPosId)
+            ->get();
+
+        foreach ($duplicates as $duplicate) {
+            $this->clearExistingPosRelations($duplicate->id);
+            $duplicate->forceDelete();
         }
     }
 
@@ -739,7 +786,8 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details')->whereIn('branch_id', UserBranch::getUserBranch());
+        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
+        // ->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -813,8 +861,12 @@ class PosController extends Controller
                     'draft' => '<span class="badge badge-light-danger">Draft</span>',
                     default => '<span class="badge badge-light-warning">' . e($item->status) . '</span>'
                 };
+                $branchLabel = '';
+                if ($item->branch) {
+                    $branchLabel = '<span class="badge badge-light-primary ms-1">' . e($item->branch->name) . '</span>';
+                }
 
-                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}";
+                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}{$branchLabel}";
             })
             ->addColumn('action', function ($item) {
                 $html  = '';

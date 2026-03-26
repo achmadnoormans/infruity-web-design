@@ -1113,8 +1113,25 @@ class ProductController extends Controller
                 $query->where('stock_available', '=', 0);
             }
         }
+
+        if ($request->filled('stock_kategori') && $request->stock_kategori !== 'all') {
+            $query->where('category_id', $request->stock_kategori);
+        }
+
         $data = $query;
         return DataTables::of($data)
+            ->filter(function ($query) use ($request) {
+                $search = trim((string) $request->input('search.value'));
+
+                if ($search === '') {
+                    return;
+                }
+
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('sku', 'like', '%' . $search . '%');
+                });
+            }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($product) {
                 $html = '

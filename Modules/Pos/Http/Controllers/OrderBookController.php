@@ -405,6 +405,7 @@ class OrderBookController extends Controller
                 if ($item->updated_at != null) {
                     $html .= '<br><span class="text-muted d-block fs-7">Di Edit : ' . $item->updated_at->format('d M Y H:i') . '</span>';
                 }
+                $html .= '<span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
                 $html .= '</div>';
                 $html .= '</div>';
                 return $html;

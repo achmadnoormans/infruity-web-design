@@ -67,10 +67,10 @@
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Cabang"
                                             data-kt-ecommerce-product-filter="cabang">
-                                            <option value="all">All</option>
                                             @foreach ($branches as $branch)
                                                 <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
                                             @endforeach
+                                            <option value="all">All</option>
                                         </select>
                                     </div>
                                     <!--end::Input group-->
@@ -104,6 +104,19 @@
             <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body pt-0">
+                <div class="d-flex flex-wrap align-items-center gap-2 gap-md-3 mb-4 px-4 py-3 rounded-3 bg-light border border-gray-200">
+                    <div class="fs-8 fw-semibold text-uppercase text-muted me-1">Filter aktif</div>
+                    <div class="d-inline-flex align-items-center flex-wrap gap-1 px-3 py-2 rounded-3 bg-white border border-gray-200">
+                        <span class="fs-8 text-muted">Cabang</span>
+                        <span class="text-gray-400">:</span>
+                        <span id="active-branch-label" class="fs-7 fw-bold text-gray-900"></span>
+                    </div>
+                    <div class="d-inline-flex align-items-center flex-wrap gap-1 px-3 py-2 rounded-3 bg-white border border-gray-200">
+                        <span class="fs-8 text-muted">Tanggal</span>
+                        <span class="text-gray-400">:</span>
+                        <span id="active-date-label" class="fs-7 fw-bold text-gray-900"></span>
+                    </div>
+                </div>
                 <!--begin::Table-->
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="pos-table" width="100%">
                     <thead>
@@ -131,16 +144,25 @@
     <script type="text/javascript">
         // Cek apakah ada produk dengan stock kosong
         @if(isset($hasEmptyStock) && $hasEmptyStock)
+            @php
+                $emptyStockBadges = $emptyStockProducts->map(function ($product) {
+                    return '<span class="badge badge-light-danger me-1 mb-1">' . e($product->name) . '</span>';
+                })->implode('');
+
+                $remainingEmptyStockHtml = $emptyStockCount > 10
+                    ? '<br><small>...dan ' . ($emptyStockCount - 10) . ' produk lainnya</small>'
+                    : '';
+
+                $emptyStockAlertHtml = 'Terdapat <strong>' . $emptyStockCount . '</strong> produk dengan stok kosong pada cabang Anda.<br><br>' .
+                    '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' .
+                    $emptyStockBadges .
+                    $remainingEmptyStockHtml .
+                    '</div>';
+            @endphp
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: 'Peringatan Stok Kosong!',
-                    html: 'Terdapat <strong>{{ $emptyStockCount }}</strong> produk dengan stok kosong pada cabang Anda.<br><br>' +
-                          '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' +
-                          '@foreach($emptyStockProducts as $product)' +
-                          '<span class="badge badge-light-danger me-1 mb-1">{{ $product->name }}</span>' +
-                          '@endforeach' +
-                          '{{ $emptyStockCount > 10 ? "<br><small>...dan " . ($emptyStockCount - 10) . " produk lainnya</small>" : "" }}' +
-                          '</div>',
+                    html: @json($emptyStockAlertHtml),
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',
                     confirmButtonColor: '#f1416c',
@@ -151,6 +173,46 @@
 
         var dataTable;
         $(document).ready(function() {
+            const $branchFilter = $('[data-kt-ecommerce-product-filter="cabang"]');
+            const $dateFilter = $('#kt_ecommerce_sales_flatpickr');
+            const $activeBranchLabel = $('#active-branch-label');
+            const $activeDateLabel = $('#active-date-label');
+
+            function formatDateLabel(dateString) {
+                if (!dateString) {
+                    return '';
+                }
+
+                const parts = dateString.split('-');
+                if (parts.length !== 3) {
+                    return dateString;
+                }
+
+                return [parts[2], parts[1], parts[0]].join('/');
+            }
+
+            function getSelectedDateLabel() {
+                const range = $dateFilter.val();
+
+                if (!range) {
+                    return 'Semua tanggal';
+                }
+
+                const dates = range.split(' to ').filter(Boolean);
+
+                if (dates.length === 1) {
+                    return formatDateLabel(dates[0]);
+                }
+
+                return `${formatDateLabel(dates[0])} - ${formatDateLabel(dates[1])}`;
+            }
+
+            function updateActiveFilterInfo() {
+                const selectedBranch = $branchFilter.find('option:selected').text().trim() || 'Semua cabang';
+                $activeBranchLabel.text(selectedBranch);
+                $activeDateLabel.text(getSelectedDateLabel());
+            }
+
             dataTable = $('#pos-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -203,18 +265,28 @@
                 dataTable.draw(); // trigger fetch ulang dari server
             });
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
+                updateActiveFilterInfo();
                 dataTable.draw(); // trigger fetch ulang dari server
             });
 
-            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+            const salesFlatpickr = $("#kt_ecommerce_sales_flatpickr").flatpickr({
                 altInput: !0,
                 altFormat: "d/m/Y",
                 dateFormat: "Y-m-d",
                 mode: "range",
                 onChange: function(e, t, n) {
+                    updateActiveFilterInfo();
                     dataTable.draw();
                 }
             });
+
+            $('#kt_ecommerce_sales_flatpickr_clear').on('click', function() {
+                salesFlatpickr.clear(false);
+                updateActiveFilterInfo();
+                dataTable.draw();
+            });
+
+            updateActiveFilterInfo();
         });
 
         function reloadDataTable() {

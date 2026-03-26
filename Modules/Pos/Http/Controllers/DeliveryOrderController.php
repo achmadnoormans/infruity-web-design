@@ -178,8 +178,8 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details')
-        ->whereIn('branch_id', UserBranch::getUserBranch())
+        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch')
+        // ->whereIn('branch_id', UserBranch::getUserBranch())
         ->where('ongkir', '>', 0);
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('ongkir_status', $request->status_filter);
@@ -237,6 +237,9 @@ class DeliveryOrderController extends Controller
             ->addColumn('date', function ($item) {
                 $html = '<span class="text-muted d-block fs-8">' . date('Y-m-d', strtotime($item->ongkir_date)) . '</span>';
                 $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
+                if ($item->branch) {
+                    $html .= '<span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
+                }
                 return $html;
             })
             ->addColumn('status', function ($item) {

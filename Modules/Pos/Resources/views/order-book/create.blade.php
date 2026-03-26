@@ -78,43 +78,53 @@
                     </div>
                 </div>
                 <div>
-                    <textarea name="note" id="note" cols="30" rows="20" class="form-control"
+                    <textarea name="note" id="note" cols="30" rows="10" class="form-control"
                         placeholder="Silahkan paste note disini">{{ $data->note ?? '' }}</textarea>
                 </div>
             </div>
             @include('pos::pos.segment.modal-customer')
         </div>
-        <div class="row">
-            <div class="col">
-                <a href="{{ url('/order-book') }}" class="btn btn-danger">Kembali</a>
+        <div class="d-flex align-items-center justify-content-between flex-nowrap gap-3 mt-1">
+            <div class="flex-shrink-0 me-2">
+                <a href="{{ url('/order-book') }}"
+                    class="btn btn-sm btn-danger d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm text-nowrap">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Kembali</span>
+                </a>
             </div>
-            <div class="col">
-                <div class="text-end" x-data="{ loading: false }">
-                    <button class="btn btn-warning" @click="loading = true; saveDraft(() => loading = false)"
-                        :disabled="loading">
-                        <template x-if="!loading">
+            <div class="d-flex align-items-center gap-2 flex-nowrap ms-auto" x-data="{ loading: false }">
+                <button type="button"
+                    class="btn btn-sm btn-warning d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm text-nowrap"
+                    @click="loading = true; saveDraft(() => loading = false)" :disabled="loading">
+                    <template x-if="!loading">
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-file-earmark-text"></i>
                             <span>Draft</span>
-                        </template>
-                        <template x-if="loading">
-                            <span>
-                                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                                Memproses...
-                            </span>
-                        </template>
-                    </button>
-                    <button class="btn btn-primary" @click="loading = true; saveTransaction(() => loading = false)"
-                        :disabled="loading">
-                        <template x-if="!loading">
-                            <span>Simpan dan Proses</span>
-                        </template>
-                        <template x-if="loading">
-                            <span>
-                                <span class="spinner-border spinner-border-sm align-middle me-2"></span>
-                                Memproses...
-                            </span>
-                        </template>
-                    </button>
-                </div>
+                        </span>
+                    </template>
+                    <template x-if="loading">
+                        <span>
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            Memproses...
+                        </span>
+                    </template>
+                </button>
+                <button type="button"
+                    class="btn btn-sm btn-primary d-inline-flex align-items-center gap-2 px-3 py-2 shadow-sm text-nowrap"
+                    @click="loading = true; saveTransaction(() => loading = false)" :disabled="loading">
+                    <template x-if="!loading">
+                        <span class="d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-check2-circle"></i>
+                            <span>Simpan & Proses</span>
+                        </span>
+                    </template>
+                    <template x-if="loading">
+                        <span>
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            Memproses...
+                        </span>
+                    </template>
+                </button>
             </div>
         </div>
     </div>

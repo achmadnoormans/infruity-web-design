@@ -25,7 +25,10 @@
             diskonGlobal: 0,
             ongkirGlobal: 0,
             diskonOngkir: 0,
+            currentInvoiceNumber: '',
             autoSaveTimeout: null,
+            isAutoSaving: false,
+            autoSaveQueued: false,
 
             // Add Product
             showAddModal: false,
@@ -57,6 +60,8 @@
 
             init() {
                 const self = this; // simpan konteks Alpine
+                this.currentInvoiceNumber = document.querySelector('input[name="invoice_number"]')?.value || '';
+
                 $('#customer_id').on('select2:select', function(e) {
                     const data = e.params.data;
                     self.setMinimalPurchase(data.minimalPurchase || 0);
@@ -528,12 +533,6 @@
                 // return this.cart.reduce((sum, item) => sum + Number(item.qty), 0);
                 return this.cart.length;
             },
-            totalHargaKeseluruhan() {
-                return this.cart.reduce((sum, item) => {
-                    const total = (item.total_input || (item.price * item.qty)) - (item.discount || 0);
-                    return sum + total;
-                }, 0).toLocaleString('id-ID');
-            },
 
 
             showCartModal: false, // di dalam return {...}
@@ -687,9 +686,16 @@
                     if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
+
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                    this.autoSaveTimeout = null;
+                }
+                this.autoSaveQueued = false;
+
                 const customerId = document.querySelector('select[name="customer_id"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
-                const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                const invoiceNumber = this.currentInvoiceNumber || document.querySelector('input[name="invoice_number"]').value;
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
@@ -778,10 +784,18 @@
 
                 // Debounce auto-save
                 this.autoSaveTimeout = setTimeout(() => {
+                    if (this.isAutoSaving) {
+                        this.autoSaveQueued = true;
+                        return;
+                    }
+
+                    this.isAutoSaving = true;
+                    this.autoSaveQueued = false;
                     console.log('Auto-saving draft...');
                     const customerId = document.querySelector('select[name="customer_id"]').value;
                     const transactionDate = document.querySelector('input[name="date"]').value;
-                    const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                    const invoiceInput = document.querySelector('input[name="invoice_number"]');
+                    const invoiceNumber = this.currentInvoiceNumber || invoiceInput?.value || '';
                     const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                     const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                     const note = document.querySelector('textarea[name="note"]').value;
@@ -822,12 +836,32 @@
                             },
                             body: JSON.stringify(data),
                         })
-                        .then(res => res.json())
-                        .then(res => {
-                            console.log('Draft saved successfully');
+                        .then(async res => {
+                            const json = await res.json().catch(() => ({}));
+
+                            if (res.ok && json.success) {
+                                if (json.invoice_number) {
+                                    this.currentInvoiceNumber = json.invoice_number;
+                                    if (invoiceInput) {
+                                        invoiceInput.value = json.invoice_number;
+                                    }
+                                }
+                                console.log('Draft saved successfully');
+                                return;
+                            }
+
+                            throw new Error(json.message || 'Auto-save failed');
                         })
                         .catch(err => {
                             console.error('Auto-save failed:', err);
+                        })
+                        .finally(() => {
+                            this.isAutoSaving = false;
+
+                            if (this.autoSaveQueued) {
+                                this.autoSaveQueued = false;
+                                this.autoSaveDraft();
+                            }
                         });
                 }, 2000); // 2 second delay
             },
@@ -841,9 +875,16 @@
                     });
                     return;
                 }
+
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                    this.autoSaveTimeout = null;
+                }
+                this.autoSaveQueued = false;
+
                 const customerId = document.querySelector('select[name="customer_id"]').value;
                 const transactionDate = document.querySelector('input[name="date"]').value;
-                const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
+                const invoiceNumber = this.currentInvoiceNumber || document.querySelector('input[name="invoice_number"]').value;
                 const ongkirDate = document.querySelector('input[name="ongkir_date"]').value;
                 const ongkirTime = document.querySelector('input[name="ongkir_time"]').value;
                 const note = document.querySelector('textarea[name="note"]').value;
@@ -1322,9 +1363,9 @@
                 this.editItem = {
                     ...item
                 }; // salin data item
-                const idx = this.parcel.findIndex(i => i.id === this.editItem.id);
-                const parcelData = this.parcel[idx].data;
-                console.log('parcel Data', parcelData, 'item', item);
+                const selectedParcel = this.parcel.find(i => i.id === this.editItem.id) || null;
+                const parcelData = Array.isArray(selectedParcel?.data) ? selectedParcel.data : [];
+                console.log('parcel Data', parcelData, 'item', item, 'selectedParcel', selectedParcel);
                 let modalEl = document.getElementById('parcelEditModal');
 
                 const jasaEl = document.getElementById('parcel_jasa');
@@ -1356,10 +1397,17 @@
                     parcelFormInstance.setParcelId(item.id);
                 });
 
-                $('#parcel_edit_qty').val(item.qty || 1);
-                $('#parcel_edit_budget').val(this.formatRupiah(item.price || 0));
-                $('#parcel_edit_jasa').val(this.formatRupiah(item.fee || 0));
-                $('#kemasan_edit_price').val(item.kemasanPrice || 0);
+                const parcelQty = selectedParcel?.qty ?? item.qty ?? 1;
+                const parcelBudget = selectedParcel?.budget ?? item.price ?? 0;
+                const parcelFee = selectedParcel?.fee ?? item.fee ?? 0;
+                const kemasanPrice = selectedParcel?.kemasanPrice ?? item.kemasanPrice ?? 0;
+                const kemasanId = selectedParcel?.kemasanId ?? item.kemasanId ?? null;
+                const kemasanName = selectedParcel?.kemasan ?? selectedParcel?.kemasanName ?? item.kemasanName ?? null;
+
+                $('#parcel_edit_qty').val(parcelQty);
+                $('#parcel_edit_budget').val(this.formatRupiah(parcelBudget || 0));
+                $('#parcel_edit_jasa').val(this.formatRupiah(parcelFee || 0));
+                $('#kemasan_edit_price').val(kemasanPrice || 0);
                 $('#select_edit_kemasan').select2({
                     placeholder: 'Pilih kemasan',
                     language: {
@@ -1403,8 +1451,8 @@
                     $('#kemasan_edit_price').val(data.price.toLocaleString());
                     this.updateAddTotalFromQty();
                 });
-                if (item.kemasanId) {
-                    let option = new Option(item.kemasanName, item.kemasanId, true, true);
+                if (kemasanId) {
+                    let option = new Option(kemasanName, kemasanId, true, true);
                     $('#select_edit_kemasan')
                         .append(option)
                         .trigger('change');
@@ -1433,6 +1481,10 @@
             },
 
             loadExistingData(data, detail) {
+                this.cart = [];
+                this.parcel = [];
+                this.jus = [];
+
                 // Load existing cart items
                 detail.map(item => {
                     let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
@@ -1494,7 +1546,7 @@
                     }
                 });
 
-                this.diskonGlobal = data.discount;
+                this.diskonGlobal = parseFloat(data.discount || 0);
                 this.ongkirGlobal = parseFloat(data.ongkir || 0);
 
                 $('#note').val(data.note);
@@ -1505,6 +1557,14 @@
                 if (data.courier) {
                     let optionCourier = new Option(data.courier.name, data.courier.id, true, true);
                     $('#courier_id').append(optionCourier).val(data.courier.id).trigger('change');
+                }
+
+                if (data.invoice_number) {
+                    this.currentInvoiceNumber = data.invoice_number;
+                    const invoiceInput = document.querySelector('input[name="invoice_number"]');
+                    if (invoiceInput) {
+                        invoiceInput.value = data.invoice_number;
+                    }
                 }
 
                 if (data.ongkir_address) {
@@ -1547,6 +1607,10 @@
             },
 
             loadExistingOrderBook(data, detail) {
+                this.cart = [];
+                this.parcel = [];
+                this.jus = [];
+
                 // Load existing cart items
                 const key = Date.now() + Math.floor(Math.random() * 1000);
                 detail.map(item => {
