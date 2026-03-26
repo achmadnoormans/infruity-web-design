@@ -15,12 +15,18 @@ use Exception;
 
 class AccountController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('account.index')) {
+            return $denied;
+        }
+
         return view('master::account.index');
     }
 
@@ -30,6 +36,10 @@ class AccountController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('account.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -40,6 +50,10 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('account.store')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:account,name',
         ]);
@@ -83,6 +97,10 @@ class AccountController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('account.edit')) {
+            return $denied;
+        }
+
         $account = Account::findOrFail($id);
         return response()->json($account);
     }
@@ -95,6 +113,10 @@ class AccountController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('account.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:account,name,' . $id,
         ]);
@@ -128,6 +150,10 @@ class AccountController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('account.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $account = Account::findOrFail($id);

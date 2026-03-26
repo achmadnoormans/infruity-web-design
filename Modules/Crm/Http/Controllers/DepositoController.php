@@ -20,12 +20,18 @@ use Exception;
 
 class DepositoController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('deposito.index')) {
+            return $denied;
+        }
+
         return view('crm::deposito.index');
     }
 
@@ -35,6 +41,10 @@ class DepositoController extends Controller
      */
     public function customer_deposito()
     {
+        if ($denied = $this->requireAccess('customer-deposito.index')) {
+            return $denied;
+        }
+
         return view('crm::deposito.customer-deposito');
     }
 
@@ -44,6 +54,10 @@ class DepositoController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('deposito.create')) {
+            return $denied;
+        }
+
         return view('crm::create');
     }
 
@@ -54,6 +68,10 @@ class DepositoController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('deposito.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'customer_id' => 'required|exists:customer,id',
@@ -105,6 +123,10 @@ class DepositoController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('customer-deposito.show')) {
+            return $denied;
+        }
+
         $data['customer'] = Customer::find($id);
         return view('crm::deposito.show', $data);
     }
@@ -116,6 +138,10 @@ class DepositoController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('deposito.edit')) {
+            return $denied;
+        }
+
         $deposito = Deposito::with('customer')->findOrFail($id);
         return response()->json($deposito);
     }
@@ -128,6 +154,10 @@ class DepositoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('deposito.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'customer_id' => 'required|exists:customer,id',
             'date' => 'required|date',
@@ -165,6 +195,10 @@ class DepositoController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('deposito.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $deposito = Deposito::findOrFail($id);

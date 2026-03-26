@@ -1,356 +1,318 @@
 <?php
 
-return [
+$resourceActions = static function (string $label, array $extra = [], array $except = []): array {
+    $actions = [
+        'index' => "Lihat {$label}",
+        'create' => "Buka Form Tambah {$label}",
+        'store' => "Simpan {$label}",
+        'show' => "Detail {$label}",
+        'edit' => "Buka Form Ubah {$label}",
+        'update' => "Simpan Perubahan {$label}",
+        'delete' => "Aksi Hapus {$label}",
+        'destroy' => "Hapus {$label}",
+    ];
 
+    foreach ($except as $action) {
+        unset($actions[$action]);
+    }
+
+    return array_merge($actions, $extra);
+};
+
+$indexActions = static function (string $label, array $extra = []): array {
+    return array_merge([
+        'index' => "Lihat {$label}",
+    ], $extra);
+};
+
+return [
     'permissions' => [
-        // USER
+        // Administrator
         'user' => [
             'label' => 'User',
-            'actions' => [
-                'index' => 'Lihat User',
-                'create' => 'Buat User',
-                'update' => 'Ubah User',
-                'delete' => 'Hapus User',
-            ],
+            'actions' => $resourceActions('User', [], ['show']),
         ],
-        // ROLE
         'role' => [
             'label' => 'Role',
-            'actions' => [
-                'index' => 'Lihat Role',
-                'create' => 'Buat Role',
-                'update' => 'Ubah Role',
-                'delete' => 'Hapus Role',
-            ],
+            'actions' => $resourceActions('Role', [
+                'duplicate' => 'Duplikat Role',
+            ]),
         ],
-        // TIER
-        'tier' => [
-            'label' => 'Tier',
-            'actions' => [
-                'index' => 'Lihat Tier',
-                'create' => 'Buat Tier',
-                'update' => 'Ubah Tier',
-                'delete' => 'Hapus Tier',
-            ],
-        ],
-        // SETTING EXP
-        'setting_exp' => [
-            'label' => 'Setting Exp',
-            'actions' => [
-                'index' => 'Lihat Setting Exp',
-                'create' => 'Buat Setting Exp',
-                'update' => 'Ubah Setting Exp',
-                'delete' => 'Hapus Setting Exp',
-            ],
-        ],
-        // POINT SCHEDULE
-        'point_schedule' => [
-            'label' => 'Point Schedule',
-            'actions' => [
-                'index' => 'Lihat Point Schedule',
-                'create' => 'Buat Point Schedule',
-                'update' => 'Ubah Point Schedule',
-                'delete' => 'Hapus Point Schedule',
-            ],
-        ],
-        // DEPOSITO
-        'deposito' => [
-            'label' => 'Deposito',
-            'actions' => [
-                'index' => 'Lihat Depo',
-                'create' => 'Buat Depo',
-                'update' => 'Ubah Depo',
-                'delete' => 'Hapus Depo',
-            ],
-        ],
-        // campaign
-        'campaign' => [
-            'label' => 'Campaign',
-            'actions' => [
-                'index' => 'Lihat Campaign',
-                'create' => 'Buat Campaign',
-                'update' => 'Ubah Campaign',
-                'delete' => 'Hapus Campaign',
-            ],
-        ],
-        // customer-deposito
-        'customer_depo' => [
-            'label' => 'Customer Deposito',
-            'actions' => [
-                'index' => 'Lihat Customer Deposito',
-            ],
-        ],
-        // products
-        'products' => [
-            'label' => 'Products',
-            'actions' => [
-                'index' => 'Lihat Products',
-                'create' => 'Buat Products',
-                'update' => 'Ubah Products',
-                'delete' => 'Hapus Products',
-            ],
-        ],
-        // category
-        'category' => [
-            'label' => 'Category',
-            'actions' => [
-                'index' => 'Lihat Category',
-                'create' => 'Buat Category',
-                'update' => 'Ubah Category',
-                'delete' => 'Hapus Category',
-            ],
-        ],
-        // unit
-        'unit' => [
-            'label' => 'Unit',
-            'actions' => [
-                'index' => 'Lihat Unit',
-                'create' => 'Buat Unit',
-                'update' => 'Ubah Unit',
-                'delete' => 'Hapus Unit',
-            ],
-        ],
-        // location
-        'location' => [
-            'label' => 'Location',
-            'actions' => [
-                'index' => 'Lihat Location',
-                'create' => 'Buat Location',
-                'update' => 'Ubah Location',
-                'delete' => 'Hapus Location',
-            ],
-        ],
-        // handling
-        'handling' => [
-            'label' => 'Penanganan',
-            'actions' => [
-                'index' => 'Lihat Penanganan',
-                'create' => 'Buat Penanganan',
-                'update' => 'Ubah Penanganan',
-                'delete' => 'Hapus Penanganan',
-            ],
-        ],
-        // department
-        'department' => [
-            'label' => 'Department',
-            'actions' => [
-                'index' => 'Lihat Department',
-                'create' => 'Buat Department',
-                'update' => 'Ubah Department',
-                'delete' => 'Hapus Department',
-            ],
-        ],
-        // position
-        'position' => [
-            'label' => 'Posisi',
-            'actions' => [
-                'index' => 'Lihat Posisi',
-                'create' => 'Buat Posisi',
-                'update' => 'Ubah Posisi',
-                'delete' => 'Hapus Posisi',
-            ],
-        ],
-        // supplier
-        'supplier' => [
-            'label' => 'Supplier',
-            'actions' => [
-                'index' => 'Lihat Supplier',
-                'create' => 'Buat Supplier',
-                'update' => 'Ubah Supplier',
-                'delete' => 'Hapus Supplier',
-            ],
-        ],
-        // customers
-        'customer' => [
-            'label' => 'Pelanggan',
-            'actions' => [
-                'index' => 'Lihat Pelanggan',
-                'create' => 'Buat Pelanggan',
-                'update' => 'Ubah Pelanggan',
-                'delete' => 'Hapus Pelanggan',
-            ],
-        ],
-        // staff
-        'staff' => [
-            'label' => 'Staff',
-            'actions' => [
-                'index' => 'Lihat Staff',
-                'create' => 'Buat Staff',
-                'update' => 'Ubah Staff',
-                'delete' => 'Hapus Staff',
-            ],
-        ],
-        // branch
-        'branch' => [
-            'label' => 'Cabang',
-            'actions' => [
-                'index' => 'Lihat Cabang',
-                'create' => 'Buat Cabang',
-                'update' => 'Ubah Cabang',
-                'delete' => 'Hapus Cabang',
-            ],
-        ],
-        // payment-method
-        'payment-method' => [
-            'label' => 'Metode Pembayaran',
-            'actions' => [
-                'index' => 'Lihat Metode Pembayaran',
-                'create' => 'Buat Metode Pembayaran',
-                'update' => 'Ubah Metode Pembayaran',
-                'delete' => 'Hapus Metode Pembayaran',
-            ],
-        ],
-        // account
-        'account' => [
-            'label' => 'Akun',
-            'actions' => [
-                'index' => 'Lihat Akun',
-                'create' => 'Buat Akun',
-                'update' => 'Ubah Akun',
-                'delete' => 'Hapus Akun',
-            ],
-        ],
-        // setting-nota
-        'setting-nota' => [
-            'label' => 'Setting Nota',
-            'actions' => [
-                'index' => 'Lihat Setting Nota',
-                'create' => 'Buat Setting Nota',
-                'update' => 'Ubah Setting Nota',
-                'delete' => 'Hapus Setting Nota',
-            ],
-        ],
-        // delivery-order
-        'delivery-order' => [
-            'label' => 'Delivery Order',
-            'actions' => [
-                'index' => 'Lihat Order',
-            ],
-        ],
-        // report-transaction
-        'report-transaction' => [
-            'label' => 'Laporan Transaksi',
-            'actions' => [
-                'report-transaction' => 'Lihat Laporan Transaksi',
-                'report-customer-transaction' => 'Lihat Laporan Transaksi Per Customer',
-            ],
-        ],
-        // stock
-        'product-stock' => [
-            'label' => 'Stok',
-            'actions' => [
-                'index' => 'Lihat Stok',
-                'show' => 'Buat Stok',
-            ],
-        ],
-        // wholesale
-        'wholesale' => [
-            'label' => 'Kulak',
-            'actions' => [
-                'index' => 'Lihat Kulak',
-                'create' => 'Buat Kulak',
-                'update' => 'Ubah Kulak',
-                'delete' => 'Hapus Kulak',
-            ],
-        ],
-        // sortir
-        'sortir' => [
-            'label' => 'Sortir',
-            'actions' => [
-                'index' => 'Lihat Sortir',
-                'save-stock' => 'Lakukan Sortir',
-            ],
-        ],
-        // product-receipt
-        'product-receipt' => [
-            'label' => 'Resep Produk',
-            'actions' => [
-                'index' => 'Lihat Resep Produk',
-                'create' => 'Buat Resep Produk',
-                'update' => 'Ubah Resep Produk',
-                'delete' => 'Hapus Resep Produk',
-            ],
-        ],
-        // stock-out
-        'stock-out' => [
-            'label' => 'Stock Keluar',
-            'actions' => [
-                'index' => 'Lihat Stock Keluar',
-                'create' => 'Buat Stock Keluar',
-                'update' => 'Ubah Stock Keluar',
-                'delete' => 'Hapus Stock Keluar',
-            ],
-        ],
-        // stock-opname
-        'stock-opname' => [
-            'label' => 'Penyesuaian Stok',
-            'actions' => [
-                'index' => 'Lihat Penyesuaian Stok',
-                'create' => 'Buat Penyesuaian Stok',
-                'update' => 'Ubah Penyesuaian Stok',
-                'delete' => 'Hapus Penyesuaian Stok',
-            ],
-        ],
-        // stock-out-type
-        'stock-out-type' => [
-            'label' => 'Master Tipe Stock Keluar',
-            'actions' => [
-                'index' => 'Lihat Tipe Stock Keluar',
-                'create' => 'Buat Tipe Stock Keluar',
-                'update' => 'Ubah Tipe Stock Keluar',
-                'delete' => 'Hapus Tipe Stock Keluar',
-            ],
-        ],
-        // production
-        'production' => [
-            'label' => 'Produksi',
-            'actions' => [
-                'index' => 'Lihat Produksi',
-                'create' => 'Buat Produksi',
-                'update' => 'Ubah Produksi',
-                'delete' => 'Hapus Produksi',
-            ],
-        ],
-        // receipt
-        'receipt' => [
-            'label' => 'Resep',
-            'actions' => [
-                'index' => 'Lihat Resep',
-                'create' => 'Buat Resep',
-                'update' => 'Ubah Resep',
-                'delete' => 'Hapus Resep',
-            ],
-        ],
-        // parcel
-        'parcel' => [
-            'label' => 'Parcel',
-            'actions' => [
-                'index' => 'Lihat Parcel',
-                'create' => 'Buat Parcel',
-                'update' => 'Ubah Parcel',
-                'delete' => 'Hapus Parcel',
-            ],
+        'role-menu' => [
+            'label' => 'Role Menu',
+            'actions' => $resourceActions('Role Menu'),
         ],
 
+        // CRM
+        'crm-dashboard' => [
+            'label' => 'CRM Dashboard',
+            'actions' => $indexActions('CRM Dashboard', [
+                'top-distribution' => 'Lihat Top Distribusi CRM',
+                'top-tier' => 'Lihat Top Tier CRM',
+                'tier-graphic' => 'Lihat Grafik Tier CRM',
+                'gender-distribution' => 'Lihat Distribusi Gender CRM',
+                'customer-distribution' => 'Lihat Distribusi Customer CRM',
+            ]),
+        ],
+        'customer-report' => [
+            'label' => 'Laporan Customer',
+            'actions' => $indexActions('Laporan Customer'),
+        ],
+        'tier' => [
+            'label' => 'Tier',
+            'actions' => $resourceActions('Tier', [
+                'save_detail' => 'Simpan Detail Tier',
+                'get-gift' => 'Lihat Hadiah Tier',
+                'list-tier' => 'Lihat Daftar Tier',
+            ], ['show']),
+        ],
+        'setting-exp' => [
+            'label' => 'Setting Exp',
+            'actions' => $resourceActions('Setting Exp', [], ['show']),
+        ],
+        'point-schedule' => [
+            'label' => 'Point Schedule',
+            'actions' => $resourceActions('Point Schedule', [], ['show']),
+        ],
+        'deposito' => [
+            'label' => 'Deposito',
+            'actions' => $resourceActions('Deposito', [], ['show']),
+        ],
+        'customer-deposito' => [
+            'label' => 'Customer Deposito',
+            'actions' => $indexActions('Customer Deposito', [
+                'show' => 'Detail Customer Deposito',
+            ]),
+        ],
+        'campaign' => [
+            'label' => 'Campaign',
+            'actions' => $resourceActions('Campaign', [
+                'get-near-event' => 'Lihat Campaign Terdekat',
+            ], ['show']),
+        ],
+
+        // Master
+        'products' => [
+            'label' => 'Produk',
+            'actions' => $resourceActions('Produk', [
+                'store-variant' => 'Simpan Varian Produk',
+                'update-variant' => 'Simpan Perubahan Varian Produk',
+                'destroy-variant' => 'Hapus Varian Produk',
+                'get-receipt' => 'Lihat Resep untuk Produksi',
+                'get-product-receipt' => 'Lihat Resep Produk',
+                'generate-branch-price' => 'Generate Harga Cabang',
+            ]),
+        ],
+        'category' => [
+            'label' => 'Kategori',
+            'actions' => $resourceActions('Kategori', [
+                'export' => 'Export Kategori',
+            ], ['show']),
+        ],
+        'unit' => [
+            'label' => 'Unit',
+            'actions' => $resourceActions('Unit', [], ['show']),
+        ],
+        'location' => [
+            'label' => 'Lokasi',
+            'actions' => $resourceActions('Lokasi', [], ['show']),
+        ],
+        'handling' => [
+            'label' => 'Penanganan',
+            'actions' => $resourceActions('Penanganan', [], ['show']),
+        ],
+        'department' => [
+            'label' => 'Department',
+            'actions' => $resourceActions('Department', [
+                'export' => 'Export Department',
+            ], ['show']),
+        ],
+        'position' => [
+            'label' => 'Posisi',
+            'actions' => $resourceActions('Posisi', [
+                'export' => 'Export Posisi',
+            ], ['show']),
+        ],
+        'supplier' => [
+            'label' => 'Supplier',
+            'actions' => $resourceActions('Supplier', [], ['show']),
+        ],
+        'customers' => [
+            'label' => 'Pelanggan',
+            'actions' => $resourceActions('Pelanggan'),
+        ],
+        'staff' => [
+            'label' => 'Staff',
+            'actions' => $resourceActions('Staff'),
+        ],
+        'branch' => [
+            'label' => 'Cabang',
+            'actions' => $resourceActions('Cabang', [], ['show']),
+        ],
+        'payment-method' => [
+            'label' => 'Metode Pembayaran',
+            'actions' => $resourceActions('Metode Pembayaran', [], ['show']),
+        ],
+        'account' => [
+            'label' => 'Akun',
+            'actions' => $resourceActions('Akun', [], ['show']),
+        ],
+        'product-stock' => [
+            'label' => 'Stok Produk',
+            'actions' => $indexActions('Stok Produk', [
+                'show' => 'Detail Stok Produk',
+            ]),
+        ],
+
+        // Transaction
+        'wholesale' => [
+            'label' => 'Kulak',
+            'actions' => $resourceActions('Kulak', [
+                'receive_product' => 'Proses Penerimaan Kulak',
+                'receive_process' => 'Lihat Proses Penerimaan Kulak',
+                'save-receive' => 'Simpan Penerimaan Kulak',
+                'get-product' => 'Lihat Produk Kulak',
+                'edit-product' => 'Buka Form Ubah Produk Kulak',
+                'update-product' => 'Simpan Perubahan Produk Kulak',
+                'save-product' => 'Simpan Produk Kulak',
+                'save-transaction' => 'Simpan Transaksi Kulak',
+                'delete_product' => 'Hapus Produk Kulak',
+                'update_receive_product' => 'Simpan Penerimaan Produk Kulak',
+                'set_selesai' => 'Selesaikan Kulak',
+                'reset' => 'Reset Transaksi Kulak',
+            ]),
+        ],
+        'sortir' => [
+            'label' => 'Sortir',
+            'actions' => $resourceActions('Sortir', [
+                'save-stock' => 'Simpan Stok Sortir',
+                'save-transaction' => 'Simpan Transaksi Sortir',
+            ]),
+        ],
+        'transfer' => [
+            'label' => 'Transfer',
+            'actions' => $resourceActions('Transfer', [
+                'save-stock' => 'Simpan Stok Transfer',
+                'save-transaction' => 'Simpan Transaksi Transfer',
+            ]),
+        ],
+        'product-receipt' => [
+            'label' => 'Resep Produk',
+            'actions' => $resourceActions('Resep Produk', [], ['show']),
+        ],
+        'stock-out' => [
+            'label' => 'Stok Keluar',
+            'actions' => $resourceActions('Stok Keluar', [], ['show']),
+        ],
+        'stock-opname' => [
+            'label' => 'Penyesuaian Stok',
+            'actions' => $resourceActions('Penyesuaian Stok', [], ['show']),
+        ],
+        'stock-out-type' => [
+            'label' => 'Tipe Stok Keluar',
+            'actions' => $resourceActions('Tipe Stok Keluar', [], ['show']),
+        ],
+        'production' => [
+            'label' => 'Produksi',
+            'actions' => $resourceActions('Produksi', [
+                'payment' => 'Pembayaran Produksi',
+                'save-completion' => 'Simpan Penyelesaian Produksi',
+                'completion-notification' => 'Lihat Notifikasi Penyelesaian Produksi',
+                'detail' => 'Detail Produksi',
+                'print' => 'Cetak Produksi',
+                'get-receipt' => 'Lihat Resep Produksi',
+                'get-recipe-data' => 'Lihat Data Resep Produksi',
+                'delete_detail' => 'Hapus Detail Produksi',
+                'update_product_id' => 'Simpan Perubahan Produk Produksi',
+                'save-ajax' => 'Simpan Bahan Tambahan Produksi',
+                'edit-ajax' => 'Buka Form Ubah Bahan Tambahan Produksi',
+                'delete-ajax' => 'Hapus Bahan Tambahan Produksi',
+            ], ['show']),
+        ],
+        'receipt' => [
+            'label' => 'Resep',
+            'actions' => $resourceActions('Resep', [
+                'save-ajax' => 'Simpan Bahan Tambahan Resep',
+                'edit-ajax' => 'Buka Form Ubah Bahan Tambahan Resep',
+                'delete-ajax' => 'Hapus Bahan Tambahan Resep',
+            ], ['show']),
+        ],
+        'parcel' => [
+            'label' => 'Parcel',
+            'actions' => $resourceActions('Parcel', [
+                'process' => 'Proses Parcel',
+                'get-product' => 'Lihat Produk Parcel',
+                'edit-product' => 'Buka Form Ubah Produk Parcel',
+                'update-product' => 'Simpan Perubahan Produk Parcel',
+                'save-product' => 'Simpan Produk Parcel',
+                'delete_product' => 'Hapus Produk Parcel',
+                'set_selesai' => 'Selesaikan Parcel',
+            ]),
+        ],
 
         // POS
         'pos' => [
             'label' => 'POS',
+            'actions' => $resourceActions('Transaksi POS', [
+                'receipt' => 'Lihat Receipt POS',
+                'payment' => 'Pembayaran POS',
+                'savePayment' => 'Simpan Pembayaran POS',
+                'paymentNotification' => 'Lihat Notifikasi Pembayaran POS',
+                'listPayment' => 'Lihat Daftar Pembayaran POS',
+                'printPayment' => 'Cetak Pembayaran POS',
+                'printDraftPayment' => 'Cetak Draft Pembayaran POS',
+                'printNota' => 'Cetak Nota POS',
+                'cek-nota' => 'Cek Nota POS',
+                'cek-nota.draft' => 'Cek Nota Draft POS',
+            ]),
+        ],
+        'setting-nota' => [
+            'label' => 'Setting Nota',
+            'actions' => $resourceActions('Setting Nota', [
+                'view-receipt' => 'Lihat Preview Nota',
+            ], ['show']),
+        ],
+        'delivery-order' => [
+            'label' => 'Delivery Order',
+            'actions' => $indexActions('Delivery Order', [
+                'get-courier' => 'Lihat Kurir Delivery Order',
+                'update-courier' => 'Simpan Kurir Delivery Order',
+                'set-selesai' => 'Selesaikan Delivery Order',
+            ]),
+        ],
+        'other-book' => [
+            'label' => 'Other Book',
+            'actions' => $indexActions('Other Book', [
+                'set-selesai' => 'Selesaikan Other Book',
+            ]),
+        ],
+        'order-book' => [
+            'label' => 'Order Book',
+            'actions' => $resourceActions('Order Book', [
+                'save-transaction' => 'Simpan Transaksi Order Book',
+                'order' => 'Proses Order Book',
+            ], ['show']),
+        ],
+        'expenditure' => [
+            'label' => 'Pengeluaran',
+            'actions' => $resourceActions('Pengeluaran', [
+                'save-transaction' => 'Simpan Transaksi Pengeluaran',
+            ]),
+        ],
+
+        // Report
+        'report' => [
+            'label' => 'Laporan',
             'actions' => [
-                'index' => 'Lihat Transaksi',
-                'create' => 'Buat Transaksi',
-                'update' => 'Ubah Transaksi',
-                'delete' => 'Hapus Transaksi',
-                'save' => 'Simpan Transaksi',
-                'add_payment' => 'Tambah Pembayaran',
-                'remove_payment' => 'Hapus Pembayaran',
-                'print_receipt' => 'Cetak Resi',
-                'transaction_jus' => 'Transaksi Jus',
-                'transaction_buah' => 'Transaksi Buah',
-                'cek-nota' => 'Cek Nota',
-                'cek-nota.draft' => 'Cek Nota Draft',
+                'transaction' => 'Lihat Laporan Transaksi Penjualan',
+                'customer.transaction' => 'Lihat Laporan Penjualan Per Pelanggan',
+                'branch.transaction' => 'Lihat Laporan Penjualan Per Cabang',
+                'product.sales' => 'Lihat Laporan Penjualan Per Produk',
+                'branch.product' => 'Lihat Laporan Penjualan Per Channel',
+                'customer.product' => 'Lihat Laporan Transaksi Penjualan per Produk',
+                'product.buang' => 'Lihat Laporan Produk Buang',
+                'total.aset' => 'Lihat Laporan Total Aset',
             ],
         ],
     ],
-
 ];

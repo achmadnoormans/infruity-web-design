@@ -19,6 +19,8 @@ use Illuminate\Support\Str;
 
 class P_role extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      *
@@ -26,6 +28,10 @@ class P_role extends Controller
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('role.index')) {
+            return $denied;
+        }
+
         $data["data"] = Role::get();
 
         return view("admin.role.index", $data);
@@ -38,6 +44,10 @@ class P_role extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('role.create')) {
+            return $denied;
+        }
+
         return view("role");
     }
 
@@ -49,6 +59,10 @@ class P_role extends Controller
      */
     public function store(RoleRequest $request)
     {
+        if ($denied = $this->requireAccess('role.store')) {
+            return $denied;
+        }
+
         try {
 
             DB::beginTransaction();
@@ -79,6 +93,10 @@ class P_role extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('role.show')) {
+            return $denied;
+        }
+
         $role = Role::with('roleMenu')->findOrFail($id);
 
         // ambil semua nama route
@@ -98,6 +116,10 @@ class P_role extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('role.edit')) {
+            return $denied;
+        }
+
         if (class_exists(\Debugbar::class)) {
             \Debugbar::disable();
         }
@@ -114,6 +136,10 @@ class P_role extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('role.update')) {
+            return $denied;
+        }
+
         try {
             // save to user
             DB::beginTransaction();
@@ -149,6 +175,10 @@ class P_role extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('role.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $role = Role::findOrFail($id);
@@ -172,6 +202,10 @@ class P_role extends Controller
 
     public function duplicate($id)
     {
+        if ($denied = $this->requireAccess('role.duplicate')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $role = Role::findOrFail($id);

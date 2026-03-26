@@ -11,18 +11,28 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('crm-dashboard.index')) {
+            return $denied;
+        }
+
         $data['totalCustomer'] = Customer::count();
         return view('crm::dashboard.index', $data);
     }
 
     public function topDistribution(Request $request)
     {
+        if ($denied = $this->requireAccess('crm-dashboard.top-distribution')) {
+            return $denied;
+        }
+
         // Query 5 teratas
         $top5 = DB::table('customer')
             ->leftJoin('reg_districts as B', 'customer.district', '=', 'B.id')
@@ -56,6 +66,10 @@ class DashboardController extends Controller
 
     public function genderDistribution()
     {
+        if ($denied = $this->requireAccess('crm-dashboard.gender-distribution')) {
+            return $denied;
+        }
+
         $data = Customer::select('gender', DB::raw('COUNT(*) as total'))
             ->groupBy('gender')
             ->get();
@@ -68,6 +82,10 @@ class DashboardController extends Controller
 
     public function topTier()
     {
+        if ($denied = $this->requireAccess('crm-dashboard.top-tier')) {
+            return $denied;
+        }
+
         $data = Customer::query()
             ->leftJoin('vw_customer_tier', 'customer.id', '=', 'vw_customer_tier.customer_id')
             ->leftJoin('crm_tier as C', 'vw_customer_tier.tier_id', '=', 'C.id')
@@ -81,6 +99,10 @@ class DashboardController extends Controller
 
     public function tierGraphic(Request $request)
     {
+        if ($denied = $this->requireAccess('crm-dashboard.tier-graphic')) {
+            return $denied;
+        }
+
         $tiers = Tier::query()->leftJoin('vw_customer_tier as B', 'crm_tier.id', '=', 'B.tier_id')
             ->select([
                 'crm_tier.id',
@@ -98,6 +120,10 @@ class DashboardController extends Controller
 
     public function customerGraphic(Request $request)
     {
+        if ($denied = $this->requireAccess('crm-dashboard.customer-distribution')) {
+            return $denied;
+        }
+
         $customer = Customer::getCustomerGraph();
         return response()->json([
             'status' => true,

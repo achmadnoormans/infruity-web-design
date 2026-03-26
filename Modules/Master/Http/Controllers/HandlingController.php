@@ -20,12 +20,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class HandlingController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('handling.index')) {
+            return $denied;
+        }
+
         return view('master::handling.index');
     }
 
@@ -35,6 +41,10 @@ class HandlingController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('handling.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -45,6 +55,10 @@ class HandlingController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('handling.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:handling,name',
@@ -91,6 +105,10 @@ class HandlingController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('handling.edit')) {
+            return $denied;
+        }
+
         $handling = Handling::findOrFail($id);
         return response()->json($handling);
     }
@@ -103,6 +121,10 @@ class HandlingController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('handling.update')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:handling,name,' . $id,
@@ -131,6 +153,10 @@ class HandlingController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('handling.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $handling = Handling::findOrFail($id);

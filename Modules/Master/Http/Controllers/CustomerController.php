@@ -17,12 +17,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CustomerController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('customers.index')) {
+            return $denied;
+        }
+
         return view('master::customer.index');
     }
 
@@ -32,6 +38,10 @@ class CustomerController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('customers.create')) {
+            return $denied;
+        }
+
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
@@ -47,6 +57,10 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('customers.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
@@ -107,6 +121,10 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('customers.show')) {
+            return $denied;
+        }
+
         $customer = Customer::findOrFail($id);
         $data = [
             'data' => $customer,
@@ -126,6 +144,10 @@ class CustomerController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('customers.edit')) {
+            return $denied;
+        }
+
 
         $customer = Customer::findOrFail($id);
         $data = [
@@ -150,6 +172,10 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('customers.update')) {
+            return $denied;
+        }
+
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
             'birth_of_date' => 'nullable|date|date_format:Y-m-d',
@@ -208,6 +234,10 @@ class CustomerController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('customers.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $customer = Customer::findOrFail($id);

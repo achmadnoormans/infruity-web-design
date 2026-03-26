@@ -11,12 +11,18 @@ use Illuminate\Support\Facades\Auth;
 
 class SettingExpController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('setting-exp.index')) {
+            return $denied;
+        }
+
         $data['data'] = SettingExp::first();
         return view('crm::setting-exp.index2', $data);
     }
@@ -27,6 +33,10 @@ class SettingExpController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('setting-exp.create')) {
+            return $denied;
+        }
+
         return view('crm::create');
     }
 
@@ -37,6 +47,10 @@ class SettingExpController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('setting-exp.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -57,6 +71,10 @@ class SettingExpController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('setting-exp.edit')) {
+            return $denied;
+        }
+
         return view('crm::edit');
     }
 
@@ -68,6 +86,10 @@ class SettingExpController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('setting-exp.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         DB::beginTransaction();
         try {
@@ -95,6 +117,10 @@ class SettingExpController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('setting-exp.destroy')) {
+            return $denied;
+        }
+
         //
     }
 }

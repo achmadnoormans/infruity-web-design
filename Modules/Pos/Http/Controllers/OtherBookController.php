@@ -11,12 +11,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class OtherBookController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('other-book.index')) {
+            return $denied;
+        }
+
         return view('pos::otherbook.index');
     }
 
@@ -82,6 +88,10 @@ class OtherBookController extends Controller
 
     public function setSelesai($id)
     {
+        if ($denied = $this->requireAccess('other-book.set-selesai')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = PosModel::find($id);

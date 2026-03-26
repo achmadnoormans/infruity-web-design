@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('check_access')) {
     function check_access($nama)
@@ -15,7 +16,7 @@ if (!function_exists('must_access')) {
         if ($data) {
             return true;
         } else {
-            abort(404);
+            return redirect('dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ' . $nama . '. Hubungi Admin untuk Aktivasi Kembali');
         }
     }
 }

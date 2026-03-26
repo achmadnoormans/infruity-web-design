@@ -17,17 +17,32 @@ use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     public function index(Request $request)
     {
+        if ($denied = $this->requireAccess('user.index')) {
+            return $denied;
+        }
+
         $data['role'] = Role::all();
         $data['branch'] = Branch::all();
         return view("admin.user.index", $data);
     }
 
-    public function create() {}
+    public function create()
+    {
+        if ($denied = $this->requireAccess('user.create')) {
+            return $denied;
+        }
+    }
 
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('user.edit')) {
+            return $denied;
+        }
+
         if (class_exists(\Debugbar::class)) {
             \Debugbar::disable();
         }
@@ -37,6 +52,10 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
+        if ($denied = $this->requireAccess('user.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         try {
             DB::beginTransaction();
@@ -76,6 +95,10 @@ class UserController extends Controller
 
     public function update(UserRequest $request, $id)
     {
+        if ($denied = $this->requireAccess('user.update')) {
+            return $denied;
+        }
+
         try {
             // save to user
             DB::beginTransaction();
@@ -112,6 +135,10 @@ class UserController extends Controller
 
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('user.destroy')) {
+            return $denied;
+        }
+
         DB::beginTransaction();
 
         try {

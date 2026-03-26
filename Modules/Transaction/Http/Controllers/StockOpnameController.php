@@ -17,12 +17,18 @@ use Exception;
 
 class StockOpnameController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('stock-opname.index')) {
+            return $denied;
+        }
+
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
@@ -45,6 +51,10 @@ class StockOpnameController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('stock-opname.create')) {
+            return $denied;
+        }
+
         return view('transaction::create');
     }
 
@@ -55,6 +65,10 @@ class StockOpnameController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('stock-opname.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -120,6 +134,10 @@ class StockOpnameController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('stock-opname.edit')) {
+            return $denied;
+        }
+
         $stock = StockOpname::with('product')->findOrFail($id);
         $stock->name = $stock->product->name;
         return response()->json($stock);
@@ -133,6 +151,10 @@ class StockOpnameController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('stock-opname.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -143,6 +165,10 @@ class StockOpnameController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('stock-opname.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $stock = StockOpname::findOrFail($id);

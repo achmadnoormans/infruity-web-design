@@ -16,12 +16,18 @@ use Exception;
 
 class TierController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('tier.index')) {
+            return $denied;
+        }
+
         return view('crm::tier.index');
     }
 
@@ -31,6 +37,10 @@ class TierController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('tier.create')) {
+            return $denied;
+        }
+
         return view('crm::create');
     }
 
@@ -41,6 +51,10 @@ class TierController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('tier.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:crm_tier,name',
@@ -91,6 +105,10 @@ class TierController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('tier.edit')) {
+            return $denied;
+        }
+
         $tier = Tier::findOrFail($id);
         return response()->json($tier);
     }
@@ -103,6 +121,10 @@ class TierController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('tier.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:crm_tier,name,' . $id,
             'level' => 'required|integer|unique:crm_tier,level,' . $id,
@@ -144,6 +166,10 @@ class TierController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('tier.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $tier = Tier::findOrFail($id);
@@ -164,6 +190,10 @@ class TierController extends Controller
 
     public function saveDetail(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('tier.save_detail')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'discount_transaction' => 'nullable|numeric',
@@ -206,11 +236,19 @@ class TierController extends Controller
 
     public function customerReport(Request $request)
     {
+        if ($denied = $this->requireAccess('customer-report.index')) {
+            return $denied;
+        }
+
         return view('crm::report.customer');
     }
 
     public function getGift($id)
     {
+        if ($denied = $this->requireAccess('tier.get-gift')) {
+            return $denied;
+        }
+
         $tier = Tier::findOrFail($id);
         $freeProducts = $tier->freeProducts()->get();
 
@@ -219,6 +257,10 @@ class TierController extends Controller
 
     public function listTier(Request $request)
     {
+        if ($denied = $this->requireAccess('tier.list-tier')) {
+            return $denied;
+        }
+
         $search = $request->get('search');
         $tier = Tier::where('name', 'like', '%' . $search . '%')->get();
 

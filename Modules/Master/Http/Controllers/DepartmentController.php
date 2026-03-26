@@ -20,12 +20,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class DepartmentController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('department.index')) {
+            return $denied;
+        }
+
         return view('master::department.index');
     }
 
@@ -35,6 +41,10 @@ class DepartmentController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('department.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -45,6 +55,10 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('department.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -114,6 +128,10 @@ class DepartmentController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('department.edit')) {
+            return $denied;
+        }
+
         $department = Department::findOrFail($id);
         return response()->json($department);
     }
@@ -126,6 +144,10 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('department.update')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -185,6 +207,10 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('department.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $department = Department::findOrFail($id);

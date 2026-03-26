@@ -26,12 +26,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class WholesaleController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('wholesale.index')) {
+            return $denied;
+        }
+
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
@@ -67,6 +73,10 @@ class WholesaleController extends Controller
     // }
     public function create()
     {
+        if ($denied = $this->requireAccess('wholesale.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
 
         // Cek apakah ada temp transaksi untuk user ini
@@ -191,6 +201,10 @@ class WholesaleController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('wholesale.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'order_date'  => 'required',
@@ -248,6 +262,10 @@ class WholesaleController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('wholesale.show')) {
+            return $denied;
+        }
+
         // $data['suppliers'] = Supplier::all();
         // $data['data'] = Wholesale::findOrFail($id);
         // return view('transaction::wholesale.show', $data);
@@ -273,6 +291,10 @@ class WholesaleController extends Controller
 
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('wholesale.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs']       = true;
         $data['data']           = Wholesale::with('branch')->findOrFail($id);
         $data['detail']         = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
@@ -287,6 +309,10 @@ class WholesaleController extends Controller
      */
     public function update_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.update-product')) {
+            return $denied;
+        }
+
         // Validasi input
         // dd($request->all());
         $validated = $request->validate([
@@ -319,6 +345,10 @@ class WholesaleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         // Validasi input
         $request->validate([
@@ -389,6 +419,10 @@ class WholesaleController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('wholesale.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $wholesale = Wholesale::findOrFail($id);
@@ -431,6 +465,10 @@ class WholesaleController extends Controller
 
     public function receive_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.receive_product')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $wholesale         = Wholesale::findOrFail($id);
@@ -452,6 +490,10 @@ class WholesaleController extends Controller
 
     public function save_receive(Request $request)
     {
+        if ($denied = $this->requireAccess('wholesale.save-receive')) {
+            return $denied;
+        }
+
         $validator = Validator::make($request->all(), [
             'wholesale_id' => 'required|exists:wholesale,id',
             'products'     => 'required|array',
@@ -488,6 +530,10 @@ class WholesaleController extends Controller
 
     public function get_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.get-product')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = WholesaleProduct::where('wholesale_id', $id)->get();
         return DataTables::of($data)
@@ -548,6 +594,10 @@ class WholesaleController extends Controller
 
     public function save_product(Request $request)
     {
+        if ($denied = $this->requireAccess('wholesale.save-product')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'wholesale_id' => 'required|exists:wholesale,id',
             'id'           => 'required|exists:products,id',
@@ -605,6 +655,10 @@ class WholesaleController extends Controller
 
     public function delete_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.delete_product')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $wholesaleProduct = WholesaleProduct::findOrFail($id);
@@ -623,6 +677,10 @@ class WholesaleController extends Controller
 
     public function edit_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.edit-product')) {
+            return $denied;
+        }
+
         $data = WholesaleProduct::findOrFail($id);
         return response()->json([
             'data' => $data,
@@ -631,6 +689,10 @@ class WholesaleController extends Controller
 
     public function receive_process($id)
     {
+        if ($denied = $this->requireAccess('wholesale.receive_process')) {
+            return $denied;
+        }
+
         $wholesale        = Wholesale::findOrFail($id);
         $wholsaleProduct  = WholesaleProduct::with('product', 'supplier')->where('wholesale_id', $id)->get();
         $data['data']     = $wholesale;
@@ -641,6 +703,10 @@ class WholesaleController extends Controller
 
     public function update_receive_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.update_receive_product')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $wholesaleProduct         = WholesaleProduct::findOrFail($id);
@@ -660,6 +726,10 @@ class WholesaleController extends Controller
 
     public function set_selesai(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('wholesale.set_selesai')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $wholesale         = Wholesale::findOrFail($id);
@@ -679,6 +749,10 @@ class WholesaleController extends Controller
 
     public function reset_transactions(Request $request)
     {
+        if ($denied = $this->requireAccess('wholesale.reset')) {
+            return $denied;
+        }
+
         $tables = [
             'wholesale',
             'wholesale_product',
@@ -756,6 +830,10 @@ class WholesaleController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('wholesale.save-transaction')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = $request->validate([
             'branch_id'      => 'required|exists:branch,id',

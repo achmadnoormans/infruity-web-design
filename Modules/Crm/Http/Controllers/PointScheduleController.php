@@ -16,12 +16,18 @@ use Modules\Crm\Entities\Tier;
 
 class PointScheduleController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('point-schedule.index')) {
+            return $denied;
+        }
+
         $data['data'] = PointSchedule::first();
         $data['frequencies'] = PointFrequency::all();
         $data['exp'] = SettingExp::first();
@@ -34,6 +40,10 @@ class PointScheduleController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('point-schedule.create')) {
+            return $denied;
+        }
+
         return view('crm::create');
     }
 
@@ -44,6 +54,10 @@ class PointScheduleController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('point-schedule.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -64,6 +78,10 @@ class PointScheduleController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('point-schedule.edit')) {
+            return $denied;
+        }
+
         return view('crm::edit');
     }
 
@@ -75,6 +93,10 @@ class PointScheduleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('point-schedule.update')) {
+            return $denied;
+        }
+
         DB::beginTransaction();
         try {
             $settingPoint = PointSchedule::findOrFail($id);
@@ -126,6 +148,10 @@ class PointScheduleController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('point-schedule.destroy')) {
+            return $denied;
+        }
+
         //
     }
 }

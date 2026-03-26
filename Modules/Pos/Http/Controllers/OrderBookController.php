@@ -23,12 +23,18 @@ use App\Models\UserDevice;
 
 class OrderBookController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('order-book.index')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::order-book.index', $data);
     }
@@ -39,6 +45,10 @@ class OrderBookController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('order-book.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['invoice_number'] = OrderBook::getOrderNumber();
         return view('pos::order-book.create', $data);
@@ -51,6 +61,10 @@ class OrderBookController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('order-book.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -71,6 +85,10 @@ class OrderBookController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('order-book.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit')->find($id);
         $data['invoice_number'] = $data['data']->invoice_number;
@@ -85,6 +103,10 @@ class OrderBookController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('order-book.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -95,6 +117,10 @@ class OrderBookController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('order-book.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = OrderBook::findOrFail($id);
@@ -117,6 +143,10 @@ class OrderBookController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('order-book.save-transaction')) {
+            return $denied;
+        }
+
         $data = $request->validate([
             'branch_id' => 'required|exists:branch,id',
             'invoice_number' => 'required',
@@ -204,6 +234,10 @@ class OrderBookController extends Controller
 
     public function order($id)
     {
+        if ($denied = $this->requireAccess('order-book.order')) {
+            return $denied;
+        }
+
         $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch')->find($id);
         $data['order'] = $orderBook;
         $data['alpinejs'] = true;

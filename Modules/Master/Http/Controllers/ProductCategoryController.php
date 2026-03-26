@@ -21,12 +21,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductCategoryController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('category.index')) {
+            return $denied;
+        }
+
         return view('master::category.index');
     }
 
@@ -36,6 +42,10 @@ class ProductCategoryController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('category.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -46,6 +56,10 @@ class ProductCategoryController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('category.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:products_category,name',
@@ -92,6 +106,10 @@ class ProductCategoryController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('category.edit')) {
+            return $denied;
+        }
+
         $category = ProductCategory::findOrFail($id);
         return response()->json($category);
     }
@@ -104,6 +122,10 @@ class ProductCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('category.update')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:products_category,name,' . $id,
@@ -132,6 +154,10 @@ class ProductCategoryController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('category.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $category = ProductCategory::findOrFail($id);
@@ -204,6 +230,10 @@ class ProductCategoryController extends Controller
 
     public function excel()
     {
+        if ($denied = $this->requireAccess('category.export')) {
+            return $denied;
+        }
+
         $category = ProductCategory::all();
 
         $dataExport = [];

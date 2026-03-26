@@ -21,12 +21,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProductionController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('production.index')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::production.index', $data);
     }
@@ -37,6 +43,10 @@ class ProductionController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('production.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
 
         // Cek apakah ada temp production untuk user ini
@@ -68,6 +78,10 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('production.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
 
@@ -198,6 +212,10 @@ class ProductionController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('production.detail')) {
+            return $denied;
+        }
+
         try {
             $data['data']              = Production::with(['products', 'products.unit', 'staff', 'creator'])->findOrFail($id);
             $data['production_detail'] = ProductionDetail::with(['products', 'products.unit', 'products.category'])->where('production_id', $id)->get();
@@ -224,6 +242,10 @@ class ProductionController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('production.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs']          = true;
         $data['data']              = Production::with('branch')->find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
@@ -242,6 +264,10 @@ class ProductionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'product_id'      => 'required|exists:receipt,id',
@@ -318,6 +344,10 @@ class ProductionController extends Controller
      */
     public function payment($id)
     {
+        if ($denied = $this->requireAccess('production.payment')) {
+            return $denied;
+        }
+
         $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.payment', $data);
@@ -330,6 +360,10 @@ class ProductionController extends Controller
      */
     public function saveCompletion(Request $request)
     {
+        if ($denied = $this->requireAccess('production.save-completion')) {
+            return $denied;
+        }
+
         $data = $request->validate([
             'production_id'   => 'required|exists:production,id',
             'completion_date' => 'required|date',
@@ -379,6 +413,10 @@ class ProductionController extends Controller
      */
     public function completionNotification($id)
     {
+        if ($denied = $this->requireAccess('production.completion-notification')) {
+            return $denied;
+        }
+
         $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.completion-success', $data);
@@ -391,6 +429,10 @@ class ProductionController extends Controller
      */
     public function printProduction($id)
     {
+        if ($denied = $this->requireAccess('production.print')) {
+            return $denied;
+        }
+
         $data['data']              = Production::with('products')->findOrFail($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
         return view('transaction::production.print', $data);
@@ -403,6 +445,10 @@ class ProductionController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('production.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $production = Production::findOrFail($id);
@@ -424,6 +470,10 @@ class ProductionController extends Controller
 
     public function delete_detail(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.delete_detail')) {
+            return $denied;
+        }
+
         try {
             $userId = Auth::user()->id_user;
             DB::beginTransaction();
@@ -465,6 +515,10 @@ class ProductionController extends Controller
 
     public function update_product_id(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.update_product_id')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $receipt   = Receipt::with('products')->find($request->receipt_id);
@@ -489,6 +543,10 @@ class ProductionController extends Controller
 
     public function get_detail_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.get-receipt')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = ProductionDetail::with('products')->where('production_id', $id)->get();
         return DataTables::of($data)
@@ -534,6 +592,10 @@ class ProductionController extends Controller
 
     public function edit_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.edit-ajax')) {
+            return $denied;
+        }
+
         $data = ProductionDetail::with('products')->findOrFail($id);
         return response()->json([
             'data' => $data,
@@ -542,6 +604,10 @@ class ProductionController extends Controller
 
     public function save_additional_ingredient(Request $request)
     {
+        if ($denied = $this->requireAccess('production.save-ajax')) {
+            return $denied;
+        }
+
         // dd($request->all());
         try {
             DB::beginTransaction();
@@ -568,6 +634,10 @@ class ProductionController extends Controller
 
     public function update_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.edit-ajax')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'qty'        => 'required|numeric',
@@ -591,6 +661,10 @@ class ProductionController extends Controller
 
     public function delete_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.delete-ajax')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $deteilProduct = ProductionDetail::findOrFail($id);

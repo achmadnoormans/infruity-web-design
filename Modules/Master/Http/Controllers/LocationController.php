@@ -15,12 +15,18 @@ use Exception;
 
 class LocationController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('location.index')) {
+            return $denied;
+        }
+
         return view('master::location.index');
     }
 
@@ -30,6 +36,10 @@ class LocationController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('location.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -40,6 +50,10 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('location.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -88,6 +102,10 @@ class LocationController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('location.edit')) {
+            return $denied;
+        }
+
         $location = Location::findOrFail($id);
         return response()->json($location);
     }
@@ -100,6 +118,10 @@ class LocationController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('location.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'string|max:255',
@@ -129,6 +151,10 @@ class LocationController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('location.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $location = Location::findOrFail($id);

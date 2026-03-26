@@ -12,12 +12,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PaymentMethodController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('payment-method.index')) {
+            return $denied;
+        }
+
         return view('master::payment-method.index');
     }
 
@@ -27,6 +33,10 @@ class PaymentMethodController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('payment-method.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -37,6 +47,10 @@ class PaymentMethodController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('payment-method.store')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:payment_method,name',
         ]);
@@ -80,6 +94,10 @@ class PaymentMethodController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('payment-method.edit')) {
+            return $denied;
+        }
+
         $paymentMethod = PaymentMethod::findOrFail($id);
         return response()->json($paymentMethod);
     }
@@ -92,6 +110,10 @@ class PaymentMethodController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('payment-method.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:payment_method,name,' . $id,
         ]);
@@ -137,6 +159,10 @@ class PaymentMethodController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('payment-method.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $paymentMethod = PaymentMethod::findOrFail($id);

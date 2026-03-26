@@ -16,45 +16,79 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index(Request $request)
     {
+        if ($denied = $this->requireAccess('report.transaction')) {
+            return $denied;
+        }
+
         return view('report::customer-transaction');
     }
 
     public function customer_transaction(Request $request)
     {
+        if ($denied = $this->requireAccess('report.customer.transaction')) {
+            return $denied;
+        }
+
         return view('report::customer-transaction-rep');
     }
 
     public function branch_transaction(Request $request)
     {
+        if ($denied = $this->requireAccess('report.branch.transaction')) {
+            return $denied;
+        }
+
         return view('report::branch-transaction-rep');
     }
 
     public function branch_product(Request $request)
     {
+        if ($denied = $this->requireAccess('report.branch.product')) {
+            return $denied;
+        }
+
         return view('report::branch-product-rep');
     }
     public function customer_product(Request $request)
     {
+        if ($denied = $this->requireAccess('report.customer.product')) {
+            return $denied;
+        }
+
         return view('report::product-customer-transaction-rep');
     }
     public function product_buang(Request $request)
     {
+        if ($denied = $this->requireAccess('report.product.buang')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::all();
         return view('report::product-buang', $data);
     }
     public function product_sales(Request $request)
     {
+        if ($denied = $this->requireAccess('report.product.sales')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::all();
         return view('report::product-sales', $data);
     }
     public function total_aset(Request $request)
     {
+        if ($denied = $this->requireAccess('report.total.aset')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::all();
         return view('report::total-aset', $data);
     }

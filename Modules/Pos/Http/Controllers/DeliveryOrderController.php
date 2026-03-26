@@ -19,12 +19,18 @@ use Illuminate\Support\Str;
 
 class DeliveryOrderController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('delivery-order.index')) {
+            return $denied;
+        }
+
         $branches = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::delivery-order.index', compact('branches'));
     }
@@ -91,6 +97,10 @@ class DeliveryOrderController extends Controller
 
     public function setSelesai(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('delivery-order.set-selesai')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = PosModel::find($id);
@@ -143,12 +153,20 @@ class DeliveryOrderController extends Controller
 
     public function getCourier(Request $request)
     {
+        if ($denied = $this->requireAccess('delivery-order.get-courier')) {
+            return $denied;
+        }
+
         $staffs = Staff::all();
         return view('pos::delivery-order.list-kurir', compact('staffs'));
     }
 
     public function updateCourier(Request $request)
     {
+        if ($denied = $this->requireAccess('delivery-order.update-courier')) {
+            return $denied;
+        }
+
         $kurirIds = $request->input('kurir_ids', []);
         $staffs = Staff::all();
         foreach ($staffs as $staff) {

@@ -20,12 +20,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SupplierController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('supplier.index')) {
+            return $denied;
+        }
+
         return view('master::supllier.index');
     }
 
@@ -35,6 +41,10 @@ class SupplierController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('supplier.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -45,6 +55,10 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('supplier.store')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:supplier,name',
             'pic_name' => 'required|string|max:255',
@@ -100,6 +114,10 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('supplier.edit')) {
+            return $denied;
+        }
+
         $supplier = Supplier::findOrFail($id);
         return response()->json($supplier);
     }
@@ -112,6 +130,10 @@ class SupplierController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('supplier.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:supplier,name,' . $id,
             'pic_name' => 'required|string|max:255',
@@ -157,6 +179,10 @@ class SupplierController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('supplier.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $supplier = Supplier::findOrFail($id);

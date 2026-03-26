@@ -15,12 +15,18 @@ use Exception;
 
 class ProductUnitController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('unit.index')) {
+            return $denied;
+        }
+
         return view('master::unit.index');
     }
 
@@ -30,6 +36,10 @@ class ProductUnitController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('unit.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -40,6 +50,10 @@ class ProductUnitController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('unit.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:product_units,name',
@@ -88,6 +102,10 @@ class ProductUnitController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('unit.edit')) {
+            return $denied;
+        }
+
         $unit = ProductUnit::findOrFail($id);
         return response()->json($unit);
     }
@@ -100,6 +118,10 @@ class ProductUnitController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('unit.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'abbreviation' => 'required|string|max:255',
@@ -129,6 +151,10 @@ class ProductUnitController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('unit.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $unit = ProductUnit::findOrFail($id);

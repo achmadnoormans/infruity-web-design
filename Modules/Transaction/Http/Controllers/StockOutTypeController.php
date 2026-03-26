@@ -15,12 +15,18 @@ use Exception;
 
 class StockOutTypeController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('stock-out-type.index')) {
+            return $denied;
+        }
+
         return view('transaction::stock-out-type.index');
     }
 
@@ -30,6 +36,10 @@ class StockOutTypeController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('stock-out-type.create')) {
+            return $denied;
+        }
+
         return view('transaction::create');
     }
 
@@ -40,6 +50,10 @@ class StockOutTypeController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('stock-out-type.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -60,6 +74,10 @@ class StockOutTypeController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('stock-out-type.edit')) {
+            return $denied;
+        }
+
         $type = StockOutType::findOrFail($id);
         return response()->json($type);
     }
@@ -72,6 +90,10 @@ class StockOutTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('stock-out-type.update')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'type_name' => 'required|string|max:255',
@@ -98,6 +120,10 @@ class StockOutTypeController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('stock-out-type.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $type = StockOutType::findOrFail($id);

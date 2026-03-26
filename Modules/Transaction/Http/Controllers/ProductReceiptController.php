@@ -22,12 +22,18 @@ use Exception;
 
 class ProductReceiptController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('product-receipt.index')) {
+            return $denied;
+        }
+
         return view('transaction::receipt.index');
     }
 
@@ -37,6 +43,10 @@ class ProductReceiptController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('product-receipt.create')) {
+            return $denied;
+        }
+
         return view('transaction::receipt.create');
     }
 
@@ -47,6 +57,10 @@ class ProductReceiptController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('product-receipt.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $messages = [
             'product_id.required' => 'ID produk wajib diisi.',
@@ -101,6 +115,10 @@ class ProductReceiptController extends Controller
 
     public function save_additional_ingredient(Request $request)
     {
+        if ($denied = $this->requireAccess('receipt.save-ajax')) {
+            return $denied;
+        }
+
         // dd($request->all());
         try {
             DB::beginTransaction();
@@ -128,6 +146,10 @@ class ProductReceiptController extends Controller
 
     public function delete_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('receipt.delete-ajax')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $deteilProduct = ProductReceipt::findOrFail($id);
@@ -146,6 +168,10 @@ class ProductReceiptController extends Controller
 
     public function edit_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('receipt.edit-ajax')) {
+            return $denied;
+        }
+
         $data = ProductReceipt::with('ingredients')->findOrFail($id);
         return response()->json([
             'data' => $data
@@ -154,6 +180,10 @@ class ProductReceiptController extends Controller
 
     public function update_additional_ingredient(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('receipt.edit-ajax')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'qty' => 'required|numeric',
@@ -192,6 +222,10 @@ class ProductReceiptController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('product-receipt.edit')) {
+            return $denied;
+        }
+
         $data['data'] = Receipt::find($id);
         $data['production_detail'] = ProductReceipt::with('product', 'ingredients')->where('receipt_id', $id)->get();
         $data['selectedProduct'] = Product::find($data['data']->product_id);
@@ -207,6 +241,10 @@ class ProductReceiptController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('product-receipt.update')) {
+            return $denied;
+        }
+
         // Custom validation messages in Bahasa Indonesia
         $messages = [
             'product_id.required' => 'ID produk wajib diisi.',
@@ -267,6 +305,10 @@ class ProductReceiptController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('product-receipt.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $production = Receipt::findOrFail($id);
@@ -288,6 +330,10 @@ class ProductReceiptController extends Controller
 
     public function getReceipt(Request $request)
     {
+        if ($denied = $this->requireAccess('products.get-receipt')) {
+            return $denied;
+        }
+
         $data = Receipt::with('products')
             ->select('*')
             ->get();
@@ -304,6 +350,10 @@ class ProductReceiptController extends Controller
 
     public function get_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('production.get-receipt')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = ProductReceipt::with('product')->with('ingredients')->where('receipt_id', $id)->get();
         return DataTables::of($data)
@@ -354,6 +404,10 @@ class ProductReceiptController extends Controller
      */
     public function getRecipeData($id)
     {
+        if ($denied = $this->requireAccess('production.get-recipe-data')) {
+            return $denied;
+        }
+
         try {
             // Find the receipt by receipt ID
             $receipt = Receipt::with('products')->find($id);

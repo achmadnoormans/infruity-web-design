@@ -20,12 +20,18 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PositionController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('position.index')) {
+            return $denied;
+        }
+
         $departments = Department::all();
         $data = [
             'departments' => $departments,
@@ -39,6 +45,10 @@ class PositionController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('position.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -49,6 +59,10 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('position.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -120,6 +134,10 @@ class PositionController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('position.edit')) {
+            return $denied;
+        }
+
         $position = Position::findOrFail($id);
         return response()->json($position);
     }
@@ -132,6 +150,10 @@ class PositionController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('position.update')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -196,6 +218,10 @@ class PositionController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('position.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $position = Position::findOrFail($id);

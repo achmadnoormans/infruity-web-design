@@ -16,12 +16,18 @@ use Exception;
 
 class StockOutController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('stock-out.index')) {
+            return $denied;
+        }
+
         $data['type'] = StockOutType::all();
         return view('transaction::stock-out.index', $data);
     }
@@ -32,6 +38,10 @@ class StockOutController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('stock-out.create')) {
+            return $denied;
+        }
+
         return view('transaction::create');
     }
 
@@ -42,6 +52,10 @@ class StockOutController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('stock-out.store')) {
+            return $denied;
+        }
+
         // Validasi input
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -108,6 +122,10 @@ class StockOutController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('stock-out.edit')) {
+            return $denied;
+        }
+
         $stock = StockOutModel::with('product')->findOrFail($id);
         $stock->name = $stock->product->name;
         return response()->json($stock);
@@ -121,6 +139,10 @@ class StockOutController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('stock-out.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'date' => 'required|date',
@@ -175,6 +197,10 @@ class StockOutController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('stock-out.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $stock = StockOutModel::findOrFail($id);

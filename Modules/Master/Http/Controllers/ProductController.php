@@ -22,18 +22,28 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProductController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('products.index')) {
+            return $denied;
+        }
+
         $data['branch'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('master::products.index', $data);
     }
 
     public function get_stock()
     {
+        if ($denied = $this->requireAccess('product-stock.index')) {
+            return $denied;
+        }
+
         $data['category'] = ProductCategory::all();
         $data['branch']   = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('master::products.stock', $data);
@@ -45,6 +55,10 @@ class ProductController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('products.create')) {
+            return $denied;
+        }
+
         $data['product_units'] = ProductUnit::all();
         $data['tipe']          = ['product' => 'Product', 'kemasan' => 'Kemasan'];
         $data['data']          = null;
@@ -58,6 +72,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('products.store')) {
+            return $denied;
+        }
+
         // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
             'product_name'    => 'required|unique:products,name',
@@ -210,6 +228,10 @@ class ProductController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('products.show')) {
+            return $denied;
+        }
+
         $product = Product::findOrFail($id);
         $data    = [
             'data'          => $product,
@@ -221,6 +243,10 @@ class ProductController extends Controller
 
     public function show_stock($id)
     {
+        if ($denied = $this->requireAccess('product-stock.show')) {
+            return $denied;
+        }
+
         $data['data'] = Product::findOrFail($id);
         return view('master::products.stock-show', $data);
     }
@@ -311,6 +337,10 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('products.edit')) {
+            return $denied;
+        }
+
         $product = Product::findOrFail($id);
         $data    = [
             'data'          => $product,
@@ -335,6 +365,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('products.update')) {
+            return $denied;
+        }
+
         // dd($request->all(), $request->file('avatar'));
         $validator = Validator::make($request->all(), [
             'product_name'    => 'required|unique:products,name,' . $id,
@@ -492,6 +526,10 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('products.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $product = Product::findOrFail($id);
@@ -584,6 +622,10 @@ class ProductController extends Controller
 
     public function storeVariant(Request $request)
     {
+        if ($denied = $this->requireAccess('products.store-variant')) {
+            return $denied;
+        }
+
         $validator = Validator::make($request->all(), [
             'parent_id'    => 'required|exists:products,id',
             'product_name' => 'required|string|max:255|unique:products,name',
@@ -629,6 +671,10 @@ class ProductController extends Controller
 
     public function updateVariant(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('products.update-variant')) {
+            return $denied;
+        }
+
         try {
             $validator = Validator::make($request->all(), [
                 'product_name' => 'required|string|max:255',
@@ -656,6 +702,10 @@ class ProductController extends Controller
 
     public function destroyVariant($id)
     {
+        if ($denied = $this->requireAccess('products.destroy-variant')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $variant = Product::findOrFail($id);
@@ -670,6 +720,10 @@ class ProductController extends Controller
 
     public function getProductReceipt(Request $request)
     {
+        if ($denied = $this->requireAccess('products.get-product-receipt')) {
+            return $denied;
+        }
+
         $search = $request->input('search', '');
         $query  = Product::where('status', 'receipt')
             ->where('name', 'like', '%' . $search . '%')
@@ -732,6 +786,10 @@ class ProductController extends Controller
 
     public function generateBranchPrice(Request $request)
     {
+        if ($denied = $this->requireAccess('products.generate-branch-price')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
 

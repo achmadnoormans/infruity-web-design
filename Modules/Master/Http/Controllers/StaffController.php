@@ -16,12 +16,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class StaffController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('staff.index')) {
+            return $denied;
+        }
+
         return view('master::staff.index');
     }
 
@@ -31,6 +37,10 @@ class StaffController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('staff.create')) {
+            return $denied;
+        }
+
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
@@ -45,6 +55,10 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('staff.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'staff_name'  => 'required',
@@ -113,6 +127,10 @@ class StaffController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('staff.show')) {
+            return $denied;
+        }
+
         $data['data'] = Staff::findOrFail($id);
         return view('master::staff.show', $data);
     }
@@ -124,6 +142,10 @@ class StaffController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('staff.edit')) {
+            return $denied;
+        }
+
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
@@ -141,6 +163,10 @@ class StaffController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('staff.update')) {
+            return $denied;
+        }
+
         $validator = Validator::make($request->all(), [
             'staff_name'  => 'required',
             'nickname'    => 'required',
@@ -219,6 +245,10 @@ class StaffController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('staff.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $staff = Staff::findOrFail($id);

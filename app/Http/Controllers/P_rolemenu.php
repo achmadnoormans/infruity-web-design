@@ -18,6 +18,8 @@ use App\Models\Module;
 
 class P_rolemenu extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      *
@@ -25,17 +27,29 @@ class P_rolemenu extends Controller
      */
     public function index(Request $request)
     {
+        if ($denied = $this->requireAccess('role-menu.index')) {
+            return $denied;
+        }
+
         $data["data"] = RoleMenu::with('role')->paginate(10);
         return view("role-menu", $data);
     }
 
     public function create()
     {
+        if ($denied = $this->requireAccess('role-menu.create')) {
+            return $denied;
+        }
+
 
     }
 
     public function store(UserRequest $request)
     {
+        if ($denied = $this->requireAccess('role-menu.store')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $user = new User();
@@ -61,11 +75,19 @@ class P_rolemenu extends Controller
 
     public function show($id)
     {
+        if ($denied = $this->requireAccess('role-menu.show')) {
+            return $denied;
+        }
+
         abort(404);
     }
 
     public function update(Request $request, $id_role)
     {
+        if ($denied = $this->requireAccess('role-menu.update')) {
+            return $denied;
+        }
+
         try {
             // save to user
             DB::beginTransaction();
@@ -95,6 +117,10 @@ class P_rolemenu extends Controller
 
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('role-menu.destroy')) {
+            return $denied;
+        }
+
         DB::beginTransaction();
 
         try {

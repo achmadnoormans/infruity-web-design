@@ -22,12 +22,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SortirController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('sortir.index')) {
+            return $denied;
+        }
+
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
@@ -50,6 +56,10 @@ class SortirController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('sortir.create')) {
+            return $denied;
+        }
+
         $data['alpinejs']       = true;
         $data['data']           = null;
         $data['detail']         = null;
@@ -64,6 +74,10 @@ class SortirController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('sortir.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -74,6 +88,10 @@ class SortirController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('sortir.show')) {
+            return $denied;
+        }
+
         // dd($id);
         $data['product'] = DB::table('sortir_view')->where('id', $id)->first();
         // $data['productChild'] = ProductChild::with('product')->where('parent_id', $data['product']->id)->get();
@@ -88,6 +106,10 @@ class SortirController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('sortir.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs']       = true;
         $data['data']           = Sortir::with('branch', 'createdBy')->findOrFail($id);
         $data['detail']         = SortirDetail::with('product', 'product.unit')->where('sortir_id', $id)->get();
@@ -103,6 +125,10 @@ class SortirController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('sortir.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -113,6 +139,10 @@ class SortirController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('sortir.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = Sortir::findOrFail($id);
@@ -134,6 +164,10 @@ class SortirController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('sortir.save-transaction')) {
+            return $denied;
+        }
+
         $data = $request->validate([
             'branch_id'      => 'required|exists:branch,id',
             'date'           => 'required|date',
@@ -229,6 +263,10 @@ class SortirController extends Controller
 
     public function save_stock(Request $request)
     {
+        if ($denied = $this->requireAccess('sortir.save-stock')) {
+            return $denied;
+        }
+
         // dd($request->all());
         Validator::make($request->all(), [
             'product_id' => 'required|exists:products,id',

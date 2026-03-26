@@ -14,12 +14,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class BranchController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('branch.index')) {
+            return $denied;
+        }
+
         return view('master::branch.index');
     }
 
@@ -29,6 +35,10 @@ class BranchController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('branch.create')) {
+            return $denied;
+        }
+
         return view('master::create');
     }
 
@@ -39,6 +49,10 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('branch.store')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:branch,name',
             'address' => 'nullable|string|max:1000',
@@ -84,6 +98,10 @@ class BranchController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('branch.edit')) {
+            return $denied;
+        }
+
         $branch = Branch::findOrFail($id);
         return response()->json($branch);
     }
@@ -96,6 +114,10 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('branch.update')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:branch,name,' . $id,
             'address' => 'nullable|string|max:1000',
@@ -131,6 +153,10 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('branch.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $branch = Branch::findOrFail($id);

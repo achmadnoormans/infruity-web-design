@@ -17,12 +17,18 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ExpenditureController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('expenditure.index')) {
+            return $denied;
+        }
+
         $branches = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('pos::expenditure.index', compact('branches'));
     }
@@ -33,6 +39,10 @@ class ExpenditureController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('expenditure.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data'] = null;
         $data['detail'] = null;
@@ -47,6 +57,10 @@ class ExpenditureController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('expenditure.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -57,6 +71,10 @@ class ExpenditureController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('expenditure.show')) {
+            return $denied;
+        }
+
         return view('pos::show');
     }
 
@@ -67,6 +85,10 @@ class ExpenditureController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('expenditure.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data'] = Expenditure::with('branch', 'payment', 'paymentMethod')->findOrFail($id);
         $data['detail'] = ExpenditureDetail::with('product', 'product.unit')->where('expenditure_id', $id)->get();
@@ -82,6 +104,10 @@ class ExpenditureController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('expenditure.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -92,6 +118,10 @@ class ExpenditureController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('expenditure.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = Expenditure::findOrFail($id);
@@ -113,6 +143,10 @@ class ExpenditureController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('expenditure.save-transaction')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = $request->validate([
             // 'customer_id' => 'nullable|exists:customer,id',

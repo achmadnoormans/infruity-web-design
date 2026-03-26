@@ -16,12 +16,18 @@ use Illuminate\Support\Str;
 
 class TransferController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('transfer.index')) {
+            return $denied;
+        }
+
         $data['branches'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::transfer.index2', $data);
     }
@@ -32,6 +38,10 @@ class TransferController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('transfer.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data'] = null;
         $data['detail'] = null;
@@ -46,6 +56,10 @@ class TransferController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('transfer.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -56,6 +70,10 @@ class TransferController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('transfer.show')) {
+            return $denied;
+        }
+
         return view('transaction::show');
     }
 
@@ -66,6 +84,10 @@ class TransferController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('transfer.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data'] = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
         $data['detail'] = TransferDetail::with('product', 'product.unit')->where('transfer_id', $id)->get();
@@ -81,6 +103,10 @@ class TransferController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('transfer.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -91,6 +117,10 @@ class TransferController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('transfer.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = Transfer::findOrFail($id);
@@ -112,6 +142,10 @@ class TransferController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('transfer.save-transaction')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = $request->validate([
             'branch_id' => 'required|exists:branch,id',

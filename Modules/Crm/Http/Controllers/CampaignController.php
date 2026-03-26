@@ -15,12 +15,18 @@ use Exception;
 
 class CampaignController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('campaign.index')) {
+            return $denied;
+        }
+
         return view('crm::campaign.index');
     }
 
@@ -30,6 +36,10 @@ class CampaignController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('campaign.create')) {
+            return $denied;
+        }
+
         return view('crm::create');
     }
 
@@ -40,6 +50,10 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('campaign.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -94,6 +108,10 @@ class CampaignController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('campaign.edit')) {
+            return $denied;
+        }
+
         $campaign = Campaign::findOrFail($id);
         return response()->json($campaign);
     }
@@ -106,6 +124,10 @@ class CampaignController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('campaign.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -150,6 +172,10 @@ class CampaignController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('campaign.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $campaign = Campaign::findOrFail($id);
@@ -170,6 +196,10 @@ class CampaignController extends Controller
 
     public function get_near_campaign()
     {
+        if ($denied = $this->requireAccess('campaign.get-near-event')) {
+            return $denied;
+        }
+
         $today = date('Y-m-d');
         $campaign = Campaign::where('start_date', '<=', $today)
             ->where('end_date', '>=', $today)

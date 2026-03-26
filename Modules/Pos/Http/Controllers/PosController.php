@@ -28,12 +28,17 @@ use Yajra\DataTables\Facades\DataTables;
 
 class PosController extends Controller
 {
+    use \App\Traits\HasAccessControl;
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('pos.index')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
@@ -57,6 +62,10 @@ class PosController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('pos.create')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
 
         // Cek apakah ada temp transaksi untuk user ini
@@ -86,6 +95,10 @@ class PosController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('pos.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $request->validate([
             'customer_id'         => 'nullable|exists:customer,id',
@@ -152,6 +165,10 @@ class PosController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('pos.show')) {
+            return $denied;
+        }
+
         $data['data']         = PosModel::with('customer')->findOrFail($id);
         $data['detail']       = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['parcelDetail'] = ProductionParcelDetail::with('product')->where('pos_id', $id)->get();
@@ -167,6 +184,10 @@ class PosController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('pos.edit')) {
+            return $denied;
+        }
+
         $data['alpinejs']       = true;
         $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
         $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product')->where('pos_id', $id)->get();
@@ -182,6 +203,10 @@ class PosController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('pos.update')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -192,6 +217,10 @@ class PosController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('pos.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $pos = PosModel::findOrFail($id);
@@ -215,6 +244,10 @@ class PosController extends Controller
 
     public function savePayment(Request $request)
     {
+        if ($denied = $this->requireAccess('pos.savePayment')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = $request->validate([
             'date'           => 'required|date',
@@ -300,6 +333,10 @@ class PosController extends Controller
 
     public function listPayment($id)
     {
+        if ($denied = $this->requireAccess('pos.listPayment')) {
+            return $denied;
+        }
+
         $payments = Payment::with('paymentMethod')->where('pos_id', $id)
             ->orderBy('date', 'asc')
             ->get();
@@ -309,6 +346,10 @@ class PosController extends Controller
 
     public function showReceipt($id)
     {
+        if ($denied = $this->requireAccess('pos.receipt')) {
+            return $denied;
+        }
+
         $data['data']   = PosModel::with('customer')->findOrFail($id);
         $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
         // dd($data);
@@ -317,6 +358,10 @@ class PosController extends Controller
 
     public function saveTransaction(Request $request)
     {
+        if ($denied = $this->requireAccess('pos.receipt')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = $request->validate([
             // 'customer_id' => 'nullable|exists:customer,id',
@@ -566,6 +611,10 @@ class PosController extends Controller
 
     public function payment($id)
     {
+        if ($denied = $this->requireAccess('pos.payment')) {
+            return $denied;
+        }
+
         $data['alpinejs'] = true;
         $data['data']     = PosModel::with('customer')->findOrFail($id);
         $data['detail']   = PosDetailModel::with('product')->where('pos_id', $id)->get();
@@ -577,6 +626,10 @@ class PosController extends Controller
 
     public function printPayment($id)
     {
+        if ($denied = $this->requireAccess('pos.printPayment')) {
+            return $denied;
+        }
+
         // $data['data'] = PosModel::with('customer', 'user')->findOrFail($id);
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
         $data['setting']     = SettingNota::first();
@@ -586,6 +639,10 @@ class PosController extends Controller
 
     public function printDraftPayment($id)
     {
+        if ($denied = $this->requireAccess('pos.printDraftPayment')) {
+            return $denied;
+        }
+
         $data['data']        = PosModel::with('customer', 'user')->findOrFail($id);
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
         $data['setting']     = SettingNota::first();
@@ -619,6 +676,10 @@ class PosController extends Controller
 
     public function paymentNotification($id)
     {
+        if ($denied = $this->requireAccess('pos.paymentNotification')) {
+            return $denied;
+        }
+
         $data['data']         = Payment::with('paymentMethod', 'pos')->findOrFail($id);
         $data['totalPayment'] = Payment::where('pos_id', $data['data']->pos_id)->sum('total');
         return view('pos::pos.payment-success2', $data);
@@ -626,6 +687,10 @@ class PosController extends Controller
 
     public function printNota($id)
     {
+        if ($denied = $this->requireAccess('pos.printNota')) {
+            return $denied;
+        }
+
         $data['payment'] = Payment::findOrFail($id);
         $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
         $data['setting'] = SettingNota::first();
@@ -637,6 +702,10 @@ class PosController extends Controller
 
     public function cekNota($id)
     {
+        if ($denied = $this->requireAccess('pos.cek-nota')) {
+            return $denied;
+        }
+
         $data['payment'] = Payment::where('uuid', $id)->first();
         if (isset($data['payment'])) {
             $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
@@ -652,6 +721,10 @@ class PosController extends Controller
 
     public function cekNotaDraft($id)
     {
+        if ($denied = $this->requireAccess('pos.cek-nota.draft')) {
+            return $denied;
+        }
+
         $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
         if (! isset($data['data'])) {
             abort(404);

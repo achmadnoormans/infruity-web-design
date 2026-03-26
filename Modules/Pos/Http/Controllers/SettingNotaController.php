@@ -11,12 +11,18 @@ use Illuminate\Support\Facades\Auth;
 
 class SettingNotaController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('setting-nota.index')) {
+            return $denied;
+        }
+
         $data['page_plugin_js'] = [
             'assets/plugins/custom/formrepeater/formrepeater.bundle.js',
         ];
@@ -30,6 +36,10 @@ class SettingNotaController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('setting-nota.create')) {
+            return $denied;
+        }
+
         return view('pos::create');
     }
 
@@ -40,6 +50,10 @@ class SettingNotaController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('setting-nota.store')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -60,6 +74,10 @@ class SettingNotaController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('setting-nota.edit')) {
+            return $denied;
+        }
+
         return view('pos::edit');
     }
 
@@ -71,6 +89,10 @@ class SettingNotaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('setting-nota.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         DB::beginTransaction();
         try {
@@ -114,6 +136,10 @@ class SettingNotaController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('setting-nota.destroy')) {
+            return $denied;
+        }
+
         //
     }
 
@@ -123,6 +149,10 @@ class SettingNotaController extends Controller
      */
     public function viewReceipt()
     {
+        if ($denied = $this->requireAccess('setting-nota.view-receipt')) {
+            return $denied;
+        }
+
         $data['setting'] = SettingNota::first();
         return view('pos::setting-nota.view', $data);
     }

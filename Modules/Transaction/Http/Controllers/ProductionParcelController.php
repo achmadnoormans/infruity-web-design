@@ -26,12 +26,18 @@ use Exception;
 
 class ProductionParcelController extends Controller
 {
+    use \App\Traits\HasAccessControl;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
     public function index()
     {
+        if ($denied = $this->requireAccess('parcel.index')) {
+            return $denied;
+        }
+
         return view('transaction::production.parcel');
     }
 
@@ -41,6 +47,10 @@ class ProductionParcelController extends Controller
      */
     public function create()
     {
+        if ($denied = $this->requireAccess('parcel.create')) {
+            return $denied;
+        }
+
         return view('transaction::production.create-parcel');
     }
 
@@ -51,6 +61,10 @@ class ProductionParcelController extends Controller
      */
     public function store(Request $request)
     {
+        if ($denied = $this->requireAccess('parcel.store')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'quantity' => 'nullable|numeric|min:1',
@@ -87,6 +101,10 @@ class ProductionParcelController extends Controller
 
     public function process($id)
     {
+        if ($denied = $this->requireAccess('parcel.process')) {
+            return $denied;
+        }
+
         $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
         return view('transaction::production.process-parcel', $data);
     }
@@ -98,6 +116,10 @@ class ProductionParcelController extends Controller
      */
     public function show($id)
     {
+        if ($denied = $this->requireAccess('parcel.show')) {
+            return $denied;
+        }
+
         $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
         $data['production_detail'] = ProductionParcelDetail::with('product')->where('production_id', $id)->get();
         return view('transaction::production.create-parcel', $data);
@@ -110,6 +132,10 @@ class ProductionParcelController extends Controller
      */
     public function edit($id)
     {
+        if ($denied = $this->requireAccess('parcel.edit')) {
+            return $denied;
+        }
+
         $data['data'] = ProductionParcel::with('staff')->findOrFail($id);
         $data['production_detail'] = ProductionParcelDetail::with('product')->where('production_id', $id)->get();
         return view('transaction::production.create-parcel', $data);
@@ -123,6 +149,10 @@ class ProductionParcelController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.update')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'quantity' => 'nullable|numeric|min:1',
@@ -175,6 +205,10 @@ class ProductionParcelController extends Controller
      */
     public function destroy($id)
     {
+        if ($denied = $this->requireAccess('parcel.destroy')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $parcel = ProductionParcel::findOrFail($id);
@@ -276,6 +310,10 @@ class ProductionParcelController extends Controller
 
     public function get_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.get-product')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $data = ProductionParcelDetail::where('production_id', $id)->get();
         return DataTables::of($data)
@@ -321,6 +359,10 @@ class ProductionParcelController extends Controller
 
     public function save_product(Request $request)
     {
+        if ($denied = $this->requireAccess('parcel.save-product')) {
+            return $denied;
+        }
+
         // dd($request->all());
         $validated = $request->validate([
             'production_id' => 'required|exists:production_parcel,id',
@@ -369,6 +411,10 @@ class ProductionParcelController extends Controller
 
     public function edit_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.edit-product')) {
+            return $denied;
+        }
+
         $data = ProductionParcelDetail::findOrFail($id);
         $product = Product::findOrFail($data->product_id);
         $data->price = $product->price;
@@ -380,6 +426,10 @@ class ProductionParcelController extends Controller
 
     public function update_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.update-product')) {
+            return $denied;
+        }
+
         $validated = $request->validate([
             'qty' => 'required|numeric',
             'sell_price' => 'nullable',
@@ -407,6 +457,10 @@ class ProductionParcelController extends Controller
 
     public function delete_product(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.delete_product')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
             $deteilProduct = ProductionParcelDetail::findOrFail($id);
@@ -425,6 +479,10 @@ class ProductionParcelController extends Controller
 
     public function set_selesai(Request $request, $id)
     {
+        if ($denied = $this->requireAccess('parcel.set_selesai')) {
+            return $denied;
+        }
+
         try {
             DB::beginTransaction();
 
