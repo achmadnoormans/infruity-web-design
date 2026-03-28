@@ -15,7 +15,7 @@
     <!--end:Menu content-->
 </div>
 <!--begin:Menu item-->
-@if (check_access('products.index'))
+@if (check_access('products.index') || check_access('products.create'))
     <div data-kt-menu-trigger="click"
         class="menu-item {{ in_array(Request::segment(1), ['products']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
@@ -32,18 +32,20 @@
         <!--end:Menu link-->
         <!--begin:Menu sub-->
         <div class="menu-sub menu-sub-accordion">
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'products' ? 'active' : '' }}" href="{{ url('products') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Daftar Produk</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+            @if (check_access('products.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'products' ? 'active' : '' }}" href="{{ url('products') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Daftar Produk</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
             @if (check_access('products.create'))
                 <!--begin:Menu item-->
                 <div class="menu-item">
@@ -146,7 +148,7 @@
         <!--end:Menu link-->
     </div>
 @endif
-@if (check_access('staff.index'))
+@if (check_access('staff.index') || check_access('staff.create'))
     <div data-kt-menu-trigger="click"
         class="menu-item {{ in_array(Request::segment(1), ['staff']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
@@ -163,18 +165,20 @@
         <!--end:Menu link-->
         <!--begin:Menu sub-->
         <div class="menu-sub menu-sub-accordion">
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'staff' ? '' : '' }}" href="{{ url('staff') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Daftar Staff</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+            @if (check_access('staff.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'staff' ? '' : '' }}" href="{{ url('staff') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Daftar Staff</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
             @if (check_access('staff.create'))
                 <!--begin:Menu item-->
                 <div class="menu-item">
@@ -194,7 +198,7 @@
         <!--end:Menu sub-->
     </div>
 @endif
-@if (check_access('customers.index'))
+@if (check_access('customers.index') || check_access('customers.create'))
     <div data-kt-menu-trigger="click"
         class="menu-item {{ in_array(Request::segment(1), ['customers']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
@@ -211,18 +215,20 @@
         <!--end:Menu link-->
         <!--begin:Menu sub-->
         <div class="menu-sub menu-sub-accordion">
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'customers' ? 'active' : '' }}" href="{{ url('customers') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Daftar Pelanggan</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+            @if (check_access('customers.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'customers' ? 'active' : '' }}" href="{{ url('customers') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Daftar Pelanggan</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
             @if (check_access('customers.create'))
                 <!--begin:Menu item-->
                 <div class="menu-item">
@@ -340,34 +346,38 @@
         </div>
         <!--end:Menu content-->
     </div>
-    <div class="menu-item">
-        <!--begin:Menu link-->
-        <a class="menu-link {{ Request::segment(1) == 'roles' ? 'active' : '' }}" href="{{ url('roles') }}">
-            <span class="menu-icon">
-                <i class="ki-duotone ki-security-user">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-            </span>
-            <span class="menu-title">Role</span>
-        </a>
-        <!--end:Menu link-->
-    </div>
-    <div class="menu-item">
-        <!--begin:Menu link-->
-        <a class="menu-link {{ Request::segment(1) == 'user' ? 'active' : '' }}" href="{{ url('user') }}">
-            <span class="menu-icon">
-                <i class="ki-duotone ki-security-user">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                </i>
-            </span>
-            <span class="menu-title">User</span>
-        </a>
-        <!--end:Menu link-->
-    </div>
+    @if (check_access('role.index'))
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ Request::segment(1) == 'roles' ? 'active' : '' }}" href="{{ url('roles') }}">
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-security-user">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                </span>
+                <span class="menu-title">Role</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+    @endif
+    @if (check_access('user.index'))
+        <div class="menu-item">
+            <!--begin:Menu link-->
+            <a class="menu-link {{ Request::segment(1) == 'user' ? 'active' : '' }}" href="{{ url('user') }}">
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-security-user">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                    </i>
+                </span>
+                <span class="menu-title">User</span>
+            </a>
+            <!--end:Menu link-->
+        </div>
+    @endif
 @endif
-@if (check_access('product-stock.index') || check_access('stock-out.index') || check_access('stock-opname.index'))
+@if (check_access('product-stock.index') || check_access('stock-opname.index'))
     <div class="menu-item pt-5">
         <!--begin:Menu content-->
         <div class="menu-content">
@@ -392,19 +402,21 @@
         <!--end:Menu link-->
         <!--begin:Menu sub-->
         <div class="menu-sub menu-sub-accordion">
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'product-stock' ? 'active' : '' }}"
-                    href="{{ url('product-stock') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Laporan Stok</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+            @if (check_access('product-stock.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'product-stock' ? 'active' : '' }}"
+                        href="{{ url('product-stock') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Laporan Stok</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
             {{-- <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
@@ -417,25 +429,28 @@
                 <!--end:Menu link-->
             </div>
             <!--end:Menu item--> --}}
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'stock-opname' ? 'active' : '' }}" href="{{ url('stock-opname') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Stock Opname</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
+            @if (check_access('stock-opname.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'stock-opname' ? 'active' : '' }}"
+                        href="{{ url('stock-opname') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Stock Opname</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
         </div>
         <!--end:Menu sub-->
     </div>
     <!--end:Menu item-->
 @endif
-<div class="menu-item">
-    @if (check_access('wholesale.index'))
+@if (check_access('wholesale.index'))
+    <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ $link == 'wholesale' ? 'active' : '' }}" href="{{ url('wholesale') }}">
             <span class="menu-icon">
@@ -447,8 +462,10 @@
             <span class="menu-title">Pengadaan</span>
         </a>
         <!--end:Menu link-->
-    @endif
-    @if (check_access('sortir.index'))
+    </div>
+@endif
+@if (check_access('sortir.index'))
+    <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ $link == 'sortir' ? 'active' : '' }}" href="{{ url('sortir') }}">
             <span class="menu-icon">
@@ -460,8 +477,10 @@
             <span class="menu-title">Sortir</span>
         </a>
         <!--end:Menu link-->
-    @endif
-    @if (check_access('transfer.index'))
+    </div>
+@endif
+@if (check_access('transfer.index'))
+    <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ $link == 'transfer' ? 'active' : '' }}" href="{{ url('transfer') }}">
             <span class="menu-icon">
@@ -473,8 +492,9 @@
             <span class="menu-title">Transfer Stok</span>
         </a>
         <!--end:Menu link-->
-    @endif
-    {{-- <!--begin:Menu link-->
+    </div>
+@endif
+{{-- <!--begin:Menu link-->
     <a class="menu-link {{ $link == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
@@ -485,8 +505,7 @@
         <span class="menu-title">Produksi</span>
     </a>
     <!--end:Menu link--> --}}
-</div>
-@if (check_access('production.index') || check_access('receipt.index') || check_access('parcel.index'))
+@if (check_access('production.index') || check_access('receipt.index'))
     <!--begin:Menu item-->
     <div data-kt-menu-trigger="click"
         class="menu-item {{ in_array(Request::segment(1), ['production', 'receipt', 'receipt', 'parcel']) ? 'here show' : '' }} menu-accordion">
@@ -556,7 +575,7 @@
 @endif
 @if (check_access('pos.index') ||
         check_access('delivery-order.index') ||
-        check_access('other-book.index') ||
+        check_access('order-book.index') ||
         check_access('setting-nota.index') ||
         check_access('expenditure.index'))
     <div class="menu-item pt-5">
@@ -567,8 +586,8 @@
         <!--end:Menu content-->
     </div>
 @endif
-<div class="menu-item">
-    @if (check_access('pos.index'))
+@if (check_access('pos.index'))
+    <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ Request::segment(1) == 'pos' ? 'active' : '' }}" href="{{ url('pos') }}">
             <span class="menu-icon">
@@ -579,10 +598,12 @@
             </span>
             <span class="menu-title">Penjualan</span>
         </a>
-    @endif
-    <!--end:Menu link-->
-    <!--begin:Menu link-->
-    @if (check_access('delivery-order.index'))
+        <!--end:Menu link-->
+    </div>
+@endif
+@if (check_access('delivery-order.index'))
+    <div class="menu-item">
+        <!--begin:Menu link-->
         <a class="menu-link {{ Request::segment(1) == 'delivery-order' ? 'active' : '' }}"
             href="{{ url('delivery-order') }}">
             <span class="menu-icon">
@@ -593,8 +614,12 @@
             </span>
             <span class="menu-title">Pengiriman</span>
         </a>
-    @endif
-    @if (check_access('order-book.index'))
+        <!--end:Menu link-->
+    </div>
+@endif
+@if (check_access('order-book.index'))
+    <div class="menu-item">
+        <!--begin:Menu link-->
         <a class="menu-link {{ Request::segment(1) == 'order-book' ? 'active' : '' }}"
             href="{{ url('order-book') }}">
             <span class="menu-icon">
@@ -605,8 +630,12 @@
             </span>
             <span class="menu-title">Pesanan Masuk</span>
         </a>
-    @endif
-    @if (check_access('expenditure.index'))
+        <!--end:Menu link-->
+    </div>
+@endif
+@if (check_access('expenditure.index'))
+    <div class="menu-item">
+        <!--begin:Menu link-->
         <a class="menu-link {{ Request::segment(1) == 'expenditure' ? 'active' : '' }}"
             href="{{ url('expenditure') }}">
             <span class="menu-icon">
@@ -617,9 +646,11 @@
             </span>
             <span class="menu-title">Pemasukan / Pengeluaran</span>
         </a>
-    @endif
-    <!--end:Menu link-->
-    @if (check_access('setting-nota.index'))
+        <!--end:Menu link-->
+    </div>
+@endif
+@if (check_access('setting-nota.index'))
+    <div class="menu-item">
         <!--begin:Menu link-->
         <a class="menu-link {{ Request::segment(1) == 'setting-nota' ? 'active' : '' }}"
             href="{{ url('setting-nota') }}">
@@ -631,16 +662,24 @@
             </span>
             <span class="menu-title">Setting Nota</span>
         </a>
-    @endif
-    <!--end:Menu link-->
-</div>
-<div class="menu-item pt-5">
-    <!--begin:Menu content-->
-    <div class="menu-content">
-        <span class="menu-heading fw-bold text-uppercase fs-7">Crm</span>
+        <!--end:Menu link-->
     </div>
-    <!--end:Menu content-->
-</div>
+@endif
+@if (check_access('crm-dashboard.index') ||
+        check_access('customer-report.index') ||
+        check_access('deposito.index') ||
+        check_access('customer-deposito.index') ||
+        check_access('tier.index') ||
+        check_access('point-schedule.index') ||
+        check_access('campaign.index'))
+    <div class="menu-item pt-5">
+        <!--begin:Menu content-->
+        <div class="menu-content">
+            <span class="menu-heading fw-bold text-uppercase fs-7">Crm</span>
+        </div>
+        <!--end:Menu content-->
+    </div>
+@endif
 @if (check_access('crm-dashboard.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
@@ -724,7 +763,7 @@
         <!--end:Menu sub-->
     </div>
 @endif
-@if (check_access('point-schedule.index') || check_access('setting-exp.index'))
+@if (check_access('tier.index') || check_access('point-schedule.index') || check_access('campaign.index'))
     <div data-kt-menu-trigger="click"
         class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
@@ -804,167 +843,195 @@
         <!--end:Menu sub-->
     </div>
 @endif
-<div class="menu-item pt-5">
-    <!--begin:Menu content-->
-    <div class="menu-content">
-        <span class="menu-heading fw-bold text-uppercase fs-7">Laporan</span>
-    </div>
-    <!--end:Menu content-->
-</div>
-<div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), [
-        'report-branch-transaction',
-        'report-branch-product',
-        'report-customer-transaction',
-        'report-customer-product',
-        'report-transaction',
-        'report-product-sales',
-    ])
-        ? 'here show'
-        : '' }} menu-accordion">
-    <!--begin:Menu link-->
-    <span class="menu-link">
-        <span class="menu-icon">
-            <i class="ki-duotone ki-basket fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
-        </span>
-        <span class="menu-title">Laporan Penjualan</span>
-        <span class="menu-arrow"></span>
-    </span>
-    <!--end:Menu link-->
-    <!--begin:Menu sub-->
-    <div class="menu-sub menu-sub-accordion">
-        <!--begin:Menu item-->
-        <div class="menu-item">
-            <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}"
-                href="{{ url('report-transaction') }}">
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Transaksi Penjualan</span>
-            </a>
-            <!--end:Menu link-->
+@if (check_access('report.transaction') ||
+        check_access('report.customer.transaction') ||
+        check_access('report.branch.transaction') ||
+        check_access('report.product.sales') ||
+        check_access('report.branch.product') ||
+        check_access('report.customer.product') ||
+        check_access('report.product.buang') ||
+        check_access('report.total.aset'))
+    <div class="menu-item pt-5">
+        <!--begin:Menu content-->
+        <div class="menu-content">
+            <span class="menu-heading fw-bold text-uppercase fs-7">Laporan</span>
         </div>
-        <!--end:Menu item-->
-        @if (check_access('report.customer.transaction'))
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'report-customer-transaction' ? 'active' : '' }}"
-                    href="{{ url('report-customer-transaction') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Penjualan Per Pelanggan</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-        @endif
-        @if (check_access('report.branch.transaction'))
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'report-branch-transaction' ? 'active' : '' }}"
-                    href="{{ url('report-branch-transaction') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Penjualan Per Cabang</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-        @endif
-        @if (check_access('report.product.sales'))
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'report-product-sales' ? 'active' : '' }}"
-                    href="{{ url('report-product-sales') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Penjualan Per Produk</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-        @endif
-        @if (check_access('report.branch.product'))
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'report-branch-product' ? 'active' : '' }}"
-                    href="{{ url('report-branch-product') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Laporan Penjualan Per-Channel (Based on Produk & Qty)</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-        @endif
-        @if (check_access('report.customer.product'))
-            <!--begin:Menu item-->
-            <div class="menu-item">
-                <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'report-customer-product' ? 'active' : '' }}"
-                    href="{{ url('report-customer-product') }}">
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Laporan Transaksi Penjualan (Based on Produk & Qty)</span>
-                </a>
-                <!--end:Menu link-->
-            </div>
-            <!--end:Menu item-->
-        @endif
+        <!--end:Menu content-->
     </div>
-    <!--end:Menu sub-->
-</div>
-<div data-kt-menu-trigger="click"
-    class="menu-item {{ in_array(Request::segment(1), ['report-branch-transaction', 'report-branch-product', 'report-customer-transaction', 'report-customer-product', 'report-transaction', 'report-total-aset']) ? 'here show' : '' }} menu-accordion">
-    <!--begin:Menu link-->
-    <span class="menu-link">
-        <span class="menu-icon">
-            <i class="ki-duotone ki-basket fs-2">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
+@endif
+@if (check_access('report.transaction') ||
+        check_access('report.customer.transaction') ||
+        check_access('report.branch.transaction') ||
+        check_access('report.product.sales') ||
+        check_access('report.branch.product') ||
+        check_access('report.customer.product'))
+    <div data-kt-menu-trigger="click"
+        class="menu-item {{ in_array(Request::segment(1), [
+            'report-branch-transaction',
+            'report-branch-product',
+            'report-customer-transaction',
+            'report-customer-product',
+            'report-transaction',
+            'report-product-sales',
+        ])
+            ? 'here show'
+            : '' }} menu-accordion">
+        <!--begin:Menu link-->
+        <span class="menu-link">
+            <span class="menu-icon">
+                <i class="ki-duotone ki-basket fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+            </span>
+            <span class="menu-title">Laporan Penjualan</span>
+            <span class="menu-arrow"></span>
         </span>
-        <span class="menu-title">Laporan Produk</span>
-        <span class="menu-arrow"></span>
-    </span>
-    <!--end:Menu link-->
-    <!--begin:Menu sub-->
-    <div class="menu-sub menu-sub-accordion">
-        <!--begin:Menu item-->
-        <div class="menu-item">
-            <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'report-product-buang' ? 'active' : '' }}"
-                href="{{ url('report-product-buang') }}">
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Produk Buang</span>
-            </a>
-            <!--end:Menu link-->
-            <!--begin:Menu link-->
-            <a class="menu-link {{ $link == 'report-total-aset' ? 'active' : '' }}"
-                href="{{ url('report-total-aset') }}">
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Total Aset</span>
-            </a>
-            <!--end:Menu link-->
+        <!--end:Menu link-->
+        <!--begin:Menu sub-->
+        <div class="menu-sub menu-sub-accordion">
+            @if (check_access('report.transaction'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}"
+                        href="{{ url('report-transaction') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Transaksi Penjualan</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.customer.transaction'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-customer-transaction' ? 'active' : '' }}"
+                        href="{{ url('report-customer-transaction') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Penjualan Per Pelanggan</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.branch.transaction'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-branch-transaction' ? 'active' : '' }}"
+                        href="{{ url('report-branch-transaction') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Penjualan Per Cabang</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.product.sales'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-product-sales' ? 'active' : '' }}"
+                        href="{{ url('report-product-sales') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Penjualan Per Produk</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.branch.product'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-branch-product' ? 'active' : '' }}"
+                        href="{{ url('report-branch-product') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Laporan Penjualan Per-Channel (Based on Produk & Qty)</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.customer.product'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-customer-product' ? 'active' : '' }}"
+                        href="{{ url('report-customer-product') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Laporan Transaksi Penjualan (Based on Produk & Qty)</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
         </div>
-        <!--end:Menu item-->
+        <!--end:Menu sub-->
     </div>
-    <!--end:Menu sub-->
-</div>
+@endif
+@if (check_access('report.product.buang') || check_access('report.total.aset'))
+    <div data-kt-menu-trigger="click"
+        class="menu-item {{ in_array(Request::segment(1), ['report-product-buang', 'report-total-aset']) ? 'here show' : '' }} menu-accordion">
+        <!--begin:Menu link-->
+        <span class="menu-link">
+            <span class="menu-icon">
+                <i class="ki-duotone ki-basket fs-2">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                </i>
+            </span>
+            <span class="menu-title">Laporan Produk</span>
+            <span class="menu-arrow"></span>
+        </span>
+        <!--end:Menu link-->
+        <!--begin:Menu sub-->
+        <div class="menu-sub menu-sub-accordion">
+            @if (check_access('report.product.buang'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-product-buang' ? 'active' : '' }}"
+                        href="{{ url('report-product-buang') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Produk Buang</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('report.total.aset'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ $link == 'report-total-aset' ? 'active' : '' }}"
+                        href="{{ url('report-total-aset') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Total Aset</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+        </div>
+        <!--end:Menu sub-->
+    </div>
+@endif
