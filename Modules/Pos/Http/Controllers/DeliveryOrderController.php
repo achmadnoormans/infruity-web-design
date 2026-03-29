@@ -184,11 +184,9 @@ class DeliveryOrderController extends Controller
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('ongkir_status', $request->status_filter);
         }
-        // if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
-        //     $query->whereHas('paymentDetails', function ($q) use ($request) {
-        //         $q->where('branch_id', $request->cabang_filter);
-        //     });
-        // }
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query = $query->where('branch_id', $request->cabang_filter);
+        }
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
