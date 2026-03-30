@@ -139,14 +139,14 @@
             <span class="path2"></span>
         </i>
     </a>
-    <button type="button" onclick="resetWholesale()" class="btn btn-danger rounded-circle shadow-lg position-fixed"
+    {{-- <button type="button" onclick="resetWholesale()" class="btn btn-danger rounded-circle shadow-lg position-fixed"
         title="Reset Transaksi Wholesale"
         style="bottom: 60px; right: 100px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
         <i class="ki-duotone ki-trash-square fs-3x text-white">
             <span class="path1"></span>
             <span class="path2"></span>
         </i>
-    </button>
+    </button> --}}
 @section('script')
     <script type="text/javascript">
         // Cek apakah ada produk dengan stock kosong
