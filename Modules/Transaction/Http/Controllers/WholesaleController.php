@@ -1063,13 +1063,30 @@ class WholesaleController extends Controller
                 return date('d F Y H:i', strtotime($item->created_at));
             })
             ->addColumn('status', function ($item) {
+                $branchBadgeClass = match ((int) ($item->branch_id ?? 0)) {
+                    1 => 'badge-light-primary',
+                    2 => 'badge-light-success',
+                    3 => 'badge-light-warning',
+                    4 => 'badge-light-info',
+                    default => 'badge-light-dark',
+                };
+
+                $branchLabel = '<span class="badge ' . $branchBadgeClass . ' mb-1">'
+                    . e($item->branch_name ?? 'Tanpa Cabang')
+                    . '</span>';
+
                 if ($item->status == 'draft') {
-                    return '<span class="badge badge-light-primary">Draft</span>';
+                    $statusLabel = '<span class="badge badge-light-primary">Draft</span>';
                 } elseif ($item->status == 'posting') {
-                    return '<span class="badge badge-light-success">Posting</span>';
+                    $statusLabel = '<span class="badge badge-light-success">Posting</span>';
                 } else {
-                    return '<span class="badge badge-light-danger">Autosave</span>';
+                    $statusLabel = '<span class="badge badge-light-danger">Autosave</span>';
                 }
+
+                return '<div class="d-flex flex-column align-items-center">'
+                    . $branchLabel
+                    . $statusLabel
+                    . '</div>';
             })
             ->addColumn('status_raw', function ($item) {
                 return $item->status;

@@ -52,7 +52,8 @@ class Wholesale extends Model
     public static function getData($request)
     {
         $query = DB::table('view_wholesale')
-            ->select('*')
+            ->leftJoin('branch', 'branch.id', '=', 'view_wholesale.branch_id')
+            ->select('view_wholesale.*', 'branch.name as branch_name')
             ->whereIn('branch_id', UserBranch::getUserBranch())
             ->orderBy('created_at', 'desc');
 
