@@ -9,7 +9,9 @@
             // edit product
             editModal: false,
             editItem: null,
+            editProduct: null,
             editPrice: 0,
+            editSell: 0,
             editQty: 1,
             editTotal: 0,
             editDiscount: 0,
@@ -194,7 +196,9 @@
                 this.editItem = {
                     ...item
                 }; // salin data item
-                this.editProduct = item;
+                this.editProduct = {
+                    ...item
+                };
                 this.editProductName = item.name;
                 this.editProductUnit = item.unit;
                 this.editTitle = item.name;
@@ -215,22 +219,24 @@
             },
 
             get formattedEditPrice() {
-                return this.formatRupiah(this.editProduct.price);
+                return this.formatRupiah(this.editProduct?.price || 0);
             },
 
             set formattedEditPrice(val) {
                 const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
                 this.editProduct.price = Number(raw || 0);
+                this.editPrice = this.editProduct.price;
                 this.updateEditTotalFromQty();
             },
 
             get formattedEditSell() {
-                return this.formatRupiah(this.editProduct.sell);
+                return this.formatRupiah(this.editProduct?.sell || 0);
             },
 
             set formattedEditSell(val) {
                 const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
                 this.editProduct.sell = Number(raw || 0);
+                this.editSell = this.editProduct.sell;
                 this.updateEditTotalFromQty();
             },
 
@@ -258,7 +264,7 @@
                 // console.log('Discount:', val);
                 if (val <= 100) {
                     let qty = parseFloat(this.editQty || 0);
-                    let originalPrice = parseFloat(this.editPrice || 0);
+                    let originalPrice = parseFloat(this.editProduct?.price || this.editPrice || 0);
                     let discount = parseFloat(this.editDiscount || 0);
                     let subtotal = qty * originalPrice;
                     return parseFloat(((subtotal || 0) * val / 100).toFixed(2)); // persen
@@ -268,21 +274,21 @@
             },
             // Update otomatis qty berdasarkan total
             updateEditQtyFromTotal() {
-                if (this.editItem && this.editItem.price > 0) {
-                    this.editQty = parseFloat((this.editTotal / this.editItem.price).toFixed(2));
+                if (this.editProduct && this.editProduct.price > 0) {
+                    this.editQty = parseFloat((this.editTotal / this.editProduct.price).toFixed(2));
                 }
             },
 
             // Update total otomatis berdasarkan qty
             updateEditTotalFromQty() {
-                if (this.editItem) {
-                    this.editTotal = parseFloat((this.editQty * this.editItem.price).toFixed(2));
+                if (this.editProduct) {
+                    this.editTotal = parseFloat((this.editQty * this.editProduct.price).toFixed(2));
                 }
             },
 
             updateEditDiscount() {
                 let qty = parseFloat(this.editQty || 0);
-                let originalPrice = parseFloat(this.editPrice || 0);
+                let originalPrice = parseFloat(this.editProduct?.price || this.editPrice || 0);
                 let discount = parseFloat(this.editDiscount || 0);
 
                 // Hitung total sebelum diskon
@@ -304,6 +310,8 @@
                 const idx = this.cart.findIndex(i => i.id === this.editItem.id);
                 if (idx !== -1) {
                     const disc = this.calculateEditDiscountAmount();
+                    this.cart[idx].price = this.editProduct?.price || 0;
+                    this.cart[idx].sell = this.editProduct?.sell || 0;
                     this.cart[idx].qty = this.editQty;
                     this.cart[idx].total_input = this.editTotal;
                     this.cart[idx].discount = disc;
@@ -867,13 +875,13 @@
                             name: productName,
                             price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
                             hpp: parseFloat(item.hpp || 0),
-                            sell: this.sanitizeNumber(Number(item.product.price || 0)),
+                            sell: this.sanitizeNumber(Number(item.sell_price ?? item.product?.price ?? 0)),
                             qty: this.sanitizeNumber(Number(item.quantity)),
                             unit: item.product.unit.abbreviation,
                             discount: this.sanitizeNumber(Number(item.discount || 0)),
                             discountPercent: item.discountPercent || 0,
                             fee: item.product.fee || 0,
-                            total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
+                            total_input: this.sanitizeNumber(Number(item.subtotal ?? item.total_price ?? 0)),
                             typeProduct: item.type || 'product',
                         };
                         this.cart.push(obj);

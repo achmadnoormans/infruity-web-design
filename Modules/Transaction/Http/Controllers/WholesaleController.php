@@ -87,6 +87,10 @@ class WholesaleController extends Controller
             ->first();
 
         if ($draft) {
+            $draft->setRelation(
+                'products',
+                $this->hydrateWholesaleDetailPricing($draft->products, $draft->branch_id)
+            );
             $data['data']           = $draft;
             $data['detail']         = $draft->products;
             $data['invoice_number'] = $draft->order_number;
@@ -272,7 +276,10 @@ class WholesaleController extends Controller
 
         $data['alpinejs']       = true;
         $data['data']           = Wholesale::with('branch')->findOrFail($id);
-        $data['detail']         = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
+        $data['detail']         = $this->hydrateWholesaleDetailPricing(
+            WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get(),
+            $data['data']->branch_id
+        );
         $data['invoice_number'] = $data['data']->order_number;
         return view('transaction::wholesale.create2', $data);
     }
@@ -297,7 +304,10 @@ class WholesaleController extends Controller
 
         $data['alpinejs']       = true;
         $data['data']           = Wholesale::with('branch')->findOrFail($id);
-        $data['detail']         = WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get();
+        $data['detail']         = $this->hydrateWholesaleDetailPricing(
+            WholesaleProduct::with('product', 'product.unit')->where('wholesale_id', $id)->get(),
+            $data['data']->branch_id
+        );
         $data['invoice_number'] = $data['data']->order_number;
         return view('transaction::wholesale.create2', $data);
     }
@@ -1114,5 +1124,30 @@ class WholesaleController extends Controller
             })
             ->rawColumns(['name', 'action', 'status', 'address'])
             ->make(true);
+    }
+
+    private function hydrateWholesaleDetailPricing($detail, $branchId = null)
+    {
+        if (! $detail || $detail->isEmpty()) {
+            return $detail;
+        }
+
+        $branchPrices = collect();
+
+        if (! empty($branchId)) {
+            $branchPrices = ProductBranch::where('branch_id', $branchId)
+                ->whereIn('product_id', $detail->pluck('product_id')->filter()->all())
+                ->pluck('price', 'product_id');
+        }
+
+        return $detail->map(function ($item) use ($branchPrices) {
+            $fallbackSellPrice = optional($item->product)->price ?? 0;
+            $sellPrice = $branchPrices->get($item->product_id, $fallbackSellPrice);
+
+            $item->setAttribute('sell_price', (float) $sellPrice);
+            $item->setAttribute('subtotal', (float) ($item->total_price ?? 0));
+
+            return $item;
+        });
     }
 }
