@@ -846,30 +846,27 @@ class ProductController extends Controller
 
     public function get_data(Request $request)
     {
-        // $searchValue = $request->input('searchValue'); // Ambil nilai pencarian
-        // if (empty($searchValue)) {
-        //     return DataTables::of([])->make(true); // Kembalikan tabel kosong jika tidak ada pencarian
-        // }
-        $query = Product::query()
-            ->with(['category', 'childProducts.product'])
-            ->where('tipe', '!=', 'parcel')
-            ->orderByRaw('CASE WHEN parent_id IS NULL THEN 0 ELSE 1 END ASC')  // Parent products first
-            ->orderBy('parent_id', 'asc')
-            ->orderBy('id', 'asc');
+        $branchFilter = $request->input('branch_filter');
+        $priceOrderExpression = 'products.price';
 
-        if ($request->has('branch_filter') && $request->branch_filter != 0) {
-            $query = $query->leftJoin('product_branch', 'products.id', '=', 'product_branch.product_id')
-                ->where('product_branch.branch_id', $request->branch_filter)
-                ->select('products.id', 'products.name', 'products.description', 'products.category_id',
-                         'products.product_unit', 'products.status', 'products.hpp', 'products.fee',
-                         'products.created_by', 'products.tipe', 'products.image', 'products.stock',
-                         'products.limit', 'products.handling', 'products.sku', 'products.barcode',
-                         'products.parent_id', 'products.is_variant',
-                         DB::raw('COALESCE(product_branch.price, products.price) as price'));
+        $query = Product::query()
+            ->select('products.*', 'product_units.abbreviation as unit_abbreviation')
+            ->with(['category', 'childProducts.product'])
+            ->leftJoin('product_units', 'products.product_unit', '=', 'product_units.id')
+            ->where('tipe', '!=', 'parcel');
+
+        if ($request->filled('branch_filter') && $request->branch_filter != 0) {
+            $query = $query->leftJoin('product_branch', function ($join) use ($branchFilter) {
+                $join->on('products.id', '=', 'product_branch.product_id')
+                    ->where('product_branch.branch_id', '=', $branchFilter);
+            })->addSelect(DB::raw('COALESCE(product_branch.price, products.price) as display_price'));
+
+            $priceOrderExpression = 'COALESCE(product_branch.price, products.price)';
+        } else {
+            $query->addSelect(DB::raw('products.price as display_price'));
         }
 
         $data = $query;
-        // $data = Product::all();
         return DataTables::of($data)
             ->filter(function ($q) use ($request) {
                 $search = $request->input('search.value');
@@ -881,8 +878,41 @@ class ProductController extends Controller
                     });
                 }
             }, true)
+            ->order(function ($query) use ($request, $priceOrderExpression) {
+                $order = $request->input('order', []);
+
+                if (empty($order)) {
+                    $query->reorder()
+                        ->orderByRaw('CASE WHEN products.parent_id IS NULL THEN 0 ELSE 1 END ASC')
+                        ->orderBy('products.parent_id', 'asc')
+                        ->orderBy('products.id', 'asc');
+                    return;
+                }
+
+                $columnIndex = (int) ($order[0]['column'] ?? 0);
+                $direction = strtolower($order[0]['dir'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+
+                $query->reorder();
+
+                if ($columnIndex === 0) {
+                    $query->orderBy('products.name', $direction);
+                    return;
+                }
+
+                if ($columnIndex === 1) {
+                    $query->orderByRaw($priceOrderExpression . ' ' . $direction);
+                    return;
+                }
+
+                if ($columnIndex === 2) {
+                    $query->orderBy('product_units.abbreviation', $direction);
+                    return;
+                }
+
+                $query->orderBy('products.id', 'desc');
+            })
             ->addIndexColumn()
-            ->addColumn('name', function ($product) {
+            ->editColumn('name', function ($product) {
                 $html = '
                     <div class="d-flex align-items-center">';
                 if (isset($product->image)) {
@@ -936,14 +966,16 @@ class ProductController extends Controller
 
                 return $html;
             })
-            ->addColumn('price', function ($product) {
-                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $product->price . '">Rp' . toNumber($product->price) . '</span>';
+            ->editColumn('price', function ($product) {
+                $price = $product->display_price ?? $product->price ?? 0;
+
+                return '<span class="badge badge-light-primary editable-price" data-id="' . $product->id . '" data-value="' . $price . '">Rp' . toNumber($price) . '</span>';
             })
             ->addColumn('category', function ($product) {
                 return $product->category->name ?? '-';
             })
-            ->addColumn('unit', function ($product) {
-                return $product->unit->abbreviation ?? '-';
+            ->editColumn('unit_abbreviation', function ($product) {
+                return $product->unit_abbreviation ?? '-';
             })
             ->addColumn('status', function ($product) {
                 $html = '';

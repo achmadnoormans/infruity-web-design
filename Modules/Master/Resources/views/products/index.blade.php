@@ -147,6 +147,7 @@
             dataTable = $('#products-table').DataTable({
                 processing: true,
                 serverSide: true,
+                order: [],
                 scrollX: true, // Aktifkan scroll horizontal
                 fixedColumns: {
                     leftColumns: 0, // Tidak ada kolom di sisi kiri yang dibekukan
@@ -172,7 +173,7 @@
                     // },
                     {
                         data: 'name',
-                        name: 'name'
+                        name: 'products.name'
                     },
                     {
                         data: 'price',
@@ -180,13 +181,15 @@
                         className: 'text-end'
                     },
                     {
-                        data: 'unit',
-                        name: 'unit',
+                        data: 'unit_abbreviation',
+                        name: 'product_units.abbreviation',
                         className: 'text-end'
                     },
                     {
                         data: 'action',
-                        name: 'action'
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
                     },
 
                 ]
