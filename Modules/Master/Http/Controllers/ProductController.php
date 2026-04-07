@@ -1203,7 +1203,19 @@ class ProductController extends Controller
                 return '<span class="badge badge-light-primary" data-id="' . $product->id . '" data-value="' . $product->hpp . '">Rp' . tonumberround($product->hpp) . '</span>';
             })
             ->addColumn('stock_available', function ($product) {
-                return '<span class="badge badge-light-' . $product->stock_status . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
+                $stockValue = (float) $product->stock_available;
+
+                if ($stockValue < 0) {
+                    $badgeClass = 'danger';
+                } elseif ($stockValue == 0.0) {
+                    $badgeClass = 'secondary';
+                } elseif ($stockValue <= (float) $product->limit) {
+                    $badgeClass = 'warning';
+                } else {
+                    $badgeClass = 'success';
+                }
+
+                return '<span class="badge badge-light-' . $badgeClass . '">' . $product->stock_available . ' ' . $product->unit . '</span>';
             })
             ->addColumn('category', function ($item) {
                 return $item->category_id;
