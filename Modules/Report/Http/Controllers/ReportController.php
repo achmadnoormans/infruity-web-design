@@ -420,14 +420,15 @@ class ReportController extends Controller
         )
             ->join('products', 'pos_transaction_detail.product_id', '=', 'products.id')
             ->join('pos_transaction', 'pos_transaction_detail.pos_id', '=', 'pos_transaction.id')
-            ->leftJoin('pos_payment', 'pos_transaction.id', '=', 'pos_payment.pos_id')
             ->whereBetween('pos_transaction.date', [$startDate, $endDate])
             ->whereNull('pos_transaction_detail.deleted_at')  // hanya yang belum dihapus
             ->where('pos_transaction.status', '!=', 'draft'); // status bukan draft
 
         if ($request->has('branch_id') && $request->branch_id != 'all') {
-            $data = $data->where('pos_payment.branch_id', $request->branch_id);
+            $data = $data->where('pos_transaction.branch_id', $request->branch_id);
         }
+
+        $this->applyProductSalesSearch($data, $request);
 
         // Clone query untuk menghitung grand total
         $grandTotalQuery = clone $data;
@@ -439,10 +440,7 @@ class ReportController extends Controller
 
         return DataTables::of($data)
             ->filter(function ($queryInstance) use ($request) {
-                if ($request->has('search') && ! empty($request->search['value'])) {
-                    $searchValue = '%' . trim($request->search['value']) . '%';
-                    $queryInstance->where('products.name', 'like', $searchValue);
-                }
+                $this->applyProductSalesSearch($queryInstance, $request);
             })
             ->editColumn('total', function ($row) {
                 return 'Rp. ' . number_format($row->total, 0, ',', '.');
@@ -454,6 +452,15 @@ class ReportController extends Controller
                 'grand_total' => 'Rp. ' . number_format($grandTotal, 0, ',', '.'),
             ])
             ->make(true);
+    }
+
+    private function applyProductSalesSearch($query, Request $request): void
+    {
+        $searchValue = trim((string) data_get($request->input('search'), 'value', ''));
+
+        if ($searchValue !== '') {
+            $query->where('products.name', 'like', '%' . $searchValue . '%');
+        }
     }
 
     public function get_data_total_aset(Request $request)
