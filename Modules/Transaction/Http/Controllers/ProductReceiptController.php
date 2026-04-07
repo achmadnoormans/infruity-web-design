@@ -359,15 +359,23 @@ class ProductReceiptController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
+                $ingredientName = $item->ingredients?->name ?? 'Produk tidak ditemukan';
+                $unitName = $item->ingredients?->unit?->abbreviation ?? '-';
+                $price = $item->ingredients?->price ?? 0;
+
                 $html = '';
-                $html .= $item->ingredients->name . '<br> Jumlah : ' . $item->quantity . ' ' . $item->ingredients->unit->abbreviation . '<br> Harga : ' . toNumber($item->ingredients->price) . '';
+                $html .= $ingredientName . '<br> Jumlah : ' . $item->quantity . ' ' . $unitName . '<br> Harga : ' . toNumber($price) . '';
                 return $html;
             })
             ->addColumn('hpp', function ($item) {
-                return 'Rp' . toNumber($item->ingredients->hpp * $item->quantity);
+                $hpp = $item->ingredients?->hpp ?? 0;
+
+                return 'Rp' . toNumber($hpp * $item->quantity);
             })
             ->addColumn('harga_jual', function ($item) {
-                return toNumber($item->ingredients->price * $item->quantity);
+                $price = $item->ingredients?->price ?? 0;
+
+                return toNumber($price * $item->quantity);
             })
             ->addColumn('action', function ($item) use ($request) {
                 $html = '';
@@ -456,7 +464,7 @@ class ProductReceiptController extends Controller
                 'success' => true,
                 'id' => $receipt->id,
                 'product_id' => $receipt->product_id,
-                'product_name' => $receipt->products->name ?? 'Unknown',
+                'product_name' => $receipt->products?->name ?? 'Unknown',
                 'yield_quantity' => 1, // Default yield quantity
                 'ingredients' => $ingredients
             ]);
@@ -476,11 +484,13 @@ class ProductReceiptController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
+                $productName = $item->products?->name ?? 'Produk tidak ditemukan';
+
                 return '<div class="d-flex align-items-center">
                             <div class="ms-5">
-                                <a href="' . url('production') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
+                                <a href="' . route('receipt.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
                                 <br>
-                                <span class="text-muted fw-bold">' . $item->products->name . '</span>
+                                <span class="text-muted fw-bold">' . e($productName) . '</span>
                             </div>
                         </div>';
             })

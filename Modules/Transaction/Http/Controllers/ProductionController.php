@@ -684,12 +684,64 @@ class ProductionController extends Controller
     public function get_data(Request $request)
     {
         try {
-            // Simple test first - get all production records
-            $productions = Production::with('products')->get();
+            $query = Production::with(['products', 'branch'])
+                ->whereNotNull('product_id');
 
-            return DataTables::of($productions)
+            if ($request->has('status_filter') && $request->status_filter !== 'all' && ! empty($request->status_filter)) {
+                $query->where('status', $request->status_filter);
+            } else {
+                $statusColumnSearch = trim((string) data_get($request->input('columns', []), '1.search.value', ''));
+                if ($statusColumnSearch !== '') {
+                    $query->where('status', $statusColumnSearch);
+                }
+            }
+
+            if ($request->has('cabang_filter') && $request->cabang_filter !== 'all' && ! empty($request->cabang_filter)) {
+                $query->where('branch_id', $request->cabang_filter);
+            }
+
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereBetween('production_date', [$request->start_date, $request->end_date]);
+            }
+
+            $data = $query->orderBy('id', 'DESC');
+
+            return DataTables::of($data)
+                ->filter(function ($q) use ($request) {
+                    $search = trim((string) $request->input('search.value'));
+
+                    if ($search === '') {
+                        return;
+                    }
+
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('production_number', 'LIKE', "%{$search}%")
+                            ->orWhere('status', 'LIKE', "%{$search}%")
+                            ->orWhereHas('products', function ($productQuery) use ($search) {
+                                $productQuery->where('name', 'LIKE', "%{$search}%");
+                            })
+                            ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                                $branchQuery->where('name', 'LIKE', "%{$search}%");
+                            });
+
+                        $possibleDates = [];
+                        $formats       = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
+
+                        foreach ($formats as $format) {
+                            $date = \DateTime::createFromFormat($format, $search);
+                            if ($date) {
+                                $possibleDates[] = $date->format('Y-m-d');
+                                break;
+                            }
+                        }
+
+                        foreach ($possibleDates as $dateStr) {
+                            $sub->orWhereDate('production_date', $dateStr);
+                        }
+                    });
+                }, true)
                 ->addColumn('name', function ($item) {
-                    $productName = $item->products ? $item->products->name : 'N/A';
+                    $productName = $item->products ? e($item->products->name) : 'N/A';
                     $quantity    = number_format($item->quantity ?? 0, 0, ',', '.');
 
                     return '<div class="d-flex align-items-center">
@@ -702,7 +754,13 @@ class ProductionController extends Controller
                             </div>';
                 })
                 ->addColumn('production_date', function ($item) {
-                    return $item->production_date ? date('d/m/Y', strtotime($item->production_date)) : 'N/A';
+                    $date = $item->production_date ? date('d/m/Y', strtotime($item->production_date)) : 'N/A';
+
+                    if ($item->branch) {
+                        return '<span class="text-muted d-block fs-8">' . $date . '</span><span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
+                    }
+
+                    return $date;
                 })
                 ->addColumn('status', function ($item) {
                     switch ($item->status) {
@@ -721,7 +779,7 @@ class ProductionController extends Controller
                 ->addColumn('action', function ($row) {
                     $editUrl   = route('production.edit', $row->id);
                     $deleteUrl = route('production.destroy', $row->id);
-                    $name      = e($row->name);
+                    $name      = e($row->production_number ?? 'Produksi');
 
                     $html  = '
                 <div class="dropstart">
@@ -746,7 +804,7 @@ class ProductionController extends Controller
                 </div>';
                     return $html;
                 })
-                ->rawColumns(['name', 'action', 'status'])
+                ->rawColumns(['name', 'action', 'status', 'production_date'])
                 ->make(true);
 
         } catch (\Exception $e) {
