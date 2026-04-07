@@ -177,12 +177,18 @@ class BranchController extends Controller
 
     public function getBranch(Request $request)
     {
-        $search = $request->get('search');
+        $search = $request->get('search', $request->get('term', ''));
+        $showAll = $request->boolean('show_all');
 
-        $data = Branch::
-            where('name', 'like', '%' . $search . '%')
-            ->whereIn('id', UserBranch::getUserBranch())
-            ->select('id', 'name')
+        $query = Branch::query()
+            ->where('name', 'like', '%' . $search . '%')
+            ->select('id', 'name');
+
+        if (! $showAll) {
+            $query->whereIn('id', UserBranch::getUserBranch());
+        }
+
+        $data = $query
             ->limit(10)
             ->get();
 

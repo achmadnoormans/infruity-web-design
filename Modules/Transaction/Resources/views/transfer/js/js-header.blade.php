@@ -3,6 +3,9 @@
     // Detect jika URL mengandung kata "create"
     $.ajax({
         url: '/ajax/getBranch',
+        data: {
+            show_all: 1
+        },
         dataType: 'json',
         success: function(data) {
 
@@ -21,6 +24,12 @@
                     url: '/ajax/getBranch',
                     dataType: 'json',
                     delay: 250,
+                    data: function(params) {
+                        return {
+                            term: params.term,
+                            show_all: 1
+                        };
+                    },
                     processResults: data => ({
                         results: data.map(item => ({
                             id: item.id,
@@ -35,6 +44,9 @@
 
     $.ajax({
         url: '/ajax/getBranch',
+        data: {
+            show_all: 1
+        },
         dataType: 'json',
         success: function(data) {
             if (window.location.pathname.includes("create")) {
@@ -51,6 +63,12 @@
                     url: '/ajax/getBranch',
                     dataType: 'json',
                     delay: 250,
+                    data: function(params) {
+                        return {
+                            term: params.term,
+                            show_all: 1
+                        };
+                    },
                     processResults: data => ({
                         results: data.map(item => ({
                             id: item.id,
