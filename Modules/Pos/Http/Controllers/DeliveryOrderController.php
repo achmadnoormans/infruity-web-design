@@ -233,8 +233,16 @@ class DeliveryOrderController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('Y-m-d', strtotime($item->ongkir_date)) . '</span>';
-                $html .= '<span class="text-muted d-block fs-8">' . date('H:i', strtotime($item->ongkir_time)) . '</span>';
+                $fallbackDateTime = now();
+                $deliveryDate = !empty($item->ongkir_date)
+                    ? date('Y-m-d', strtotime($item->ongkir_date))
+                    : $fallbackDateTime->format('Y-m-d');
+                $deliveryTime = !empty($item->ongkir_time)
+                    ? date('H:i', strtotime($item->ongkir_time))
+                    : $fallbackDateTime->format('H:i');
+
+                $html = '<span class="text-muted d-block fs-8">' . $deliveryDate . '</span>';
+                $html .= '<span class="text-muted d-block fs-8">' . $deliveryTime . '</span>';
                 if ($item->branch) {
                     $html .= '<span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
                 }
