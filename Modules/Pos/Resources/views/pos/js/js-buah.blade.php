@@ -1303,6 +1303,7 @@
                             data: function(params) {
                                 return {
                                     term: params.term, // term dari select2 untuk pencarian
+                                    branch: $('#branch_id').val(),
                                     type: 'kemasan', // contoh ambil dari input lain
                                     status: 'aktif', // contoh nilai statis
                                     limit: 10 // contoh parameter tambahan
@@ -1423,6 +1424,7 @@
                         data: function(params) {
                             return {
                                 term: params.term, // term dari select2 untuk pencarian
+                                branch: $('#branch_id').val(),
                                 type: 'kemasan', // contoh ambil dari input lain
                                 status: 'aktif', // contoh nilai statis
                                 limit: 10 // contoh parameter tambahan
@@ -1480,7 +1482,7 @@
                 return num.toString();
             },
 
-            loadExistingData(data, detail) {
+            loadExistingData(transactionData, detail) {
                 this.cart = [];
                 this.parcel = [];
                 this.jus = [];
@@ -1514,17 +1516,30 @@
 
                     if (item.type == 'parcel') {
                         let percelDatas = [];
-                        let data = item.product.production_parcel_details;
-                        data.forEach(item => {
+                        const branchId = transactionData.branch_id ?? transactionData.branch?.id ?? $('#branch_id').val();
+                        const parentParcelQty = this.sanitizeNumber(Number(item.quantity || 1)) || 1;
+                        const parcelDetails = Array.isArray(item.product?.production_parcel_details) ? item.product.production_parcel_details : [];
+
+                        parcelDetails.forEach(detailItem => {
+                            const totalQty = this.sanitizeNumber(Number(detailItem.quantity || 0));
+                            const qtyPerParcel = parentParcelQty > 0 ? totalQty / parentParcelQty : totalQty;
+                            const branchPrice = detailItem.product?.product_branches?.find(branchProduct =>
+                                String(branchProduct.branch_id) === String(branchId)
+                            )?.price;
+                            const fallbackBasePrice = this.sanitizeNumber(Number(branchPrice ?? detailItem.product?.price ?? 0));
+                            const normalizedQty = qtyPerParcel > 0 ? qtyPerParcel : 1;
+                            const basePrice = fallbackBasePrice;
+                            const linePrice = basePrice * normalizedQty;
+
                             const parcelData = {
-                                product: item.product_id,
-                                name: item.product.name ?? 'unknown',
-                                unit: item.product.product_unit ?? 1,
-                                priceAwal: item.product.price ?? 0,
-                                hpp: parseFloat(item.product.hpp ?? 0),
-                                price: item.product.price ?? 12,
-                                priceFormatted: this.formatRupiah(item.product.price ?? 1),
-                                qty: item.quantity,
+                                product: detailItem.product_id,
+                                name: detailItem.product?.name ?? 'unknown',
+                                unit: detailItem.product?.product_unit ?? 1,
+                                priceAwal: basePrice,
+                                hpp: parseFloat(detailItem.product?.hpp ?? 0),
+                                price: linePrice,
+                                priceFormatted: this.formatRupiah(linePrice),
+                                qty: qtyPerParcel,
                             };
                             percelDatas.push(parcelData);
                         });
@@ -1546,51 +1561,51 @@
                     }
                 });
 
-                this.diskonGlobal = parseFloat(data.discount || 0);
-                this.ongkirGlobal = parseFloat(data.ongkir || 0);
+                this.diskonGlobal = parseFloat(transactionData.discount || 0);
+                this.ongkirGlobal = parseFloat(transactionData.ongkir || 0);
 
-                $('#note').val(data.note);
-                $('#ongkir_date').val(data.ongkir_date);
-                $('#ongkir_time').val(data.ongkir_time);
+                $('#note').val(transactionData.note);
+                $('#ongkir_date').val(transactionData.ongkir_date);
+                $('#ongkir_time').val(transactionData.ongkir_time);
                 // $('#ongkir_address').val(data.ongkir_address);
 
-                if (data.courier) {
-                    let optionCourier = new Option(data.courier.name, data.courier.id, true, true);
-                    $('#courier_id').append(optionCourier).val(data.courier.id).trigger('change');
+                if (transactionData.courier) {
+                    let optionCourier = new Option(transactionData.courier.name, transactionData.courier.id, true, true);
+                    $('#courier_id').append(optionCourier).val(transactionData.courier.id).trigger('change');
                 }
 
-                if (data.invoice_number) {
-                    this.currentInvoiceNumber = data.invoice_number;
+                if (transactionData.invoice_number) {
+                    this.currentInvoiceNumber = transactionData.invoice_number;
                     const invoiceInput = document.querySelector('input[name="invoice_number"]');
                     if (invoiceInput) {
-                        invoiceInput.value = data.invoice_number;
+                        invoiceInput.value = transactionData.invoice_number;
                     }
                 }
 
-                if (data.ongkir_address) {
-                    let ongkirAddress = new Option(data.ongkir_address, data.ongkir_address, true, true);
-                    $('#address_id').append(ongkirAddress).val(data.ongkir_address).trigger('change');
+                if (transactionData.ongkir_address) {
+                    let ongkirAddress = new Option(transactionData.ongkir_address, transactionData.ongkir_address, true, true);
+                    $('#address_id').append(ongkirAddress).val(transactionData.ongkir_address).trigger('change');
                 }
 
-                if (data.branch_proses) {
-                    let branchProcess = new Option(data.branch_proses.name, data.branch_proses.id, true, true);
-                    $('#branch_process_id').append(branchProcess).val(data.branch_proses.id).trigger('change');
+                if (transactionData.branch_proses) {
+                    let branchProcess = new Option(transactionData.branch_proses.name, transactionData.branch_proses.id, true, true);
+                    $('#branch_process_id').append(branchProcess).val(transactionData.branch_proses.id).trigger('change');
                 }
 
-                if (data.branch) {
-                    let branch = new Option(data.branch.name, data.branch.id, true, true);
-                    $('#branch_id').append(branch).val(data.branch.id).trigger('change');
+                if (transactionData.branch) {
+                    let branch = new Option(transactionData.branch.name, transactionData.branch.id, true, true);
+                    $('#branch_id').append(branch).val(transactionData.branch.id).trigger('change');
                 }
 
-                if (data.customer) {
+                if (transactionData.customer) {
                     let c = {
-                        id: data.customer_id || 0,
-                        name: data.customer?.name || 'Pelanggan Umum',
-                        address: data.customer?.address || '-',
-                        phone: data.customer?.whatsapp || '-',
-                        tier_id: data.customer?.customer_tier?.tier_id || '',
-                        tier_name: data.customer?.customer_tier?.tier_name || '-',
-                        tier_style: data.customer?.customer_tier?.tier_style || 'badge-light-secondary'
+                        id: transactionData.customer_id || 0,
+                        name: transactionData.customer?.name || 'Pelanggan Umum',
+                        address: transactionData.customer?.address || '-',
+                        phone: transactionData.customer?.whatsapp || '-',
+                        tier_id: transactionData.customer?.customer_tier?.tier_id || '',
+                        tier_name: transactionData.customer?.customer_tier?.tier_name || '-',
+                        tier_style: transactionData.customer?.customer_tier?.tier_style || 'badge-light-secondary'
                     };
 
                     let option = new Option(c.name, c.id, true, true);

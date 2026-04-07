@@ -108,4 +108,5 @@ LEFT JOIN child_agg
    AND child_agg.branch_id = parent_ts.branch_id
 LEFT JOIN product_units C
     ON C.id = A.product_unit
-WHERE A.is_variant IS NULL;
+WHERE A.tipe != 'parcel'
+AND A.is_variant IS NULL;

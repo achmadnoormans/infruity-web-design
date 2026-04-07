@@ -10,6 +10,7 @@ use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\Receipt;
 use Modules\Transaction\Entities\ProductReceipt;
 use Modules\Transaction\Entities\ProductionParcelDetail;
+use Modules\Master\Entities\ProductBranch;
 use DB;
 
 class Product extends Model
@@ -65,6 +66,11 @@ class Product extends Model
             'production_id', // FK di tabel production_parcel_detail
             'id'             // PK di tabel products
         );
+    }
+
+    public function productBranches()
+    {
+        return $this->hasMany(ProductBranch::class, 'product_id', 'id');
     }
 
     /**

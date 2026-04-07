@@ -157,6 +157,13 @@
                         url: '/ajax/listProduct',
                         dataType: 'json',
                         delay: 250,
+                        data: function(params) {
+                            return {
+                                term: params.term,
+                                branch: $('#branch_id').val(),
+                                limit: 10
+                            };
+                        },
                         processResults: function(data) {
                             return {
                                 results: data.map(item => ({
@@ -190,6 +197,13 @@
                         url: '/ajax/listProduct',
                         dataType: 'json',
                         delay: 250,
+                        data: function(params) {
+                            return {
+                                term: params.term,
+                                branch: $('#branch_id').val(),
+                                limit: 10
+                            };
+                        },
                         processResults: function(data) {
                             return {
                                 results: data.map(item => ({
