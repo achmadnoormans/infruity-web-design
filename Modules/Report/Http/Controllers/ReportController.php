@@ -491,7 +491,7 @@ class ReportController extends Controller
                 DB::raw('SUM(A.quantity) as total_stock'),
                 // DB::raw('(SUM(A.quantity) * PARENT.hpp) as total_hpp'),
 
-                'hpp_last.total_aset_berjalan AS total_hpp',
+                DB::raw('COALESCE(hpp_last.total_aset_berjalan, 0) as total_hpp'),
             ])
             ->join('products as CHILD', 'A.product_id', '=', 'CHILD.id')
             ->leftJoin('product_child as pc', 'CHILD.id', '=', 'pc.product_id')
@@ -530,6 +530,24 @@ class ReportController extends Controller
             ->sum('total_hpp');
 
         return DataTables::of($query)
+            ->filterColumn('name', function ($query, $keyword) {
+                $query->where('PARENT.name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('abbreviation', function ($query, $keyword) {
+                $query->where('C.abbreviation', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('hpp', function ($query, $keyword) {
+                $normalizedKeyword = str_replace(',', '.', $keyword);
+                $query->whereRaw('CAST(PARENT.hpp AS CHAR) LIKE ?', ['%' . $normalizedKeyword . '%']);
+            })
+            ->filterColumn('total_stock', function ($query, $keyword) {
+                $normalizedKeyword = preg_replace('/[^0-9.,-]/', '', $keyword);
+                $query->havingRaw('CAST(SUM(A.quantity) AS CHAR) LIKE ?', ['%' . $normalizedKeyword . '%']);
+            })
+            ->filterColumn('total_hpp', function ($query, $keyword) {
+                $normalizedKeyword = str_replace(',', '.', $keyword);
+                $query->whereRaw('CAST(COALESCE(hpp_last.total_aset_berjalan, 0) AS CHAR) LIKE ?', ['%' . $normalizedKeyword . '%']);
+            })
             ->editColumn('total_hpp', function ($row) {
                 return 'Rp' . number_format($row->total_hpp, 0, ',', '.');
             })
