@@ -80,7 +80,8 @@ class ReportController extends Controller
             return $denied;
         }
 
-        $data['branches'] = Branch::all();
+        $data['branches']    = Branch::all();
+        $data['defaultDate'] = date('Y-m-d');
         return view('report::product-sales', $data);
     }
     public function total_aset(Request $request)
@@ -400,8 +401,8 @@ class ReportController extends Controller
 
     public function get_data_product_sales(Request $request)
     {
-        $startDate = $request->start_date ?? date('Y-01-01');
-        $endDate   = $request->end_date ?? date('Y-12-31');
+        $startDate = $request->start_date ?? date('Y-m-d');
+        $endDate   = $request->end_date ?? date('Y-m-d');
 
         // Query utama
         $data = PosDetailModel::select(

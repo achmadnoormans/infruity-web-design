@@ -118,6 +118,7 @@
 @section('script')
     <script type="text/javascript">
         var dataTable;
+        const defaultDate = @json($defaultDate ?? date('Y-m-d'));
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -191,6 +192,7 @@
                 altFormat: "d/m/Y",
                 dateFormat: "Y-m-d",
                 mode: "range",
+                defaultDate: [defaultDate, defaultDate],
                 onChange: function(selectedDates, dateStr, instance) {
                     updateDateRangeLabel(); // Update label
                     dataTable.draw(); // Reload data
