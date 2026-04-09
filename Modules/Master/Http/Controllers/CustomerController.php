@@ -19,6 +19,16 @@ class CustomerController extends Controller
 {
     use \App\Traits\HasAccessControl;
 
+    private function whatsappValidationMessage(): string
+    {
+        return 'Nomor WhatsApp harus diawali 0, 62, atau +62 dan berisi 10-15 digit.';
+    }
+
+    private function isDuplicateWhatsapp(?string $phone, ?int $ignoreId = null): bool
+    {
+        return $phone !== null && $phone !== '' && Customer::whatsappExists($phone, $ignoreId);
+    }
+
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -73,10 +83,17 @@ class CustomerController extends Controller
             'address' => 'nullable',
             'phone' => [
                 'nullable',
-                'numeric',
-                'digits_between:10,15',
-                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
-                'unique:customer,whatsapp',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && $value !== '' && !Customer::isValidWhatsapp($value)) {
+                        $fail($this->whatsappValidationMessage());
+                    }
+                },
+                function ($attribute, $value, $fail) {
+                    if ($this->isDuplicateWhatsapp($value)) {
+                        $fail('Nomor WhatsApp sudah digunakan oleh customer lain.');
+                    }
+                },
             ],
             'email' => 'nullable',
         ]);
@@ -99,7 +116,7 @@ class CustomerController extends Controller
             $customer->district = $request->district;
             $customer->village = $request->village;
             $customer->address = $request->address;
-            $customer->whatsapp = $request->phone;
+            $customer->whatsapp = Customer::sanitizeWhatsapp($request->phone);
             $customer->email = $request->email;
             $customer->created_by = Auth::user()->id_user;
             $customer->save();
@@ -187,10 +204,17 @@ class CustomerController extends Controller
             'address' => 'nullable',
             'phone' => [
                 'nullable',
-                'numeric',
-                'digits_between:10,15',
-                'regex:/^(?:\+62|62|08)[0-9]{8,13}$/',
-                'unique:customer,whatsapp,' . $id,
+                'string',
+                function ($attribute, $value, $fail) {
+                    if ($value !== null && $value !== '' && !Customer::isValidWhatsapp($value)) {
+                        $fail($this->whatsappValidationMessage());
+                    }
+                },
+                function ($attribute, $value, $fail) use ($id) {
+                    if ($this->isDuplicateWhatsapp($value, (int) $id)) {
+                        $fail('Nomor WhatsApp sudah digunakan oleh customer lain.');
+                    }
+                },
             ],
             'email' => 'nullable',
         ]);
@@ -212,7 +236,7 @@ class CustomerController extends Controller
             $customer->district = $request->district;
             $customer->village = $request->village;
             $customer->address = $request->address;
-            $customer->whatsapp = $request->phone;
+            $customer->whatsapp = Customer::sanitizeWhatsapp($request->phone);
             $customer->email = $request->email;
             $customer->updated_by = Auth::user()->id_user;
             $customer->save();
@@ -258,11 +282,32 @@ class CustomerController extends Controller
 
     public function storeCustomer(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!Customer::isValidWhatsapp($value)) {
+                        $fail($this->whatsappValidationMessage());
+                    }
+                },
+                function ($attribute, $value, $fail) {
+                    if ($this->isDuplicateWhatsapp($value)) {
+                        $fail('Nomor WhatsApp sudah digunakan oleh customer lain.');
+                    }
+                },
+            ],
             'address' => 'nullable|string|max:500',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         try {
             DB::beginTransaction();
@@ -270,7 +315,7 @@ class CustomerController extends Controller
             $customer->name = $request->name;
             $customer->code = Customer::getCustomerNumber();
             $customer->address = $request->address;
-            $customer->whatsapp = $request->phone;
+            $customer->whatsapp = Customer::sanitizeWhatsapp($request->phone);
             $customer->created_by = Auth::user()->id_user;
             $customer->save();
             DB::commit();
@@ -281,6 +326,8 @@ class CustomerController extends Controller
                     'id' => $customer->id,
                     'name' => $customer->name,
                     'address' => $customer->address,
+                    'phone' => $customer->whatsapp,
+                    'whatsapp' => $customer->whatsapp,
                 ],
             ]);
         } catch (Exception $e) {
@@ -391,12 +438,38 @@ class CustomerController extends Controller
 
     public function getCustomer(Request $request)
     {
-        $search = $request->get('search');
+        $search = trim((string) $request->get('search', ''));
+        $searchDigits = preg_replace('/\D+/', '', $search);
         $page = $request->get('page', 1); // Select2 akan mengirim page
 
-        $customer = Customer::where(function ($q) use ($search) {
-            $q->where('name', 'like', '%' . $search . '%')
-                ->orWhere('whatsapp', 'like', '%' . $search . '%');
+        $phoneKeywords = [];
+        if ($searchDigits !== '') {
+            $phoneKeywords[] = $searchDigits;
+
+            if (str_starts_with($searchDigits, '0')) {
+                $phoneKeywords[] = '62' . substr($searchDigits, 1);
+            }
+
+            if (str_starts_with($searchDigits, '62')) {
+                $phoneKeywords[] = '0' . substr($searchDigits, 2);
+            }
+
+            $phoneKeywords = array_values(array_unique(array_filter($phoneKeywords)));
+        }
+
+        $customer = Customer::when($search !== '' || !empty($phoneKeywords), function ($query) use ($search, $phoneKeywords) {
+            $query->where(function ($q) use ($search, $phoneKeywords) {
+                if ($search !== '') {
+                    $q->where('customer.name', 'like', '%' . $search . '%');
+                }
+
+                foreach ($phoneKeywords as $keyword) {
+                    $q->orWhereRaw(
+                        "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(customer.whatsapp, ''), '+', ''), '-', ''), ' ', ''), '(', ''), ')', '') LIKE ?",
+                        ['%' . $keyword . '%']
+                    );
+                }
+            });
         })
             ->leftJoin('vw_customer_tier', 'vw_customer_tier.customer_id', '=', 'customer.id')
             ->select('customer.*', 'tier_name', 'tier_id', 'tier_style', 'minimal_purchase', 'voucher', 'discount')

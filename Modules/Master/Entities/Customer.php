@@ -44,6 +44,77 @@ class Customer extends Model
         return $newCode;
     }
 
+    public static function sanitizeWhatsapp(?string $phone): ?string
+    {
+        $phone = trim((string) $phone);
+        if ($phone === '') {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $phone);
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '8')) {
+            return '0' . $digits;
+        }
+
+        return $digits;
+    }
+
+    public static function normalizeWhatsapp(?string $phone): ?string
+    {
+        $sanitized = self::sanitizeWhatsapp($phone);
+        if (!$sanitized) {
+            return null;
+        }
+
+        if (str_starts_with($sanitized, '0')) {
+            return '62' . substr($sanitized, 1);
+        }
+
+        if (str_starts_with($sanitized, '8')) {
+            return '62' . $sanitized;
+        }
+
+        return $sanitized;
+    }
+
+    public static function isValidWhatsapp(?string $phone): bool
+    {
+        $normalized = self::normalizeWhatsapp($phone);
+
+        return $normalized !== null && preg_match('/^62\d{8,13}$/', $normalized) === 1;
+    }
+
+    public static function normalizedWhatsappSql(string $column = 'whatsapp'): string
+    {
+        $cleaned = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE($column, ''), '+', ''), '-', ''), ' ', ''), '(', ''), ')', '')";
+
+        return "CASE
+            WHEN $cleaned = '' THEN ''
+            WHEN LEFT($cleaned, 1) = '0' THEN CONCAT('62', SUBSTRING($cleaned, 2))
+            WHEN LEFT($cleaned, 1) = '8' THEN CONCAT('62', $cleaned)
+            ELSE $cleaned
+        END";
+    }
+
+    public static function whatsappExists(?string $phone, ?int $ignoreId = null): bool
+    {
+        $normalized = self::normalizeWhatsapp($phone);
+        if (!$normalized) {
+            return false;
+        }
+
+        return self::query()
+            ->when($ignoreId, function ($query) use ($ignoreId) {
+                $query->where('id', '!=', $ignoreId);
+            })
+            ->whereRaw(self::normalizedWhatsappSql('whatsapp') . ' = ?', [$normalized])
+            ->exists();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by', 'id_user');

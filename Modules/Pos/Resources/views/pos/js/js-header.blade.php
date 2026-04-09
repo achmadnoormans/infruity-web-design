@@ -78,6 +78,11 @@
     }
 
     // Fungsi render untuk item terpilih
+    function getCustomerPhoneSuffix(phone) {
+        const phoneDigits = String(phone || '').replace(/\D/g, '');
+        return phoneDigits ? phoneDigits.slice(-4) : '';
+    }
+
     function formatCustomerSelection(customer) {
         if (!customer.id) return customer.text;
 
@@ -85,11 +90,16 @@
         const el = $('#customer_id').find(`option[value="${customer.id}"]`);
 
         const name = customer.name ?? el.data('name') ?? 'Pelanggan Umum';
-        const tier_name = customer.tier_name ?? el.data('tier_name') ?? '-';
-
+        const whatsapp = customer.whatsapp ?? customer.phone ?? el.data('whatsapp') ?? '';
         if (customer.id === '0') return name;
 
-        return `${name} (${tier_name})`;
+        const phoneSuffix = getCustomerPhoneSuffix(whatsapp);
+
+        if (!phoneSuffix) {
+            return name;
+        }
+
+        return `${name} (${phoneSuffix})`;
     }
 
 
