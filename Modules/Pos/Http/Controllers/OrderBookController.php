@@ -25,6 +25,11 @@ class OrderBookController extends Controller
 {
     use \App\Traits\HasAccessControl;
 
+    private function containsParcelKeyword(?string $note): bool
+    {
+        return str_contains(strtolower((string) $note), 'parcel');
+    }
+
     /**
      * Display a listing of the resource.
      * @return Renderable
@@ -157,6 +162,7 @@ class OrderBookController extends Controller
         ]);
 
         try {
+            $isParcelOrder = $this->containsParcelKeyword($data['note']);
             $updateAt = null;
             $userId = Auth::id();
             DB::beginTransaction();
@@ -219,7 +225,8 @@ class OrderBookController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi berhasil disimpan',
-                'order_book_id' => $orderBook->id
+                'order_book_id' => $orderBook->id,
+                'is_parcel' => $isParcelOrder
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -244,6 +251,7 @@ class OrderBookController extends Controller
         $data['data'] = $orderBook;
         $data['detail'] = $orderBook->details ?? [];
         $data['invoice_number'] = $orderBook->invoice_number;
+        $data['is_parcel_order'] = $this->containsParcelKeyword($orderBook->note ?? '');
         return view('pos::order-book.order', $data);
     }
 
@@ -395,12 +403,15 @@ class OrderBookController extends Controller
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $warningIcon = $item->updated_at ? '<span class="text-warning mx-1" title="Ada updated_at">⚠️</span>' : '';
+                $parcelBadge = $this->containsParcelKeyword($item->note ?? '')
+                    ? '<br><span class="badge badge-light-info"><i class="bi bi-box"></i></span>'
+                    : '';
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= $warningIcon . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
+                    $html .= $warningIcon . $parcelBadge . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
                 } else {
-                    $html .= $warningIcon . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $html .= $warningIcon . $parcelBadge . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                 }
                 if ($item->updated_at != null) {
                     $html .= '<br><span class="text-muted d-block fs-7">Di Edit : ' . $item->updated_at->format('d M Y H:i') . '</span>';
