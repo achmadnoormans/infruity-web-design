@@ -30,7 +30,16 @@
             },
             setParcel(item) {
                 // this.parcels = []; // reset
-                this.parcels.push(item); // masukkan data baru
+                const normalizedUnit = this.getUnitLabel(item.unit);
+                this.parcels.push({
+                    ...item,
+                    unit: normalizedUnit,
+                    displayName: item.displayName || this.formatParcelProductName({
+                        name: item.name,
+                        text: item.text,
+                        unit: normalizedUnit
+                    })
+                }); // masukkan data baru
                 this.$nextTick(() => {
                     this.initSelect2();
                     this.updateTotal();
@@ -42,6 +51,7 @@
                     product: '',
                     name: '',
                     unit: '',
+                    displayName: '',
                     priceAwal: 0,
                     qty: 1,
                     price: 0,
@@ -144,6 +154,20 @@
                     minimumFractionDigits: 0
                 }).format(num);
             },
+            getUnitLabel(unit) {
+                if (!unit) return '';
+                if (typeof unit === 'string') return unit;
+                return unit.abbreviation || unit.name || '';
+            },
+            formatParcelProductName(item) {
+                if (!item) return '';
+
+                const productName = item.displayName || item.text || item.name || '';
+                const unitLabel = this.getUnitLabel(item.unit);
+
+                if (!unitLabel) return productName;
+                return productName.includes(`(${unitLabel})`) ? productName : `${productName} (${unitLabel})`;
+            },
             initSelect2() {
                 $('.parcel-select').select2({
                     placeholder: 'Pilih Buah',
@@ -153,6 +177,20 @@
                         }
                     },
                     dropdownParent: $('#parcelModal'),
+                    templateResult: (item) => {
+                        if (item.loading) {
+                            return item.text;
+                        }
+
+                        return this.formatParcelProductName(item);
+                    },
+                    templateSelection: (item) => {
+                        if (!item.id) {
+                            return item.text;
+                        }
+
+                        return this.formatParcelProductName(item);
+                    },
                     ajax: {
                         url: '/ajax/listProduct',
                         dataType: 'json',
@@ -183,6 +221,10 @@
                     this.parcels[index].product = data.id;
                     this.parcels[index].name = data.text;
                     this.parcels[index].unit = data.unit;
+                    this.parcels[index].displayName = this.formatParcelProductName({
+                        text: data.text,
+                        unit: data.unit
+                    });
                     this.parcels[index].priceAwal = data.price;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
@@ -193,6 +235,21 @@
 
                 $('.parcel-select-edit').select2({
                     placeholder: 'Pilih Parcel',
+                    dropdownParent: $('#parcelEditModal'),
+                    templateResult: (item) => {
+                        if (item.loading) {
+                            return item.text;
+                        }
+
+                        return this.formatParcelProductName(item);
+                    },
+                    templateSelection: (item) => {
+                        if (!item.id) {
+                            return item.text;
+                        }
+
+                        return this.formatParcelProductName(item);
+                    },
                     ajax: {
                         url: '/ajax/listProduct',
                         dataType: 'json',
@@ -223,6 +280,10 @@
                     this.parcels[index].product = data.id;
                     this.parcels[index].name = data.text;
                     this.parcels[index].unit = data.unit;
+                    this.parcels[index].displayName = this.formatParcelProductName({
+                        text: data.text,
+                        unit: data.unit
+                    });
                     this.parcels[index].priceAwal = data.price;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
@@ -241,6 +302,12 @@
                 const budgetValue = this.parseNumber(budget);
                 const feeValue = this.parseNumber(fee);
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
+                const normalizedParcels = this.parcels.map(item => ({
+                    ...item,
+                    unit: this.getUnitLabel(item.unit),
+                    displayName: item.displayName || this.formatParcelProductName(item)
+                }));
+
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
@@ -266,7 +333,7 @@
                     kemasanPrice: kemasanPriceValue,
                     hpp: this.totalAll,
                     fee: feeValue,
-                    data: this.parcels,
+                    data: normalizedParcels,
                     type: 'parcel',
                 }
 
@@ -312,6 +379,12 @@
                 const feeValue = this.parseNumber(fee);
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
+                const normalizedParcels = this.parcels.map(item => ({
+                    ...item,
+                    unit: this.getUnitLabel(item.unit),
+                    displayName: item.displayName || this.formatParcelProductName(item)
+                }));
+
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
@@ -339,7 +412,7 @@
                     kemasanPrice: kemasanPriceValue,
                     hpp: this.totalAll,
                     fee: feeValue,
-                    data: this.parcels, // isi produk dalam parcel
+                    data: normalizedParcels, // isi produk dalam parcel
                     type: 'parcel',
                 };
 

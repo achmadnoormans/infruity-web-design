@@ -1384,7 +1384,8 @@
                         const parcelItem = {
                             product: item.product,
                             name: item.name,
-                            // unit: item.unit.abbreviation,
+                            unit: item.unit?.abbreviation ?? item.unit?.name ?? item.unit ?? '',
+                            displayName: item.displayName ?? '',
                             priceAwal: item.priceAwal ?? item.price,
                             qty: item.qty || 1,
                             price: item.price,
@@ -1540,7 +1541,10 @@
                             const parcelData = {
                                 product: detailItem.product_id,
                                 name: detailItem.product?.name ?? 'unknown',
-                                unit: detailItem.product?.product_unit ?? 1,
+                                unit: detailItem.product?.unit?.abbreviation ?? detailItem.product?.unit?.name ?? '',
+                                displayName: detailItem.product?.name && (detailItem.product?.unit?.abbreviation ?? detailItem.product?.unit?.name)
+                                    ? `${detailItem.product.name} (${detailItem.product.unit?.abbreviation ?? detailItem.product.unit?.name})`
+                                    : (detailItem.product?.name ?? 'unknown'),
                                 priceAwal: basePrice,
                                 hpp: parseFloat(detailItem.product?.hpp ?? 0),
                                 price: linePrice,
