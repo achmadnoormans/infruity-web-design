@@ -188,7 +188,7 @@ class DeliveryOrderController extends Controller
             $query = $query->where('branch_id', $request->cabang_filter);
         }
         if ($request->start_date && $request->end_date) {
-            $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            $query->whereBetween('ongkir_date', [$request->start_date, $request->end_date]);
         }
         $data = $query->orderBy('ongkir_status', 'asc')
         ->orderBy('created_at', 'desc');
@@ -199,10 +199,10 @@ class DeliveryOrderController extends Controller
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name ?? '-' . '</a>';
+                    $html .= '<a href="' . route('pos.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name ?? '-' . '</a>';
                     $html .= '<br><span class="text-muted d-block fs-7">' . ($item->ongkir_address) . '</span>';
                 } else {
-                    $html .= '<a href="' . url('pos') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $html .= '<a href="' . route('pos.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
                     $html .= '<br><span class="text-muted d-block fs-7">' . ($item->ongkir_address) . '</span>';
                 }
                 $html .= '</div>';
