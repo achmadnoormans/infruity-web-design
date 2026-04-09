@@ -542,11 +542,21 @@ class PosController extends Controller
                         'created_by'    => $userId,
                     ]);
                     foreach ($value['data'] as $item) {
+                        $parcelQtyPerSet = (float) ($item['qty'] ?? 0);
+                        $parcelLinePrice = (float) ($item['price'] ?? 0);
+                        $parcelBasePrice = (float) ($item['priceAwal'] ?? 0);
+
+                        if ($parcelBasePrice <= 0 && $parcelQtyPerSet > 0) {
+                            $parcelBasePrice = $parcelLinePrice / $parcelQtyPerSet;
+                        }
+
                         ProductionParcelDetail::insert([
                             'production_id' => $product->id,
                             'pos_id'        => $transaksiId,
                             'product_id'    => $item['product'],
-                            'quantity'      => $item['qty'] * $value['qty'],
+                            'quantity'      => $parcelQtyPerSet * $value['qty'],
+                            'price'         => $parcelLinePrice,
+                            'price_awal'    => $parcelBasePrice,
                         ]);
                     }
                 }

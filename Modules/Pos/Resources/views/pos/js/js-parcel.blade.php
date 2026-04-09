@@ -136,7 +136,7 @@
             },
 
             formatRupiah(angka) {
-                let num = parseInt(angka);
+                let num = this.parseNumber(angka);
                 if (isNaN(num) || num < 0) num = 0;
                 return new Intl.NumberFormat('id-ID', {
                     style: 'currency',
@@ -238,11 +238,14 @@
                 const kemasan = $('#select_kemasan option:selected').text();
                 const kemasanId = $('#select_kemasan option:selected').val();
                 const kemasanPrice = $('#kemasan_price').val();
+                const budgetValue = this.parseNumber(budget);
+                const feeValue = this.parseNumber(fee);
+                const kemasanPriceValue = this.parseNumber(kemasanPrice);
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
-                    price: parseInt(budget.replace(/\./g, ''), 10),
-                    fee: parseInt(fee.replace(/\./g, ''), 10) || 0,
+                    price: budgetValue,
+                    fee: feeValue,
                     hpp: 0,
                     qty: qty,
                     unit: 'Parcel',
@@ -251,18 +254,18 @@
                     total_input: 0,
                     kemasanId: kemasanId,
                     kemasanName: kemasan,
-                    kemasanPrice: kemasanPrice,
+                    kemasanPrice: kemasanPriceValue,
                     typeProduct: 'parcel',
                 };
                 const posParcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
-                    budget: budget,
+                    budget: budgetValue,
                     qty: qty,
                     kemasan: kemasan,
                     kemasanId: kemasanId,
-                    kemasanPrice: kemasanPrice,
+                    kemasanPrice: kemasanPriceValue,
                     hpp: this.totalAll,
-                    fee: fee,
+                    fee: feeValue,
                     data: this.parcels,
                     type: 'parcel',
                 }
@@ -305,12 +308,15 @@
                 const kemasan = $('#select_edit_kemasan option:selected').text();
                 const kemasanId = $('#select_edit_kemasan option:selected').val();
                 const kemasanPrice = $('#kemasan_edit_price').val();
+                const budgetValue = this.parseNumber(budget);
+                const feeValue = this.parseNumber(fee);
+                const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
                 const parcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
-                    price: parseInt(budget.replace(/\./g, ''), 10),
-                    fee: parseInt(fee.replace(/\./g, ''), 10) || 0,
+                    price: budgetValue,
+                    fee: feeValue,
                     hpp: 0,
                     qty: qty,
                     unit: 'Parcel',
@@ -320,19 +326,19 @@
                     typeProduct: 'parcel',
                     kemasanId: kemasanId,
                     kemasanName: kemasan,
-                    kemasanPrice: kemasanPrice,
+                    kemasanPrice: kemasanPriceValue,
                 };
 
                 const posParcel = {
                     id: 'parcel' + kemasanId + this.formatShortNumber(budget),
-                    budget: budget,
+                    budget: budgetValue,
                     qty: qty,
                     kemasan: kemasan,
                     kemasanId: kemasanId,
                     kemasanName: kemasan,
-                    kemasanPrice: kemasanPrice,
+                    kemasanPrice: kemasanPriceValue,
                     hpp: this.totalAll,
-                    fee: fee,
+                    fee: feeValue,
                     data: this.parcels, // isi produk dalam parcel
                     type: 'parcel',
                 };

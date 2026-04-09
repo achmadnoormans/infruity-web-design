@@ -671,7 +671,7 @@
                 this.diskonOngkir = val;
             },
             formatRupiah(number) {
-                number = parseFloat(number || 0);
+                number = this.sanitizeNumber(number) || 0;
                 return number.toLocaleString("id-ID");
             },
 
@@ -1385,7 +1385,7 @@
                             product: item.product,
                             name: item.name,
                             // unit: item.unit.abbreviation,
-                            priceAwal: item.price,
+                            priceAwal: item.priceAwal ?? item.price,
                             qty: item.qty || 1,
                             price: item.price,
                             priceFormatted: this.formatRupiah(item.price),
@@ -1528,8 +1528,14 @@
                             )?.price;
                             const fallbackBasePrice = this.sanitizeNumber(Number(branchPrice ?? detailItem.product?.price ?? 0));
                             const normalizedQty = qtyPerParcel > 0 ? qtyPerParcel : 1;
-                            const basePrice = fallbackBasePrice;
-                            const linePrice = basePrice * normalizedQty;
+                            const storedBasePrice = this.sanitizeNumber(Number(detailItem.price_awal || 0));
+                            const storedLinePrice = this.sanitizeNumber(Number(detailItem.price || 0));
+                            const basePrice = storedBasePrice > 0
+                                ? storedBasePrice
+                                : (storedLinePrice > 0 && normalizedQty > 0
+                                    ? storedLinePrice / normalizedQty
+                                    : fallbackBasePrice);
+                            const linePrice = storedLinePrice > 0 ? storedLinePrice : (basePrice * normalizedQty);
 
                             const parcelData = {
                                 product: detailItem.product_id,

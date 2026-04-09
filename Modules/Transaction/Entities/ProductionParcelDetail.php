@@ -14,6 +14,8 @@ class ProductionParcelDetail extends Model
         'pos_id',
         'product_id',
         'quantity',
+        'price',
+        'price_awal',
     ];
     protected $table = 'production_parcel_detail';
 
