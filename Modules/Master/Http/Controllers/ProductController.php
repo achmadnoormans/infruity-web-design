@@ -781,6 +781,34 @@ class ProductController extends Controller
 
         $query = $query->get();
 
+        $query->map(function ($product) {
+            $lastWholesale = \Modules\Transaction\Entities\WholesaleProduct::where('product_id', $product->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            $product->last_price = $lastWholesale ? (float) $lastWholesale->price : null;
+            
+            // Ambil last_sell_price dari ProductBranch berdasarkan branch_id di transaksi pengadaan terakhir
+            if ($lastWholesale) {
+                $lastWholesaleFull = \Modules\Transaction\Entities\WholesaleProduct::with('wholesale')
+                    ->where('product_id', $product->id)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $branchId = $lastWholesaleFull?->wholesale?->branch_id;
+                if ($branchId) {
+                    $productBranch = \Modules\Master\Entities\ProductBranch::where('product_id', $product->id)
+                        ->where('branch_id', $branchId)
+                        ->first();
+                    $product->last_sell_price = $productBranch ? (float) $productBranch->price : null;
+                } else {
+                    $product->last_sell_price = null;
+                }
+            } else {
+                $product->last_sell_price = null;
+            }
+            
+            return $product;
+        });
+
         return response()->json($query);
     }
 

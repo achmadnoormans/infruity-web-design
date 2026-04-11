@@ -369,6 +369,8 @@
                                     unit: item.unit,
                                     price: item.price || 0,
                                     hpp: item.hpp || 0,
+                                    last_price: item.last_price || null,
+                                    last_sell_price: item.last_sell_price || null,
                                 }))
                             })
                         }
@@ -377,8 +379,10 @@
                         this.addProduct.id = data.id;
                         this.addProduct.name = data.text;
                         this.addProduct.unit = data.unit.abbreviation;
-                        this.addProduct.price = data.price;
-                        this.addProduct.sell = data.price;
+                        // Gunakan last_price dari pengadaan sebelumnya jika ada, jika tidak gunakan price biasa
+                        this.addProduct.price = data.last_price || data.price || 0;
+                        // Gunakan last_sell_price untuk harga jual nanti
+                        this.addProduct.sell = data.last_sell_price || data.last_price || data.price || 0;
                         this.addProduct.hpp = data.hpp ?? 0;
                         subtotal = this.addProduct.qty * this.addProduct.price;
                         this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
