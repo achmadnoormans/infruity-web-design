@@ -268,7 +268,7 @@ class PosController extends Controller
             // 'account_id' => 'required|exists:account,id',
             // 'payment_id' => 'required|exists:payment_method,id',
             'payments'       => 'required|array',
-            'total_payment'  => 'required|numeric|min:1',
+            'total_payment'  => 'required|numeric|min:0',
             'customer_id'    => 'nullable',
         ]);
 

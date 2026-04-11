@@ -197,11 +197,43 @@
                         }
                     }
 
-                    if (!payload.payments || !payload.date || !payload.total_payment) {
+                    if (!payload.payments || !payload.date) {
                         Swal.fire('Lengkapi data', 'Semua input wajib diisi.', 'warning');
                         this.loading = false; // hentikan loading jika validasi gagal
                         return;
                     }
+
+                    // Check if total penjualan is 0 and payment is 0
+                    const totalPenjualan = {{ $data->total }};
+                    if (totalPenjualan == 0 && this.totalPayment == 0) {
+                        Swal.fire({
+                            title: 'Peringatan',
+                            text: 'Total Penjualan dan Jumlah Pembayaran adalah 0. Apakah Anda yakin ingin menyimpan?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ya, Simpan',
+                            cancelButtonText: 'Batal',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.doSavePayment(payload);
+                            } else {
+                                this.loading = false;
+                            }
+                        });
+                        return;
+                    }
+
+                    if (!payload.total_payment || payload.total_payment <= 0) {
+                        Swal.fire('Lengkapi data', 'Jumlah pembayaran wajib diisi.', 'warning');
+                        this.loading = false;
+                        return;
+                    }
+
+                    this.doSavePayment(payload);
+                },
+
+                doSavePayment(payload) {
 
                     fetch("{{ route('pos.savePayment') }}", {
                             method: "POST",
