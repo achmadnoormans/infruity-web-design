@@ -133,7 +133,7 @@
             <div class="card card-body mb-3">
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="fs-5 fw-bold d-flex">Produk Pengadaan</span>
+                        <span class="fs-5 fw-bold d-flex">Produk Grosir</span>
                         <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
                     </div>
                     <div class="btn-group">
@@ -146,17 +146,17 @@
                     </div>
                 </div>
                 {{-- <!-- Cart --> --}}
-                @include('transaction::pengadaan.segment.cart')
+                @include('transaction::wholesale.segment.cart')
             </div>
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
-                @include('transaction::pengadaan.segment.ringkasan')
+                @include('transaction::wholesale.segment.ringkasan')
             </div>
 
-            @include('transaction::pengadaan.segment.modal-product')
+            @include('transaction::wholesale.segment.modal-product')
         </div>
     </div>
     <!--end::Aside column-->
-    @include('transaction::pengadaan.js-create')
+    @include('transaction::wholesale.js-create')
 @endsection
