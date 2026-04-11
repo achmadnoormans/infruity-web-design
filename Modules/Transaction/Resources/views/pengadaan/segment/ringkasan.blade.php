@@ -25,8 +25,7 @@
             <div class="d-flex flex-column align-items-center gap-2 mb-2" x-data="{ loadingDraft: false, loadingFinal: false }">
                 <!-- Tombol Simpan Draft -->
                 <button class="btn btn-sm btn-success shadow-lg d-flex align-items-center justify-content-center gap-2"
-                    :disabled="loadingDraft" @click="loadingDraft = true; saveTransaction(() => loadingDraft = false)"
-                    :disabled="loading">
+                    :disabled="loadingDraft || isSubmitting" @click="loadingDraft = true; saveTransaction(() => loadingDraft = false)">
                     <span x-show="!loadingDraft">Draft</span>
                     <span x-show="loadingDraft">
                         <span class="spinner-border spinner-border-sm"></span> Menyimpan...
@@ -35,8 +34,7 @@
 
                 <!-- Tombol Simpan Final -->
                 <button class="btn btn-sm btn-warning shadow-lg d-flex align-items-center justify-content-center gap-2"
-                    :disabled="loadingFinal" @click="loadingFinal = true; saveToOrderBook(() => loadingFinal = false)"
-                    :disabled="loading">
+                    :disabled="loadingFinal || isSubmitting" @click="loadingFinal = true; saveToOrderBook(() => loadingFinal = false)">
                     <span x-show="!loadingFinal">Submit</span>
                     <span x-show="loadingFinal">
                         <span class="spinner-border spinner-border-sm"></span> Menyimpan...

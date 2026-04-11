@@ -59,6 +59,7 @@
             priceAnimation: false,
             autoSaveTimeout: null,
             currentInvoiceNumber: '',
+            isSubmitting: false,
 
             init() {
                 const self = this; // simpan konteks Alpine
@@ -78,12 +79,20 @@
                 }
 
                 // Auto-save using watchers - similar to PosController
-                this.$watch('cart', () => this.autoSaveTemp());
-                this.$watch('diskonGlobal', () => this.autoSaveTemp());
+                this.$watch('cart', () => {
+                    if (!self.isSubmitting) self.autoSaveTemp();
+                });
+                this.$watch('diskonGlobal', () => {
+                    if (!self.isSubmitting) self.autoSaveTemp();
+                });
                 
                 // Listen to form changes
-                $('input[name="date"]').on('change input', () => this.autoSaveTemp());
-                $('#branch_id').on('change', () => this.autoSaveTemp());
+                $('input[name="date"]').on('change input', () => {
+                    if (!self.isSubmitting) self.autoSaveTemp();
+                });
+                $('#branch_id').on('change', () => {
+                    if (!self.isSubmitting) self.autoSaveTemp();
+                });
             },
 
             // Manual trigger for testing
@@ -701,6 +710,16 @@
                     if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
+                
+                // Cancel any pending auto-save
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                    this.autoSaveTimeout = null;
+                }
+                
+                this.isSubmitting = true;
+                console.log('saveTransaction started, isSubmitting:', this.isSubmitting, 'status:', 'draft');
+                
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const branchId = document.querySelector('select[name="branch_id"]').value;
@@ -762,6 +781,9 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         if (typeof doneCallback === 'function') doneCallback();
+                    })
+                    .finally(() => {
+                        this.isSubmitting = false;
                     });
 
             },
@@ -776,6 +798,16 @@
                     if (typeof doneCallback === 'function') doneCallback();
                     return;
                 }
+                
+                // Cancel any pending auto-save
+                if (this.autoSaveTimeout) {
+                    clearTimeout(this.autoSaveTimeout);
+                    this.autoSaveTimeout = null;
+                }
+                
+                this.isSubmitting = true;
+                console.log('saveToOrderBook started, isSubmitting:', this.isSubmitting, 'status:', 'posting');
+                
                 const transactionDate = document.querySelector('input[name="date"]').value;
                 const invoiceNumber = document.querySelector('input[name="invoice_number"]').value;
                 const branchId = document.querySelector('select[name="branch_id"]').value;
@@ -838,6 +870,9 @@
                             text: 'Gagal menyimpan transaksi.',
                         });
                         if (typeof doneCallback === 'function') doneCallback();
+                    })
+                    .finally(() => {
+                        this.isSubmitting = false;
                     });
 
             },
@@ -921,7 +956,9 @@
 
             // Auto-save function for temp draft (debounced like PosController)
             autoSaveTemp() {
-                if (this.cart.length === 0) {
+                // Skip if cart is empty or currently submitting
+                if (this.cart.length === 0 || this.isSubmitting) {
+                    console.log('Auto-save skipped: cart empty or submitting, isSubmitting:', this.isSubmitting);
                     return;
                 }
 
@@ -930,9 +967,13 @@
                     clearTimeout(this.autoSaveTimeout);
                 }
 
-                // Debounce auto-save
+                // Debounce auto-save (5 seconds)
                 this.autoSaveTimeout = setTimeout(() => {
-                    console.log('Auto-saving draft...');
+                    // Check again before executing
+                    if (this.isSubmitting) {
+                        console.log('Auto-save skipped: isSubmitting became true');
+                        return;
+                    }
                     
                     const transactionDate = document.querySelector('input[name="date"]')?.value;
                     const invoiceNumber = document.querySelector('input[name="invoice_number"]')?.value;
@@ -971,7 +1012,7 @@
                     .then(async res => {
                         const json = await res.json().catch(() => ({}));
                         console.log('Auto-save response:', res.status, json);
-                        if (res.ok && json.success) {
+                        if (res.ok && json.success && !this.isSubmitting) {
                             this.currentInvoiceNumber = json.invoice_number;
                             const invoiceInput = document.querySelector('input[name="invoice_number"]');
                             if (invoiceInput && json.invoice_number) {
