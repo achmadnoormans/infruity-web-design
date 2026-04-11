@@ -416,9 +416,16 @@ class PosController extends Controller
 
             if ($pos) {
                 $this->clearExistingPosRelations($pos->id);
+                $originalStatus = $pos->status;
             } else {
                 $pos = new PosModel();
                 $pos->uuid = Str::uuid();
+                $originalStatus = null;
+            }
+
+            $statusToSave = $data['status'] ?? 'draft';
+            if ($pos->exists && $originalStatus && $originalStatus !== 'temp' && $statusToSave === 'temp') {
+                $statusToSave = $originalStatus;
             }
 
             $pos->fill([
@@ -432,7 +439,7 @@ class PosController extends Controller
                 'ongkir_discount'   => $data['discount_ongkir'] ?? 0,
                 'ongkir_date'       => $data['ongkir_date'] ?? null,
                 'ongkir_time'       => $data['ongkir_time'] ?? null,
-                'status'            => $data['status'] ?? 'draft',
+                'status'            => $statusToSave,
                 'process_status'    => $data['process_status'] ?? 'none',
                 'process_date'      => date('Y-m-d H:i:s'),
                 'note'              => $data['note'] ?? null,

@@ -29,6 +29,8 @@
             autoSaveTimeout: null,
             isAutoSaving: false,
             autoSaveQueued: false,
+            originalStatus: 'temp',
+            isEditing: false,
 
             // Add Product
             showAddModal: false,
@@ -72,6 +74,8 @@
                 const data = @json($data ?? null);
                 const detail = @json($detail ?? null);
                 if (data && !this._loaded) {
+                    this.isEditing = true;
+                    this.originalStatus = data.status || 'temp';
                     this.loadExistingData(data, detail);
                     this._loaded = true;
                 }
@@ -79,6 +83,8 @@
                 if (currentRouteIsOrderBook && !this._loaded) {
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
+                    this.isEditing = true;
+                    this.originalStatus = data.status || 'temp';
                     this.loadExistingOrderBook(data, detail);
                     this._loaded = true;
                 }
@@ -773,6 +779,10 @@
             },
 
             autoSaveDraft() {
+                if (this.isEditing && this.originalStatus !== 'temp') {
+                    return;
+                }
+
                 if (this.cart.length === 0 && this.parcel.length === 0 && this.jus.length === 0) {
                     return;
                 }
@@ -818,7 +828,7 @@
                         ongkir_date: ongkirDate,
                         ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
-                        status: 'temp',
+                        status: this.isEditing && this.originalStatus !== 'temp' ? this.originalStatus : 'temp',
                         note: note,
                         courier_id: courierId,
                         ongkir_address: ongkirAddress,
