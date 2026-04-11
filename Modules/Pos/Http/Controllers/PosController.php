@@ -451,7 +451,8 @@ class PosController extends Controller
             $totalPrice  = $this->sumTotalPrice($data['items']);
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
-                    $prosentase  = round(($item['total_input'] / $totalPrice) * 100, 2);
+                    $itemTotal   = $item['total_input'] ?? ($item['price'] * $item['qty']);
+                    $prosentase  = $totalPrice > 0 ? round(($itemTotal / $totalPrice) * 100, 2) : 0;
                     $posDiscount = $pos->discount * $prosentase / 100;
                     $product     = Product::find($item['id']);
 
