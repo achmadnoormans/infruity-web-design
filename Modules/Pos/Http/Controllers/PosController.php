@@ -805,8 +805,15 @@ class PosController extends Controller
 
     public function get_data(Request $request)
     {
+        $userId = auth()->id();
         $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
         // ->whereIn('branch_id', UserBranch::getUserBranch());
+        
+        $query->where(function ($q) use ($userId) {
+            $q->where('status', '!=', 'temp')
+              ->orWhere('created_by', $userId);
+        });
+        
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
