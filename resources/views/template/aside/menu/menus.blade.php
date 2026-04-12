@@ -2,9 +2,10 @@
     $link = Request::segment(1);
     if (Request::segment(2) != null && !is_numeric(Request::segment(2))) {
         $link .= '/' . Request::segment(2);
-    }
-    if (Request::segment(3) != null && !is_numeric(Request::segment(3))) {
-        $link .= '/' . Request::segment(3);
+
+        if (Request::segment(3) != null && !is_numeric(Request::segment(3))) {
+            $link .= '/' . Request::segment(3);
+        }
     }
 @endphp
 <div class="menu-item pt-5">
@@ -70,7 +71,7 @@
     <!--begin:Menu item-->
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'category' ? 'active' : '' }}" href="{{ url('category') }}">
+        <a class="menu-link {{ Request::segment(1) == 'category' ? 'active' : '' }}" href="{{ url('category') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-duotone ki-chart fs-2">
                     <span class="path1"></span>
@@ -84,7 +85,7 @@
 @if (check_access('unit.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'unit' ? 'active' : '' }}" href="{{ url('unit') }}">
+        <a class="menu-link {{ Request::segment(1) == 'unit' ? 'active' : '' }}" href="{{ url('unit') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-data">
                     <span class="path1"></span>
@@ -102,7 +103,7 @@
 @if (check_access('supplier.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'supplier' ? 'active' : '' }}" href="{{ url('supplier') }}">
+        <a class="menu-link {{ Request::segment(1) == 'supplier' ? 'active' : '' }}" href="{{ url('supplier') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-handcart">
                 </i>
@@ -115,7 +116,7 @@
 @if (check_access('location.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'location' ? 'active' : '' }}" href="{{ url('location') }}">
+        <a class="menu-link {{ Request::segment(1) == 'location' ? 'active' : '' }}" href="{{ url('location') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-map fs-2">
                     <span class="path1"></span>
@@ -131,7 +132,7 @@
 @if (check_access('handling.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'handling' ? 'active' : '' }}" href="{{ url('handling') }}">
+        <a class="menu-link {{ Request::segment(1) == 'handling' ? 'active' : '' }}" href="{{ url('handling') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-courier-express">
                     <span class="path1"></span>
@@ -169,7 +170,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'staff' ? '' : '' }}" href="{{ url('staff') }}">
+                    <a class="menu-link {{ $link == 'staff' ? 'active' : '' }}" href="{{ url('staff') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -251,7 +252,7 @@
 @if (check_access('department.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'department' ? 'active' : '' }}" href="{{ url('department') }}">
+        <a class="menu-link {{ Request::segment(1) == 'department' ? 'active' : '' }}" href="{{ url('department') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-home">
                 </i>
@@ -265,7 +266,7 @@
 @if (check_access('position.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'position' ? 'active' : '' }}" href="{{ url('position') }}">
+        <a class="menu-link {{ Request::segment(1) == 'position' ? 'active' : '' }}" href="{{ url('position') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -281,7 +282,7 @@
     <!--end:Menu item-->
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'stock-out-type' ? 'active' : '' }}" href="{{ url('stock-out-type') }}">
+        <a class="menu-link {{ Request::segment(1) == 'stock-out-type' ? 'active' : '' }}" href="{{ url('stock-out-type') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -296,7 +297,7 @@
 @if (check_access('branch.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'branch' ? 'active' : '' }}" href="{{ url('branch') }}">
+        <a class="menu-link {{ Request::segment(1) == 'branch' ? 'active' : '' }}" href="{{ url('branch') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -311,7 +312,7 @@
 @if (check_access('payment-method.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'payment-method' ? 'active' : '' }}" href="{{ url('payment-method') }}">
+        <a class="menu-link {{ Request::segment(1) == 'payment-method' ? 'active' : '' }}" href="{{ url('payment-method') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -326,7 +327,7 @@
 {{-- @if (check_access('account.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'account' ? 'active' : '' }}" href="{{ url('account') }}">
+        <a class="menu-link {{ Request::segment(1) == 'account' ? 'active' : '' }}" href="{{ url('account') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -406,7 +407,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'product-stock' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'product-stock' ? 'active' : '' }}"
                         href="{{ url('product-stock') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -420,7 +421,7 @@
             {{-- <!--begin:Menu item-->
             <div class="menu-item">
                 <!--begin:Menu link-->
-                <a class="menu-link {{ $link == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
+                <a class="menu-link {{ Request::segment(1) == 'stock-out' ? 'active' : '' }}" href="{{ url('stock-out') }}">
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
@@ -433,7 +434,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'stock-opname' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'stock-opname' ? 'active' : '' }}"
                         href="{{ url('stock-opname') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -452,7 +453,7 @@
 @if (check_access('wholesale.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'wholesale' ? 'active' : '' }}" href="{{ url('wholesale') }}">
+        <a class="menu-link {{ Request::segment(1) == 'wholesale' ? 'active' : '' }}" href="{{ url('wholesale') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -467,7 +468,7 @@
 @if (check_access('sortir.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'sortir' ? 'active' : '' }}" href="{{ url('sortir') }}">
+        <a class="menu-link {{ Request::segment(1) == 'sortir' ? 'active' : '' }}" href="{{ url('sortir') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -482,7 +483,7 @@
 @if (check_access('transfer.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ $link == 'transfer' ? 'active' : '' }}" href="{{ url('transfer') }}">
+        <a class="menu-link {{ Request::segment(1) == 'transfer' ? 'active' : '' }}" href="{{ url('transfer') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -495,7 +496,7 @@
     </div>
 @endif
 {{-- <!--begin:Menu link-->
-    <a class="menu-link {{ $link == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
+    <a class="menu-link {{ Request::segment(1) == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
         <span class="menu-icon">
             <i class="ki-duotone ki-security-user">
                 <span class="path1"></span>
@@ -508,7 +509,7 @@
 @if (check_access('production.index') || check_access('receipt.index'))
     <!--begin:Menu item-->
     <div data-kt-menu-trigger="click"
-        class="menu-item {{ in_array(Request::segment(1), ['production', 'receipt', 'receipt', 'parcel']) ? 'here show' : '' }} menu-accordion">
+        class="menu-item {{ in_array(Request::segment(1), ['production', 'receipt', 'parcel']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
         <span class="menu-link">
             <span class="menu-icon">
@@ -749,7 +750,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'customer-deposito' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'customer-deposito' ? 'active' : '' }}"
                         href="{{ url('customer-deposito') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -765,7 +766,7 @@
 @endif
 @if (check_access('tier.index') || check_access('point-schedule.index') || check_access('campaign.index'))
     <div data-kt-menu-trigger="click"
-        class="menu-item {{ in_array(Request::segment(1), ['point-schedule', 'setting-exp']) ? 'here show' : '' }} menu-accordion">
+        class="menu-item {{ in_array(Request::segment(1), ['tier', 'point-schedule', 'campaign']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
         <span class="menu-link">
             <span class="menu-icon">
@@ -800,7 +801,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'point-schedule' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'point-schedule' ? 'active' : '' }}"
                         href="{{ url('point-schedule') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -813,7 +814,7 @@
             @if (check_access('campaign.index'))
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'campaign' ? 'active' : '' }}" href="{{ url('campaign') }}">
+                    <a class="menu-link {{ Request::segment(1) == 'campaign' ? 'active' : '' }}" href="{{ url('campaign') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -894,7 +895,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-transaction' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-transaction' ? 'active' : '' }}"
                         href="{{ url('report-transaction') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -909,7 +910,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-customer-transaction' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-customer-transaction' ? 'active' : '' }}"
                         href="{{ url('report-customer-transaction') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -924,7 +925,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-branch-transaction' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-branch-transaction' ? 'active' : '' }}"
                         href="{{ url('report-branch-transaction') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -939,7 +940,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-product-sales' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-product-sales' ? 'active' : '' }}"
                         href="{{ url('report-product-sales') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -954,7 +955,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-branch-product' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-branch-product' ? 'active' : '' }}"
                         href="{{ url('report-branch-product') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -969,7 +970,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-customer-product' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-customer-product' ? 'active' : '' }}"
                         href="{{ url('report-customer-product') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -1005,7 +1006,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-product-buang' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-product-buang' ? 'active' : '' }}"
                         href="{{ url('report-product-buang') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
@@ -1020,7 +1021,7 @@
                 <!--begin:Menu item-->
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ $link == 'report-total-aset' ? 'active' : '' }}"
+                    <a class="menu-link {{ Request::segment(1) == 'report-total-aset' ? 'active' : '' }}"
                         href="{{ url('report-total-aset') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
