@@ -837,7 +837,8 @@ class PosController extends Controller
                 if (! empty($search)) {
                     $q->where(function ($sub) use ($search) {
                         $sub->whereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where('name', 'LIKE', "%{$search}%");
+                            $customerQuery->where('name', 'LIKE', "%{$search}%")
+                                ->orWhere('whatsapp', 'LIKE', "%{$search}%");
                         });
                         $possibleDates = [];
                         $formats       = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
@@ -864,7 +865,8 @@ class PosController extends Controller
                 $html       = '<div class="d-flex align-items-center">';
                 $html      .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a> ';
+                    $waLast4 = !empty($item->customer->whatsapp) ? ' (' . substr($item->customer->whatsapp, -4) . ')' : '';
+                    $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . $waLast4 . '</a> ';
                 } else {
                     $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a> ';
                 }
