@@ -109,4 +109,5 @@ LEFT JOIN child_agg
 LEFT JOIN product_units C
     ON C.id = A.product_unit
 WHERE A.tipe != 'parcel'
-AND A.is_variant IS NULL;
+AND A.is_variant IS NULL
+AND LOWER(A.name) NOT LIKE '%jus%';

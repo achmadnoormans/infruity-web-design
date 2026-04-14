@@ -400,24 +400,63 @@ class OrderBookController extends Controller
         $data = $query->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
+            ->filter(function ($q) use ($request) {
+                $search = trim($request->input('search.value'));
+
+                if (! empty($search)) {
+                    $q->where(function ($sub) use ($search) {
+                        $sub->whereHas('customer', function ($customerQuery) use ($search) {
+                            $customerQuery->where('name', 'LIKE', "%{$search}%")
+                                ->orWhere('whatsapp', 'LIKE', "%{$search}%");
+                        });
+                        $possibleDates = [];
+                        $formats       = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd M Y', 'd F Y', 'd/m/Y H:i', 'd-m-Y H:i'];
+                        foreach ($formats as $format) {
+                            $date = \DateTime::createFromFormat($format, $search);
+                            if ($date) {
+                                $possibleDates[] = $date->format('Y-m-d');
+                                break;
+                            }
+                        }
+                        if (! empty($possibleDates)) {
+                            foreach ($possibleDates as $dateStr) {
+                                $sub->orWhereDate('date', $dateStr);
+                            }
+                        }
+                        $sub->orWhere('status', 'LIKE', "%{$search}%");
+                        $sub->orWhere('invoice_number', 'LIKE', "%{$search}%");
+                    });
+                }
+            }, true)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
-                $warningIcon = $item->updated_at ? '<span class="text-warning mx-1" title="Ada updated_at">⚠️</span>' : '';
+                $warningIcon = $item->updated_at ? '<span class="text-warning mx-1" title="Terakhir diedit" style="font-size: 0.75rem;">⚠️</span>' : '';
                 $parcelBadge = $this->containsParcelKeyword($item->note ?? '')
-                    ? '<br><span class="badge badge-light-info"><i class="bi bi-box"></i></span>'
+                    ? '<span class="badge badge-light-success p-1 ms-2" title="Ada Parcel" style="font-size: 1rem;"><i class="bi bi-box text-success" style="font-size: 1rem;"></i></span>'
                     : '';
-                $html = '<div class="d-flex align-items-center">';
-                $html .= '<div class="ms-5">';
+
+                $customerName = 'Pelanggan Umum';
                 if (isset($item->customer->name)) {
-                    $html .= $warningIcon . $parcelBadge . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . '</a>';
-                } else {
-                    $html .= $warningIcon . $parcelBadge . '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a>';
+                    $waLast4 = !empty($item->customer->whatsapp) ? ' (' . substr($item->customer->whatsapp, -4) . ')' : '';
+                    $customerName = $item->customer->name . $waLast4;
                 }
-                if ($item->updated_at != null) {
-                    $html .= '<br><span class="text-muted d-block fs-7">Di Edit : ' . $item->updated_at->format('d M Y H:i') . '</span>';
-                }
-                $html .= '<span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
+
+                $html = '<div class="d-flex flex-column">';
+                
+                // Row 1: Customer Name + Icons
+                $html .= '<div class="d-flex align-items-center mb-1">';
+                $html .= '<a href="javascript:void(0)" class="text-gray-800 text-hover-primary fs-6 fw-bold">' . $customerName . '</a>';
+                $html .= $parcelBadge;
                 $html .= '</div>';
+
+                // Row 2: Metadata (Edit Date and Branch)
+                $html .= '<div class="d-flex align-items-center flex-wrap gap-2">';
+                if ($item->updated_at != null) {
+                    $html .= '<span class="text-muted" style="font-size: 0.7rem;">' . $warningIcon . ' Diedit: ' . $item->updated_at->format('d/m/y H:i') . '</span>';
+                }
+                $html .= '<span class="badge badge-light-primary px-2 py-1">' . e($item->branch->name) . '</span>';
+                $html .= '</div>';
+
                 $html .= '</div>';
                 return $html;
             })
