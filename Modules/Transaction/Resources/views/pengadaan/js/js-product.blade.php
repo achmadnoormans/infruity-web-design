@@ -242,11 +242,18 @@
                 return this.formatRupiah(this.editProduct?.sell || 0);
             },
 
-            set formattedEditSell(val) {
+set formattedEditSell(val) {
                 const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
                 this.editProduct.sell = Number(raw || 0);
                 this.editSell = this.editProduct.sell;
                 this.updateEditTotalFromQty();
+            },
+            get edit_HPPPercent() {
+                const sell = parseFloat(this.editProduct?.sell || this.editSell || 0);
+                const price = parseFloat(this.editProduct?.price || this.editPrice || 0);
+                if (sell === 0) return '0';
+                const percent = ((sell - price) / sell) * 100;
+                return percent.toFixed(2);
             },
 
             updateEditTotalFormatted(e) {
@@ -477,6 +484,13 @@
                 const raw = val.replace(/\./g, '').replace(/[^0-9]/g, '');
                 this.addProduct.sell = Number(raw || 0);
                 this.updateAddTotalFromQty();
+            },
+            get addProduct_HPPPercent() {
+                const sell = parseFloat(this.addProduct.sell) || 0;
+                const price = parseFloat(this.addProduct.price) || 0;
+                if (sell === 0) return '0';
+                const percent = ((sell - price) / sell) * 100;
+                return percent.toFixed(2);
             },
             get formattedAddTotal() {
                 return this.formatRupiah(this.addProduct.qty * this.addProduct.price);

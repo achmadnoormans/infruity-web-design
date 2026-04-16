@@ -32,11 +32,20 @@
                     </div>
                 </div>
 
-                <!-- Quantity -->
-                <div class="mb-3">
-                    <label class="form-label">Quantity</label>
-                    <input type="number" class="form-control" step="0.01" min="0" x-model="addProduct.qty"
-                        @input="updateAddTotalFromQty">
+                <!-- Quantity & Persentase HPP -->
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" step="0.01" min="0" x-model="addProduct.qty"
+                            @input="updateAddTotalFromQty">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Persentase HPP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" x-model="addProduct_HPPPercent" readonly>
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
                 </div>
                 <!-- Jumlah Harga -->
                 <div class="mb-3">
@@ -84,12 +93,19 @@
                                 x-model="formattedEditSell">
                         </div>
                     </div>
-                    <!-- Input Qty -->
+                    <!-- Input Qty & Persentase HPP -->
                     <div class="row mb-3">
-                        <div class="col-12">
+                        <div class="col-6">
                             <label class="form-label">Quantity</label>
                             <input type="number" class="form-control" step="0.01" min="0" x-model="editQty"
                                 @input="updateTotalFromEditQty">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Persentase HPP</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" x-model="edit_HPPPercent" readonly>
+                                <span class="input-group-text">%</span>
+                            </div>
                         </div>
                     </div>
                     <!-- Input Mode Harga -->
