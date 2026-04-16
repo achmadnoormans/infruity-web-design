@@ -75,6 +75,7 @@
                     url: "{{ route('customers-data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.q = $('#search').val(); // custom search param
                     }
                 },
                 columns: [
@@ -84,11 +85,11 @@
                     },
                     {
                         data: 'birth_of_date',
-                        name: 'birth_of_date',
+                        name: 'birth_of_date'
                     },
                     {
                         data: 'gender',
-                        name: 'gender',
+                        name: 'gender'
                     },
                     {
                         data: 'action',
@@ -99,7 +100,7 @@
             });
             // Search manual lewat input
             $('#search').on('keyup', function() {
-                dataTable.search(this.value).draw();
+                dataTable.draw();
             });
         });
 

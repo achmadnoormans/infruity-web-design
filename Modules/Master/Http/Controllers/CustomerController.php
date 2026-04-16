@@ -387,8 +387,18 @@ class CustomerController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = Customer::orderBy('name', 'asc');
-        return DataTables::of($data)
+        $query = Customer::query()->orderBy('name', 'asc');
+
+        // Handle search from custom parameter 'q'
+        $searchValue = $request->input('q');
+        if (!empty($searchValue)) {
+            $searchValue = trim($searchValue);
+            if ($searchValue !== '') {
+                $query->where('name', 'like', '%' . $searchValue . '%');
+            }
+        }
+
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 return '<div class="d-flex align-items-center">
@@ -400,7 +410,15 @@ class CustomerController extends Controller
                         </div>';
             })
             ->addColumn('birth_of_date', function ($item) {
-                return '<span class="badge badge-light-danger">' . \Carbon\Carbon::parse($item->birth_of_date)->diffInYears() . '</span> Thn';
+                if ($item->birth_of_date) {
+                    try {
+                        $age = \Carbon\Carbon::parse($item->birth_of_date)->diffInYears();
+                        return '<span class="badge badge-light-danger">' . $age . '</span> Thn';
+                    } catch (\Exception $e) {
+                        // fall through
+                    }
+                }
+                return '<span class="badge badge-light-secondary">-</span>';
             })
             ->addColumn('action', function ($item) {
                 $html = '';
