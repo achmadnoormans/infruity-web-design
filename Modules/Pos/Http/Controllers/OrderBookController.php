@@ -183,31 +183,31 @@ class OrderBookController extends Controller
                 'created_by' => $userId,
                 'updated_at' => $updateAt,
             ]);
-            $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
-            $dataItem = $this->sendToAi($products, $data['note']);
-            // dd($dataItem);
-            Log::info('AI Response: ' . json_encode($dataItem, JSON_UNESCAPED_SLASHES));
+            // $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
+            // $dataItem = $this->sendToAi($products, $data['note']);
+            // // dd($dataItem);
+            // Log::info('AI Response: ' . json_encode($dataItem, JSON_UNESCAPED_SLASHES));
 
-            if (!isset($dataItem['items']) || !is_array($dataItem['items'])) {
-                return response()->json(['error' => 'Respons AI tidak valid.'], 400);
-            }
+            // if (!isset($dataItem['items']) || !is_array($dataItem['items'])) {
+            //     return response()->json(['error' => 'Respons AI tidak valid.'], 400);
+            // }
 
-            foreach ($dataItem['items'] as $item) {
-                if (!isset($item['product_id']) || !isset($item['quantity']))
-                    continue;
+            // foreach ($dataItem['items'] as $item) {
+            //     if (!isset($item['product_id']) || !isset($item['quantity']))
+            //         continue;
 
-                // Validasi: pastikan product_id benar-benar ada di database
-                $productId = (int) $item['product_id'];
-                if (!$products->contains('id', $productId)) {
-                    continue; // skip jika ID tidak valid
-                }
+            //     // Validasi: pastikan product_id benar-benar ada di database
+            //     $productId = (int) $item['product_id'];
+            //     if (!$products->contains('id', $productId)) {
+            //         continue; // skip jika ID tidak valid
+            //     }
 
-                OrderBookDetail::create([
-                    'order_book_id' => $orderBook->id,
-                    'product_id' => $productId,
-                    'quantity' => (int) $item['quantity']
-                ]);
-            }
+            //     OrderBookDetail::create([
+            //         'order_book_id' => $orderBook->id,
+            //         'product_id' => $productId,
+            //         'quantity' => (int) $item['quantity']
+            //     ]);
+            // }
             DB::commit();
             $tokens = UserDevice::join('user_branch', 'user_devices.user_id', '=', 'user_branch.user_id')
                 ->whereNotNull('user_devices.fcm_token')

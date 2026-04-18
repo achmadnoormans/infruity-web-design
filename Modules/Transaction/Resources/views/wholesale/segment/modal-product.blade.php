@@ -40,7 +40,7 @@
                             @input="updateAddTotalFromQty">
                     </div>
                     <div class="col-6 mb-3">
-                        <label class="form-label">Persentase HPP</label>
+                        <label class="form-label">Margin (%)</label>
                         <div class="input-group">
                             <input type="text" class="form-control" x-model="addProduct_HPPPercent" readonly>
                             <span class="input-group-text">%</span>
@@ -101,7 +101,7 @@
                                 @input="updateTotalFromEditQty">
                         </div>
                         <div class="col-6">
-                            <label class="form-label">Persentase HPP</label>
+                            <label class="form-label">Margin (%)</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" x-model="edit_HPPPercent" readonly>
                                 <span class="input-group-text">%</span>
