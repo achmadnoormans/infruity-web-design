@@ -73,11 +73,30 @@
                 this.loadAvailableRecipes();
                 this.loadExistingData();
 
-                // Initialize quantity from HTML input
+                // Initialize quantity from HTML input or from edit mode
                 const quantityInput = document.getElementById('quantity');
-                if (quantityInput && quantityInput.value) {
-                    this.productionQuantity = parseFloat(quantityInput.value) || 1;
+                @php
+                if (isset($edit_quantity)) {
+                    echo "this.productionQuantity = " . $edit_quantity . ";";
+                    echo "if (quantityInput) quantityInput.value = " . $edit_quantity . ";";
+                } else {
+                    echo "if (quantityInput && quantityInput.value) { this.productionQuantity = parseFloat(quantityInput.value) || 1; }";
                 }
+                @endphp
+
+                // Initialize sellPrice from edit mode
+                @php
+                if (isset($edit_sell_price)) {
+                    echo "this.sellPrice = " . $edit_sell_price . ";";
+                }
+                @endphp
+
+                // Initialize serviceCost from edit mode
+                @php
+                if (isset($edit_service_cost)) {
+                    echo "this.serviceCost = " . $edit_service_cost . ";";
+                }
+                @endphp
 
                 // Cost fields are initialized in loadExistingData()
 
@@ -551,6 +570,12 @@
                     formData.append('submit_type', submitType);
                     formData.append('notes', this.notes || '');
 
+                    // Add ID if in edit mode
+                    const productionIdInput = document.querySelector('input[name="id"]');
+                    if (productionIdInput && productionIdInput.value) {
+                        formData.append('id', productionIdInput.value);
+                    }
+
                     const branchSelect = document.getElementById('branch_id');
                     if (branchSelect.value) {
                         formData.append('branch_id', branchSelect.value);
@@ -721,22 +746,24 @@
                  }
              });
 
-             // Load sell price for editing if product is already selected
-             @if(isset($data) && isset($receipt) && $receipt && isset($receipt->products))
-                 setTimeout(() => {
-                     // Set Alpine.js sellPrice
-                     const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
-                     if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
-                         alpineElement._x_dataStack[0].sellPrice = {{ $receipt->products->price ?? 0 }};
-                     }
+              // Load product and sell price for editing if in edit mode
+              @if(isset($edit_product_id) && isset($edit_product_name))
+                  // Set selected product in Select2
+                  var editProductOption = new Option('{{ $edit_product_name }}', '{{ $edit_product_id }}', true, true);
+                  $('#product_id').append(editProductOption).trigger('change');
 
-                     // Set input field value
-                     const sellPriceInput = document.getElementById('sell_price');
-                     if (sellPriceInput) {
-                         sellPriceInput.value = '{{ number_format($receipt->products->price ?? 0, 0, ',', '.') }}';
-                     }
-                 }, 600);
-             @endif
+                  // Set Alpine.js sellPrice
+                  const alpineElement = document.querySelector('[x-data*="productionApp"]') || document.querySelector('[x-data]');
+                  if (alpineElement && alpineElement._x_dataStack && alpineElement._x_dataStack[0]) {
+                      alpineElement._x_dataStack[0].sellPrice = {{ $edit_sell_price ?? 0 }};
+                  }
+
+                  // Set sell price input value
+                  const sellPriceInput = document.getElementById('sell_price');
+                  if (sellPriceInput) {
+                      sellPriceInput.value = '{{ number_format($edit_sell_price ?? 0, 0, ',', '.') }}';
+                  }
+              @endif
          }, 500); // Wait 500ms for Alpine to initialize
 
         // Initialize Select2 for staff selection  

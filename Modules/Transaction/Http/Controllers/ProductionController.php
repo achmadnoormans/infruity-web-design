@@ -112,13 +112,22 @@ class ProductionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Check if there's existing temp production to update
-            $production = Production::where('created_by', Auth::user()->id_user)
-                ->where('status', 'temp')
-                ->where('production_number', $request->production_number)
-                ->first();
+            // Check if this is an update (id is provided) or a new record
+            $production = null;
+            if ($request->id) {
+                $production = Production::find($request->id);
+            }
+
+            // If no production found with ID, check for existing temp production
             if (! $production) {
-                // Create new production
+                $production = Production::where('created_by', Auth::user()->id_user)
+                    ->where('status', 'temp')
+                    ->where('production_number', $request->production_number)
+                    ->first();
+            }
+
+            // If still no production, create new one
+            if (! $production) {
                 $production                    = new Production();
                 $production->production_number = $request->production_number;
                 $production->created_by        = Auth::user()->id_user;
@@ -139,7 +148,7 @@ class ProductionController extends Controller
             }
             $production->save();
 
-            // Clear existing production details if updating
+            // Clear existing production details
             ProductionDetail::where('production_id', $production->id)->delete();
 
             // Add new production details from ingredients array
@@ -154,14 +163,16 @@ class ProductionController extends Controller
 
             // Handle different submit types like PosController
             if ($request->submit_type == 'temp') {
+                DB::commit();
                 return response()->json([
                     'success' => true,
-                    'message' => 'Produksi berhasil dibuat',
+                    'message' => 'Produksi berhasil disimpan',
                 ], 200);
             } elseif ($request->submit_type == 'draft') {
+                DB::commit();
                 return response()->json([
                     'success' => true,
-                    'message' => 'Produksi berhasil dibuat',
+                    'message' => 'Produksi berhasil disimpan',
                 ], 200);
             } else {
                 // posting - calculate and update HPP using ingredients array data
@@ -192,7 +203,7 @@ class ProductionController extends Controller
                 DB::commit();
                 return response()->json([
                     'success' => true,
-                    'message' => 'Produksi berhasil dibuat',
+                    'message' => 'Produksi berhasil disimpan',
                 ], 200);
             }
 
@@ -247,12 +258,16 @@ class ProductionController extends Controller
         }
 
         $data['alpinejs']          = true;
-        $data['data']              = Production::with('branch')->find($id);
+        $data['data']              = Production::with(['branch', 'products'])->find($id);
         $data['production_detail'] = ProductionDetail::with('products')->where('production_id', $id)->get();
-        // $data['selectedProduct']   = Product::find($data['data']->product_id);
         $data['receipt']           = Receipt::with('products')->where('product_id', $data['data']->product_id)->first();
-        $data['production_number'] = $data['data']->production_number; // Add the production number
-                                                                       // dd($data);
+        $data['production_number'] = $data['data']->production_number;
+        $data['id']                = $id;
+        $data['edit_quantity']     = $data['data']->quantity;
+        $data['edit_product_id']   = $data['data']->product_id;
+        $data['edit_product_name'] = $data['data']->products ? $data['data']->products->name : '';
+        $data['edit_sell_price']  = $data['data']->sell_price;
+        $data['edit_service_cost'] = $data['data']->service_cost;
         return view('transaction::production.create', $data);
     }
 
@@ -684,7 +699,7 @@ class ProductionController extends Controller
     public function get_data(Request $request)
     {
         try {
-            $query = Production::with(['products', 'branch'])
+            $query = Production::with(['products', 'branch', 'productionDetails', 'productionDetails.products'])
                 ->whereNotNull('product_id');
 
             if ($request->has('status_filter') && $request->status_filter !== 'all' && ! empty($request->status_filter)) {
@@ -743,13 +758,21 @@ class ProductionController extends Controller
                 ->addColumn('name', function ($item) {
                     $productName = $item->products ? e($item->products->name) : 'N/A';
                     $quantity    = number_format($item->quantity ?? 0, 0, ',', '.');
+                    $ingredientCount = $item->productionDetails ? $item->productionDetails->count() : 0;
+
+                    $ingredientBadge = '';
+                    if ($ingredientCount > 0) {
+                        $ingredientBadge = '<span class="badge badge-outline badge-primary mt-2">' . $ingredientCount . ' bahan</span>';
+                    }
 
                     return '<div class="d-flex align-items-center">
                                 <div class="ms-5">
-                                    <a href="' . route('production.detail', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . ($item->production_number ?? 'N/A') . '</a>
+                                    <a href="' . route('production.detail', $item->id) . '" class="text-primary fs-6 fw-bold text-hover-primary">' . ($item->production_number ?? 'N/A') . '</a>
                                     <br>
-                                    <span class="text-muted d-block">' . $productName . '</span>
-                                    <span class="text-muted d-block">Qty: ' . $quantity . '</span>
+                                    <span class="text-gray-800 fw-semibold">' . $productName . '</span>
+                                    <br>
+                                    <span class="text-success fw-bold">Qty: ' . $quantity . '</span>
+                                    ' . $ingredientBadge . '
                                 </div>
                             </div>';
                 })

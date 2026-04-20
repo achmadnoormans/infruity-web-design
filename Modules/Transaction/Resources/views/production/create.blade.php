@@ -151,7 +151,9 @@
                             <!--end::Label-->
                             <!--begin::Select-->
                             <select name="product_id" id="product_id" class="form-select">
-                                @if (isset($receipt) && $receipt != null)
+                                @if (isset($edit_product_id) && isset($edit_product_name))
+                                    <option value="{{ $edit_product_id }}" selected>{{ $edit_product_name }}</option>
+                                @elseif (isset($receipt) && $receipt != null)
                                     <option value="{{ $receipt->id }}" selected>{{ $receipt->products->name }}</option>
                                 @else
                                     <option value="">Pilih Produk</option>
@@ -167,9 +169,12 @@
                             <!--end::Label-->
                             <!--begin::Select-->
                             <input type="text" name="sell_price" id="sell_price" class="form-control format-number"
-                                placeholder="Masukkan Jumlah" x-model="sellPrice" />
+                                placeholder="Masukkan Jumlah" x-model="sellPrice"
+                                value="{{ isset($edit_sell_price) ? number_format($edit_sell_price, 0, ',', '.') : '' }}" />
                             <input type="hidden" name="production_number" id="production_number" class="form-control"
                                 value="{{ $production_number }}">
+                            <input type="hidden" name="id" id="production_id" class="form-control"
+                                value="{{ isset($id) ? $id : '' }}">
                             <!--end::Select-->
                         </div>
                     </div>
@@ -193,7 +198,8 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="number" name="quantity" id="quantity" class="form-control"
-                                placeholder="Masukkan Jumlah" step="0.01" x-model="productionQuantity" />
+                                placeholder="Masukkan Jumlah" step="0.01" x-model="productionQuantity"
+                                value="{{ isset($data) ? $data->quantity : '' }}" />
                             <!--end::Input-->
                         </div>
                     </div>
@@ -204,7 +210,8 @@
                             <!--end::Label-->
                             <!--begin::Input-->
                             <input type="text" name="service_cost" id="service_cost" class="form-control format-number"
-                                placeholder="Masukkan Biaya Jasa" x-model="serviceCost" x-init="@if (isset($data) && $data->service_cost) $el.value = '{{ number_format($data->service_cost, 0, ',', '.') }}'; @endif" />
+                                placeholder="Masukkan Biaya Jasa" x-model="serviceCost"
+                                value="{{ isset($edit_service_cost) ? number_format($edit_service_cost, 0, ',', '.') : '' }}" />
                             <!--end::Input-->
                         </div>
                     </div>

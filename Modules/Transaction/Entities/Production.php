@@ -28,21 +28,22 @@ class Production extends Model
     ];
 
 
-    public static function getOrderNumber()
+    public static function getOrderNumber($productionDate = null)
     {
-        $orderData = self::select(DB::raw('CAST(RIGHT(production_number, 3) AS UNSIGNED) + 1 AS production_number'))
-            ->whereRaw('MONTH(created_at) = MONTH(NOW())')
-            ->whereRaw('YEAR(created_at) = YEAR(NOW())')
-            ->whereRaw('SUBSTRING(production_number, 1, 3) = ?', ['PRO'])
-            ->orderByRaw('CAST(RIGHT(production_number, 3) AS UNSIGNED) DESC')
-            ->limit(1)
+        $date = $productionDate ? \Carbon\Carbon::parse($productionDate) : now();
+        $prefix = 'PRO' . $date->format('Ym');
+
+        $latestNumber = self::where('production_number', 'like', $prefix . '%')
+            ->orderByDesc('production_number')
             ->first();
-        $orderPad = '001';
-        if ($orderData && $orderData->production_number) {
-            $orderPad = str_pad($orderData->production_number, 3, '0', STR_PAD_LEFT);
+
+        $nextNumber = 1;
+        if ($latestNumber) {
+            $lastNumber = (int) substr($latestNumber->production_number, -3);
+            $nextNumber = $lastNumber + 1;
         }
 
-        $prefix = 'PRO' . now()->format('Ym');
+        $orderPad = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         $newCode = $prefix . $orderPad;
 
         return $newCode;
@@ -66,5 +67,10 @@ class Production extends Model
     public function creator()
     {
         return $this->belongsTo('App\User', 'created_by', 'id_user');
+    }
+
+    public function productionDetails()
+    {
+        return $this->hasMany('Modules\Transaction\Entities\ProductionDetail', 'production_id', 'id');
     }
 }
