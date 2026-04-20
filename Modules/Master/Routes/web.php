@@ -14,6 +14,7 @@ use Modules\Master\Http\Controllers\StaffController;
 use Modules\Master\Http\Controllers\PaymentMethodController;
 use Modules\Master\Http\Controllers\BranchController;
 use Modules\Master\Http\Controllers\AccountController;
+use Modules\Master\Http\Controllers\KurirController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -50,6 +51,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('branch', BranchController::class)->names('branch')->except('show');
     Route::resource('payment-method', PaymentMethodController::class)->names('payment-method')->except('show');
     Route::resource('account', AccountController::class)->names('account')->except('show');
+    Route::resource('kurir', KurirController::class)->names('kurir')->except('show');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
@@ -66,6 +68,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/getPaymentMethod', [PaymentMethodController::class, 'getPaymentMethod'])->name('ajax.getPaymentMethod');
     Route::get('/ajax/getBranch', [BranchController::class, 'getBranch'])->name('ajax.getBranch');
     Route::get('/ajax/getStaff', [StaffController::class, 'getStaff'])->name('ajax.getStaff');
+    Route::get('/ajax/getKurir', [KurirController::class, 'getKurir'])->name('ajax.getKurir');
     Route::post('products/variant/store', [ProductController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('products/variants/get', [ProductController::class, 'getVariant'])->name('variants.get');
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
@@ -93,4 +96,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('branch/data', [BranchController::class, 'get_data'])->name('branch.data');
     Route::get('payment-method/data', [PaymentMethodController::class, 'get_data'])->name('payment-method.data');
     Route::get('account/data', [AccountController::class, 'get_data'])->name('account.data');
+    Route::get('kurir/data', [KurirController::class, 'get_data'])->name('kurir.data');
 });
