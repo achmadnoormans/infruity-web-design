@@ -173,13 +173,28 @@ class KurirController extends Controller
     {
         $search = $request->get('search', $request->get('term', ''));
 
-        $query = Kurir::query()
+        $externalKurir = Kurir::query()
             ->where('name', 'like', '%' . $search . '%')
-            ->select('id', 'name');
-
-        $data = $query
+            ->select('id', 'name')
             ->limit(10)
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->type = 'external';
+                return $item;
+            });
+
+        $internalKurir = \Modules\Master\Entities\Staff::query()
+            ->where('name', 'like', '%' . $search . '%')
+            ->where('is_kurir', 1)
+            ->select('id', 'name')
+            ->limit(10)
+            ->get()
+            ->map(function ($item) {
+                $item->type = 'internal';
+                return $item;
+            });
+
+        $data = $externalKurir->concat($internalKurir);
 
         return response()->json($data);
     }

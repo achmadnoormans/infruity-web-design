@@ -35,6 +35,7 @@ class PosModel extends Model
         'process_date',
         'note',
         'courier_id',
+        'courier_type',
         'ongkir_address',
         'branch_id',
         'branch_process_id',
@@ -96,6 +97,11 @@ class PosModel extends Model
     public function courier()
     {
         return $this->belongsTo(Staff::class, 'courier_id');
+    }
+
+    public function courierExternal()
+    {
+        return $this->belongsTo(\Modules\Master\Entities\Kurir::class, 'courier_id');
     }
 
     public function user()

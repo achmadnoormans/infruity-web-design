@@ -178,7 +178,7 @@ class DeliveryOrderController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch')
+        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch', 'courier')
         // ->whereIn('branch_id', UserBranch::getUserBranch())
         ->where('ongkir', '>', 0);
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
@@ -210,9 +210,43 @@ class DeliveryOrderController extends Controller
                 return $html;
             })
             ->addColumn('courier', function ($item) {
-                $courier = $item->courier->name ?? '-';
+                $courierName = '-';
+                $courierType = 'internal';
+                $courierId = $item->courier_id;
+                $savedType = $item->courier_type;
+                
+                if (!$courierId) {
+                    $courierName = '-';
+                } else {
+                    // Jika courier_type sudah tersimpan, gunakan sesuai type
+                    if ($savedType === 'external') {
+                        $externalKurir = \Modules\Master\Entities\Kurir::find($courierId);
+                        $courierName = $externalKurir ? $externalKurir->name : 'Not found';
+                        $courierType = 'external';
+                    } elseif ($savedType === 'internal') {
+                        $internalStaff = \Modules\Master\Entities\Staff::find($courierId);
+                        $courierName = $internalStaff ? $internalStaff->name : 'Not found';
+                        $courierType = 'internal';
+                    } else {
+                        // Legacy data: courier_type NULL, coba detect berdasarkan keberadaan di tabel
+                        $externalKurir = \Modules\Master\Entities\Kurir::find($courierId);
+                        if ($externalKurir) {
+                            $courierName = $externalKurir->name;
+                            $courierType = 'external';
+                        } else {
+                            $internalStaff = \Modules\Master\Entities\Staff::find($courierId);
+                            $courierName = $internalStaff ? $internalStaff->name : 'ID: ' . $courierId;
+                            $courierType = $internalStaff ? 'internal' : 'unknown';
+                        }
+                    }
+                }
+                
+                $typeLabel = $courierType === 'external' ? 'External' : ($courierType === 'internal' ? 'Internal' : 'Unknown');
+                $typeClass = $courierType === 'external' ? 'badge-warning' : ($courierType === 'internal' ? 'badge-info' : 'badge-secondary');
+                
                 $html = '';
-                $html .= '<span class="text-muted d-block fs-5">' . ($courier) . '</span>';
+                $html .= '<span class="text-muted d-block fs-5">' . ($courierName) . '</span>';
+                $html .= '<span class="badge ' . $typeClass . ' fs-8">' . $typeLabel . '</span>';
                 $html .= '<span class="text-muted d-block fs-8">Rp. ' . number_format($item->ongkir, 0, ',', '.') . '</span>';
                 return $html;
             })

@@ -739,6 +739,7 @@
                     status: 'draft',
                     note: note,
                     courier_id: courierId,
+                    courier_type: document.querySelector('select[name="courier_type"]')?.value || null,
                     ongkir_address: ongkirAddress,
                     branch_id: branchId,
                     branch_process_id: branchProcessId,
@@ -831,6 +832,7 @@
                         status: this.isEditing && this.originalStatus !== 'temp' ? this.originalStatus : 'temp',
                         note: note,
                         courier_id: courierId,
+                        courier_type: document.querySelector('select[name="courier_type"]')?.value || null,
                         ongkir_address: ongkirAddress,
                         branch_id: branchId,
                         branch_process_id: branchProcessId,
@@ -932,6 +934,7 @@
                     process_status: 'pending',
                     note: note,
                     courier_id: courierId,
+                    courier_type: document.querySelector('select[name="courier_type"]')?.value || null,
                     ongkir_address: ongkirAddress,
                     branch_id: branchId,
                     branch_process_id: branchProsesId,
@@ -1592,6 +1595,17 @@
                 if (transactionData.courier) {
                     let optionCourier = new Option(transactionData.courier.name, transactionData.courier.id, true, true);
                     $('#courier_id').append(optionCourier).val(transactionData.courier.id).trigger('change');
+                } else if (transactionData.courierExternal) {
+                    let optionCourier = new Option(transactionData.courierExternal.name, transactionData.courierExternal.id, true, true);
+                    $('#courier_id').append(optionCourier).val(transactionData.courierExternal.id).trigger('change');
+                }
+
+                if (transactionData.courier_type) {
+                    $('#courier_type').val(transactionData.courier_type).trigger('change');
+                } else if (transactionData.courier) {
+                    $('#courier_type').val('internal').trigger('change');
+                } else if (transactionData.courierExternal) {
+                    $('#courier_type').val('external').trigger('change');
                 }
 
                 if (transactionData.invoice_number) {

@@ -201,7 +201,7 @@ class PosController extends Controller
         }
 
         $data['alpinejs']       = true;
-        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
+        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'courierExternal', 'branch', 'branch_proses', 'user')->findOrFail($id);
         $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product', 'product.productionParcelDetails.product.productBranches')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
@@ -394,6 +394,7 @@ class PosController extends Controller
             'ongkir_time'       => 'nullable',
             'note'              => 'nullable',
             'courier_id'        => 'nullable',
+            'courier_type'      => 'nullable',
             'ongkir_address'    => 'nullable',
             'kemasan_price'     => 'nullable|numeric',
             'branch_id'         => 'nullable',
@@ -445,6 +446,7 @@ class PosController extends Controller
                 'note'              => $data['note'] ?? null,
                 'created_by'        => $userId,
                 'courier_id'        => $data['courier_id'] ?? null,
+                'courier_type'      => $data['courier_type'] ?? null,
                 'ongkir_address'    => $data['ongkir_address'] ?? null,
                 'branch_id'         => $data['branch_id'] ?? null,
                 'branch_process_id' => $data['branch_process_id'] ?? null,

@@ -158,26 +158,72 @@
     }
 </script>
 <script>
+    $('#courier_type').select2({
+        placeholder: 'Pilih Jenis Kurir',
+        minimumResultsForSearch: Infinity
+    });
+
+    function loadCourierOptions() {
+        const courierType = $('#courier_type').val();
+        $('#courier_id').empty().append('<option value="">Pilih Kurir</option>').trigger('change');
+
+        if (!courierType) {
+            return;
+        }
+
+        $.ajax({
+            url: '/ajax/getKurir',
+            dataType: 'json',
+            delay: 250,
+            data: { search: '', term: '' },
+            success: function(data) {
+                const filtered = data.filter(item => item.type === courierType);
+                const options = filtered.map(item => ({
+                    id: item.id,
+                    text: item.name,
+                    name: item.name,
+                    courierType: item.type,
+                }));
+                options.forEach(item => {
+                    const newOption = new Option(item.text, item.id, false, false);
+                    $('#courier_id').append(newOption);
+                });
+            }
+        });
+    }
+
     $('#courier_id').select2({
         placeholder: 'Pilih Kurir',
         ajax: {
-            url: '/staff/get-staff', // ganti sesuai route
+            url: '/ajax/getKurir',
             dataType: 'json',
             delay: 250,
             data: function(params) {
-                return {
-                    term: params.term, // term dari select2 untuk pencarian
-                    type: 'kurir', // contoh ambil dari input lain
-                };
+                return { search: params.term, term: params.term };
             },
-            processResults: data => ({
-                results: data.map(item => ({
-                    id: item.id,
-                    text: item.name,
-                }))
-            })
+            processResults: function(data) {
+                const courierType = $('#courier_type').val();
+                const filtered = courierType 
+                    ? data.filter(item => item.type === courierType)
+                    : data;
+                return {
+                    results: filtered.map(item => ({
+                        id: item.id,
+                        text: item.name + ' (' + (item.type === 'internal' ? 'Internal)' : 'External)'),
+                        name: item.name,
+                        courierType: item.type,
+                    }))
+                };
+            }
         }
-    })
+    });
+
+    $('#courier_type').on('change', function() {
+        const courierType = $(this).val();
+        if (courierType) {
+            loadCourierOptions();
+        }
+    });
 
     // Pastikan ada elemen <select id="branch_id"></select> di HTML
 
