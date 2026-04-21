@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Master\Entities\Kurir;
+use Modules\Master\Entities\Staff;
 use Yajra\DataTables\Facades\DataTables;
 
 class KurirController extends Controller
@@ -52,15 +53,19 @@ class KurirController extends Controller
         }
 
         $validated = $request->validate([
+            'type' => 'required|in:internal,external',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'staff_id' => 'nullable|integer|exists:staff,id',
         ]);
 
         try {
             DB::beginTransaction();
             $kurir = new Kurir();
+            $kurir->type = $validated['type'];
             $kurir->name = $validated['name'];
             $kurir->description = $validated['description'] ?? null;
+            $kurir->staff_id = $request->type === 'internal' ? ($validated['staff_id'] ?? null) : null;
             $kurir->save();
             DB::commit();
         } catch (Exception $e) {
@@ -99,7 +104,13 @@ class KurirController extends Controller
         }
 
         $kurir = Kurir::findOrFail($id);
-        return response()->json($kurir);
+        return response()->json([
+            'id' => $kurir->id,
+            'type' => $kurir->type,
+            'name' => $kurir->name,
+            'description' => $kurir->description,
+            'staff_id' => $kurir->staff_id,
+        ]);
     }
 
     /**
@@ -115,15 +126,19 @@ class KurirController extends Controller
         }
 
         $validated = $request->validate([
+            'type' => 'required|in:internal,external',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'staff_id' => 'nullable|integer|exists:staff,id',
         ]);
 
         try {
             DB::beginTransaction();
             $kurir = Kurir::findOrFail($id);
+            $kurir->type = $validated['type'];
             $kurir->name = $validated['name'];
             $kurir->description = $validated['description'] ?? null;
+            $kurir->staff_id = $request->type === 'internal' ? ($validated['staff_id'] ?? null) : null;
             $kurir->save();
             DB::commit();
         } catch (Exception $e) {
@@ -199,11 +214,43 @@ class KurirController extends Controller
         return response()->json($data);
     }
 
+    public function getStaff(Request $request)
+    {
+        $search = $request->get('search', $request->get('term', ''));
+        $query = Staff::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('nickname', 'like', '%' . $search . '%');
+            });
+        }
+
+        $staff = $query->select('id', 'name', 'nickname')
+            ->limit(20)
+            ->get()
+            ->map(function ($item) {
+                $label = $item->nickname ? $item->name . ' (' . $item->nickname . ')' : $item->name;
+                return [
+                    'id' => $item->id,
+                    'text' => $label,
+                    'name' => $item->name,
+                ];
+            });
+
+        return response()->json(['results' => $staff]);
+    }
+
     public function get_data(Request $request)
     {
         $data = Kurir::all();
         return DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('type', function ($row) {
+                $badgeClass = $row->type === 'internal' ? 'badge-success' : 'badge-warning';
+                $label = $row->type === 'internal' ? 'Internal' : 'External';
+                return '<span class="badge ' . $badgeClass . '">' . $label . '</span>';
+            })
             ->addColumn('action', function ($row) {
                 $name = e($row->name);
 
@@ -226,7 +273,7 @@ class KurirController extends Controller
                     </ul>
                 </div>';
             })
-            ->rawColumns(['name', 'action'])
+            ->rawColumns(['type', 'name', 'action'])
             ->make(true);
     }
 }

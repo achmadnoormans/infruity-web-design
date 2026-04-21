@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('kurir', function (Blueprint $table) {
             $table->id();
+            $table->enum('type', ['internal', 'external']);
+            $table->integer('staff_id')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
             $table->softDeletes();

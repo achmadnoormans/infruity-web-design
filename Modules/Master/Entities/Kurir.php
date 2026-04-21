@@ -10,5 +10,5 @@ class Kurir extends Model
 {
     use HasFactory, SoftDeletes;
     protected $table = 'kurir';
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'description', 'type', 'staff_id'];
 }

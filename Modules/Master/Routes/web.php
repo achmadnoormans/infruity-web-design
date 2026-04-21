@@ -70,6 +70,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('/ajax/getStaff', [StaffController::class, 'getStaff'])->name('ajax.getStaff');
     Route::get('/ajax/getKurir', [KurirController::class, 'getKurir'])->name('ajax.getKurir');
     Route::get('kurir/get-kurir', [KurirController::class, 'getKurir'])->name('kurir.get-kurir');
+    Route::get('/ajax/getKurirStaff', [KurirController::class, 'getStaff'])->name('ajax.getKurirStaff');
     Route::post('products/variant/store', [ProductController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('products/variants/get', [ProductController::class, 'getVariant'])->name('variants.get');
     Route::put('products/variants/{id}', [ProductController::class, 'updateVariant'])->name('products.update-variant');
