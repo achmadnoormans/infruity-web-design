@@ -157,7 +157,13 @@ class DeliveryOrderController extends Controller
             return $denied;
         }
 
-        $staffs = Staff::all();
+        // Get ONLY staff that are registered in the kurir table (internal type)
+        $staffs = Staff::join('kurir', 'staff.id', '=', 'kurir.staff_id')
+            ->where('kurir.type', 'internal')
+            ->where('staff.is_kurir', 1)
+            ->select('staff.*')
+            ->get();
+
         return view('pos::delivery-order.list-kurir', compact('staffs'));
     }
 
@@ -211,39 +217,43 @@ class DeliveryOrderController extends Controller
             })
             ->addColumn('courier', function ($item) {
                 $courierName = '-';
-                $courierType = 'internal';
+                $courierType = null;
                 $courierId = $item->courier_id;
-                $savedType = $item->courier_type;
-                
+
                 if (!$courierId) {
                     $courierName = '-';
                 } else {
-                    // Jika courier_type sudah tersimpan, gunakan sesuai type
-                    if ($savedType === 'external') {
-                        $externalKurir = \Modules\Master\Entities\Kurir::find($courierId);
-                        $courierName = $externalKurir ? $externalKurir->name : 'Not found';
-                        $courierType = 'external';
-                    } elseif ($savedType === 'internal') {
-                        $internalStaff = \Modules\Master\Entities\Staff::find($courierId);
-                        $courierName = $internalStaff ? $internalStaff->name : 'Not found';
-                        $courierType = 'internal';
-                    } else {
-                        // Legacy data: courier_type NULL, coba detect berdasarkan keberadaan di tabel
-                        $externalKurir = \Modules\Master\Entities\Kurir::find($courierId);
-                        if ($externalKurir) {
-                            $courierName = $externalKurir->name;
-                            $courierType = 'external';
+                    // Cek di tabel kurir untuk mendapatkan type (external atau internal)
+                    $kurir = \Modules\Master\Entities\Kurir::find($courierId);
+                    if ($kurir) {
+                        $courierType = $kurir->type;
+                        // Jika internal, ambil nama dari staff
+                        if ($courierType === 'internal' && $kurir->staff_id) {
+                            $staff = \Modules\Master\Entities\Staff::find($kurir->staff_id);
+                            $courierName = $staff ? $staff->name : 'Not found';
                         } else {
-                            $internalStaff = \Modules\Master\Entities\Staff::find($courierId);
-                            $courierName = $internalStaff ? $internalStaff->name : 'ID: ' . $courierId;
-                            $courierType = $internalStaff ? 'internal' : 'unknown';
+                            // External atau internal tanpa staff_id (edge case)
+                            $courierName = $kurir->name;
                         }
+                    } else {
+                        // Fallback: cek di tabel staff (untuk legacy data yang tidak ada di kurir)
+                        $staff = \Modules\Master\Entities\Staff::find($courierId);
+                        $courierName = $staff ? $staff->name : 'Not found';
+                        $courierType = $staff && $staff->is_kurir ? 'internal' : 'unknown';
                     }
                 }
-                
-                $typeLabel = $courierType === 'external' ? 'External' : ($courierType === 'internal' ? 'Internal' : 'Unknown');
-                $typeClass = $courierType === 'external' ? 'badge-warning' : ($courierType === 'internal' ? 'badge-info' : 'badge-secondary');
-                
+
+                $typeLabel = match($courierType) {
+                    'external' => 'External',
+                    'internal' => 'Internal',
+                    default => $courierType ? ucfirst($courierType) : 'Unknown'
+                };
+                $typeClass = match($courierType) {
+                    'external' => 'badge-warning',
+                    'internal' => 'badge-info',
+                    default => 'badge-secondary'
+                };
+
                 $html = '';
                 $html .= '<span class="text-muted d-block fs-5">' . ($courierName) . '</span>';
                 $html .= '<span class="badge ' . $typeClass . ' fs-8">' . $typeLabel . '</span>';

@@ -188,26 +188,23 @@ class KurirController extends Controller
     {
         $search = $request->get('search', $request->get('term', ''));
 
+        // External kurir: dari tabel kurir dengan type 'external'
         $externalKurir = Kurir::query()
+            ->where('type', 'external')
             ->where('name', 'like', '%' . $search . '%')
-            ->select('id', 'name')
+            ->select('id', 'name', 'type')
             ->limit(10)
-            ->get()
-            ->map(function ($item) {
-                $item->type = 'external';
-                return $item;
-            });
+            ->get();
 
-        $internalKurir = \Modules\Master\Entities\Staff::query()
-            ->where('name', 'like', '%' . $search . '%')
-            ->where('is_kurir', 1)
-            ->select('id', 'name')
+        // Internal kurir: hanya staff yang memiliki entri di tabel kurir dengan type 'internal'
+        $internalKurir = Kurir::join('staff', 'kurir.staff_id', '=', 'staff.id')
+            ->where('kurir.type', 'internal')
+            ->where('staff.is_kurir', 1)
+            ->where('staff.name', 'like', '%' . $search . '%')
+            ->whereNotNull('kurir.staff_id')
+            ->select('staff.id as id', 'staff.name as name', 'kurir.type as type')
             ->limit(10)
-            ->get()
-            ->map(function ($item) {
-                $item->type = 'internal';
-                return $item;
-            });
+            ->get();
 
         $data = $externalKurir->concat($internalKurir);
 
