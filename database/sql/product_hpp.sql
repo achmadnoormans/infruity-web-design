@@ -62,6 +62,7 @@ WITH RECURSIVE ordered_trx AS (
         JOIN pos_transaction pos ON d.pos_id = pos.id
         LEFT JOIN product_child pc ON pc.product_id = d.product_id
         WHERE pos.deleted_at IS NULL
+        AND pos.status != 'draft'
 
         UNION ALL
 
@@ -246,7 +247,7 @@ SELECT
 
         ELSE 0
     END AS cogs,
-    
+
     -- ================= OPNAME VALUE =================
     CASE
         WHEN f.type='~' THEN
