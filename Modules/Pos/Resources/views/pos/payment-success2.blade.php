@@ -433,6 +433,8 @@
             </div>
             <button class="btn-primary" onclick="window.location.href='{{ route('pos.create') }}'">Transaksi
                 Baru</button>
+            <button class="btn-outline" onclick="window.location.href='{{ route('pos.index') }}'">Kembali
+                ke Daftar</button>
         </div>
     </div>
 </body>
