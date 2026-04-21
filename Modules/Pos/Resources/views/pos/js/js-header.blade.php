@@ -158,38 +158,30 @@
     }
 </script>
 <script>
-    $('#courier_type').select2({
-        placeholder: 'Pilih Jenis Kurir',
-        minimumResultsForSearch: Infinity
-    });
-
-    function loadCourierOptions() {
-        const courierType = $('#courier_type').val();
-        $('#courier_id').empty().append('<option value="">Pilih Kurir</option>').trigger('change');
-
-        if (!courierType) {
+    function updateCourierType() {
+        var $courierId = $('#courier_id');
+        var $courierType = $('#courier_type');
+        var selectedVal = $courierId.val();
+        
+        if (!selectedVal) {
+            $courierType.val('');
             return;
         }
-
-        $.ajax({
-            url: '/ajax/getKurir',
-            dataType: 'json',
-            delay: 250,
-            data: { search: '', term: '' },
-            success: function(data) {
-                const filtered = data.filter(item => item.type === courierType);
-                const options = filtered.map(item => ({
-                    id: item.id,
-                    text: item.name,
-                    name: item.name,
-                    courierType: item.type,
-                }));
-                options.forEach(item => {
-                    const newOption = new Option(item.text, item.id, false, false);
-                    $('#courier_id').append(newOption);
-                });
-            }
-        });
+        
+        // Get the selected option element's text (which contains Internal or External)
+        var selectedOption = $courierId.find('option:selected');
+        var optionText = selectedOption.text() || '';
+        
+        // Parse the type from the display text: "Name (Internal)" or "Name (External)"
+        var courierType = '';
+        if (optionText.toLowerCase().indexOf('(external)') !== -1) {
+            courierType = 'external';
+        } else if (optionText.toLowerCase().indexOf('(internal)') !== -1) {
+            courierType = 'internal';
+        }
+        
+        $courierType.val(courierType);
+        console.log('Courier Type determined from text:', courierType, '| Text:', optionText);
     }
 
     $('#courier_id').select2({
@@ -202,27 +194,35 @@
                 return { search: params.term, term: params.term };
             },
             processResults: function(data) {
-                const courierType = $('#courier_type').val();
-                const filtered = courierType 
-                    ? data.filter(item => item.type === courierType)
-                    : data;
                 return {
-                    results: filtered.map(item => ({
-                        id: item.id,
-                        text: item.name + ' (' + (item.type === 'internal' ? 'Internal)' : 'External)'),
-                        name: item.name,
-                        courierType: item.type,
-                    }))
+                    results: data.map(function(item) {
+                        return {
+                            id: item.id,
+                            text: item.name + ' (' + (item.type === 'internal' ? 'Internal)' : 'External)'),
+                            name: item.name,
+                            courierType: item.type
+                        };
+                    })
                 };
             }
         }
     });
 
-    $('#courier_type').on('change', function() {
-        const courierType = $(this).val();
-        if (courierType) {
-            loadCourierOptions();
+    $('#courier_id').on('change', function() {
+        updateCourierType();
+    });
+
+    $(document).on('select2:select', '#courier_id', function(e) {
+        var data = e.params.data;
+        if (data) {
+            var courierType = data.courierType || data.type || '';
+            $('#courier_type').val(courierType);
+            console.log('Courier Type set:', courierType);
         }
+    });
+
+    $(document).ready(function() {
+        setTimeout(updateCourierType, 500);
     });
 
     // Pastikan ada elemen <select id="branch_id"></select> di HTML

@@ -64,18 +64,11 @@
                             <select class="form-control" name="ongkir_address" id="address_id"></select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label mb-1">Jenis Kurir</label>
-                            <select class="form-control" name="courier_type" id="courier_type">
-                                <option value="">Pilih Jenis Kurir</option>
-                                <option value="internal">Kurir Internal (Staff)</option>
-                                <option value="external">Kurir External</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label mb-1">Pilih Kurir</label>
                             <select class="form-control" name="courier_id" id="courier_id">
                                 <option value="">Pilih Kurir</option>
                             </select>
+                            <input type="hidden" name="courier_type" id="courier_type" value="">
                         </div>
                         <div class="mb-3 row">
                             <div class="col">
