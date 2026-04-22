@@ -224,7 +224,7 @@
                         return;
                     }
 
-                    if (!payload.total_payment || payload.total_payment <= 0) {
+                    if (payload.total_payment === undefined || payload.total_payment === null) {
                         Swal.fire('Lengkapi data', 'Jumlah pembayaran wajib diisi.', 'warning');
                         this.loading = false;
                         return;
