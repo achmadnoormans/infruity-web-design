@@ -151,10 +151,14 @@
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
+                @if (Request::segment(3) != 'show')
                 @include('transaction::wholesale.segment.ringkasan')
+            @endif
             </div>
 
-            @include('transaction::wholesale.segment.modal-product')
+            @if (Request::segment(3) != 'show')
+                @include('transaction::wholesale.segment.modal-product')
+            @endif
         </div>
     </div>
     <!--end::Aside column-->

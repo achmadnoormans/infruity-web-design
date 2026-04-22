@@ -140,7 +140,13 @@
                     {
                         data: 'remarks',
                         name: 'remarks',
-                        className: 'text-nowrap'
+                        className: 'text-nowrap',
+                        render: function(data, type, row) {
+                            if (row.url) {
+                                return '<a href="' + row.url + '" class="text-primary fw-bold text-decoration-underline">' + data + '</a>';
+                            }
+                            return data;
+                        }
                     },
                     {
                         data: 'qty',

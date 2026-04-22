@@ -12,7 +12,9 @@ WITH RECURSIVE ordered_trx AS (
         total_belanja,
         total_non_belanja,
         type,
-        remarks
+        remarks,
+        trx_id,
+        trx_type
     FROM (
         -- ================= PENGADAAN =================
         SELECT
@@ -27,7 +29,9 @@ WITH RECURSIVE ordered_trx AS (
             END AS total_belanja,
             0 AS total_non_belanja,
             '+' AS type,
-            'PENGADAAN' AS remarks
+            'PENGADAAN' AS remarks,
+            p.wholesale_id AS trx_id,
+            'pengadaan' AS trx_type
         FROM wholesale_product p
         LEFT JOIN product_child pc ON pc.product_id = p.product_id
 
@@ -42,7 +46,9 @@ WITH RECURSIVE ordered_trx AS (
             0,
             0,
             '-',
-            'BARANG BUANG'
+            'BARANG BUANG',
+            b.sortir_id AS trx_id,
+            'barang_buang' AS trx_type
         FROM sortir_transaction_detail b
         LEFT JOIN product_child pc ON pc.product_id = b.product_id
 
@@ -57,7 +63,9 @@ WITH RECURSIVE ordered_trx AS (
             0,
             0,
             '-',
-            'PENJUALAN'
+            'PENJUALAN',
+            d.pos_id AS trx_id,
+            'penjualan' AS trx_type
         FROM pos_transaction_detail d
         JOIN pos_transaction pos ON d.pos_id = pos.id
         LEFT JOIN product_child pc ON pc.product_id = d.product_id
@@ -75,7 +83,9 @@ WITH RECURSIVE ordered_trx AS (
             0,
             0,
             '-',
-            'BAHAN PRODUKSI'
+            'BAHAN PRODUKSI',
+            d.production_id AS trx_id,
+            'bahan_produksi' AS trx_type
         FROM production_detail d
         LEFT JOIN product_child pc ON pc.product_id = d.product_id
 
@@ -90,7 +100,9 @@ WITH RECURSIVE ordered_trx AS (
                 d.quantity * p.hpp AS total_belanja,
                 0,
                 '+',
-                'PRODUKSI'
+                'PRODUKSI',
+                d.id AS trx_id,
+                'produksi' AS trx_type
         FROM production d
         LEFT JOIN products as p ON d.product_id = p.id
         LEFT JOIN product_child pc ON pc.product_id = d.product_id
@@ -106,7 +118,9 @@ WITH RECURSIVE ordered_trx AS (
             0,
             0,
             '~',
-            'OPNAME'
+            'OPNAME',
+            o.id AS trx_id,
+            'opname' AS trx_type
         FROM stock_opname o
         LEFT JOIN product_child pc ON pc.product_id = o.product_id
     ) x
@@ -127,7 +141,9 @@ running AS (
         remarks,
         qty AS qty_berjalan_raw,
         qty AS qty_berjalan,
-        CASE WHEN qty > 0 THEN total_belanja ELSE 0 END AS total_aset_berjalan
+        CASE WHEN qty > 0 THEN total_belanja ELSE 0 END AS total_aset_berjalan,
+        trx_id,
+        trx_type
     FROM ordered_trx
     WHERE rn = 1
 
@@ -175,7 +191,10 @@ running AS (
 
                 ELSE r.total_aset_berjalan
             END
-        )
+        ),
+
+        t.trx_id,
+        t.trx_type
 
     FROM running r
     JOIN ordered_trx t
@@ -307,7 +326,19 @@ SELECT
         )
     END AS hpp_berjalan,
     f.total_aset_berjalan,
-    f.created_at
+    f.created_at,
+    f.trx_id,
+    f.trx_type,
+
+    CASE f.trx_type
+        WHEN 'pengadaan' THEN CONCAT('/wholesale/', f.trx_id, '/show')
+        WHEN 'barang_buang' THEN CONCAT('/sortir/show/', f.trx_id)
+        WHEN 'penjualan' THEN CONCAT('/pos/show/', f.trx_id)
+        WHEN 'bahan_produksi' THEN CONCAT('/production/', f.trx_id, '/detail')
+        WHEN 'produksi' THEN CONCAT('/production/', f.trx_id, '/detail')
+        WHEN 'opname' THEN CONCAT('/stock-opname/', f.trx_id, '/edit')
+        ELSE NULL
+    END AS url
 
 FROM final f
 ORDER BY f.product_id, f.rn;
