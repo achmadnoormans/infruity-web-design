@@ -886,11 +886,15 @@ class PosController extends Controller
             })
             ->addColumn('date', function ($item) {
                 $date  = date('d M Y H:i', strtotime($item->created_at));
-                $badge = match ($item->status) {
-                    'paid'  => '<span class="badge badge-light-success">Paid</span>',
-                    'draft' => '<span class="badge badge-light-danger">Draft</span>',
-                    default => '<span class="badge badge-light-warning">' . e($item->status) . '</span>'
-                };
+                $statusLabels = [
+                    'paid' => ['label' => 'Lunas', 'class' => 'success'],
+                    'draft' => ['label' => 'Pending', 'class' => 'secondary'],
+                    'debt' => ['label' => 'Piutang', 'class' => 'danger'],
+                    'canceled' => ['label' => 'Dihapus', 'class' => 'dark'],
+                    'temp' => ['label' => 'Pending', 'class' => 'secondary'],
+                ];
+                $statusInfo = $statusLabels[$item->status] ?? ['label' => ucfirst($item->status), 'class' => 'warning'];
+                $badge = '<span class="badge badge-light-' . $statusInfo['class'] . '">' . $statusInfo['label'] . '</span>';
                 $branchLabel = '';
                 if ($item->branch) {
                     $branchLabel = '<span class="badge badge-light-primary ms-1">' . e($item->branch->name) . '</span>';

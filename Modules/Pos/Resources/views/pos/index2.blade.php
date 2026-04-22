@@ -91,14 +91,19 @@
                                 <div>
                                     <label class="form-label fs-6 fw-semibold">Status:</label>
                                     @php
-                                        $category = ['draft', 'paid', 'debt', 'canceled'];
+                                        $statuses = [
+                                            ['value' => 'all', 'label' => 'Semua', 'color' => ''],
+                                            ['value' => 'draft', 'label' => 'Pending', 'color' => 'gray'],
+                                            ['value' => 'paid', 'label' => 'Lunas', 'color' => 'success'],
+                                            ['value' => 'debt', 'label' => 'Piutang', 'color' => 'danger'],
+                                            ['value' => 'canceled', 'label' => 'Dihapus', 'color' => 'dark'],
+                                        ];
                                     @endphp
                                     <select class="form-select form-select-solid" data-control="select2"
                                         data-hide-search="true" data-placeholder="Status"
                                         data-kt-ecommerce-product-filter="status">
-                                        <option value="all">All</option>
-                                        @foreach ($category as $category)
-                                            <option value="{{ $category }}">{{ ucwords($category) }}</option>
+                                        @foreach ($statuses as $status)
+                                            <option value="{{ $status['value'] }}">{{ $status['label'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -263,6 +268,26 @@
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            function formatStatusOption(state) {
+                if (!state.id) return state.text;
+                var statusColors = {
+                    'Semua': '',
+                    'Pending': '#6c757d',
+                    'Lunas': '#198754',
+                    'Piutang': '#dc3545',
+                    'Dihapus': '#1f1f1f'
+                };
+                var color = statusColors[state.text] || '';
+                if (color) {
+                    return $('<span><span class="badge badge-light-' + (state.text === 'Lunas' ? 'success' : state.text === 'Piutang' ? 'danger' : state.text === 'Pending' ? 'secondary' : 'dark') + '">' + state.text + '</span></span>');
+                }
+                return state.text;
+            }
+
+            $('[data-kt-ecommerce-product-filter="status"]').select2({
+                templateResult: formatStatusOption
             });
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
                 updateActiveFilterInfo();
