@@ -153,7 +153,7 @@
             @endphp
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
-                    title: 'Peringatan Stok Kosong!',
+                    title: 'Peringatan Stok Minus!',
                     html: @json($emptyStockAlertHtml),
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',

@@ -186,7 +186,7 @@
             @endphp
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
-                    title: 'Peringatan Stok Kosong!',
+                    title: 'Peringatan Stok Minus!',
                     html: @json($emptyStockAlertHtml),
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',
@@ -401,24 +401,24 @@
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
-                    
+
                     // Clear and reset product_id select2 first
                     var $productSelect = $('select[name="product_id"]');
                     $productSelect.empty();
                     $productSelect.append(new Option('Pilih Product', '', false, false));
                     $productSelect.append(new Option(response.name, response.product_id, true, true));
                     $productSelect.val(response.product_id).trigger('change');
-                    
+
                     // Set flatpickr date
                     var fp = $('#date')[0]._flatpickr;
                     if (fp) {
                         fp.setDate(response.date);
                     }
-                    
+
                     // Set form fields - use 'stock' from database, not 'quantity'
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
-                    
+
                     // Set branch_id
                     $('select[name="branch_id"]').val(response.branch_id).trigger('change');
 
@@ -456,24 +456,24 @@
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
-                    
+
                     // Clear and reset product_id select2 first
                     var $productSelect = $('select[name="product_id"]');
                     $productSelect.empty();
                     $productSelect.append(new Option('Pilih Product', '', false, false));
                     $productSelect.append(new Option(response.name, response.product_id, true, true));
                     $productSelect.val(response.product_id).trigger('change');
-                    
+
                     // Set flatpickr date
                     var fp = $('#date')[0]._flatpickr;
                     if (fp) {
                         fp.setDate(response.date);
                     }
-                    
+
                     // Set form fields - use 'stock' from database, not 'quantity'
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
-                    
+
                     // Set branch_id
                     $('select[name="branch_id"]').val(response.branch_id).trigger('change');
 
