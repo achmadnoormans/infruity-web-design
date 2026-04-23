@@ -810,12 +810,12 @@ class PosController extends Controller
         $userId = auth()->id();
         $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
         // ->whereIn('branch_id', UserBranch::getUserBranch());
-        
+
         $query->where(function ($q) use ($userId) {
             $q->where('status', '!=', 'temp')
               ->orWhere('created_by', $userId);
         });
-        
+
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -885,7 +885,7 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $date  = date('d M Y H:i', strtotime($item->created_at));
+                $date  = date('d M Y H:i', strtotime($item->date));
                 $statusLabels = [
                     'paid' => ['label' => 'Lunas', 'class' => 'success'],
                     'draft' => ['label' => 'Pending', 'class' => 'secondary'],
