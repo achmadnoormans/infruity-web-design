@@ -149,6 +149,30 @@ FROM
 	FROM
 	sortir_transaction_detail
 	JOIN sortir_transaction ON sortir_transaction_detail.sortir_id = sortir_transaction.id
+    UNION ALL
+
+	-- TRANSFER (ASAL)
+	SELECT
+		transfer.branch_id,
+		transfer_detail.product_id,
+		- transfer_detail.quantity,
+		transfer_detail.price,
+		transfer.created_at,
+		'transfer asal'
+	FROM transfer
+	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	UNION ALL
+
+	-- TRANSFER (TUJUAN)
+	SELECT
+		transfer.branch_destination_id,
+		transfer_detail.product_id,
+		transfer_detail.quantity,
+		transfer_detail.price,
+		transfer.created_at,
+		'transfer tujuan'
+	FROM transfer
+	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
 	) AS Q;
 
 -- Sortir view
