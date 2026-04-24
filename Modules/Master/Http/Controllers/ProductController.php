@@ -248,6 +248,7 @@ class ProductController extends Controller
         }
 
         $data['data'] = Product::findOrFail($id);
+        $data['branch'] = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('master::products.stock-show', $data);
     }
 
@@ -1277,13 +1278,24 @@ class ProductController extends Controller
         $child = ProductChild::where('parent_id', $request->product_id)
             ->pluck('product_id')
             ->toArray();
+
         $query = DB::table('transaction_stock')
             ->join('products', 'transaction_stock.product_id', '=', 'products.id')
             ->join('product_units', 'products.product_unit', '=', 'product_units.id')
-            ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit')
-            ->where('transaction_stock.product_id', $request->product_id)
-            ->orWhereIn('transaction_stock.product_id', $child)
-            ->orderBy('transaction_stock.date', 'asc');
+            ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit');
+
+        // Filter by branch if provided
+        if ($request->filled('branch') && $request->branch != 'all') {
+            $query->where('transaction_stock.branch_id', $request->branch);
+        }
+
+        $query->where(function($q) use ($request, $child) {
+            $q->where('transaction_stock.product_id', $request->product_id)
+              ->orWhereIn('transaction_stock.product_id', $child);
+        });
+
+        $query->orderBy('transaction_stock.date', 'asc');
+
         $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()

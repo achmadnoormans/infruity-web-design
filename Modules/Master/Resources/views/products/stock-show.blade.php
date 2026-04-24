@@ -10,6 +10,15 @@
                 <div class="card-title">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
+                        <label class="form-label fs-6 fw-semibold me-4">Cabang:</label>
+                        <select class="form-select form-select-solid" data-control="select2"
+                            data-hide-search="true" data-placeholder="Cabang"
+                            data-kt-ecommerce-product-filter="branch" style="width: 250px;">
+                            <option value="all">Semua Cabang</option>
+                            @foreach ($branch as $item)
+                                <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <!--end::Search-->
                 </div>
@@ -53,7 +62,8 @@
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
-                        d.product_id = {{ $data->id }}
+                        d.product_id = {{ $data->id }};
+                        d.branch = $('[data-kt-ecommerce-product-filter="branch"]').val();
                     }
                 },
                 columns: [{
@@ -94,6 +104,10 @@
             });
 
             $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
+                dataTable.draw(); // trigger fetch ulang dari server
+            });
+
+            $('[data-kt-ecommerce-product-filter="branch"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
             });
         });
