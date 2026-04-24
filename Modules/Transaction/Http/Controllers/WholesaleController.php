@@ -146,7 +146,7 @@ class WholesaleController extends Controller
                 $draft = Wholesale::where('created_by', $userId)
                     ->where('status', 'temp')
                     ->first();
-                
+
                 if ($draft) {
                     $wholesale = $draft;
                 } else {
@@ -772,6 +772,12 @@ class WholesaleController extends Controller
             'pos_payment',
             'sortir_transaction',
             'sortir_transaction_detail',
+            'production',
+            'production_detail',
+            'production_parcel',
+            'production_parcel_detail',
+            'transfer',
+            'transfer_detail'
         ];
 
         try {
@@ -864,7 +870,7 @@ class WholesaleController extends Controller
             // =========================
             // HEADER (UPDATE / CREATE)
             // =========================
-            
+
             // Jika status adalah temp, cek apakah ada existing temp draft untuk user ini
             $existingTempDraft = null;
             if (($data['status'] ?? 'draft') === 'temp') {
@@ -901,7 +907,7 @@ class WholesaleController extends Controller
                 $draft = Wholesale::where('created_by', $userId)
                     ->where('status', 'temp')
                     ->first();
-                
+
                 if ($draft) {
                     $wholesale = $draft;
                     $wholesale->update($wholesaleData);
