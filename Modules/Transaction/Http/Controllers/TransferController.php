@@ -219,7 +219,7 @@ class TransferController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Transfer::with('createdBy')->whereIn('branch_id', UserBranch::getUserBranch());
+        $query = Transfer::with('createdBy', 'branch', 'branchDestination')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -244,7 +244,6 @@ class TransferController extends Controller
                     });
                 }
             }, true)
-            ->addIndexColumn()
             ->addColumn('name', function ($item) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';

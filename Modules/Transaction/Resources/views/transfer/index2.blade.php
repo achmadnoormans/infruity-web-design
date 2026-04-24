@@ -128,7 +128,9 @@
     <a href="{{ url('transfer/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
         style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
         <i class="fa fa-plus text-white"></i>
-    </a>
+        </a>
+@endsection
+
 @section('script')
     <script type="text/javascript">
         var dataTable;
@@ -156,10 +158,14 @@
                             d.start_date = dates[0];
                             d.end_date = dates[1] ?? dates[0]; // jika hanya pilih 1 tanggal
                         }
+                    },
+                    error: function(xhr, error, thrown) {
+                        console.error('DataTable AJAX Error:', xhr.responseText);
+                        alert('Error loading data: ' + thrown);
                     }
                 },
                 order: [
-                    [2, 'desc'], // Then by order_date ASC (kolom ke-3)
+                    [1, 'desc'], // Sort by date column DESC
                 ],
                 columns: [{
                         data: 'name',
@@ -255,5 +261,4 @@
             });
         }
     </script>
-@endsection
 @endsection
