@@ -885,7 +885,7 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $date  = date('d M Y H:i', strtotime($item->date));
+                $date  = date('d M Y', strtotime($item->date)) . ' ' . date('H:i', strtotime($item->created_at));
                 $statusLabels = [
                     'paid' => ['label' => 'Lunas', 'class' => 'success'],
                     'draft' => ['label' => 'Pending', 'class' => 'secondary'],
