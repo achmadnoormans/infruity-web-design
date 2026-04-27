@@ -231,7 +231,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/transfer/${id}`, // Ganti dengan URL yang sesuai
+                        url: "{{ url('transfer') }}/" + id,
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')
