@@ -756,17 +756,41 @@
                         },
                         body: JSON.stringify(data),
                     })
-                    .then(res => res.json())
-                    .then(res => {
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Berhasil',
-                        //     text: 'Transaksi berhasil disimpan!',
-                        // });
-                        // this.resetPOS(); // Reset cart dsb.
-                        // window.location.href = '/pos';
-                        redirectToHome();
+                    .then(async (res) => {
+                        const text = await res.text();
+                        let json = {};
+                        try {
+                            json = text ? JSON.parse(text) : {};
+                        } catch (e) {
+                            json = {
+                                message: 'Response server tidak valid. Periksa kemungkinan debug/dd di backend.'
+                            };
+                        }
 
+                        if (!res.ok) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return;
+                        }
+
+                        if (json.success === false) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message ?? 'Gagal menyimpan transaksi.',
+                            });
+
+                            if (typeof doneCallback === 'function') doneCallback();
+                            return;
+                        }
+
+                        if (typeof doneCallback === 'function') doneCallback();
+                        redirectToHome();
                     })
                     .catch(err => {
                         Swal.fire({
