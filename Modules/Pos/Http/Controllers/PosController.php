@@ -520,6 +520,10 @@ class PosController extends Controller
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $key => $value) {
                     $parcel             = $value;
+                    $kemasanProduct     = null;
+                    if (!empty($parcel['kemasan'])) {
+                        $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
+                    }
                     $productNameBase    = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
                     $productDescription = 'Parcel ' . $parcel['kemasan'] . '-' . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
                     $product            = new Product([
@@ -536,13 +540,13 @@ class PosController extends Controller
                     $product->save();
                     PosDetailModel::insert([
                         'pos_id'        => $transaksiId,
-                        'parcel_id'     => $parcel['kemasanId'] ?? Product::where('name', $parcel['kemasan'])->first()->id,
+                        'parcel_id'     => !empty($parcel['kemasanId']) ? $parcel['kemasanId'] : ($kemasanProduct->id ?? null),
                         'product_id'    => $product->id,
                         'price'         => $product->price,
                         'quantity'      => $parcel['qty'],
                         'discount'      => 0,
                         'subtotal'      => $product->price,
-                        'kemasan_price' => isset($parcel['kemasanPrice']) ? preg_replace('/[^0-9]/', '', $parcel['kemasanPrice']) : Product::where('name', $parcel['kemasan'])->first()->price,
+                        'kemasan_price' => isset($parcel['kemasanPrice']) ? preg_replace('/[^0-9]/', '', $parcel['kemasanPrice']) : ($kemasanProduct->price ?? 0),
                         'hpp'           => $product->hpp,
                         'exp'           => $product->price - $product->hpp,
                         'exp_value'     => ($product->price - $product->hpp) * $settingExp->value_exp,
