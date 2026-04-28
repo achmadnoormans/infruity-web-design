@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Master\Entities\Customer;
+use Modules\Master\Entities\Kurir;
 use Modules\Master\Entities\PaymentMethod;
-use Modules\Master\Entities\Staff;
 use Modules\Master\Entities\Branch;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
@@ -96,12 +96,7 @@ class PosModel extends Model
 
     public function courier()
     {
-        return $this->belongsTo(Staff::class, 'courier_id');
-    }
-
-    public function courierExternal()
-    {
-        return $this->belongsTo(\Modules\Master\Entities\Kurir::class, 'courier_id');
+        return $this->belongsTo(Kurir::class, 'courier_id');
     }
 
     public function user()

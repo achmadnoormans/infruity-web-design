@@ -1617,19 +1617,16 @@
                 // $('#ongkir_address').val(data.ongkir_address);
 
                 if (transactionData.courier) {
-                    let optionCourier = new Option(transactionData.courier.name, transactionData.courier.id, true, true);
+                    const courierTypeLabel = transactionData.courier_type === 'external' ? 'External' : 'Internal';
+                    const courierText = `${transactionData.courier.name} (${courierTypeLabel})`;
+                    let optionCourier = new Option(courierText, transactionData.courier.id, true, true);
                     $('#courier_id').append(optionCourier).val(transactionData.courier.id).trigger('change');
-                } else if (transactionData.courierExternal) {
-                    let optionCourier = new Option(transactionData.courierExternal.name, transactionData.courierExternal.id, true, true);
-                    $('#courier_id').append(optionCourier).val(transactionData.courierExternal.id).trigger('change');
                 }
 
                 if (transactionData.courier_type) {
                     $('#courier_type').val(transactionData.courier_type).trigger('change');
                 } else if (transactionData.courier) {
                     $('#courier_type').val('internal').trigger('change');
-                } else if (transactionData.courierExternal) {
-                    $('#courier_type').val('external').trigger('change');
                 }
 
                 if (transactionData.invoice_number) {

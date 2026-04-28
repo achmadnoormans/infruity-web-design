@@ -201,7 +201,7 @@ class PosController extends Controller
         }
 
         $data['alpinejs']       = true;
-        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'courierExternal', 'branch', 'branch_proses', 'user')->findOrFail($id);
+        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user')->findOrFail($id);
         $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product', 'product.productionParcelDetails.product.productBranches')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
