@@ -23,6 +23,10 @@ class UserBranch extends Model
 
     public static function getUserBranch()
     {
+        if (session('role')['id_role'] == 1) {
+            return Branch::pluck('id')->toArray();
+        }
+
         return self::where('user_id', auth()->user()->id_user)
             ->pluck('branch_id')
             ->toArray();

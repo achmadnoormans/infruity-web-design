@@ -219,7 +219,13 @@ class TransferController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = Transfer::with('createdBy', 'branch', 'branchDestination')->whereIn('branch_id', UserBranch::getUserBranch());
+        $userBranches = UserBranch::getUserBranch();
+        $query = Transfer::with(['createdBy', 'branch', 'branchDestination'])
+            ->where(function($q) use ($userBranches) {
+                $q->whereIn('branch_id', $userBranches)
+                  ->orWhereIn('branch_destination_id', $userBranches);
+            });
+
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -247,9 +253,9 @@ class TransferController extends Controller
             ->addColumn('name', function ($item) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
-                $html .= '<a href="' . route('sortir.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
-                $html .= '<br><span class="text-muted d-block fs-7">' . $item->branch->name . ' <i class="bi bi-arrow-right"></i> ' . $item->branchDestination->name . '</span>';
-                $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user)) . '</span>';
+                $html .= '<a href="' . route('transfer.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
+                $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
+                $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? 'unknown')) . '</span>';
                 return $html;
             })
             ->addColumn('date', function ($item) {
@@ -277,7 +283,7 @@ class TransferController extends Controller
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
-                if (!in_array($item->status, ['paid', 'debt'])) {
+                if (!in_array($item->status, ['paid', 'debt']) || session('role')['id_role'] == 1) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
