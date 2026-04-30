@@ -31,7 +31,8 @@ FROM
 		avg_price,
 		-- date,
 		created_at AS date,
-		`code` AS reff
+		`code` AS reff,
+		'stock-in' AS url
 	FROM
 		stock_in
 	UNION ALL
@@ -44,7 +45,8 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
-		`code`
+		`code`,
+		'stock-out'
 	FROM
 		stock_out
 	UNION ALL
@@ -57,7 +59,8 @@ FROM
 		price,
 		-- wholesale.order_date,
 		wholesale.created_at,
-		'pengadaan' AS reff
+		'pengadaan' AS reff,
+		'wholesale' AS url
 	FROM
 		wholesale_product
 		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
@@ -74,7 +77,8 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
-		'stock-out'
+		'stock-out',
+		'stock-out-transaction'
 	FROM
 		stock_out_transaction
 	UNION ALL
@@ -87,6 +91,7 @@ FROM
 		avg_price,
 		-- date,
 		created_at,
+		'stock-opname',
 		'stock-opname'
 	FROM
 		stock_opname
@@ -100,7 +105,8 @@ FROM
 		NULL,
 		-- production_date,
 		created_at,
-		'produksi'
+		'produksi',
+		'production'
 	FROM
 		production
         WHERE production.`status` = 'posting'
@@ -114,7 +120,8 @@ FROM
 		NULL,
 		-- production.production_date,
 		production.created_at,
-		'produksi-detail'
+		'produksi-detail',
+		'production'
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id
@@ -129,6 +136,7 @@ FROM
 		pos_transaction_detail.price,
 		-- pos_transaction.date,
 		pos_transaction.created_at,
+		'pos',
 		'pos'
 	FROM
 		pos_transaction_detail
@@ -145,6 +153,7 @@ FROM
 		- sortir_transaction_detail.quantity,
 		sortir_transaction_detail.price,
 		sortir_transaction_detail.created_at,
+		'sortir',
 		'sortir'
 	FROM
 	sortir_transaction_detail
@@ -158,7 +167,8 @@ FROM
 		- transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer asal'
+		'transfer asal',
+		'transfer'
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
 	UNION ALL
@@ -170,7 +180,8 @@ FROM
 		transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer tujuan'
+		'transfer tujuan',
+		'transfer'
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
 	) AS Q;

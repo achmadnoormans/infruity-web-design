@@ -38,7 +38,7 @@
                             <th class="min-w-100px">Product</th>
                             <th class="text-end min-w-70px">Quantity</th>
                             <th class="text-end min-w-100px">Tanggal</th>
-                            <th class="text-end min-w-100px">Refernce</th>
+                            <th class="text-end min-w-100px">Reference</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600">
