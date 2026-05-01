@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('real_stock', 10, 2);
             $table->decimal('difference', 10, 2);
             $table->integer('avg_price')->default(0);
+            $table->decimal('hpp', 15, 3)->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

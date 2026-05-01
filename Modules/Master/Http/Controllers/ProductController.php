@@ -1265,12 +1265,20 @@ class ProductController extends Controller
 
     public function get_data_available(Request $request)
     {
-        return DB::table('product_stock')
+        if ($request->has('branch_id') && ! $request->filled('branch_id')) {
+            return collect();
+        }
+
+        $query = DB::table('product_stock')
             ->where('stock_available', '>', 0)
             ->where('name', 'like', '%' . $request->search . '%')
-            ->select('id', 'name', 'stock_available')
-            ->limit(20)
-            ->get();
+            ->select('id', 'name', 'stock_available');
+
+        if ($request->filled('branch_id')) {
+            $query->where('branch_id', $request->branch_id);
+        }
+
+        return $query->limit(20)->get();
     }
 
     public function get_data_stock_show(Request $request)

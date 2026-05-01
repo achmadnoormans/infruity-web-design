@@ -82,6 +82,7 @@ class StockOpnameController extends Controller
             DB::beginTransaction();
             $productStock = DB::table('product_stock')
                 ->where('id', $validated['product_id'])
+                ->where('branch_id', $validated['branch_id'])
                 ->first();
             if (!$productStock) {
                 return response()->json([
@@ -210,6 +211,25 @@ class StockOpnameController extends Controller
                 }
                 return '<span class="' . $class . '" data-id="' . $item->id . '" data-value="' . $item->difference . '">' . toNumber($item->difference) . ' ' . $item->product->unit->abbreviation . '</span>';
             })
+            ->addColumn('difference_value', function ($item) {
+                $value = (float) $item->difference * (float) ($item->avg_price ?? 0);
+                $class = $value < 0 ? 'text-danger' : 'text-success';
+
+                return '<span class="' . $class . '">Rp ' . toNumber($value) . '</span>';
+            })
+            ->addColumn('percentage', function ($item) {
+                $stock = (float) $item->stock;
+                $difference = (float) $item->difference;
+
+                if ($stock == 0.0) {
+                    return '<span class="text-muted">-</span>';
+                }
+
+                $percentage = ($difference / $stock) * 100;
+                $class = $percentage < 0 ? 'text-danger' : 'text-success';
+
+                return '<span class="' . $class . '">' . toNumber($percentage) . '%</span>';
+            })
             ->addColumn('action', function ($row) {
                 $editUrl = route('products.edit', $row->id);
                 $deleteUrl = route('products.destroy', $row->id);
@@ -240,7 +260,7 @@ class StockOpnameController extends Controller
                 </div>';
 
             })
-            ->rawColumns(['name', 'quantity', 'action'])
+            ->rawColumns(['name', 'quantity', 'difference_value', 'percentage', 'action'])
             ->make(true);
     }
 }

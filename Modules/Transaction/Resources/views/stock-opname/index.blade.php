@@ -41,7 +41,9 @@
                                 </div>
                             </th> --}}
                             <th class="text-start min-w-100px">Nama</th>
-                            <th class="text-end min-w-70px">Jumlah</th>
+                            <th class="text-end min-w-70px">Selisih</th>
+                            <th class="text-end min-w-120px">Nilai Selisih (idr)</th>
+                            <th class="text-end min-w-90px">Prosentase</th>
                             <th class="text-end min-w-70px">Aksi</th>
                         </tr>
                     </thead>
@@ -222,6 +224,16 @@
                     {
                         data: 'quantity',
                         name: 'quantity',
+                        className: 'text-end'
+                    },
+                    {
+                        data: 'difference_value',
+                        name: 'difference_value',
+                        className: 'text-end'
+                    },
+                    {
+                        data: 'percentage',
+                        name: 'percentage',
                         className: 'text-end'
                     },
                     {
@@ -509,7 +521,15 @@
         });
 
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
-            $('#product_id').select2({
+            const $branch = $('#branch_id');
+            const $product = $('#product_id');
+            const $quantity = $('input[name="quantity"]');
+
+            if ($product.hasClass('select2-hidden-accessible')) {
+                $product.select2('destroy');
+            }
+
+            $product.select2({
                 placeholder: 'Pilih Produk',
                 dropdownParent: $('#kt_modal_add_customer'),
                 ajax: {
@@ -517,7 +537,8 @@
                     dataType: 'json',
                     delay: 250,
                     data: params => ({
-                        search: params.term
+                        search: params.term,
+                        branch_id: $branch.val()
                     }),
                     processResults: data => ({
                         results: data.map(item => ({
@@ -529,12 +550,55 @@
                 }
             }).on('select2:select', function(e) {
                 const data = e.params.data;
-                $('input[name="quantity"]').val(data.stock_available || 0);
+                $quantity.val(data.stock_available || 0);
             });
 
-            $('#branch_id').select2({
+            if ($branch.hasClass('select2-hidden-accessible')) {
+                $branch.select2('destroy');
+            }
+
+            $branch.select2({
                 placeholder: 'Pilih Cabang',
                 dropdownParent: $('#kt_modal_add_customer'),
+            });
+
+            $branch.off('change.stockOpname').on('change.stockOpname', function() {
+                const branchId = $(this).val();
+                const productId = $product.val();
+
+                $quantity.val('');
+
+                if (!branchId) {
+                    $product.val(null).trigger('change');
+                    return;
+                }
+
+                if (!productId) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('ajax.stock-available') }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        branch_id: branchId,
+                        search: ''
+                    },
+                    success: function(items) {
+                        const selected = (items || []).find(item => String(item.id) === String(productId));
+
+                        if (selected) {
+                            $quantity.val(selected.stock_available || 0);
+                            return;
+                        }
+
+                        $product.val(null).trigger('change');
+                    },
+                    error: function() {
+                        $product.val(null).trigger('change');
+                    }
+                });
             });
         });
     </script>
