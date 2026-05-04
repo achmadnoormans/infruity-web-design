@@ -32,15 +32,14 @@ class StockOpnameController extends Controller
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
-        // Cek product_stock yang kosong pada branch yang dimiliki user
         $emptyStockProducts = DB::table('product_stock')
-            ->whereIn('branch_id', $userBranches)
+            ->join('branch', 'product_stock.branch_id', '=', 'branch.id')
+            ->select('product_stock.*', 'branch.name as branch_name')
+            ->whereIn('product_stock.branch_id', $userBranches)
             ->where('stock_available', '<', 0)
             ->get();
 
-        $data['hasEmptyStock'] = $emptyStockProducts->isNotEmpty();
-        $data['emptyStockCount'] = $emptyStockProducts->count();
-        $data['emptyStockProducts'] = $emptyStockProducts->take(10);
+        $data['emptyStockData'] = $emptyStockProducts;
 
         return view('transaction::stock-opname.index', $data);
     }
@@ -190,7 +189,14 @@ class StockOpnameController extends Controller
 
     public function get_data(Request $request)
     {
-        $data = StockOpname::with('product')->get();
+        $userBranches = UserBranch::getUserBranch();
+        $query = StockOpname::with('product')->whereIn('branch_id', $userBranches);
+
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->where('branch_id', $request->cabang_filter);
+        }
+
+        $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {

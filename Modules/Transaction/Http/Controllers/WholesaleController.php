@@ -41,15 +41,14 @@ class WholesaleController extends Controller
         $userBranches = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
-        // Cek product_stock yang kosong pada branch yang dimiliki user
         $emptyStockProducts = DB::table('product_stock')
-            ->whereIn('branch_id', $userBranches)
+            ->join('branch', 'product_stock.branch_id', '=', 'branch.id')
+            ->select('product_stock.*', 'branch.name as branch_name')
+            ->whereIn('product_stock.branch_id', $userBranches)
             ->where('stock_available', '<', 0)
             ->get();
 
-        $data['hasEmptyStock'] = $emptyStockProducts->isNotEmpty();
-        $data['emptyStockCount'] = $emptyStockProducts->count();
-        $data['emptyStockProducts'] = $emptyStockProducts->take(10);
+        $data['emptyStockData'] = $emptyStockProducts;
 
         return view('transaction::wholesale.index', $data);
     }

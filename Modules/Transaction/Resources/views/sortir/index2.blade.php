@@ -134,34 +134,42 @@
     </a>
 @section('script')
     <script type="text/javascript">
-        // Cek apakah ada produk dengan stock kosong
-        @if(isset($hasEmptyStock) && $hasEmptyStock)
-            @php
-                $emptyStockBadges = $emptyStockProducts->map(function ($product) {
-                    return '<span class="badge badge-light-danger me-1 mb-1">' . e($product->name) . '</span>';
-                })->implode('');
+        // Data stock kosong dari server
+        const emptyStockData = @json($emptyStockData ?? []);
 
-                $remainingEmptyStockHtml = $emptyStockCount > 10
-                    ? '<br><small>...dan ' . ($emptyStockCount - 10) . ' produk lainnya</small>'
+        function showStockAlert(selectedBranchId) {
+            let filteredProducts = emptyStockData;
+            if (selectedBranchId && selectedBranchId !== 'all') {
+                filteredProducts = emptyStockData.filter(p => p.branch_id == selectedBranchId);
+            }
+
+            if (filteredProducts.length > 0) {
+                const count = filteredProducts.length;
+                const badges = filteredProducts.slice(0, 10).map(p => {
+                    return `<span class="badge badge-light-danger me-1 mb-1">${p.name} (${p.branch_name})</span>`;
+                }).join('');
+
+                const remainingHtml = count > 10
+                    ? `<br><small>...dan ${count - 10} produk lainnya</small>`
                     : '';
 
-                $emptyStockAlertHtml = 'Terdapat <strong>' . $emptyStockCount . '</strong> produk dengan stok kosong pada cabang Anda.<br><br>' .
-                    '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' .
-                    $emptyStockBadges .
-                    $remainingEmptyStockHtml .
-                    '</div>';
-            @endphp
-            document.addEventListener('DOMContentLoaded', function() {
+                const scopeText = selectedBranchId === 'all' ? 'pada seluruh cabang' : 'pada cabang ini';
+                const alertHtml = `Terdapat <strong>${count}</strong> produk dengan stok kosong ${scopeText}.<br><br>` +
+                    `<div style="text-align: left; max-height: 200px; overflow-y: auto;">` +
+                    badges +
+                    remainingHtml +
+                    `</div>`;
+
                 Swal.fire({
                     title: 'Peringatan Stok Minus!',
-                    html: @json($emptyStockAlertHtml),
+                    html: alertHtml,
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',
                     confirmButtonColor: '#f1416c',
                     allowOutsideClick: false
                 });
-            });
-        @endif
+            }
+        }
 
         var dataTable;
         $(document).ready(function() {
@@ -219,6 +227,7 @@
 
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
                 dataTable.draw(); // trigger fetch ulang dari server
+                showStockAlert($(this).val());
             });
 
             $("#kt_ecommerce_sales_flatpickr").flatpickr({
@@ -230,6 +239,8 @@
                     dataTable.draw();
                 }
             });
+            
+            showStockAlert($('[data-kt-ecommerce-product-filter="cabang"]').val());
         });
 
         function reloadDataTable() {

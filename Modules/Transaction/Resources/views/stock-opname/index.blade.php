@@ -19,6 +19,16 @@
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <div class="w-100 mw-250px">
+                        <select class="form-select form-select-solid" data-control="select2"
+                            data-hide-search="true" data-placeholder="Cabang"
+                            data-kt-ecommerce-product-filter="cabang">
+                            <option value="all">Semua Cabang</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <!--begin::Add product-->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#kt_modal_add_customer">Tambah Transaksi</button>
@@ -169,34 +179,42 @@
     </div>
 @section('script')
     <script type="text/javascript">
-        // Cek apakah ada produk dengan stock kosong
-        @if(isset($hasEmptyStock) && $hasEmptyStock)
-            @php
-                $emptyStockBadges = $emptyStockProducts->map(function ($product) {
-                    return '<span class="badge badge-light-danger me-1 mb-1">' . e($product->name) . '</span>';
-                })->implode('');
+        // Data stock kosong dari server
+        const emptyStockData = @json($emptyStockData ?? []);
 
-                $remainingEmptyStockHtml = $emptyStockCount > 10
-                    ? '<br><small>...dan ' . ($emptyStockCount - 10) . ' produk lainnya</small>'
+        function showStockAlert(selectedBranchId) {
+            let filteredProducts = emptyStockData;
+            if (selectedBranchId && selectedBranchId !== 'all') {
+                filteredProducts = emptyStockData.filter(p => p.branch_id == selectedBranchId);
+            }
+
+            if (filteredProducts.length > 0) {
+                const count = filteredProducts.length;
+                const badges = filteredProducts.slice(0, 10).map(p => {
+                    return `<span class="badge badge-light-danger me-1 mb-1">${p.name} (${p.branch_name})</span>`;
+                }).join('');
+
+                const remainingHtml = count > 10
+                    ? `<br><small>...dan ${count - 10} produk lainnya</small>`
                     : '';
 
-                $emptyStockAlertHtml = 'Terdapat <strong>' . $emptyStockCount . '</strong> produk dengan stok kosong pada cabang Anda.<br><br>' .
-                    '<div style="text-align: left; max-height: 200px; overflow-y: auto;">' .
-                    $emptyStockBadges .
-                    $remainingEmptyStockHtml .
-                    '</div>';
-            @endphp
-            document.addEventListener('DOMContentLoaded', function() {
+                const scopeText = (selectedBranchId && selectedBranchId !== 'all') ? 'pada cabang ini' : 'pada seluruh cabang';
+                const alertHtml = `Terdapat <strong>${count}</strong> produk dengan stok kosong ${scopeText}.<br><br>` +
+                    `<div style="text-align: left; max-height: 200px; overflow-y: auto;">` +
+                    badges +
+                    remainingHtml +
+                    `</div>`;
+
                 Swal.fire({
                     title: 'Peringatan Stok Minus!',
-                    html: @json($emptyStockAlertHtml),
+                    html: alertHtml,
                     icon: 'warning',
                     confirmButtonText: 'Mengerti',
                     confirmButtonColor: '#f1416c',
                     allowOutsideClick: false
                 });
-            });
-        @endif
+            }
+        }
 
         var dataTable;
         $.ajaxSetup({
@@ -215,6 +233,7 @@
                     url: "{{ route('stock-opname.data') }}",
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
+                        d.cabang_filter = $('[data-kt-ecommerce-product-filter="cabang"]').val();
                     }
                 },
                 columns: [{
@@ -250,6 +269,13 @@
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
             });
+
+            $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
+                dataTable.draw();
+                showStockAlert($(this).val());
+            });
+
+            showStockAlert($('[data-kt-ecommerce-product-filter="cabang"]').val());
 
             document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
                 e.preventDefault(); // Mencegah form reset langsung
