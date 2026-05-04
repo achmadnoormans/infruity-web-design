@@ -35,6 +35,7 @@ return new class extends Migration
             $table->date('hpp_date')->nullable();
             $table->integer('fee')->nullable();
             $table->enum('tipe', ['product', 'kemasan', 'non-pos', 'parcel'])->default('product');
+            $table->integer('is_default')->nullable()->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

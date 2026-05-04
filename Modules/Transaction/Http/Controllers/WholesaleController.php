@@ -777,7 +777,12 @@ class WholesaleController extends Controller
             'production_parcel_detail',
             'transfer',
             'transfer_detail',
-            'stock_opname'
+            'stock_opname',
+            'order_book',
+            'order_book_detail',
+            'expenditure',
+            'expenditure_detail',
+            'expenditure_payment',
         ];
 
         try {
