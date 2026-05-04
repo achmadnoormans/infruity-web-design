@@ -1,4 +1,13 @@
 @section('script')
+    @php
+        $defaultKemasan = \Modules\Master\Entities\Product::where('tipe', 'kemasan')
+            ->where('is_default', 1)
+            ->first();
+    @endphp
+    <script>
+        var defaultKemasanId = '{{ $defaultKemasan->id ?? "" }}';
+        var defaultKemasanName = '{{ $defaultKemasan->name ?? "" }}';
+    </script>
     @include('pos::pos.js.js-allowed')
     @include('pos::pos.js.js-header')
     @include('pos::pos.js.js-buah')

@@ -296,8 +296,13 @@
                 const budget = document.getElementById('parcel_budget').value;
                 const qty = document.getElementById('parcel_qty').value;
                 const fee = document.getElementById('parcel_jasa').value;
-                const kemasan = $('#select_kemasan option:selected').text();
-                const kemasanId = $('#select_kemasan option:selected').val();
+                let kemasan = $('#select_kemasan option:selected').text();
+                let kemasanId = $('#select_kemasan option:selected').val();
+                if (!kemasanId) {
+                    kemasanId = defaultKemasanId;
+                    kemasan = defaultKemasanName;
+                }
+                console.log(kemasanId, kemasan);
                 const kemasanPrice = $('#kemasan_price').val();
                 const budgetValue = this.parseNumber(budget);
                 const feeValue = this.parseNumber(fee);
