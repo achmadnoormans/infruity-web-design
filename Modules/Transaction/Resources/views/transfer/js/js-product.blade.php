@@ -27,6 +27,13 @@
             diskonOngkir: 0,
             payment: 0,
 
+            // Correction Section
+            correctionModal: false,
+            correctionItem: null,
+            correctionQty: 0,
+            correctionNote: '',
+            correctionLoading: false,
+
             // Add Product
             showAddModal: false,
             showGiftModal: false,
@@ -890,6 +897,8 @@
                         fee: item.product.fee || 0,
                         total_input: this.sanitizeNumber(Number(item.subtotal || 0)),
                         typeProduct: item.type || 'product',
+                        detail_id: item.id,
+                        corrections: item.corrections || [],
                     };
                     this.cart.push(obj);
                 });
@@ -950,6 +959,71 @@
                     });
             },
 
+            openCorrectionModal(item) {
+                this.correctionItem = item;
+                this.correctionQty = item.qty;
+                this.correctionNote = '';
+                this.correctionModal = true;
+                
+                setTimeout(() => {
+                    const modal = new bootstrap.Modal(document.getElementById('correctionModal'));
+                    modal.show();
+                }, 0);
+            },
+
+            saveCorrection() {
+                if (!this.correctionItem || !this.correctionItem.detail_id) {
+                    Swal.fire('Error', 'ID detail tidak ditemukan', 'error');
+                    return;
+                }
+
+                const payload = {
+                    detail_id: this.correctionItem.detail_id,
+                    quantity: this.correctionQty,
+                    note: this.correctionNote
+                };
+
+                this.correctionLoading = true;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch('/transfer/save-correction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    this.correctionLoading = false;
+                    if (data.success) {
+                        Swal.fire('Berhasil', data.message, 'success').then(() => {
+                            // Update local state instead of full reload for speed
+                            this.correctionItem.qty = this.correctionQty;
+                            this.correctionItem.total_input = data.new_subtotal;
+                            
+                            // Close modal
+                            const modalEl = document.getElementById('correctionModal');
+                            const modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                            
+                            // Optional: still reload if you want to refresh history, 
+                            // but doing it here might be what the user felt was slow.
+                            // window.location.reload(); 
+                        });
+                    } else {
+                        Swal.fire('Gagal', data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    this.correctionLoading = false;
+                    console.error(err);
+                    Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+                });
+            },
+
             transactionInput() {
                 return {
                     type: "{{ $data->type ?? 'pemasukan' }}",
@@ -962,5 +1036,12 @@
                 }
             },
         }
+    }
+    function redirectToHome(transaksiId) {
+        window.location.href = '/transfer';
+    }
+
+    function redirectToPayment(transaksiId) {
+        window.location.href = '/transfer/payment/' + transaksiId;
     }
 </script>

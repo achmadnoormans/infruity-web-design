@@ -181,6 +181,9 @@
             @if(!$is_view)
             @include('transaction::transfer.segment.modal-product')
             @endif
+            @if($is_view)
+            @include('transaction::transfer.segment.modal-correction')
+            @endif
         </div>
     </div>
     <!--end::Aside column-->

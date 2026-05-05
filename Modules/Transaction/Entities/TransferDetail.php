@@ -26,4 +26,9 @@ class TransferDetail extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+
+    public function corrections()
+    {
+        return $this->hasMany(TransferDetailCorrection::class, 'transfer_detail_id')->orderBy('id', 'DESC');
+    }
 }

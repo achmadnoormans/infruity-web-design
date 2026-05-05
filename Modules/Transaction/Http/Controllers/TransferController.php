@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+use Modules\Transaction\Entities\TransferDetailCorrection;
+
 
 class TransferController extends Controller
 {
@@ -84,7 +86,7 @@ class TransferController extends Controller
 
         $data['alpinejs'] = true;
         $data['data'] = $transfer;
-        $data['detail'] = TransferDetail::with('product', 'product.unit')->where('transfer_id', $id)->get();
+        $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $transfer->invoice_number;
         $data['is_view'] = true;
         return view('transaction::transfer.create', $data);
@@ -103,7 +105,7 @@ class TransferController extends Controller
 
         $data['alpinejs'] = true;
         $data['data'] = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
-        $data['detail'] = TransferDetail::with('product', 'product.unit')->where('transfer_id', $id)->get();
+        $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('transaction::transfer.create', $data);
     }
@@ -230,7 +232,72 @@ class TransferController extends Controller
         }
     }
 
+    public function saveCorrection(Request $request)
+    {
+        if ($denied = $this->requireAccess('transfer.save-correction')) {
+            return $denied;
+        }
+
+        $request->validate([
+            'detail_id' => 'required|exists:transfer_detail,id',
+            'quantity' => 'required|numeric|min:0',
+            'note' => 'nullable|string',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $detail = TransferDetail::findOrFail($request->detail_id);
+            $transfer = Transfer::findOrFail($detail->transfer_id);
+
+            if ($transfer->status === 'selesai') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak dapat mengoreksi transaksi yang sudah selesai.'
+                ], 422);
+            }
+
+            $oldQty = $detail->quantity;
+
+            // Record correction history
+            TransferDetailCorrection::create([
+                'transfer_detail_id' => $detail->id,
+                'old_quantity' => $oldQty,
+                'new_quantity' => $request->quantity,
+                'note' => $request->note,
+                'created_by' => Auth::id(),
+            ]);
+
+            // Update detail
+            $detail->quantity = $request->quantity;
+            $detail->subtotal = $detail->price * $request->quantity;
+            $detail->save();
+
+            // Update total transfer
+            $transfer = Transfer::find($detail->transfer_id);
+            $total = TransferDetail::where('transfer_id', $transfer->id)->sum('subtotal');
+            $transfer->total = $total;
+            $transfer->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Quantity berhasil dikoreksi',
+                'new_subtotal' => $detail->subtotal,
+                'new_total' => $transfer->total,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengoreksi quantity: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function set_selesai($id)
+
     {
         if ($denied = $this->requireAccess('transfer.set_selesai')) {
             return $denied;
@@ -270,7 +337,7 @@ class TransferController extends Controller
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
             $query->where('branch_id', $request->cabang_filter);
         }
-        $data = $query->orderBy('id', 'DESC');
+        $data = $query->orderBy('date', 'DESC')->orderBy('id', 'DESC');
         // dd($data);
         return DataTables::of($data)
             ->filter(function ($query) use ($request) {
@@ -294,7 +361,9 @@ class TransferController extends Controller
                 return $html;
             })
             ->addColumn('date', function ($item) {
-                $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
+                $date = date('d M Y', strtotime($item->date));
+                $time = date('H:i', strtotime($item->created_at));
+                $html = '<span class="text-muted d-block fs-8">' . $date . ' ' . $time . '</span>';
 
                 $statusBadges = [
                     'temp'     => '<span class="badge badge-light-secondary">Draft</span>',
