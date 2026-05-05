@@ -58,11 +58,12 @@
             init() {
                 const self = this; // simpan konteks Alpine
                 let url = '{{ Request::segment(3) }}';
-                if (url == 'edit' && !this._loaded) {
+                let segment2 = '{{ Request::segment(2) }}';
+                if ((url == 'edit' || segment2 == 'show') && !this._loaded) {
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
                     this.loadExistingData(data, detail);
-                    // console.log('loadExisting', url, data, detail);
+                    // console.log('loadExisting', url, segment2, data, detail);
                     this._loaded = true;
 
                     // console.log('cart =>', this.cart);
@@ -726,7 +727,7 @@
                     branch_destination_id: branchDestinationId,
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
-                    status: 'paid',
+                    status: 'pending',
                 };
 
                 // Simulasi kirim ke server
@@ -883,7 +884,7 @@
                         price: this.sanitizeNumber(Number(item.price || 0)), // pastikan number dulu
                         hpp: parseFloat(item.hpp || 0),
                         qty: this.sanitizeNumber(Number(item.quantity)),
-                        unit: item.product.unit.abbreviation,
+                        unit: item.product.unit ? item.product.unit.abbreviation : '',
                         discount: this.sanitizeNumber(Number(item.discount || 0)),
                         discountPercent: item.discountPercent || 0,
                         fee: item.product.fee || 0,
@@ -903,7 +904,50 @@
                     $('#branch_destination_id').append(optionDestination).val(data.branch_destination.id).trigger('change');
                 }
 
+                if (data.date) {
+                    $('input[name="date"]').val(data.date);
+                }
+
                 this.payment = data.paid;
+            },
+
+            setSelesai() {
+                const id = '{{ $data->id ?? '' }}';
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch('/transfer/set-selesai/' + id, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                    })
+                    .then(async res => {
+                        const json = await res.json().catch(() => ({}));
+                        if (res.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: json.message || 'Status berhasil diubah',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: json.message || 'Gagal mengubah status',
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Terjadi kesalahan: ' + error.message,
+                        });
+                    });
             },
 
             transactionInput() {

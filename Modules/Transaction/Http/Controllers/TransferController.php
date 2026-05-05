@@ -74,7 +74,20 @@ class TransferController extends Controller
             return $denied;
         }
 
-        return view('transaction::show');
+        $transfer = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
+
+        // Ubah status ke proses jika status sebelumnya pending
+        if ($transfer->status == 'pending') {
+            $transfer->update(['status' => 'proses']);
+            $transfer->refresh();
+        }
+
+        $data['alpinejs'] = true;
+        $data['data'] = $transfer;
+        $data['detail'] = TransferDetail::with('product', 'product.unit')->where('transfer_id', $id)->get();
+        $data['invoice_number'] = $transfer->invoice_number;
+        $data['is_view'] = true;
+        return view('transaction::transfer.create', $data);
     }
 
     /**
@@ -155,7 +168,7 @@ class TransferController extends Controller
             'items' => 'required|array',
             'total' => 'required|numeric',
             'subtotal' => 'required|numeric',
-            'status' => 'nullable|in:draft,paid,debt,temp,pending',
+            'status' => 'nullable|in:temp,draft,pending,proses,selesai',
         ]);
 
         try {
@@ -217,6 +230,28 @@ class TransferController extends Controller
         }
     }
 
+    public function set_selesai($id)
+    {
+        if ($denied = $this->requireAccess('transfer.set_selesai')) {
+            return $denied;
+        }
+
+        try {
+            $transfer = Transfer::findOrFail($id);
+            $transfer->update(['status' => 'selesai']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diubah menjadi selesai'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengubah status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
@@ -253,20 +288,23 @@ class TransferController extends Controller
             ->addColumn('name', function ($item) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
-                $html .= '<a href="' . route('transfer.edit', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
+                $html .= '<a href="' . route('transfer.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
                 $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? 'unknown')) . '</span>';
                 return $html;
             })
             ->addColumn('date', function ($item) {
                 $html = '<span class="text-muted d-block fs-8">' . date('d M Y H:i', strtotime($item->created_at)) . '</span>';
-                if ($item->status == 'paid') {
-                    $html .= '<span class="badge badge-light-success">Final</span>';
-                } else if ($item->status == 'draft') {
-                    $html .= '<span class="badge badge-light-danger">Draft</span>';
-                } else {
-                    $html .= '<span class="badge badge-light-warning">' . $item->status . '</span>';
-                }
+
+                $statusBadges = [
+                    'temp'     => '<span class="badge badge-light-secondary">Draft</span>',
+                    'draft'   => '<span class="badge badge-light-danger">Draft</span>',
+                    'pending' => '<span class="badge badge-light-info">Pending</span>',
+                    'proses'  => '<span class="badge badge-light-primary">Proses</span>',
+                    'selesai' => '<span class="badge badge-light-success">Selesai</span>',
+                ];
+
+                $html .= $statusBadges[$item->status] ?? '<span class="badge badge-light-dark">' . $item->status . '</span>';
                 return $html;
             })
             ->addColumn('action', function ($item) {
@@ -277,6 +315,12 @@ class TransferController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                $html .= '
+                            <li>
+                                <a class="dropdown-item" href="' . route('transfer.show', $item->id) . '">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </li>';
                 $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('transfer.edit', $item->id) . '">

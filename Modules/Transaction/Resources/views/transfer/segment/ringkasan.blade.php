@@ -8,40 +8,51 @@
             <span x-text="formatRupiah(totalHargaKeseluruhan)"></span>
         </div>
     </div>
-    
-    <div x-data="{ showActions: false }" class="position-fixed d-flex flex-column-reverse align-items-center"
-        style="bottom: 70px; right: 30px; z-index: 1050; gap: 10px;">
-
-        <!-- Tombol utama (floating) -->
-        <button class="btn btn-primary rounded-circle shadow-lg" style="width: 50px; height: 50px;"
-            @click="showActions = !showActions">
-            <i class="bi bi-three-dots-vertical"></i>
-        </button>
-
-        <!-- Tombol tambahan (floating) -->
-        <template x-if="showActions">
-            <div class="d-flex flex-column align-items-center gap-2 mb-2" x-data="{ loadingDraft: false, loadingFinal: false }">
-                <!-- Tombol Simpan Draft -->
-                <button class="btn btn-sm btn-success shadow-lg d-flex align-items-center justify-content-center gap-2"
-                    :disabled="loadingDraft"
-                    @click="loadingDraft = true; saveTransaction(() => loadingDraft = false)" :disabled="loading">
-                    <span x-show="!loadingDraft">Draft</span>
-                    <span x-show="loadingDraft">
-                        <span class="spinner-border spinner-border-sm"></span> Menyimpan...
-                    </span>
-                </button>
-
-                <!-- Tombol Simpan Final -->
-                <button class="btn btn-sm btn-warning shadow-lg d-flex align-items-center justify-content-center gap-2"
-                    :disabled="loadingFinal"
-                    @click="loadingFinal = true; saveToOrderBook(() => loadingFinal = false)" :disabled="loading">
-                    <span x-show="!loadingFinal">Submit</span>
-                    <span x-show="loadingFinal">
-                        <span class="spinner-border spinner-border-sm"></span> Menyimpan...
-                    </span>
+    @if($is_view ?? false)
+        @if(($data->status ?? '') == 'proses')
+        <div class="row mt-5 gap-2">
+            <div class="col" x-data="{ loading: false }">
+                <button class="btn btn-success w-100" @click="loading = true; setSelesai()" :disabled="loading">
+                    <template x-if="!loading">
+                        <span><i class="bi bi-check-circle me-2"></i> Diterima</span>
+                    </template>
+                    <template x-if="loading">
+                        <span>
+                            <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                            Memproses...
+                        </span>
+                    </template>
                 </button>
             </div>
-        </template>
-
+        </div>
+        @endif
+    @else
+    <div class="row mt-5 gap-2">
+        <div class="col" x-data="{ loadingDraft: false }">
+            <button class="btn btn-primary w-100" @click="loadingDraft = true; saveTransaction(() => loadingDraft = false)"
+                :disabled="loadingDraft">
+                <template x-if="!loadingDraft">
+                    <span><i class="bi bi-save me-2"></i> Draft</span>
+                </template>
+                <template x-if="loadingDraft">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                </template>
+            </button>
+        </div>
+        <div class="col" x-data="{ loadingFinal: false }">
+            <button class="btn btn-success w-100" @click="loadingFinal = true; saveToOrderBook(() => loadingFinal = false)"
+                :disabled="loadingFinal">
+                <template x-if="!loadingFinal">
+                    <span><i class="bi bi-cash-stack me-2"></i> Submit</span>
+                </template>
+                <template x-if="loadingFinal">
+                    <span>
+                        <span class="spinner-border spinner-border-sm align-middle me-2"></span>
+                        Menyimpan...
+                    </span>
+                </template>
+            </button>
+        </div>
     </div>
+    @endif
 </div>

@@ -1,6 +1,18 @@
 @extends('template.root')
 
 @section('content')
+    @php
+        $is_view = $is_view ?? false;
+    @endphp
+
+    @if($is_view)
+    <div class="mb-3">
+        <a href="{{ route('transfer.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Kembali
+        </a>
+    </div>
+    @endif
+
     <style>
         /* Animasi flying cart - produk terbang ke keranjang */
         @keyframes flyToCart {
@@ -98,7 +110,7 @@
                             <label class="required form-label">Cabang</label>
                             <!--end::Label-->
                             <!--begin::Select-->
-                            <select class="form-control" name="branch_id" id="branch_id">
+                            <select class="form-control" name="branch_id" id="branch_id" {{ $is_view ? 'disabled' : '' }}>
                                 <option value="">Pilih Cabang</option>
                             </select>
                             <!--end::Select-->
@@ -110,7 +122,7 @@
                             <label class="required form-label">Cabang Tujuan</label>
                             <!--end::Label-->
                             <!--begin::Select-->
-                            <select class="form-control" name="branch_destination_id" id="branch_destination_id">
+                            <select class="form-control" name="branch_destination_id" id="branch_destination_id" {{ $is_view ? 'disabled' : '' }}>
                                 <option value="">Pilih Cabang</option>
                             </select>
                             <!--end::Select-->
@@ -122,7 +134,7 @@
                             <label class="required form-label">Tanggal Transaksi</label>
                             <!--end::Label-->
                             <!--begin::Editor-->
-                            <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}">
+                            <input type="date" class="form-control" name="date" value="{{ date('Y-m-d') }}" {{ $is_view ? 'readonly' : '' }}>
                             <!--end::Editor-->
                         </div>
                     </div>
@@ -148,12 +160,14 @@
                         <span class="fs-5 fw-bold d-flex">Produk Yang di Transfer</span>
                         <span class="text-danger">Diperbarui per {{ date('d/m/Y') }}</span>
                     </div>
+                    @if(!$is_view)
                     <div class="btn-group">
                         <button type="button" class="btn btn-outline btn-outline-dashed btn-outline-primary"
                             @click="openAddModal()">
                             <i class="fa fa-plus"></i>
                         </button>
                     </div>
+                    @endif
                 </div>
                 {{-- <!-- Cart --> --}}
                 @include('transaction::transfer.segment.cart')
@@ -161,10 +175,12 @@
 
             <div class="card card-body">
                 {{-- Ringkasan --}}
-                @include('transaction::transfer.segment.ringkasan')
+                @include('transaction::transfer.segment.ringkasan', ['is_view' => $is_view])
             </div>
 
+            @if(!$is_view)
             @include('transaction::transfer.segment.modal-product')
+            @endif
         </div>
     </div>
     <!--end::Aside column-->

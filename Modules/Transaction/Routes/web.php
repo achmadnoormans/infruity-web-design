@@ -53,6 +53,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
 
     Route::resource('transfer', TransferController::class)->names('transfer')->except('show');
     Route::get('transfer/show/{id}', [TransferController::class, 'show'])->name('transfer.show');
+    Route::post('transfer/set-selesai/{id}', [TransferController::class, 'set_selesai'])->name('transfer.set_selesai');
     Route::post('transfer/save-stock', [TransferController::class, 'save_stock'])->name('transfer.save-stock');
     Route::post('transfer/save-transaction', [TransferController::class, 'saveTransaction'])->name('transfer.save-transaction');
 
