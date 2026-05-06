@@ -1,5 +1,5 @@
 <div class="col-md-12" style="height: 400px; overflow-y: auto;">
-    @if($is_view && ($data->status ?? '') !== 'selesai')
+    @if($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
     <div class="mb-3">
         <span class="text-muted fs-7"><i class="bi bi-info-circle me-1"></i> Klik pada bahan untuk edit jumlah</span>
     </div>
@@ -19,13 +19,13 @@
                         'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
                     <!-- Mobile Layout (Stack Vertically) -->
                     <div class="d-block d-lg-none"
-                        @click="@if($is_view && ($data->status ?? '') !== 'selesai') openCorrectionModal(item) @else (item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)) @endif">
+                        @click="@if($is_view && ($data->status ?? '') !== 'selesai') @if(($type ?? '') == 'transfer-penerima') openCorrectionModal(item) @endif @else (item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)) @endif">
                         <!-- Product Name & Price -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
                                 <div class="d-flex align-items-center">
                                     <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                    @if($is_view && ($data->status ?? '') !== 'selesai')
+                                    @if($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
                                     <i class="bi bi-pencil-fill text-warning fs-9 ms-2"></i>
                                     @endif
                                 </div>
@@ -56,12 +56,12 @@
 
                     <!-- Desktop Layout (Horizontal) -->
                     <div class="d-none d-lg-block"
-                        @click="@if($is_view && ($data->status ?? '') !== 'selesai') openCorrectionModal(item) @else (item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)) @endif">
+                        @click="@if($is_view && ($data->status ?? '') !== 'selesai') @if(($type ?? '') == 'transfer-penerima') openCorrectionModal(item) @endif @else (item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)) @endif">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
                                 <div class="d-flex align-items-center">
                                     <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                    @if($is_view && ($data->status ?? '') !== 'selesai')
+                                    @if($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
                                     <i class="bi bi-pencil-fill text-warning fs-9 ms-2"></i>
                                     @endif
                                 </div>

@@ -48,6 +48,7 @@ class TransferController extends Controller
         $data['data'] = null;
         $data['detail'] = null;
         $data['invoice_number'] = Transfer::getOrderNumber();
+        $data['type'] = request('type');
         return view('transaction::transfer.create', $data);
     }
 
@@ -78,8 +79,8 @@ class TransferController extends Controller
 
         $transfer = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
 
-        // Ubah status ke proses jika status sebelumnya pending
-        if ($transfer->status == 'pending') {
+        // Ubah status ke proses jika status sebelumnya pending dan bukan pengirim yang melihat
+        if ($transfer->status == 'pending' && request('type') != 'transfer-pengirim') {
             $transfer->update(['status' => 'proses']);
             $transfer->refresh();
         }
@@ -89,6 +90,7 @@ class TransferController extends Controller
         $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $transfer->invoice_number;
         $data['is_view'] = true;
+        $data['type'] = request('type');
         return view('transaction::transfer.create', $data);
     }
 
@@ -107,6 +109,7 @@ class TransferController extends Controller
         $data['data'] = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
         $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
+        $data['type'] = request('type');
         return view('transaction::transfer.create', $data);
     }
 
@@ -323,10 +326,19 @@ class TransferController extends Controller
     {
         $userBranches = UserBranch::getUserBranch();
         $query = Transfer::with(['createdBy', 'branch', 'branchDestination'])
-            ->where(function($q) use ($userBranches) {
+            ->withSum('corrections as total_old', 'old_quantity')
+            ->withSum('corrections as total_new', 'new_quantity');
+
+        if ($request->url == 'transfer-pengirim') {
+            $query->whereIn('branch_id', $userBranches);
+        } elseif ($request->url == 'transfer-penerima') {
+            $query->whereIn('branch_destination_id', $userBranches);
+        } else {
+            $query->where(function ($q) use ($userBranches) {
                 $q->whereIn('branch_id', $userBranches)
-                  ->orWhereIn('branch_destination_id', $userBranches);
+                    ->orWhereIn('branch_destination_id', $userBranches);
             });
+        }
 
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
@@ -335,7 +347,11 @@ class TransferController extends Controller
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
-            $query->where('branch_id', $request->cabang_filter);
+            if ($request->url == 'transfer-penerima') {
+                $query->where('branch_destination_id', $request->cabang_filter);
+            } else {
+                $query->where('branch_id', $request->cabang_filter);
+            }
         }
         $data = $query->orderBy('date', 'DESC')->orderBy('id', 'DESC');
         // dd($data);
@@ -352,10 +368,10 @@ class TransferController extends Controller
                     });
                 }
             }, true)
-            ->addColumn('name', function ($item) {
+            ->addColumn('name', function ($item) use ($request) {
                 $html = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
-                $html .= '<a href="' . route('transfer.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
+                $html .= '<a href="' . route('transfer.show', ['id' => $item->id, 'type' => $request->url]) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
                 $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? 'unknown')) . '</span>';
                 return $html;
@@ -376,7 +392,16 @@ class TransferController extends Controller
                 $html .= $statusBadges[$item->status] ?? '<span class="badge badge-light-dark">' . $item->status . '</span>';
                 return $html;
             })
-            ->addColumn('action', function ($item) {
+            ->addColumn('correction', function ($item) {
+                $diff = ($item->total_old ?? 0) - ($item->total_new ?? 0);
+                if ($diff > 0) {
+                    return '<span class="badge badge-light-danger">-' . $diff . '</span>';
+                } elseif ($diff < 0) {
+                    return '<span class="badge badge-light-success">+' . abs($diff) . '</span>';
+                }
+                return '-';
+            })
+            ->addColumn('action', function ($item) use ($request) {
                 $html = '';
                 $html .= '
                     <div class="dropstart">
@@ -386,13 +411,13 @@ class TransferController extends Controller
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('transfer.show', $item->id) . '">
+                                <a class="dropdown-item" href="' . route('transfer.show', ['id' => $item->id, 'type' => $request->url]) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('transfer.edit', $item->id) . '">
+                                <a class="dropdown-item" href="' . route('transfer.edit', ['transfer' => $item->id, 'type' => $request->url]) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
@@ -410,7 +435,7 @@ class TransferController extends Controller
                     ';
                 return $html;
             })
-            ->rawColumns(['name', 'action', 'date'])
+            ->rawColumns(['name', 'action', 'date', 'correction'])
             ->make(true);
     }
 }

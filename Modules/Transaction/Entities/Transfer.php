@@ -46,6 +46,11 @@ class Transfer extends Model
         return $this->belongsTo(\App\Models\User::class, 'created_by', 'id_user');
     }
 
+    public function corrections()
+    {
+        return $this->hasManyThrough(TransferDetailCorrection::class, TransferDetail::class, 'transfer_id', 'transfer_detail_id');
+    }
+
     public static function getOrderNumber()
     {
         $orderData = self::select(DB::raw('CAST(RIGHT(invoice_number, 3) AS UNSIGNED) + 1 AS order_number'))

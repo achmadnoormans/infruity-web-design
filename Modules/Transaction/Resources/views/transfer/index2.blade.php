@@ -70,10 +70,10 @@
                                         <select class="form-select form-select-solid" data-control="select2"
                                             data-hide-search="true" data-placeholder="Cabang"
                                             data-kt-ecommerce-product-filter="cabang">
-                                            <option value="all">All</option>
                                             @foreach ($branches as $branch)
                                                 <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
                                             @endforeach
+                                            <option value="all">All</option>
                                         </select>
                                     </div>
                                     <!--end::Input group-->
@@ -115,6 +115,7 @@
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-start min-w-150px">Name</th>
                             <th class="text-start min-w-150px">Date</th>
+                            <th class="text-start min-w-100px text-center">Koreksi</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -125,10 +126,11 @@
             <!--end::Card body-->
         </div>
     </div>
-    <a href="{{ url('transfer/create') }}" class="btn btn-primary rounded-circle shadow-lg position-fixed"
+    <a href="{{ url('transfer/create') }}?type={{ request()->segment(1) }}"
+        class="btn btn-primary rounded-circle shadow-lg position-fixed"
         style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
         <i class="fa fa-plus text-white"></i>
-        </a>
+    </a>
 @endsection
 
 @section('script')
@@ -174,6 +176,11 @@
                     {
                         data: 'date',
                         name: 'date',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'correction',
+                        name: 'correction',
                         className: 'text-center'
                     },
                     {

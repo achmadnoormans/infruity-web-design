@@ -5,13 +5,18 @@
         $is_view = $is_view ?? false;
     @endphp
 
-    @if($is_view)
     <div class="mb-3">
-        <a href="{{ route('transfer.index') }}" class="btn btn-secondary">
+        @php
+            $backUrl = route('transfer.index');
+            if(isset($type)) {
+                if($type == 'transfer-penerima') $backUrl = route('transfer-penerima.index');
+                elseif($type == 'transfer-pengirim') $backUrl = route('transfer-pengirim.index');
+            }
+        @endphp
+        <a href="{{ $backUrl }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
     </div>
-    @endif
 
     <style>
         /* Animasi flying cart - produk terbang ke keranjang */

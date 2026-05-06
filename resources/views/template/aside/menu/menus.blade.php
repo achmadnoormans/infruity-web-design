@@ -267,7 +267,8 @@
 @if (check_access('department.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ Request::segment(1) == 'department' ? 'active' : '' }}" href="{{ url('department') }}">
+        <a class="menu-link {{ Request::segment(1) == 'department' ? 'active' : '' }}"
+            href="{{ url('department') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-home">
                 </i>
@@ -327,7 +328,8 @@
 @if (check_access('payment-method.index'))
     <div class="menu-item">
         <!--begin:Menu link-->
-        <a class="menu-link {{ Request::segment(1) == 'payment-method' ? 'active' : '' }}" href="{{ url('payment-method') }}">
+        <a class="menu-link {{ Request::segment(1) == 'payment-method' ? 'active' : '' }}"
+            href="{{ url('payment-method') }}">
             <span class="menu-icon">
                 <i class="ki-duotone ki-security-user">
                     <span class="path1"></span>
@@ -496,31 +498,58 @@
     </div>
 @endif
 @if (check_access('transfer.index'))
-    <div class="menu-item">
+    <!--begin:Menu item-->
+    <div data-kt-menu-trigger="click"
+        class="menu-item {{ in_array(Request::segment(1), ['transfer-pengirim', 'transfer-penerima']) ? 'here show' : '' }} menu-accordion">
         <!--begin:Menu link-->
-        <a class="menu-link {{ Request::segment(1) == 'transfer' ? 'active' : '' }}" href="{{ url('transfer') }}">
+        <span class="menu-link">
             <span class="menu-icon">
-                <i class="ki-duotone ki-security-user">
+                <i class="ki-duotone ki-basket fs-2">
                     <span class="path1"></span>
                     <span class="path2"></span>
                 </i>
             </span>
             <span class="menu-title">Transfer Stok</span>
-        </a>
-        <!--end:Menu link-->
-    </div>
-@endif
-{{-- <!--begin:Menu link-->
-    <a class="menu-link {{ Request::segment(1) == 'production' ? 'active' : '' }}" href="{{ url('production') }}">
-        <span class="menu-icon">
-            <i class="ki-duotone ki-security-user">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
+            <span class="menu-arrow"></span>
         </span>
-        <span class="menu-title">Produksi</span>
-    </a>
-    <!--end:Menu link--> --}}
+        <!--end:Menu link-->
+        <!--begin:Menu sub-->
+        <div class="menu-sub menu-sub-accordion">
+            @if (check_access('transfer.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ Request::segment(1) == 'transfer-pengirim' ? 'active' : '' }}"
+                        href="{{ url('transfer-pengirim') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Transfer Pengirim</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+            @if (check_access('transfer.index'))
+                <!--begin:Menu item-->
+                <div class="menu-item">
+                    <!--begin:Menu link-->
+                    <a class="menu-link {{ Request::segment(1) == 'transfer-penerima' ? 'active' : '' }}"
+                        href="{{ url('transfer-penerima') }}">
+                        <span class="menu-bullet">
+                            <span class="bullet bullet-dot"></span>
+                        </span>
+                        <span class="menu-title">Transfer Penerima</span>
+                    </a>
+                    <!--end:Menu link-->
+                </div>
+                <!--end:Menu item-->
+            @endif
+        </div>
+        <!--end:Menu sub-->
+    </div>
+    <!--end:Menu item-->
+@endif
 @if (check_access('production.index') || check_access('receipt.index'))
     <!--begin:Menu item-->
     <div data-kt-menu-trigger="click"
@@ -829,7 +858,8 @@
             @if (check_access('campaign.index'))
                 <div class="menu-item">
                     <!--begin:Menu link-->
-                    <a class="menu-link {{ Request::segment(1) == 'campaign' ? 'active' : '' }}" href="{{ url('campaign') }}">
+                    <a class="menu-link {{ Request::segment(1) == 'campaign' ? 'active' : '' }}"
+                        href="{{ url('campaign') }}">
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>

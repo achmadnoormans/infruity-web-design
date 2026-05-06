@@ -9,7 +9,7 @@
         </div>
     </div>
     @if($is_view ?? false)
-        @if(($data->status ?? '') == 'proses')
+        @if(($data->status ?? '') == 'proses' && ($type ?? '') == 'transfer-penerima')
         <div class="row mt-5 gap-2">
             <div class="col" x-data="{ loading: false }">
                 <button class="btn btn-success w-100" @click="loading = true; setSelesai()" :disabled="loading">
