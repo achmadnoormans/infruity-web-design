@@ -51,7 +51,7 @@
 </div>
 {{-- Modal Edit --}}
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"
-    x-show="editModal" style="display: none;">
+    x-show="showEditModal" style="display: none;">
     <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content" x-data>
             <div class="modal-header" style="background-color: #ff000d; color: #fff;">

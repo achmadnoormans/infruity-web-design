@@ -524,7 +524,7 @@
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Transfer Pengirim</span>
+                        <span class="menu-title">Mengirim</span>
                     </a>
                     <!--end:Menu link-->
                 </div>
@@ -539,7 +539,7 @@
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Transfer Penerima</span>
+                        <span class="menu-title">Menerima</span>
                     </a>
                     <!--end:Menu link-->
                 </div>

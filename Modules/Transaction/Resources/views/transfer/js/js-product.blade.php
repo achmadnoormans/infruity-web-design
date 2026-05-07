@@ -7,7 +7,7 @@
             jus: [],
 
             // edit product
-            editModal: false,
+            showEditModal: false,
             editItem: null,
             editPrice: 0,
             editQty: 1,
@@ -28,7 +28,7 @@
             payment: 0,
 
             // Correction Section
-            correctionModal: false,
+            showCorrectionModal: false,
             correctionItem: null,
             correctionQty: 0,
             correctionNote: '',
@@ -176,6 +176,20 @@
             },
 
             // Edit Product Section
+            handleItemClick(item) {
+                @if($is_view && ($data->status ?? '') !== 'selesai')
+                    @if(($type ?? '') == 'transfer-penerima')
+                        this.openCorrectionModal(item);
+                    @endif
+                @else
+                    if (item.typeProduct === 'parcel') {
+                        this.openEditParcelModal(item);
+                    } else {
+                        this.openEditModal(item);
+                    }
+                @endif
+            },
+
             openEditModal(item) {
                 // console.log('Opening edit modal for item:', item);
                 this.editItem = {
@@ -193,11 +207,14 @@
                 this.editDiscount = item.discount || 0;
 
 
-                this.editModal = true;
+                this.showEditModal = true;
 
                 setTimeout(() => {
-                    const modal = new bootstrap.Modal(document.getElementById('editModal'));
-                    modal.show();
+                    const modalEl = document.getElementById('editModal');
+                    if (modalEl) {
+                        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        modal.show();
+                    }
                 }, 0);
             },
 
@@ -289,10 +306,35 @@
                 }
             },
 
+            removeFromCart(item) {
+                Swal.fire({
+                    title: 'Hapus Produk?',
+                    text: "Apakah Anda yakin ingin menghapus " + item.name + " dari keranjang?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const index = this.cart.findIndex(i => i.id === item.id);
+                        if (index !== -1) {
+                            this.cart.splice(index, 1);
+                        }
+                    }
+                });
+            },
+
+            openEditParcelModal(item) {
+                // For now, parcels use the same edit modal logic
+                this.openEditModal(item);
+            },
+
             // End edit modal section
 
             closeEditModal() {
-                this.editModal = false;
+                this.showEditModal = false;
                 const modalEl = document.getElementById('editModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
@@ -900,6 +942,15 @@
                         detail_id: item.id,
                         corrections: item.corrections || [],
                     };
+
+                    // Identify original_qty
+                    if (obj.corrections.length > 0) {
+                        // The oldest correction's old_quantity is the very first qty
+                        obj.original_qty = this.sanitizeNumber(Number(obj.corrections[0].old_quantity));
+                    } else {
+                        obj.original_qty = obj.qty;
+                    }
+
                     this.cart.push(obj);
                 });
 
@@ -963,11 +1014,14 @@
                 this.correctionItem = item;
                 this.correctionQty = item.qty;
                 this.correctionNote = '';
-                this.correctionModal = true;
+                this.showCorrectionModal = true;
                 
                 setTimeout(() => {
-                    const modal = new bootstrap.Modal(document.getElementById('correctionModal'));
-                    modal.show();
+                    const modalEl = document.getElementById('correctionModal');
+                    if (modalEl) {
+                        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                        modal.show();
+                    }
                 }, 0);
             },
 

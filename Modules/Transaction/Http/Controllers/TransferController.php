@@ -382,10 +382,10 @@ class TransferController extends Controller
                 $html = '<span class="text-muted d-block fs-8">' . $date . ' ' . $time . '</span>';
 
                 $statusBadges = [
-                    'temp'     => '<span class="badge badge-light-secondary">Draft</span>',
+                    'temp'     => '<span class="badge badge-light-danger">Draft</span>',
                     'draft'   => '<span class="badge badge-light-danger">Draft</span>',
-                    'pending' => '<span class="badge badge-light-info">Pending</span>',
-                    'proses'  => '<span class="badge badge-light-primary">Proses</span>',
+                    'pending' => '<span class="badge badge-light-secondary">Pending</span>',
+                    'proses'  => '<span class="badge badge-light-warning">Proses</span>',
                     'selesai' => '<span class="badge badge-light-success">Selesai</span>',
                 ];
 
