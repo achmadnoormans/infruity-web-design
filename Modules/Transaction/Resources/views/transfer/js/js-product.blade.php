@@ -342,6 +342,16 @@
 
             // Add Product Section
             openAddModal() {
+                const branchId = document.getElementById('branch_id').value;
+                if (!branchId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cabang belum dipilih',
+                        text: 'Silakan pilih cabang asal terlebih dahulu.',
+                    });
+                    return;
+                }
+
                 this.showAddModal = true;
                 setTimeout(() => {
                     const modal = new bootstrap.Modal(document.getElementById('addModal'));
@@ -359,6 +369,8 @@
                                 return {
                                     term: params.term, // term dari select2 untuk pencarian
                                     status: 'aktif', // contoh nilai statis
+                                    branch: branchId,
+                                    has_stock: '{{ ($type ?? "") == "transfer-pengirim" ? 1 : 0 }}',
                                     limit: 10 // contoh parameter tambahan
                                 };
                             },

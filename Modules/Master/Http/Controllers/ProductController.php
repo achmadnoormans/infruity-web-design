@@ -766,6 +766,16 @@ class ProductController extends Controller
             $query = $query->join('product_branch', 'products.id', '=', 'product_branch.product_id')
                 ->where('product_branch.branch_id', $request->branch)
                 ->select('products.*', 'product_branch.price as price');
+            
+            if ($request->has('has_stock') && $request->has_stock == 1) {
+                $query = $query->whereExists(function ($q) use ($request) {
+                    $q->select(DB::raw(1))
+                        ->from('product_stock')
+                        ->whereColumn('product_stock.id', 'products.id')
+                        ->where('product_stock.branch_id', $request->branch)
+                        ->where('product_stock.stock_available', '>', 0);
+                });
+            }
         }
 
         if ($request->has('jenis')) {
