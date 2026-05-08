@@ -1280,7 +1280,7 @@ class ProductController extends Controller
         }
 
         $query = DB::table('product_stock')
-            ->where('stock_available', '>', 0)
+            // ->where('stock_available', '>', 0)
             ->where('name', 'like', '%' . $request->search . '%')
             ->select('id', 'name', 'stock_available');
 
