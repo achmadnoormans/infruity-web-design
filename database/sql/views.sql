@@ -171,6 +171,7 @@ FROM
 		'transfer'
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	WHERE transfer.`status` = 'selesai'
 	UNION ALL
 
 	-- TRANSFER (TUJUAN)
@@ -184,6 +185,7 @@ FROM
 		'transfer'
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	WHERE transfer.`status` = 'selesai'
 	UNION ALL
 
 	SELECT
