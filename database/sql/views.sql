@@ -109,7 +109,7 @@ FROM
 		'production'
 	FROM
 		production
-        WHERE production.`status` = 'posting'
+        WHERE production.`status` IN ('posting', 'complete')
 	UNION ALL
 
 	-- DETAIL PRODUCTION (-)
@@ -125,7 +125,7 @@ FROM
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id
-		WHERE production.`status` = 'posting'
+        WHERE production.`status` IN ('posting', 'complete')
         UNION ALL
 
 	-- DETAIL POS
@@ -184,6 +184,19 @@ FROM
 		'transfer'
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	UNION ALL
+
+	SELECT
+		pos_transaction.branch_id,
+		production_parcel_detail.product_id,
+		- production_parcel_detail.quantity,
+		production_parcel_detail.price,
+		pos_transaction.created_at,
+		'pos-parcel',
+		'pos'
+	FROM production_parcel_detail
+	JOIN pos_transaction ON pos_transaction.id = production_parcel_detail.pos_id
+	WHERE pos_transaction.`status` != 'draft'
 	) AS Q;
 
 -- Sortir view

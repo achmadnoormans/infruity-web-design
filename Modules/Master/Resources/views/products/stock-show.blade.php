@@ -5,26 +5,40 @@
     <div>
         <div class="card card-flush">
             <!--begin::Card header-->
-            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+            <div class="card-header align-items-stretch py-3 gap-3 flex-column flex-md-row">
                 <!--begin::Card title-->
-                <div class="card-title">
-                    <!--begin::Search-->
+                <div class="card-title align-items-start flex-column">
                     <div class="d-flex align-items-center position-relative my-1">
-                        <label class="form-label fs-6 fw-semibold me-4">Cabang:</label>
+                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
+                        <input type="text" data-kt-ecommerce-product-filter="search" id="search"
+                            class="form-control form-control-solid w-200px ps-12" placeholder="Search" />
+                    </div>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar flex-wrap gap-3 justify-content-end">
+                    <div class="w-100 w-md-auto">
                         <select class="form-select form-select-solid" data-control="select2"
                             data-hide-search="true" data-placeholder="Cabang"
-                            data-kt-ecommerce-product-filter="branch" style="width: 250px;">
-                            <option value="all">Semua Cabang</option>
+                            data-kt-ecommerce-product-filter="branch">
+                            <option value="all">Semua</option>
                             @foreach ($branch as $item)
                                 <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <!--end::Search-->
-                </div>
-                <!--end::Card title-->
-                <!--begin::Card toolbar-->
-                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <div class="w-100 w-md-auto">
+                        <div class="input-group">
+                            <input class="form-control form-control-solid" placeholder="Pilih tanggal"
+                                id="kt_ecommerce_sales_flatpickr" />
+                            <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                                <i class="ki-duotone ki-cross fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <!--end::Card toolbar-->
             </div>
@@ -55,8 +69,7 @@
             dataTable = $('#products-stock-table').DataTable({
                 processing: true,
                 serverSide: true,
-                scrollX: true, // Aktifkan scroll horizontal
-                // responsive: true,
+                scrollX: true,
                 ajax: {
                     url: "{{ route('product-stock-data-show') }}",
                     data: function(d) {
@@ -64,6 +77,12 @@
                         d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
                         d.product_id = {{ $data->id }};
                         d.branch = $('[data-kt-ecommerce-product-filter="branch"]').val();
+                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        if (range) {
+                            var dates = range.split(' to ');
+                            d.start_date = dates[0];
+                            d.end_date = dates[1] ?? dates[0];
+                        }
                     }
                 },
                 columns: [{
@@ -89,33 +108,46 @@
                 ],
                 order: [
                     [2, 'desc']
-                ] // Order by quantity column (index 1) in descending order
+                ]
             });
-            // Search manual lewat input
+
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
                 let val = $(this).val();
-
-                if (val === 'all') val = ''; // kosongkan filter jika all
+                if (val === 'all') val = '';
                 dataTable.column(3).search(val).draw();
             });
 
             $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
-                dataTable.draw(); // trigger fetch ulang dari server
+                dataTable.draw();
             });
 
             $('[data-kt-ecommerce-product-filter="branch"]').on('change', function() {
-                dataTable.draw(); // trigger fetch ulang dari server
+                dataTable.draw();
+            });
+
+            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+                altInput: !0,
+                altFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
+                mode: "range",
+                onChange: function(e, t, n) {
+                    dataTable.draw();
+                }
+            });
+
+            $('#kt_ecommerce_sales_flatpickr_clear').on('click', function() {
+                $('#kt_ecommerce_sales_flatpickr').val('');
+                dataTable.draw();
             });
         });
 
         function reloadDataTable() {
-            // Pastikan dataTable sudah terinisialisasi sebelumnya
             if (typeof dataTable !== 'undefined') {
-                dataTable.ajax.reload(null, false); // 'false' untuk tidak mereset ke halaman pertama
+                dataTable.ajax.reload(null, false);
             } else {
                 console.error('DataTable tidak terinisialisasi.');
             }

@@ -1293,7 +1293,9 @@ class ProductController extends Controller
 
     public function get_data_stock_show(Request $request)
     {
-        $child = ProductChild::where('parent_id', $request->product_id)
+        $productId = is_array($request->product_id) ? ($request->product_id[0] ?? $request->product_id) : $request->product_id;
+        
+        $child = ProductChild::where('parent_id', $productId)
             ->pluck('product_id')
             ->toArray();
 
@@ -1302,15 +1304,30 @@ class ProductController extends Controller
             ->join('product_units', 'products.product_unit', '=', 'product_units.id')
             ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit');
 
-        // Filter by branch if provided
         if ($request->filled('branch') && $request->branch != 'all') {
             $query->where('transaction_stock.branch_id', $request->branch);
         }
 
-        $query->where(function($q) use ($request, $child) {
-            $q->where('transaction_stock.product_id', $request->product_id)
+        $query->where(function($q) use ($productId, $child) {
+            $q->where('transaction_stock.product_id', $productId)
               ->orWhereIn('transaction_stock.product_id', $child);
         });
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = is_array($request->start_date) ? ($request->start_date[0] ?? $request->start_date) : $request->start_date;
+            $endDate = is_array($request->end_date) ? ($request->end_date[0] ?? $request->end_date) : $request->end_date;
+            $query->whereBetween('transaction_stock.date', [$startDate, $endDate]);
+        }
+
+        if ($request->filled('search')) {
+            $search = is_array($request->search) ? ($request->search['value'] ?? '') : $request->search;
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('products.name', 'like', "%{$search}%")
+                      ->orWhere('transaction_stock.reff', 'like', "%{$search}%");
+                });
+            }
+        }
 
         $query->orderBy('transaction_stock.date', 'asc');
 
