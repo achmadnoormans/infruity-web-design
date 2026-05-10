@@ -1,20 +1,18 @@
 <?php
-
 namespace Modules\Transaction\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\Master\Entities\Branch;
 use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Transfer;
 use Modules\Transaction\Entities\TransferDetail;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Str;
 use Modules\Transaction\Entities\TransferDetailCorrection;
-
+use Yajra\DataTables\Facades\DataTables;
 
 class TransferController extends Controller
 {
@@ -44,11 +42,12 @@ class TransferController extends Controller
             return $denied;
         }
 
-        $data['alpinejs'] = true;
-        $data['data'] = null;
-        $data['detail'] = null;
+        $data['alpinejs']       = true;
+        $data['data']           = null;
+        $data['detail']         = null;
         $data['invoice_number'] = Transfer::getOrderNumber();
-        $data['type'] = request('type');
+        $data['type']           = request('type');
+        $data['branches']       = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::transfer.create', $data);
     }
 
@@ -85,12 +84,12 @@ class TransferController extends Controller
             $transfer->refresh();
         }
 
-        $data['alpinejs'] = true;
-        $data['data'] = $transfer;
-        $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = $transfer;
+        $data['detail']         = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $transfer->invoice_number;
-        $data['is_view'] = true;
-        $data['type'] = request('type');
+        $data['is_view']        = true;
+        $data['type']           = request('type');
         return view('transaction::transfer.create', $data);
     }
 
@@ -105,11 +104,11 @@ class TransferController extends Controller
             return $denied;
         }
 
-        $data['alpinejs'] = true;
-        $data['data'] = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
-        $data['detail'] = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
+        $data['alpinejs']       = true;
+        $data['data']           = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
+        $data['detail']         = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
-        $data['type'] = request('type');
+        $data['type']           = request('type');
         return view('transaction::transfer.create', $data);
     }
 
@@ -147,13 +146,13 @@ class TransferController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus.'
+                'message' => 'Data berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                'message' => 'Gagal menghapus data: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -166,14 +165,14 @@ class TransferController extends Controller
 
         // dd($request->all());
         $data = $request->validate([
-            'branch_id' => 'required|exists:branch,id',
+            'branch_id'             => 'required|exists:branch,id',
             'branch_destination_id' => 'required|exists:branch,id',
-            'date' => 'required|date',
-            'invoice_number' => 'nullable',
-            'items' => 'required|array',
-            'total' => 'required|numeric',
-            'subtotal' => 'required|numeric',
-            'status' => 'nullable|in:temp,draft,pending,proses,selesai',
+            'date'                  => 'required|date',
+            'invoice_number'        => 'nullable',
+            'items'                 => 'required|array',
+            'total'                 => 'required|numeric',
+            'subtotal'              => 'required|numeric',
+            'status'                => 'nullable|in:temp,draft,pending,proses,selesai',
         ]);
 
         try {
@@ -181,21 +180,21 @@ class TransferController extends Controller
             DB::beginTransaction();
             $cek = Transfer::where('invoice_number', $data['invoice_number'])->first();
             if ($cek) {
-                $pos = Transfer::find($cek->id);
+                $pos       = Transfer::find($cek->id);
                 $posDetail = TransferDetail::where('transfer_id', $cek->id);
                 TransferDetail::where('transfer_id', $cek->id)->delete();
                 $pos->delete();
             }
             // Simpan ke tabel transfer (buat dulu kalau belum ada)
             $pos = new Transfer([
-                'uuid' => Str::uuid(),
-                'branch_id' => $data['branch_id'],
+                'uuid'                  => Str::uuid(),
+                'branch_id'             => $data['branch_id'],
                 'branch_destination_id' => $data['branch_destination_id'],
-                'date' => $data['date'],
-                'invoice_number' => Transfer::getOrderNumber(),
-                'total' => $data['total'],
-                'status' => $data['status'] ?? 'draft',
-                'created_by' => $userId,
+                'date'                  => $data['date'],
+                'invoice_number'        => Transfer::getOrderNumber(),
+                'total'                 => $data['total'],
+                'status'                => $data['status'] ?? 'draft',
+                'created_by'            => $userId,
             ]);
             $pos->save();
 
@@ -205,13 +204,13 @@ class TransferController extends Controller
                 if (is_numeric($item['id'])) {
                     TransferDetail::insert([
                         'transfer_id' => $transaksiId,
-                        'product_id' => $item['id'],
-                        'price' => $item['price'],
-                        'quantity' => $item['qty'],
-                        'discount' => $item['discount'] ?? 0,
-                        'subtotal' => $item['total_input'],
-                        'created_at' => now(),
-                        'created_by' => $userId,
+                        'product_id'  => $item['id'],
+                        'price'       => $item['price'],
+                        'quantity'    => $item['qty'],
+                        'discount'    => $item['discount'] ?? 0,
+                        'subtotal'    => $item['total_input'],
+                        'created_at'  => now(),
+                        'created_by'  => $userId,
                     ]);
                 }
             }
@@ -220,9 +219,9 @@ class TransferController extends Controller
             DB::disconnect();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil disimpan',
-                'transaksi_id' => $transaksiId
+                'success'      => true,
+                'message'      => 'Transaksi berhasil disimpan',
+                'transaksi_id' => $transaksiId,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -230,7 +229,7 @@ class TransferController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan transaksi',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -243,20 +242,20 @@ class TransferController extends Controller
 
         $request->validate([
             'detail_id' => 'required|exists:transfer_detail,id',
-            'quantity' => 'required|numeric|min:0',
-            'note' => 'nullable|string',
+            'quantity'  => 'required|numeric|min:0',
+            'note'      => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $detail = TransferDetail::findOrFail($request->detail_id);
+            $detail   = TransferDetail::findOrFail($request->detail_id);
             $transfer = Transfer::findOrFail($detail->transfer_id);
 
             if ($transfer->status === 'selesai') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Tidak dapat mengoreksi transaksi yang sudah selesai.'
+                    'message' => 'Tidak dapat mengoreksi transaksi yang sudah selesai.',
                 ], 422);
             }
 
@@ -265,10 +264,10 @@ class TransferController extends Controller
             // Record correction history
             TransferDetailCorrection::create([
                 'transfer_detail_id' => $detail->id,
-                'old_quantity' => $oldQty,
-                'new_quantity' => $request->quantity,
-                'note' => $request->note,
-                'created_by' => Auth::id(),
+                'old_quantity'       => $oldQty,
+                'new_quantity'       => $request->quantity,
+                'note'               => $request->note,
+                'created_by'         => Auth::id(),
             ]);
 
             // Update detail
@@ -277,30 +276,29 @@ class TransferController extends Controller
             $detail->save();
 
             // Update total transfer
-            $transfer = Transfer::find($detail->transfer_id);
-            $total = TransferDetail::where('transfer_id', $transfer->id)->sum('subtotal');
+            $transfer        = Transfer::find($detail->transfer_id);
+            $total           = TransferDetail::where('transfer_id', $transfer->id)->sum('subtotal');
             $transfer->total = $total;
             $transfer->save();
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Quantity berhasil dikoreksi',
+                'success'      => true,
+                'message'      => 'Quantity berhasil dikoreksi',
                 'new_subtotal' => $detail->subtotal,
-                'new_total' => $transfer->total,
+                'new_total'    => $transfer->total,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengoreksi quantity: ' . $e->getMessage()
+                'message' => 'Gagal mengoreksi quantity: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     public function set_selesai($id)
-
     {
         if ($denied = $this->requireAccess('transfer.set_selesai')) {
             return $denied;
@@ -312,12 +310,12 @@ class TransferController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Status berhasil diubah menjadi selesai'
+                'message' => 'Status berhasil diubah menjadi selesai',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengubah status: ' . $e->getMessage()
+                'message' => 'Gagal mengubah status: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -325,7 +323,7 @@ class TransferController extends Controller
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
-        $query = Transfer::with(['createdBy', 'branch', 'branchDestination'])
+        $query        = Transfer::with(['createdBy', 'branch', 'branchDestination'])
             ->withSum('corrections as total_old', 'old_quantity')
             ->withSum('corrections as total_new', 'new_quantity');
 
@@ -359,7 +357,7 @@ class TransferController extends Controller
             ->filter(function ($query) use ($request) {
                 $search = trim($request->input('search.value'));
 
-                if (!empty($search)) {
+                if (! empty($search)) {
                     $query->where(function ($q) use ($search) {
                         $q->where('invoice_number', 'LIKE', "%{$search}%")
                             ->orWhereHas('createdBy', function ($sub) use ($search) {
@@ -369,7 +367,7 @@ class TransferController extends Controller
                 }
             }, true)
             ->addColumn('name', function ($item) use ($request) {
-                $html = '<div class="d-flex align-items-center">';
+                $html  = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
                 $html .= '<a href="' . route('transfer.show', ['id' => $item->id, 'type' => $request->url]) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
@@ -382,7 +380,7 @@ class TransferController extends Controller
                 $html = '<span class="text-muted d-block fs-8">' . $date . ' ' . $time . '</span>';
 
                 $statusBadges = [
-                    'temp'     => '<span class="badge badge-light-danger">Draft</span>',
+                    'temp'    => '<span class="badge badge-light-danger">Draft</span>',
                     'draft'   => '<span class="badge badge-light-danger">Draft</span>',
                     'pending' => '<span class="badge badge-light-secondary">Pending</span>',
                     'proses'  => '<span class="badge badge-light-warning">Proses</span>',
@@ -402,7 +400,7 @@ class TransferController extends Controller
                 return '-';
             })
             ->addColumn('action', function ($item) use ($request) {
-                $html = '';
+                $html  = '';
                 $html .= '
                     <div class="dropstart">
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
@@ -415,13 +413,15 @@ class TransferController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                $html .= '
+                if ($request->url == 'transfer-pengirim') {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('transfer.edit', ['transfer' => $item->id, 'type' => $request->url]) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
-                if (!in_array($item->status, ['paid', 'debt']) || session('role')['id_role'] == 1) {
+                }
+                if (! in_array($item->status, ['diterima']) && $request->url == 'transfer-pengirim') {
                     $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
