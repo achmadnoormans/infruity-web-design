@@ -32,7 +32,8 @@ FROM
 		-- date,
 		created_at AS date,
 		`code` AS reff,
-		'stock-in' AS url
+		'stock-in' AS url,
+		id AS id
 	FROM
 		stock_in
 	UNION ALL
@@ -46,7 +47,8 @@ FROM
 		-- date,
 		created_at,
 		`code`,
-		'stock-out'
+		'stock-out',
+		id
 	FROM
 		stock_out
 	UNION ALL
@@ -60,7 +62,8 @@ FROM
 		-- wholesale.order_date,
 		wholesale.created_at,
 		'pengadaan' AS reff,
-		'wholesale' AS url
+		'wholesale' AS url,
+		wholesale.id AS id
 	FROM
 		wholesale_product
 		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
@@ -78,7 +81,8 @@ FROM
 		-- date,
 		created_at,
 		'stock-out',
-		'stock-out-transaction'
+		'stock-out-transaction',
+		id
 	FROM
 		stock_out_transaction
 	UNION ALL
@@ -92,7 +96,8 @@ FROM
 		-- date,
 		created_at,
 		'stock-opname',
-		'stock-opname'
+		'stock-opname',
+		id
 	FROM
 		stock_opname
 	UNION ALL
@@ -106,7 +111,8 @@ FROM
 		-- production_date,
 		created_at,
 		'produksi',
-		'production'
+		'production',
+		id
 	FROM
 		production
         WHERE production.`status` IN ('posting', 'complete')
@@ -121,7 +127,8 @@ FROM
 		-- production.production_date,
 		production.created_at,
 		'produksi-detail',
-		'production'
+		'production',
+		production.id
 	FROM
 		production_detail
 		JOIN production ON production.id = production_detail.production_id
@@ -137,7 +144,8 @@ FROM
 		-- pos_transaction.date,
 		pos_transaction.created_at,
 		'pos',
-		'pos'
+		'pos',
+		 pos_transaction.id AS id
 	FROM
 		pos_transaction_detail
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
@@ -154,7 +162,8 @@ FROM
 		sortir_transaction_detail.price,
 		sortir_transaction_detail.created_at,
 		'sortir',
-		'sortir'
+		'sortir',
+		sortir_transaction.id AS id
 	FROM
 	sortir_transaction_detail
 	JOIN sortir_transaction ON sortir_transaction_detail.sortir_id = sortir_transaction.id
@@ -168,7 +177,8 @@ FROM
 		transfer_detail.price,
 		transfer.date,
 		'transfer asal',
-		'transfer'
+		'transfer',
+		transfer.id AS id
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
 	WHERE transfer.`status` = 'selesai'
@@ -182,7 +192,8 @@ FROM
 		transfer_detail.price,
 		transfer.date,
 		'transfer tujuan',
-		'transfer'
+		'transfer',
+		transfer.id AS id
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
 	WHERE transfer.`status` = 'selesai'
@@ -195,7 +206,8 @@ FROM
 		production_parcel_detail.price,
 		pos_transaction.created_at,
 		'pos-parcel',
-		'pos'
+		'pos',
+		pos_transaction.id AS id
 	FROM production_parcel_detail
 	JOIN pos_transaction ON pos_transaction.id = production_parcel_detail.pos_id
 	WHERE pos_transaction.`status` != 'draft'

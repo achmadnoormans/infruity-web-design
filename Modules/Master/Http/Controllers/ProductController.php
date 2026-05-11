@@ -1334,19 +1334,17 @@ class ProductController extends Controller
         $data = $query->get();
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('name', function ($product) {
-                $targetUrl = $this->resolveTransactionTargetUrl($product);
+->addColumn('name', function ($product) {
+                $targetUrl = $this->getTargetUrlFromTransaction($product);
 
-                $html  = '
-                    <div class="d-flex align-items-center">';
+                $html  = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">
                             <a href="' . $targetUrl . '" class="text-gray-800 text-hover-primary fs-5 fw-bold"
                                data-kt-ecommerce-product-filter="product_name">
                                 ' . e($product->name) . '
                             </a>
                         </div>
-                    </div>
-                ';
+                    </div>';
                 return $html;
             })
             ->addColumn('quantity', function ($product) {
@@ -1363,132 +1361,23 @@ class ProductController extends Controller
             ->make(true);
     }
 
-    private function resolveTransactionTargetUrl(object $transaction): string
+    private function getTargetUrlFromTransaction(object $transaction): string
     {
-        $detailUrl = $this->findTransactionDetailUrl($transaction);
+        $baseUrl = $transaction->url;
+        $id = $transaction->id;
 
-        if ($detailUrl) {
-            return $detailUrl;
+        $showRoutes = ['wholesale', 'pos', 'sortir', 'transfer'];
+        $detailRoutes = ['production'];
+
+        if (in_array($baseUrl, $showRoutes)) {
+            return url($baseUrl . '/show/' . $id);
         }
 
-        return match ($transaction->url) {
-            'wholesale' => url('wholesale'),
-            'stock-out' => url('stock-out'),
-            'stock-opname' => url('stock-opname'),
-            'production' => url('production'),
-            'sortir' => url('sortir'),
-            'transfer' => url('transfer'),
-            'pos' => url('pos'),
-            default => url('products/' . $transaction->product_id . '/show'),
-        };
+        if (in_array($baseUrl, $detailRoutes)) {
+            return url($baseUrl . '/' . $id . '/detail');
+        }
+
+        return url($baseUrl . '/' . $id . '/edit');
     }
 
-    private function findTransactionDetailUrl(object $transaction): ?string
-    {
-        $date = $transaction->date;
-        $productId = (int) $transaction->product_id;
-        $branchId = (int) ($transaction->branch_id ?? 0);
-
-        if ($transaction->url === 'stock-out') {
-            $id = DB::table('stock_out')
-                ->where('code', $transaction->reff)
-                ->where('product_id', $productId)
-                ->value('id');
-
-            return $id ? url('stock-out/' . $id . '/edit') : null;
-        }
-
-        if ($transaction->url === 'stock-opname') {
-            $id = DB::table('stock_opname')
-                ->where('code', $transaction->reff)
-                ->where('product_id', $productId)
-                ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
-                ->value('id');
-
-            return $id ? url('stock-opname/' . $id . '/edit') : null;
-        }
-
-        if ($transaction->url === 'wholesale') {
-            $id = DB::table('wholesale_product as wp')
-                ->join('wholesale as w', 'w.id', '=', 'wp.wholesale_id')
-                ->where('wp.product_id', $productId)
-                ->where('w.status', 'posting')
-                ->when($branchId > 0, fn ($q) => $q->where('w.branch_id', $branchId))
-                ->where('w.created_at', $date)
-                ->value('w.id');
-
-            return $id ? url('wholesale/show/' . $id) : null;
-        }
-
-        if ($transaction->url === 'pos') {
-            $id = DB::table('pos_transaction_detail as d')
-                ->join('pos_transaction as p', 'p.id', '=', 'd.pos_id')
-                ->where('d.product_id', $productId)
-                ->whereNull('d.deleted_at')
-                ->whereNull('p.deleted_at')
-                ->where('p.status', '!=', 'draft')
-                ->when($branchId > 0, fn ($q) => $q->where('p.branch_id', $branchId))
-                ->where('p.created_at', $date)
-                ->value('p.id');
-
-            return $id ? url('pos/show/' . $id) : null;
-        }
-
-        if ($transaction->url === 'sortir') {
-            $id = DB::table('sortir_transaction_detail as d')
-                ->join('sortir_transaction as s', 's.id', '=', 'd.sortir_id')
-                ->where('d.product_id', $productId)
-                ->when($branchId > 0, fn ($q) => $q->where('s.branch_id', $branchId))
-                ->where('d.created_at', $date)
-                ->value('s.id');
-
-            return $id ? url('sortir/show/' . $id) : null;
-        }
-
-        if ($transaction->url === 'transfer') {
-            $query = DB::table('transfer_detail as d')
-                ->join('transfer as t', 't.id', '=', 'd.transfer_id')
-                ->where('d.product_id', $productId)
-                ->where('t.created_at', $date);
-
-            if ($branchId > 0) {
-                if ($transaction->reff === 'transfer asal') {
-                    $query->where('t.branch_id', $branchId);
-                } elseif ($transaction->reff === 'transfer tujuan') {
-                    $query->where('t.branch_destination_id', $branchId);
-                }
-            }
-
-            $id = $query->value('t.id');
-
-            return $id ? url('transfer/show/' . $id) : null;
-        }
-
-        if ($transaction->url === 'production') {
-            if ($transaction->reff === 'produksi') {
-                $id = DB::table('production')
-                    ->where('product_id', $productId)
-                    ->where('status', 'posting')
-                    ->when($branchId > 0, fn ($q) => $q->where('branch_id', $branchId))
-                    ->where('created_at', $date)
-                    ->value('id');
-
-                return $id ? url('production/' . $id . '/detail') : null;
-            }
-
-            if ($transaction->reff === 'produksi-detail') {
-                $id = DB::table('production_detail as d')
-                    ->join('production as p', 'p.id', '=', 'd.production_id')
-                    ->where('d.product_id', $productId)
-                    ->where('p.status', 'posting')
-                    ->when($branchId > 0, fn ($q) => $q->where('p.branch_id', $branchId))
-                    ->where('p.created_at', $date)
-                    ->value('p.id');
-
-                return $id ? url('production/' . $id . '/detail') : null;
-            }
-        }
-
-        return null;
     }
-}

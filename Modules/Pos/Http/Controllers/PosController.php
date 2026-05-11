@@ -587,6 +587,8 @@ class PosController extends Controller
                             'created_by'        => Auth::user()->id_user,
                             'quantity'          => $value['qty'],
                             'staff_id'          => Auth::user()->id_user,
+                            'pos_id'            => $transaksiId,
+                            'branch_id'         => $data['branch_id'] ?? null,
                         ]);
                         $production->save();
                         if (isset($value['product_receipt_id'])) {

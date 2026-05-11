@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('sell_price', 10, 2)->default(0);
             $table->unsignedBigInteger('staff_id')->nullable();
             $table->unsignedBigInteger('branch_id')->nullable();
+            $table->unsignedBigInteger('pos_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
