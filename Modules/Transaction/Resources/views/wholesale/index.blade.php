@@ -1,111 +1,124 @@
 @extends('template.root')
 
 @section('content')
-    {{-- @livewire('product-table') --}}
-    <div>
+    <div class="pos-index-page">
+        <style>
+            .pos-index-page .pos-index-search {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .pos-index-page .pos-index-search .form-control {
+                height: 44px;
+                border-radius: 12px;
+            }
+
+            .pos-index-page .pos-index-filter-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.45rem;
+                min-height: 44px;
+                border-radius: 12px;
+                white-space: nowrap;
+            }
+
+            .pos-index-page #active-branch-button-label {
+                display: inline-block;
+                max-width: 160px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: middle;
+            }
+
+            @media (max-width: 767.98px) {
+                .pos-index-page .pos-index-search {
+                    max-width: 100%;
+                }
+
+                .pos-index-page .pos-index-filter-toolbar {
+                    width: 100%;
+                    justify-content: flex-start !important;
+                }
+
+                .pos-index-page .pos-index-filter-btn {
+                    width: 100%;
+                }
+            }
+        </style>
         <div class="card card-flush">
-            <!--begin::Card header-->
-            <div class="card-header align-items-center py-3 gap-2 flex-wrap flex-md-nowrap">
-                <!--begin::Card title-->
-                <div class="card-title">
-                    <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1">
+            <div class="card-header align-items-stretch py-3 gap-3 flex-column flex-md-row">
+                <div class="card-title flex-grow-1 w-100 mb-0">
+                    <div class="d-flex align-items-center position-relative my-1 pos-index-search">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
                         <input type="text" data-kt-ecommerce-product-filter="search" id="search"
-                            class="form-control form-control-solid w-200px w-md-250px ps-12" placeholder="Cari Pengadaan" />
+                            class="form-control form-control-solid w-100 ps-12" placeholder="Cari Pengadaan" />
                     </div>
-                    <!--end::Search-->
                 </div>
-                <!--end::Card title-->
-                <!--begin::Card toolbar-->
-                <div class="card-toolbar ms-auto">
-                    <div class="card-toolbar">
-                        <!--begin::Toolbar-->
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <!--begin::Filter-->
-                            <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                                <i class="ki-duotone ki-filter fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i></button>
-                            <!--begin::Menu 1-->
-                            <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
-                                <!--begin::Header-->
-                                <div class="px-7 py-5">
-                                    <div class="fs-5 text-gray-900 fw-bold">Pilihan Filter</div>
-                                </div>
-                                <!--end::Header-->
-                                <!--begin::Separator-->
-                                <div class="separator border-gray-200"></div>
-                                <!--end::Separator-->
-                                <!--begin::Content-->
-                                <div class="px-7 py-2" data-kt-user-table-filter="form">
-                                    <!--begin::Input group-->
-                                    <div>
-                                        <label class="form-label fs-6 fw-semibold">Status:</label>
-                                        @php
-                                            $category = [
-                                                'draft' => 'Draft',
-                                                'posting' => 'Posting',
-                                            ];
-                                        @endphp
-                                        <select class="form-select form-select-solid" data-control="select2"
-                                            data-hide-search="true" data-placeholder="Status"
-                                            data-kt-ecommerce-product-filter="status">
-                                            <option value="all">All</option>
-                                            @foreach ($category as $key => $value)
-                                                <option value="{{ $key }}">{{ ucwords($value) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <!--end::Input group-->
-                                </div>
-                                <!--end::Content-->
-                                <div class="px-7 py-2" data-kt-user-table-filter="form">
-                                    <!--begin::Input group-->
-                                    <div>
-                                        <label class="form-label fs-6 fw-semibold">Cabang:</label>
-                                        <select class="form-select form-select-solid" data-control="select2"
-                                            data-hide-search="true" data-placeholder="Cabang"
-                                            data-kt-ecommerce-product-filter="cabang">
-                                            <option value="all">All</option>
-                                            @foreach ($branches as $branch)
-                                                <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <!--end::Input group-->
-                                </div>
-                                <!--begin::Separator-->
-                                <div class="separator border-gray-200"></div>
-                                <!--end::Separator-->
-                                <!--begin::Content-->
-                                <div class="px-7 py-5" data-kt-user-table-filter="form">
-                                    <!--begin::Input group-->
-                                    <div class="input-group mw-350px">
-                                        <input class="form-control form-control-solid rounded rounded-end-0"
-                                            placeholder="Pick date range" id="kt_ecommerce_sales_flatpickr" />
-                                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
-                                            <i class="ki-duotone ki-cross fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
-                                    </div>
-                                    <!--end::Input group-->
-                                </div>
-                                <!--end::Content-->
+                <div class="card-toolbar w-100 w-md-auto ms-md-auto">
+                    <div class="d-flex align-items-center justify-content-md-end pos-index-filter-toolbar gap-3"
+                        data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-light-primary px-4 pos-index-filter-btn"
+                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                            <i class="ki-duotone ki-filter fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            <span id="active-branch-button-label">Cabang</span>
+                        </button>
+                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true">
+                            <div class="px-7 py-5">
+                                <div class="fs-5 text-gray-900 fw-bold">Pilihan Filter</div>
                             </div>
-                            <!--end::Menu 1-->
-                            <!--end::Filter-->
+                            <div class="separator border-gray-200"></div>
+                            <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                <div>
+                                    <label class="form-label fs-6 fw-semibold">Status:</label>
+                                    @php
+                                        $category = [
+                                            'draft' => 'Draft',
+                                            'posting' => 'Posting',
+                                        ];
+                                    @endphp
+                                    <select class="form-select form-select-solid" data-control="select2"
+                                        data-hide-search="true" data-placeholder="Status"
+                                        data-kt-ecommerce-product-filter="status">
+                                        <option value="all">All</option>
+                                        @foreach ($category as $key => $value)
+                                            <option value="{{ $key }}">{{ ucwords($value) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="px-7 py-2" data-kt-user-table-filter="form">
+                                <div>
+                                    <label class="form-label fs-6 fw-semibold">Cabang:</label>
+                                    <select class="form-select form-select-solid" data-control="select2"
+                                        data-hide-search="true" data-placeholder="Cabang"
+                                        data-kt-ecommerce-product-filter="cabang">
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
+                                        @endforeach
+                                        <option value="all">All</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="px-7 py-5" data-kt-user-table-filter="form">
+                                <div class="input-group mw-350px">
+                                    <input class="form-control form-control-solid rounded rounded-end-0"
+                                        placeholder="Pick date range" id="kt_ecommerce_sales_flatpickr" />
+                                    <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                                        <i class="ki-duotone ki-cross fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <!--end::Toolbar-->
                     </div>
                 </div>
-                <!--end::Card toolbar-->
             </div>
-            <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body pt-0">
                 <!--begin::Table-->
@@ -188,6 +201,14 @@
 
         var dataTable;
         $(document).ready(function() {
+            const $branchFilter = $('[data-kt-ecommerce-product-filter="cabang"]');
+            const $activeBranchButtonLabel = $('#active-branch-button-label');
+
+            function updateActiveFilterInfo() {
+                const selectedBranch = $branchFilter.find('option:selected').text().trim() || 'Semua cabang';
+                $activeBranchButtonLabel.text(selectedBranch);
+            }
+
             dataTable = $('#wholesale-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -269,13 +290,17 @@
             });
 
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
-                dataTable.draw(); // trigger fetch ulang dari server
+                updateActiveFilterInfo();
+                dataTable.draw();
             });
 
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
-                dataTable.draw(); // trigger fetch ulang dari server
+                updateActiveFilterInfo();
+                dataTable.draw();
                 showStockAlert($(this).val());
             });
+
+            updateActiveFilterInfo();
 
             $("#kt_ecommerce_sales_flatpickr").flatpickr({
                 altInput: !0,
