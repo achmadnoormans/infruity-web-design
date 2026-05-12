@@ -379,8 +379,15 @@
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
                             })
+                        },
+                        templateResult: data => {
+                            if (data.loading) return data.text;
+                            const stock = data.stock_available ?? 0;
+                            const $el = $(`<span>${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            return $el;
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
@@ -1469,14 +1476,21 @@
                             };
                         },
                         processResults: data => ({
-                            results: data.map(item => ({
-                                id: item.id,
-                                text: item.name,
-                                unit: item.unit,
-                                price: item.price,
-                                hpp: item.hpp,
-                            }))
-                        })
+                                results: data.map(item => ({
+                                    id: item.id,
+                                    text: item.name,
+                                    unit: item.unit,
+                                    price: item.price,
+                                    hpp: item.hpp,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
+                                }))
+                            }),
+                            templateResult: data => {
+                                if (data.loading) return data.text;
+                                const stock = data.stock_available ?? 0;
+                                const $el = $(`<span><strong>${data.text}</strong> <span class="badge bg-${stock > 0 ? 'success' : 'danger'}">Sisa: ${stock}</span></span>`);
+                                return $el;
+                            }
                     }
                 }).on('select2:select', (e) => {
                     const data = e.params.data;
