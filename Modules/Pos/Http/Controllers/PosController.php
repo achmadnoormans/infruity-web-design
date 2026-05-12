@@ -24,6 +24,7 @@ use Modules\Transaction\Entities\ProductHppRunning;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductionParcelDetail;
+use Modules\Transaction\Entities\ProductStock;
 use Yajra\DataTables\Facades\DataTables;
 
 class PosController extends Controller
@@ -40,7 +41,7 @@ class PosController extends Controller
         }
 
         $data['alpinejs'] = true;
-        $userBranches = UserBranch::getUserBranch();
+        $userBranches     = UserBranch::getUserBranch();
         $data['branches'] = Branch::whereIn('id', $userBranches)->get();
 
         // Cek product_stock yang kosong pada branch yang dimiliki user
@@ -402,13 +403,13 @@ class PosController extends Controller
         ]);
 
         try {
-            $userId = Auth::id();
+            $userId     = Auth::id();
             $isTempSave = ($data['status'] ?? null) === 'temp';
             DB::beginTransaction();
             $invoiceNumber = $data['invoice_number'] ?? null;
-            $pos = null;
+            $pos           = null;
 
-            if (!empty($invoiceNumber)) {
+            if (! empty($invoiceNumber)) {
                 $pos = PosModel::where('created_by', $userId)
                     ->where('invoice_number', $invoiceNumber)
                     ->lockForUpdate()
@@ -419,8 +420,8 @@ class PosController extends Controller
                 $this->clearExistingPosRelations($pos->id);
                 $originalStatus = $pos->status;
             } else {
-                $pos = new PosModel();
-                $pos->uuid = Str::uuid();
+                $pos            = new PosModel();
+                $pos->uuid      = Str::uuid();
                 $originalStatus = null;
             }
 
@@ -519,9 +520,9 @@ class PosController extends Controller
 
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $key => $value) {
-                    $parcel             = $value;
-                    $kemasanProduct     = null;
-                    if (!empty($parcel['kemasan'])) {
+                    $parcel         = $value;
+                    $kemasanProduct = null;
+                    if (! empty($parcel['kemasan'])) {
                         $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
                     }
                     $productNameBase    = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
@@ -540,7 +541,7 @@ class PosController extends Controller
                     $product->save();
                     PosDetailModel::insert([
                         'pos_id'        => $transaksiId,
-                        'parcel_id'     => !empty($parcel['kemasanId']) ? $parcel['kemasanId'] : ($kemasanProduct->id ?? null),
+                        'parcel_id'     => ! empty($parcel['kemasanId']) ? $parcel['kemasanId'] : ($kemasanProduct->id ?? null),
                         'product_id'    => $product->id,
                         'price'         => $product->price,
                         'quantity'      => $parcel['qty'],
@@ -578,27 +579,31 @@ class PosController extends Controller
 
             if (isset($data['jus'])) {
                 foreach ($data['jus'] as $key => $value) {
-                    if (!$isTempSave) {
-                        $production = new Production([
-                            'production_number' => Production::getOrderNumber(),
-                            'product_id'        => $value['productId'],
-                            'production_date'   => now(),
-                            'status'            => 'complete',
-                            'created_by'        => Auth::user()->id_user,
-                            'quantity'          => $value['qty'],
-                            'staff_id'          => Auth::user()->id_user,
-                            'pos_id'            => $transaksiId,
-                            'branch_id'         => $data['branch_id'] ?? null,
-                        ]);
-                        $production->save();
-                        if (isset($value['product_receipt_id'])) {
-                            foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
-                                $productionDetail = new ProductionDetail([
-                                    'production_id' => $production->id,
-                                    'product_id'    => $productReceiptId,
-                                    'quantity'      => $value['product_receipt_qty'][$key],
-                                ]);
-                                $productionDetail->save();
+                    if (! $isTempSave) {
+                        $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
+                        if ($productStock->stock_available <= 0 || $productStock->stock_available < $value['qty']) {
+                            // dd($productStock->stock_available, $value);
+                            $production = new Production([
+                                'production_number' => Production::getOrderNumber(),
+                                'product_id'        => $value['productId'],
+                                'production_date'   => now(),
+                                'status'            => 'complete',
+                                'created_by'        => Auth::user()->id_user,
+                                'quantity'          => $productStock->stock_available - $value['qty'],
+                                'staff_id'          => Auth::user()->id_user,
+                                'pos_id'            => $transaksiId,
+                                'branch_id'         => $data['branch_id'] ?? null,
+                            ]);
+                            $production->save();
+                            if (isset($value['product_receipt_id'])) {
+                                foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
+                                    $productionDetail = new ProductionDetail([
+                                        'production_id' => $production->id,
+                                        'product_id'    => $productReceiptId,
+                                        'quantity'      => $value['product_receipt_qty'][$key],
+                                    ]);
+                                    $productionDetail->save();
+                                }
                             }
                         }
                     }
@@ -621,7 +626,7 @@ class PosController extends Controller
                 }
             }
 
-            if (!$isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {
+            if (! $isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {
                 $orderBook = OrderBook::where('invoice_number', $data['invoice_number'])->first();
                 if ($orderBook) {
                     $orderBook->status = 'done';
@@ -634,9 +639,9 @@ class PosController extends Controller
             DB::disconnect();
 
             return response()->json([
-                'success'      => true,
-                'message'      => 'Transaksi berhasil disimpan',
-                'transaksi_id' => $transaksiId,
+                'success'        => true,
+                'message'        => 'Transaksi berhasil disimpan',
+                'transaksi_id'   => $transaksiId,
                 'invoice_number' => $pos->invoice_number,
             ]);
         } catch (\Throwable $e) {
@@ -658,7 +663,7 @@ class PosController extends Controller
             ->filter()
             ->all();
 
-        if (!empty($parcelProductIds)) {
+        if (! empty($parcelProductIds)) {
             Product::whereIn('id', $parcelProductIds)->delete();
         }
 
@@ -814,12 +819,12 @@ class PosController extends Controller
     public function get_data(Request $request)
     {
         $userId = auth()->id();
-        $query = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
+        $query  = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
         // ->whereIn('branch_id', UserBranch::getUserBranch());
 
         $query->where(function ($q) use ($userId) {
             $q->where('status', '!=', 'temp')
-              ->orWhere('created_by', $userId);
+                ->orWhere('created_by', $userId);
         });
 
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
@@ -873,8 +878,8 @@ class PosController extends Controller
                 $html       = '<div class="d-flex align-items-center">';
                 $html      .= '<div class="ms-5">';
                 if (isset($item->customer->name)) {
-                    $waLast4 = !empty($item->customer->whatsapp) ? ' (' . substr($item->customer->whatsapp, -4) . ')' : '';
-                    $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . $waLast4 . '</a> ';
+                    $waLast4  = ! empty($item->customer->whatsapp) ? ' (' . substr($item->customer->whatsapp, -4) . ')' : '';
+                    $html    .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->customer->name . $waLast4 . '</a> ';
                 } else {
                     $html .= $iconHtml . ' <a href="' . url('pos') . '/show' . '/' . $item->id . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">Pelanggan Umum</a> ';
                 }
@@ -891,16 +896,16 @@ class PosController extends Controller
                 return $item->total_quantity;
             })
             ->addColumn('date', function ($item) {
-                $date  = date('d M Y', strtotime($item->date)) . ' ' . date('H:i', strtotime($item->created_at));
+                $date         = date('d M Y', strtotime($item->date)) . ' ' . date('H:i', strtotime($item->created_at));
                 $statusLabels = [
-                    'paid' => ['label' => 'Lunas', 'class' => 'success'],
-                    'draft' => ['label' => 'Pending', 'class' => 'secondary'],
-                    'debt' => ['label' => 'Piutang', 'class' => 'danger'],
+                    'paid'     => ['label' => 'Lunas', 'class' => 'success'],
+                    'draft'    => ['label' => 'Pending', 'class' => 'secondary'],
+                    'debt'     => ['label' => 'Piutang', 'class' => 'danger'],
                     'canceled' => ['label' => 'Dihapus', 'class' => 'dark'],
-                    'temp' => ['label' => 'Pending', 'class' => 'secondary'],
+                    'temp'     => ['label' => 'Pending', 'class' => 'secondary'],
                 ];
-                $statusInfo = $statusLabels[$item->status] ?? ['label' => ucfirst($item->status), 'class' => 'warning'];
-                $badge = '<span class="badge badge-light-' . $statusInfo['class'] . '">' . $statusInfo['label'] . '</span>';
+                $statusInfo  = $statusLabels[$item->status] ?? ['label' => ucfirst($item->status), 'class' => 'warning'];
+                $badge       = '<span class="badge badge-light-' . $statusInfo['class'] . '">' . $statusInfo['label'] . '</span>';
                 $branchLabel = '';
                 if ($item->branch) {
                     $branchLabel = '<span class="badge badge-light-primary ms-1">' . e($item->branch->name) . '</span>';
