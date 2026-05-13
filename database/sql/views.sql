@@ -175,7 +175,7 @@ FROM
 		transfer_detail.product_id,
 		- transfer_detail.quantity,
 		transfer_detail.price,
-		transfer.date,
+		transfer.created_at,
 		'transfer asal',
 		'transfer',
 		transfer.id AS id
@@ -190,7 +190,7 @@ FROM
 		transfer_detail.product_id,
 		transfer_detail.quantity,
 		transfer_detail.price,
-		transfer.date,
+		transfer.created_at,
 		'transfer tujuan',
 		'transfer',
 		transfer.id AS id
