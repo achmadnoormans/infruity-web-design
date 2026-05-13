@@ -25,6 +25,7 @@ use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductionParcelDetail;
 use Modules\Transaction\Entities\ProductStock;
+use Modules\Transaction\Entities\ProductReceipt;
 use Yajra\DataTables\Facades\DataTables;
 
 class PosController extends Controller
