@@ -327,6 +327,13 @@ class PosController extends Controller
             // $pos->ongkir_status = 'delivered';
             $pos->status = $status;
             $pos->save();
+
+            if ($status === 'paid') {
+                Production::where('pos_id', $pos->id)
+                    ->where('status', 'draft')
+                    ->update(['status' => 'complete']);
+            }
+
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -408,6 +415,7 @@ class PosController extends Controller
             DB::beginTransaction();
             $invoiceNumber = $data['invoice_number'] ?? null;
             $pos           = null;
+            $posId         = null;
 
             if (! empty($invoiceNumber)) {
                 $pos = PosModel::where('created_by', $userId)
@@ -418,7 +426,9 @@ class PosController extends Controller
 
             if ($pos) {
                 $this->clearExistingPosRelations($pos->id);
+                $posId          = $pos->id ?? null;
                 $originalStatus = $pos->status;
+
             } else {
                 $pos            = new PosModel();
                 $pos->uuid      = Str::uuid();
@@ -577,33 +587,38 @@ class PosController extends Controller
                 }
             }
 
-            if (isset($data['jus'])) {
+            if (!empty($data['jus'])) {
+                if (isset($posId)) {
+                    $lastProduction = Production::where('pos_id', $posId)->first();
+                    if ($lastProduction) {
+                        ProductionDetail::where('production_id', $lastProduction->id)->delete();
+                        $lastProduction->delete();
+                    }
+                }
                 foreach ($data['jus'] as $key => $value) {
-                    if (! $isTempSave) {
-                        $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
-                        if ($productStock->stock_available <= 0 || $productStock->stock_available < $value['qty']) {
-                            // dd($productStock->stock_available, $value);
-                            $production = new Production([
-                                'production_number' => Production::getOrderNumber(),
-                                'product_id'        => $value['productId'],
-                                'production_date'   => now(),
-                                'status'            => 'complete',
-                                'created_by'        => Auth::user()->id_user,
-                                'quantity'          => $productStock->stock_available - $value['qty'],
-                                'staff_id'          => Auth::user()->id_user,
-                                'pos_id'            => $transaksiId,
-                                'branch_id'         => $data['branch_id'] ?? null,
-                            ]);
-                            $production->save();
-                            if (isset($value['product_receipt_id'])) {
-                                foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
-                                    $productionDetail = new ProductionDetail([
-                                        'production_id' => $production->id,
-                                        'product_id'    => $productReceiptId,
-                                        'quantity'      => $value['product_receipt_qty'][$key],
-                                    ]);
-                                    $productionDetail->save();
-                                }
+                    $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
+                    $newStock     = $productStock->stock_available - $value['qty'];
+                    if ($newStock <= 0) {
+                        $production = new Production([
+                            'production_number' => Production::getOrderNumber(),
+                            'product_id'        => $value['productId'],
+                            'production_date'   => now(),
+                            'status'            => $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft',
+                            'created_by'        => Auth::user()->id_user,
+                            'quantity'          => $value['qty'],
+                            'staff_id'          => Auth::user()->id_user,
+                            'pos_id'            => $transaksiId,
+                            'branch_id'         => $data['branch_id'] ?? null,
+                        ]);
+                        $production->save();
+                        if (isset($value['product_receipt_id'])) {
+                            foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
+                                $productionDetail = new ProductionDetail([
+                                    'production_id' => $production->id,
+                                    'product_id'    => $productReceiptId,
+                                    'quantity'      => $value['product_receipt_qty'][$key] * $value['qty'],
+                                ]);
+                                $productionDetail->save();
                             }
                         }
                     }
@@ -624,6 +639,43 @@ class PosController extends Controller
                         'created_by' => $userId,
                     ]);
                 }
+            } elseif (isset($posId)) {
+                // Update status production yang sudah ada sesuai status POS
+                $productionStatus = $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft';
+                Production::where('pos_id', $posId)
+                    ->update(['status' => $productionStatus]);
+
+                // Buat production baru untuk produk receipt yang ada di items (jika belum ada)
+                $existingProductIds = Production::where('pos_id', $posId)
+                    ->pluck('product_id');
+                foreach ($data['items'] as $item) {
+                    if (is_numeric($item['id']) && !$existingProductIds->contains($item['id'])) {
+                        $hasRecipe = ProductReceipt::where('product_id', $item['id'])->exists();
+                        if ($hasRecipe) {
+                            $production = Production::create([
+                                'production_number' => Production::getOrderNumber(),
+                                'product_id'        => $item['id'],
+                                'production_date'   => now(),
+                                'status'            => $productionStatus,
+                                'created_by'        => $userId,
+                                'quantity'          => $item['qty'],
+                                'staff_id'          => $userId,
+                                'pos_id'            => $transaksiId,
+                                'branch_id'         => $data['branch_id'] ?? null,
+                            ]);
+
+                            $productReceipts = ProductReceipt::where('product_id', $item['id'])->get();
+                            foreach ($productReceipts as $receipt) {
+                                ProductionDetail::create([
+                                    'production_id' => $production->id,
+                                    'product_id'    => $receipt->product_receipt_id,
+                                    'quantity'      => $receipt->quantity * $item['qty'],
+                                ]);
+                            }
+                        }
+                    }
+                }
+
             }
 
             if (! $isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {

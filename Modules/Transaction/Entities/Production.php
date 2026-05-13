@@ -24,7 +24,8 @@ class Production extends Model
         'staff_id',
         'branch_id',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'pos_id'
     ];
 
 
