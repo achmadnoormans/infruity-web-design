@@ -1139,11 +1139,14 @@ class ProductController extends Controller
             // Single branch query
             $query = DB::table('product_stock')
                 ->where('branch_id', $branch)
+                ->whereNull('is_variant')
+                ->where('tipe', '!=', 'parcel')
                 ->orderBy($orderColumn, $orderDirection);
         } else {
             // All branches with aggregation
             $query = DB::table('product_stock')
                 ->where('tipe', '!=', 'parcel')
+                ->whereNull('is_variant')
                 ->select(
                     'id',
                     'name',

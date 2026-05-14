@@ -29,13 +29,6 @@ child_agg AS (
     GROUP BY
         pc.parent_id,
         ts.branch_id
-),
-product_stock_parent AS (
-    SELECT
-        p.id AS product_id,
-        COALESCE(pc.parent_id, p.id) AS stock_parent_id
-    FROM products p
-    LEFT JOIN product_child pc ON pc.product_id = p.id
 )
 SELECT
     A.id,
@@ -70,15 +63,13 @@ SELECT
     END AS stock_status
 
 FROM products A
-JOIN product_stock_parent psp
-    ON psp.product_id = A.id
 LEFT JOIN parent_ts
-    ON parent_ts.product_id = psp.stock_parent_id
+    ON parent_ts.product_id = A.id
 LEFT JOIN child_agg
-    ON child_agg.parent_id = psp.stock_parent_id
+    ON child_agg.parent_id = A.id
    AND child_agg.branch_id = parent_ts.branch_id
 LEFT JOIN product_units C
     ON C.id = A.product_unit
 WHERE A.tipe != 'parcel'
--- AND A.is_variant IS NULL
+AND A.is_variant IS NULL
 AND LOWER(A.name) NOT LIKE '%jus%';
