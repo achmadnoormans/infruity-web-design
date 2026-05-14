@@ -238,9 +238,31 @@ class PosController extends Controller
         try {
             DB::beginTransaction();
             $pos = PosModel::findOrFail($id);
-            $pos->delete();
+
+            // Hapus parcel products
+            $parcelProductIds = PosDetailModel::where('pos_id', $id)
+                ->whereNotNull('parcel_id')
+                ->pluck('product_id')
+                ->filter()
+                ->all();
+            if (! empty($parcelProductIds)) {
+                Product::whereIn('id', $parcelProductIds)->delete();
+            }
+
+            // Hapus production parcel details
+            ProductionParcelDetail::where('pos_id', $id)->delete();
+
+            // Hapus production details untuk productions yang terkait
+            $productionIds = Production::where('pos_id', $id)->pluck('id');
+            ProductionDetail::whereIn('production_id', $productionIds)->delete();
+
+            // Hapus productions
+            Production::where('pos_id', $id)->delete();
+
+            // Hapus POS details, payments, dan transaksi utama
             PosDetailModel::where('pos_id', $id)->delete();
             Payment::where('pos_id', $id)->delete();
+            $pos->delete();
 
             DB::commit();
             return response()->json([
