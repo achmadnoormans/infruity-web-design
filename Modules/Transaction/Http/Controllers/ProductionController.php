@@ -777,26 +777,37 @@ class ProductionController extends Controller
                             </div>';
                 })
                 ->addColumn('production_date', function ($item) {
-                    $date = $item->production_date ? date('d/m/Y', strtotime($item->production_date)) : 'N/A';
+                    $date = $item->created_at ? date('d/m/Y H:i', strtotime($item->created_at)) : 'N/A';
+
+                    $result = '<span class="text-muted d-block fs-8">' . $date . '</span>';
 
                     if ($item->branch) {
-                        return '<span class="text-muted d-block fs-8">' . $date . '</span><span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
+                        $result .= '<span class="badge badge-light-primary">' . e($item->branch->name) . '</span>';
                     }
 
-                    return $date;
+                    if ($item->staff) {
+                        $result .= '<br><small class="text-muted">' . e($item->staff->name) . '</small>';
+                    }
+
+                    return $result;
                 })
                 ->addColumn('status', function ($item) {
+                    $posBadge = '';
+                    if ($item->pos_id) {
+                        $posBadge = ' <br><span class="badge badge-light-danger">POS</span>';
+                    }
+
                     switch ($item->status) {
                         case 'posting':
-                            return '<span class="badge badge-light-success">Completed</span>';
+                            return '<span class="badge badge-light-success">Completed</span>' . $posBadge;
                         case 'complete':
-                            return '<span class="badge badge-light-success">Complete</span>';
+                            return '<span class="badge badge-light-success">Complete</span>' . $posBadge;
                         case 'draft':
-                            return '<span class="badge badge-light-warning">Draft</span>';
+                            return '<span class="badge badge-light-warning">Draft</span>' . $posBadge;
                         case 'temp':
-                            return '<span class="badge badge-light-info">Temp</span>';
+                            return '<span class="badge badge-light-info">Temp</span>' . $posBadge;
                         default:
-                            return '<span class="badge badge-light-secondary">' . ucfirst($item->status ?? 'Unknown') . '</span>';
+                            return '<span class="badge badge-light-secondary">' . ucfirst($item->status ?? 'Unknown') . '</span>' . $posBadge;
                     }
                 })
                 ->addColumn('action', function ($row) {

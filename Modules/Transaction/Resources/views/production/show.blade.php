@@ -142,6 +142,9 @@
                         @else
                             <span class="badge badge-light-secondary fs-7 fw-bold">{{ ucfirst($data->status) }}</span>
                         @endif
+                        @if($data->pos_id)
+                            <span class="badge badge-light-primary fs-7 fw-bold ms-2">POS</span>
+                        @endif
                     </div>
                     <!--end::Col-->
                 </div>
