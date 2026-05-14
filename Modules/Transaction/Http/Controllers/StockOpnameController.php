@@ -155,7 +155,36 @@ class StockOpnameController extends Controller
             return $denied;
         }
 
-        //
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'branch_id' => 'required|exists:branch,id',
+            'date' => 'required|date',
+            'real_stock' => 'required|numeric',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $stock = StockOpname::findOrFail($id);
+
+            $stock->product_id = $validated['product_id'];
+            $stock->date = $validated['date'];
+            $stock->branch_id = $validated['branch_id'];
+            $stock->real_stock = $validated['real_stock'];
+            $stock->difference = (Double)$validated['real_stock'] - (Double)$stock->stock;
+            $stock->updated_by = Auth::user()->id_user;
+            $stock->save();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Transaksi gagal diperbarui.',
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Transaksi berhasil diperbarui.',
+            'data' => $stock
+        ]);
     }
 
     /**

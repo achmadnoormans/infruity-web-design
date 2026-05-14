@@ -503,10 +503,13 @@
 
         function editProduct(id) {
             $.ajax({
-                url: `/stock-opname/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
+                url: `/stock-opname/${id}/edit`,
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
+
+                    // Prevent old branch change handler from overwriting quantity
+                    $('#branch_id').off('change.stockOpname');
 
                     // Clear and reset product_id select2 first
                     var $productSelect = $('select[name="product_id"]');
@@ -521,20 +524,20 @@
                         fp.setDate(response.date);
                     }
 
-                    // Set form fields - use 'stock' from database, not 'quantity'
+                    // Set branch_id BEFORE quantity so re-init won't overwrite
+                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
+
+                    // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
 
-                    // Set branch_id
-                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
-
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
-                    form.attr('action', `/stock-opname/${id}`); // URL untuk update produk
-                    form.find('input[name="_method"]').remove(); // Hapus input _method jika ada
+                    form.attr('action', `/stock-opname/${id}`);
+                    form.find('input[name="_method"]').remove();
                     form.append(
                         '<input type="hidden" name="_method" value="PUT">'
-                    ); // Menambahkan input _method untuk PUT
+                    );
 
                     // --- ENABLE semua input/select/textarea di form untuk edit ---
                     form.find('input, select, textarea, button[type="submit"]').prop('disabled', false);
@@ -558,10 +561,13 @@
 
         function viewProduct(id) {
             $.ajax({
-                url: `/stock-opname/${id}/edit`, // URL untuk mengambil data produk yang akan diedit
+                url: `/stock-opname/${id}/edit`,
                 type: 'GET',
                 success: function(response) {
                     console.log(response);
+
+                    // Prevent old branch change handler from overwriting quantity
+                    $('#branch_id').off('change.stockOpname');
 
                     // Clear and reset product_id select2 first
                     var $productSelect = $('select[name="product_id"]');
@@ -576,12 +582,12 @@
                         fp.setDate(response.date);
                     }
 
-                    // Set form fields - use 'stock' from database, not 'quantity'
+                    // Set branch_id BEFORE quantity so re-init won't overwrite
+                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
+
+                    // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
-
-                    // Set branch_id
-                    $('select[name="branch_id"]').val(response.branch_id).trigger('change');
 
                     // Ubah action form untuk view (no action)
                     var form = $('#kt_modal_add_customer_form');
