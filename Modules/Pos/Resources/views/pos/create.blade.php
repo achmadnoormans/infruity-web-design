@@ -178,7 +178,7 @@
                                                 x-text="product.price.toLocaleString()"></span></small>
                                         <br>
                                         <span class="badge badge-light-info"
-                                            x-text="product.get_stock.stock_available">Qty</span>
+                                            x-text="product.get_stock?.stock_available ?? 0">Qty</span>
                                     </div>
                                 </button>
                                 <button @click="openModal(product)" class="btn">

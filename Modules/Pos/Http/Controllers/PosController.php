@@ -620,7 +620,8 @@ class PosController extends Controller
                 }
                 foreach ($data['jus'] as $key => $value) {
                     $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
-                    $newStock     = $productStock->stock_available - $value['qty'];
+                    $currentStock = $productStock?->stock_available ?? 0;
+                    $newStock     = $currentStock - $value['qty'];
                     if ($newStock <= 0) {
                         $production = new Production([
                             'production_number' => Production::getOrderNumber(),
