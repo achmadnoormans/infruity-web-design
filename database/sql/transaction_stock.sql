@@ -1,153 +1,161 @@
 DROP VIEW IF EXISTS transaction_stock;
 CREATE VIEW transaction_stock AS
-SELECT
-	*
-FROM
-	(-- 	STOCK IN
+WITH base AS (
+	-- 	STOCK IN
 	SELECT
 		0 AS branch_id,
 		product_id,
 		quantity,
 		avg_price,
-		-- date,
-		created_at AS date,
-		`code` AS reff,
+		stock_in.created_at AS date,
+		stock_in.`code` AS reff,
 		'stock-in' AS url,
-		id AS id
-	FROM
-		stock_in
+		stock_in.id AS id,
+		u1.nm_user AS created_by
+	FROM stock_in
+	LEFT JOIN users u1 ON u1.id_user = stock_in.created_by
+
 	UNION ALL
 
 	-- STOCK OUT
 	SELECT
 		0 AS branch_id,
 		product_id,
-		- quantity,
-		avg_price,
-		-- date,
-		created_at,
-		`code`,
+		- stock_out.quantity,
+		stock_out.avg_price,
+		stock_out.created_at,
+		stock_out.`code`,
 		'stock-out',
-		id
-	FROM
-		stock_out
+		stock_out.id,
+		u2.nm_user
+	FROM stock_out
+	LEFT JOIN users u2 ON u2.id_user = stock_out.created_by
+
 	UNION ALL
 
 	-- WHOLESALE
 	SELECT
-		branch_id,
-		product_id,
-		quantity,
-		price,
-		-- wholesale.order_date,
+		wholesale.branch_id,
+		wholesale_product.product_id,
+		wholesale_product.quantity,
+		wholesale_product.price,
 		wholesale.created_at,
 		'pengadaan' AS reff,
 		'wholesale' AS url,
-		wholesale.id AS id
-	FROM
-		wholesale_product
-		JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
-	WHERE
-		wholesale.`status` = 'posting'
-		AND product_id != 0
+		wholesale.id AS id,
+		u3.nm_user
+	FROM wholesale_product
+	JOIN wholesale ON wholesale_product.wholesale_id = wholesale.id
+	LEFT JOIN users u3 ON u3.id_user = wholesale.created_by
+	WHERE wholesale.`status` = 'posting'
+		AND wholesale_product.product_id != 0
+
 	UNION ALL
 
 	-- STOCK OUT TRANSACTION
 	SELECT
 		0 AS branch_id,
 		product_id,
-		- quantity,
-		avg_price,
-		-- date,
-		created_at,
-		'stock-out',
-		'stock-out-transaction',
-		id
-	FROM
-		stock_out_transaction
+		- stock_out_transaction.quantity,
+		stock_out_transaction.avg_price,
+		stock_out_transaction.created_at,
+		'stock-out' AS reff,
+		'stock-out-transaction' AS url,
+		stock_out_transaction.id,
+		u4.nm_user
+	FROM stock_out_transaction
+	LEFT JOIN users u4 ON u4.id_user = stock_out_transaction.created_by
+
 	UNION ALL
 
 	-- STOCK OPNAME
 	SELECT
-		branch_id AS branch_id,
-		product_id,
-		difference,
-		avg_price,
-		-- date,
-		created_at,
-		'stock-opname',
-		'stock-opname',
-		id
-	FROM
-		stock_opname
+		stock_opname.branch_id,
+		stock_opname.product_id,
+		stock_opname.difference,
+		stock_opname.avg_price,
+		stock_opname.created_at,
+		'stock-opname' AS reff,
+		'stock-opname' AS url,
+		stock_opname.id,
+		u5.nm_user
+	FROM stock_opname
+	LEFT JOIN users u5 ON u5.id_user = stock_opname.created_by
+
 	UNION ALL
 
-	-- PRODUCTION (PRODUCT RESEP)(+)
+	-- PRODUCTION (+)
 	SELECT
-		branch_id,
-		product_id,
-		quantity,
+		production.branch_id,
+		production.product_id,
+		production.quantity,
 		NULL,
-		-- production_date,
-		created_at,
-		'produksi',
-		'production',
-		id
-	FROM
-		production
-        WHERE production.`status` IN ('posting', 'complete')
+		production.created_at,
+		'produksi' AS reff,
+		'production' AS url,
+		production.id,
+		u6.nm_user
+	FROM production
+	LEFT JOIN users u6 ON u6.id_user = production.created_by
+	WHERE production.`status` IN ('posting', 'complete')
+
 	UNION ALL
 
-	-- DETAIL PRODUCTION (-)
+	-- PRODUCTION DETAIL (-)
 	SELECT
 		production.branch_id,
 		production_detail.product_id,
 		- production_detail.quantity,
 		NULL,
-		-- production.production_date,
 		production.created_at,
-		'produksi-detail',
-		'production',
-		production.id
-	FROM
-		production_detail
-		JOIN production ON production.id = production_detail.production_id
-        WHERE production.`status` IN ('posting', 'complete')
-        UNION ALL
+		'produksi-detail' AS reff,
+		'production' AS url,
+		production.id AS id,
+		u7.nm_user
+	FROM production_detail
+	JOIN production ON production.id = production_detail.production_id
+	LEFT JOIN users u7 ON u7.id_user = production.created_by
+	WHERE production.`status` IN ('posting', 'complete')
 
-	-- DETAIL POS
+	UNION ALL
+
+	-- POS
 	SELECT
 		pos_transaction.branch_id,
 		pos_transaction_detail.product_id,
 		- pos_transaction_detail.quantity,
 		pos_transaction_detail.price,
-		-- pos_transaction.date,
 		pos_transaction.created_at,
-		'pos',
-		'pos',
-		 pos_transaction.id AS id
-	FROM
-		pos_transaction_detail
+		'pos' AS reff,
+		'pos' AS url,
+		pos_transaction.id AS id,
+		u8.nm_user
+	FROM pos_transaction_detail
 	JOIN pos_transaction ON pos_transaction.id = pos_transaction_detail.pos_id
-    WHERE pos_transaction_detail.deleted_at IS NULL
-	AND pos_transaction.`status` IN ('paid', 'debt')
-    AND pos_transaction.deleted_at IS NULL
+	LEFT JOIN users u8 ON u8.id_user = pos_transaction.created_by
+	WHERE pos_transaction_detail.deleted_at IS NULL
+		AND pos_transaction.`status` IN ('paid', 'debt')
+		AND pos_transaction.deleted_at IS NULL
+
 	UNION ALL
 
-    -- DETAIL SORTIR
+	-- SORTIR
 	SELECT
 		sortir_transaction.branch_id,
 		sortir_transaction_detail.product_id,
 		- sortir_transaction_detail.quantity,
 		sortir_transaction_detail.price,
 		sortir_transaction_detail.created_at,
-		'sortir',
-		'sortir',
-		sortir_transaction.id AS id
-	FROM
-	sortir_transaction_detail
+		'sortir' AS reff,
+		'sortir' AS url,
+		sortir_transaction.id AS id,
+		u9.nm_user
+	FROM sortir_transaction_detail
 	JOIN sortir_transaction ON sortir_transaction_detail.sortir_id = sortir_transaction.id
-    UNION ALL
+	LEFT JOIN users u9 ON u9.id_user = sortir_transaction.created_by
+	WHERE sortir_transaction.`status` IN ('paid', 'debt')
+
+	UNION ALL
 
 	-- TRANSFER (ASAL)
 	SELECT
@@ -156,12 +164,15 @@ FROM
 		- transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer asal',
-		'transfer',
-		transfer.id AS id
+		'transfer asal' AS reff,
+		'transfer' AS url,
+		transfer.id AS id,
+		u10.nm_user
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	LEFT JOIN users u10 ON u10.id_user = transfer.created_by
 	WHERE transfer.`status` = 'selesai'
+
 	UNION ALL
 
 	-- TRANSFER (TUJUAN)
@@ -171,24 +182,43 @@ FROM
 		transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer tujuan',
-		'transfer',
-		transfer.id AS id
+		'transfer tujuan' AS reff,
+		'transfer' AS url,
+		transfer.id AS id,
+		u11.nm_user
 	FROM transfer
 	JOIN transfer_detail ON transfer_detail.transfer_id = transfer.id
+	LEFT JOIN users u11 ON u11.id_user = transfer.created_by
 	WHERE transfer.`status` = 'selesai'
+
 	UNION ALL
 
+	-- POS PARCEL
 	SELECT
 		pos_transaction.branch_id,
 		production_parcel_detail.product_id,
 		- production_parcel_detail.quantity,
 		production_parcel_detail.price,
 		pos_transaction.created_at,
-		'pos-parcel',
-		'pos',
-		pos_transaction.id AS id
+		'pos-parcel' AS reff,
+		'pos' AS url,
+		pos_transaction.id AS id,
+		u12.nm_user
 	FROM production_parcel_detail
 	JOIN pos_transaction ON pos_transaction.id = production_parcel_detail.pos_id
-	AND pos_transaction.`status` IN ('paid', 'debt')
-	) AS Q;
+	LEFT JOIN users u12 ON u12.id_user = pos_transaction.created_by
+	WHERE pos_transaction.`status` IN ('paid', 'debt')
+		AND pos_transaction.deleted_at IS NULL
+)
+SELECT *,
+	COALESCE(SUM(quantity) OVER (
+		PARTITION BY product_id, branch_id
+		ORDER BY date, id, url, reff
+		ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+	), 0) AS stock_awal,
+	COALESCE(SUM(quantity) OVER (
+		PARTITION BY product_id, branch_id
+		ORDER BY date, id, url, reff
+		ROWS UNBOUNDED PRECEDING
+	), 0) AS stock_akhir
+FROM base;

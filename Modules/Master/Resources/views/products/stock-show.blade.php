@@ -51,8 +51,11 @@
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-100px">Product</th>
                             <th class="text-end min-w-70px">Quantity</th>
+                            <th class="text-end min-w-70px">Stock Awal</th>
+                            <th class="text-end min-w-70px">Stock Akhir</th>
                             <th class="text-end min-w-100px">Tanggal</th>
                             <th class="text-end min-w-100px">Reference</th>
+                            <th class="text-end min-w-100px">Created By</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600">
@@ -95,6 +98,16 @@
                         className: 'text-end'
                     },
                     {
+                        data: 'stock_awal',
+                        name: 'stock_awal',
+                        className: 'text-end'
+                    },
+                    {
+                        data: 'stock_akhir',
+                        name: 'stock_akhir',
+                        className: 'text-end'
+                    },
+                    {
                         data: 'date',
                         name: 'date',
                         className: 'text-end'
@@ -104,10 +117,15 @@
                         name: 'reff',
                         className: 'text-end'
                     },
+                    {
+                        data: 'created_by',
+                        name: 'created_by',
+                        className: 'text-end'
+                    },
 
                 ],
                 order: [
-                    [2, 'desc']
+                    [4, 'desc']
                 ]
             });
 
@@ -118,7 +136,7 @@
             $('[data-kt-ecommerce-product-filter="status"]').on('change', function() {
                 let val = $(this).val();
                 if (val === 'all') val = '';
-                dataTable.column(3).search(val).draw();
+                dataTable.column(5).search(val).draw();
             });
 
             $('[data-kt-ecommerce-product-filter="stock"]').on('change', function() {
