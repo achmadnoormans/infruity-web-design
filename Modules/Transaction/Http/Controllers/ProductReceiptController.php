@@ -334,8 +334,13 @@ class ProductReceiptController extends Controller
             return $denied;
         }
 
+        $search = $request->input('search', '');
         $data = Receipt::with('products')
-            ->select('*')
+            ->when($search, function ($query) use ($search) {
+                return $query->whereHas('products', function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                });
+            })
             ->get();
         return response()->json($data);
     }

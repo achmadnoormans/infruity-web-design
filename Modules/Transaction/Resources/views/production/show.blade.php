@@ -107,7 +107,7 @@
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
-                        <span class="fw-bold fs-6 text-gray-800">{{ dateindo($data->production_date) }}</span>
+                        <span class="fw-bold fs-6 text-gray-800">{{ dateindo($data->production_date) }} {{ $data->created_at->format('H:i') }} WIB</span>
                     </div>
                     <!--end::Col-->
                 </div>
@@ -120,7 +120,7 @@
                     <!--end::Label-->
                     <!--begin::Col-->
                     <div class="col-lg-8 fv-row">
-                        <span class="fw-bold fs-6 text-gray-800">{{ $data->staff->name ?? 'Tidak ada' }}</span>
+                        <span class="fw-bold fs-6 text-gray-800">{{ $data->staff->name ?? $data->creator->nm_user ?? 'Tidak ada' }}</span>
                     </div>
                     <!--end::Col-->
                 </div>
@@ -317,7 +317,7 @@
                 <!--begin::Item-->
                 <div class="d-flex flex-stack mb-3">
                     <div class="text-gray-700 fw-semibold fs-6 me-2">Dibuat oleh:</div>
-                    <div class="text-gray-900 fw-bold fs-6">{{ $data->creator->name ?? 'System' }}</div>
+                    <div class="text-gray-900 fw-bold fs-6">{{ $data->creator->nm_user ?? 'System' }}</div>
                 </div>
                 <!--end::Item-->
                 

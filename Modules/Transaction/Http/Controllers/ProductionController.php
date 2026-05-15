@@ -146,6 +146,7 @@ class ProductionController extends Controller
             if ($request->sell_price) {
                 $production->sell_price = preg_replace('/[^0-9]/', '', $request->sell_price);
             }
+            $production->created_by      = Auth::user()->id_user;
             $production->save();
 
             // Clear existing production details

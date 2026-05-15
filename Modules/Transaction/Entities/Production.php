@@ -67,7 +67,7 @@ class Production extends Model
 
     public function creator()
     {
-        return $this->belongsTo('App\User', 'created_by', 'id_user');
+        return $this->belongsTo('App\User', 'created_by', 'id_user')->withoutGlobalScope('is_aktif');
     }
 
     public function productionDetails()
