@@ -115,9 +115,6 @@
                         <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
                             <th class="text-start min-w-150px">Name</th>
                             <th class="text-start min-w-150px">Date</th>
-                            @if(request()->segment(1) == 'transfer-penerima')
-                            <th class="text-start min-w-100px text-center">Koreksi</th>
-                            @endif
                             <th></th>
                         </tr>
                     </thead>
@@ -181,13 +178,6 @@
                         name: 'date',
                         className: 'text-center'
                     },
-                    @if(request()->segment(1) == 'transfer-penerima')
-                    {
-                        data: 'correction',
-                        name: 'correction',
-                        className: 'text-center'
-                    },
-                    @endif
                     {
                         data: 'action',
                         name: 'action'
