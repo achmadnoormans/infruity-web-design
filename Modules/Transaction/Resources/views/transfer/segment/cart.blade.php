@@ -19,112 +19,36 @@
                         'btn btn-outline btn-outline-dashed btn-outline-success' : ''"
                     @click="handleItemClick(item)">
 
-                    <!-- Mobile Layout (Stack Vertically) -->
-                    <div class="d-block d-lg-none">
-                        <!-- Product Name & Price -->
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="mb-2">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                    <template x-if="item.original_qty != item.qty">
-                                        @if (request('type') != 'transfer-pengirim')
-                                            <span class="badge badge-light-danger ms-2 py-1 px-2"
-                                                style="font-size: 0.65rem;">
-                                                Dikoreksi
-                                            </span>
-                                        @endif
-                                    </template>
-                                    @if ($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
-                                        <i class="bi bi-pencil-fill text-warning fs-9 ms-2"></i>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
+                                <template x-if="item.original_qty != item.qty">
+                                    @if (request('type') != 'transfer-pengirim')
+                                        <span class="badge badge-light-danger ms-2 py-1 px-2"
+                                            style="font-size: 0.65rem;">
+                                            Dikoreksi
+                                        </span>
                                     @endif
-                                </div>
-                                <small class="text-muted d-flex align-items-center">
-                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
-                                    <template x-if="item.original_qty != item.qty">
-                                        <div class="d-flex align-items-center">
-                                            <span class="text-decoration-line-through text-gray-500 me-1"
-                                                x-text="item.original_qty"></span>
-                                            <i class="bi bi-arrow-right fs-9 text-danger me-1"></i>
-                                            <span class="fw-bold text-danger" x-text="item.qty"></span>
-                                        </div>
-                                    </template>
-                                    <template x-if="item.original_qty == item.qty">
-                                        <span x-text="item.qty"></span>
-                                    </template>
-                                    (<span x-text="item.unit"></span>)
-                                </small>
-                                <div x-show="item.discount > 0">
-                                    <small class="text-muted">Diskon</small>
-                                    <small class="text-muted" x-show="item.discountPercent > 0">
-                                        <span x-text="item.discountPercent"></span>%
-                                    </small>
-                                    <small class="text-muted">
-                                        (-<span x-text="item.discount.toLocaleString()"></span>)
-                                    </small>
-                                </div>
+                                </template>
+                                @if ($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
+                                    <i class="bi bi-pencil-fill text-warning fs-9 ms-2"></i>
+                                @endif
                             </div>
-                            <div class="mb-2 text-end">
-                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
-                                <span class="text-muted">
-                                    Rp <span
-                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
-                                        ></span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Desktop Layout (Horizontal) -->
-                    <div class="d-none d-lg-block">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="mb-2">
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
-                                    <template x-if="item.original_qty != item.qty">
-                                        @if (request('type') != 'transfer-pengirim')
-                                            <span class="badge badge-light-danger ms-2 py-1 px-2"
-                                                style="font-size: 0.65rem;">
-                                                Dikoreksi
-                                            </span>
-                                        @endif
-                                    </template>
-                                    @if ($is_view && ($data->status ?? '') !== 'selesai' && ($type ?? '') == 'transfer-penerima')
-                                        <i class="bi bi-pencil-fill text-warning fs-9 ms-2"></i>
-                                    @endif
-                                </div>
-                                <small class="text-muted d-flex align-items-center">
-                                    <span x-text="item.price.toLocaleString()"></span> &nbsp; x &nbsp;
-                                    <template x-if="item.original_qty != item.qty">
-                                        <div class="d-flex align-items-center">
-                                            <span class="text-decoration-line-through text-gray-500 me-1"
-                                                x-text="item.original_qty"></span>
-                                            <i class="bi bi-arrow-right fs-9 text-danger me-1"></i>
-                                            <span class="fw-bold text-danger" x-text="item.qty"></span>
-                                        </div>
-                                    </template>
-                                    <template x-if="item.original_qty == item.qty">
-                                        <span x-text="item.qty"></span>
-                                    </template>
-                                    (<span x-text="item.unit"></span>)
-                                </small>
-                                <div x-show="item.discount > 0">
-                                    <small class="text-muted">Diskon</small>
-                                    <small class="text-muted" x-show="item.discountPercent > 0">
-                                        <span x-text="item.discountPercent"></span>%
-                                    </small>
-                                    <small class="text-muted">
-                                        (-<span x-text="item.discount.toLocaleString()"></span>)
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="mb-2">
-                                <h6 class="mb-1 fw-bold text-transparent">a</h6>
-                                <span class="text-muted">
-                                    Rp <span
-                                        x-text="(item.total_input ||( (item.price * item.qty) - item.discount)).toLocaleString()">
-                                        ></span>
-                                </span>
-                            </div>
+                            <small class="text-muted d-flex align-items-center">
+                                <template x-if="item.original_qty != item.qty">
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-decoration-line-through text-gray-500 me-1"
+                                            x-text="item.original_qty"></span>
+                                        <i class="bi bi-arrow-right fs-9 text-danger me-1"></i>
+                                        <span class="fw-bold text-danger" x-text="item.qty"></span>
+                                    </div>
+                                </template>
+                                <template x-if="item.original_qty == item.qty">
+                                    <span class="fw-bold" x-text="item.qty"></span>
+                                </template>
+                                <span class="ms-1" x-text="item.unit"></span>
+                            </small>
                         </div>
                     </div>
                 </div>
