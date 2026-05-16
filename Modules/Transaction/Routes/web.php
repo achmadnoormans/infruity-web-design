@@ -51,11 +51,31 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('sortir/save-stock', [SortirController::class, 'save_stock'])->name('sortir.save-stock');
     Route::post('sortir/save-transaction', [SortirController::class, 'saveTransaction'])->name('sortir.save-transaction');
 
-    Route::resource('transfer', TransferController::class)->names('transfer')->except('show');
-    Route::get('transfer-pengirim', [TransferController::class, 'index'])->name('transfer-pengirim.index');
-    Route::get('transfer-penerima', [TransferController::class, 'index'])->name('transfer-penerima.index');
-    Route::get('transfer/show/{id}', [TransferController::class, 'show'])->name('transfer.show');
-    Route::post('transfer/set-selesai/{id}', [TransferController::class, 'set_selesai'])->name('transfer.set_selesai');
+    // Transfer - Pengirim
+    Route::prefix('transfer-pengirim')->name('transfer-pengirim.')->group(function () {
+        Route::get('/', [TransferController::class, 'index'])->name('index');
+        Route::get('create', [TransferController::class, 'create'])->name('create');
+        Route::post('store', [TransferController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [TransferController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [TransferController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [TransferController::class, 'destroy'])->name('destroy');
+        Route::get('show/{id}', [TransferController::class, 'show'])->name('show');
+        Route::post('set-selesai/{id}', [TransferController::class, 'set_selesai'])->name('set_selesai');
+    });
+
+    // Transfer - Penerima
+    Route::prefix('transfer-penerima')->name('transfer-penerima.')->group(function () {
+        Route::get('/', [TransferController::class, 'index'])->name('index');
+        Route::get('create', [TransferController::class, 'create'])->name('create');
+        Route::post('store', [TransferController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [TransferController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [TransferController::class, 'update'])->name('update');
+        Route::delete('delete/{id}', [TransferController::class, 'destroy'])->name('destroy');
+        Route::get('show/{id}', [TransferController::class, 'show'])->name('show');
+        Route::post('set-selesai/{id}', [TransferController::class, 'set_selesai'])->name('set_selesai');
+    });
+
+    // Transfer - Shared (AJAX)
     Route::post('transfer/save-stock', [TransferController::class, 'save_stock'])->name('transfer.save-stock');
     Route::post('transfer/save-correction', [TransferController::class, 'saveCorrection'])->name('transfer.save-correction');
     Route::post('transfer/save-transaction', [TransferController::class, 'saveTransaction'])->name('transfer.save-transaction');

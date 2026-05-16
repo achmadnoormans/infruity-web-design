@@ -704,6 +704,7 @@
                 const branchId = document.querySelector('select[name="branch_id"]').value;
                 const branchDestinationId = document.querySelector('select[name="branch_destination_id"]').value;
 
+                let type = window.location.pathname.split('/')[1];
                 const data = {
                     date: transactionDate,
                     invoice_number: invoiceNumber,
@@ -713,8 +714,8 @@
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
                     status: 'draft',
+                    type: type,
                 };
-                // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch('/transfer/save-transaction', {
                         method: 'POST',
@@ -728,7 +729,6 @@
                     .then(async res => {
                         const json = await res.json().catch(() => ({}));
 
-                        // ❌ Jika error status (422 / 500)
                         if (!res.ok) {
                             if (json.errors) {
                                 Swal.fire({
@@ -749,8 +749,11 @@
                             throw new Error("Request Failed");
                         }
 
-                        // ✅ SUCCESS → panggil redirectToHome()
-                        redirectToHome();
+                        if (json.redirect_url) {
+                            window.location.href = json.redirect_url;
+                        } else {
+                            redirectToHome();
+                        }
                         if (typeof doneCallback === 'function') doneCallback();
 
                     })
@@ -780,6 +783,7 @@
                 const branchId = document.querySelector('select[name="branch_id"]').value;
                 const branchDestinationId = document.querySelector('select[name="branch_destination_id"]').value;
 
+                let type = window.location.pathname.split('/')[1];
                 const data = {
                     date: transactionDate,
                     invoice_number: invoiceNumber,
@@ -789,9 +793,9 @@
                     subtotal: this.subtotal,
                     total: this.totalHargaKeseluruhan,
                     status: 'pending',
+                    type: type,
                 };
 
-                // Simulasi kirim ke server
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch('/transfer/save-transaction', {
                         method: 'POST',
@@ -805,7 +809,6 @@
                     .then(async res => {
                         const json = await res.json().catch(() => ({}));
 
-                        // ❌ Jika error status (422 / 500)
                         if (!res.ok) {
                             if (json.errors) {
                                 Swal.fire({
@@ -826,8 +829,11 @@
                             throw new Error("Request Failed");
                         }
 
-                        // ✅ SUCCESS → panggil redirectToHome()
-                        redirectToHome();
+                        if (json.redirect_url) {
+                            window.location.href = json.redirect_url;
+                        } else {
+                            redirectToHome();
+                        }
                         if (typeof doneCallback === 'function') doneCallback();
 
                     })
@@ -986,8 +992,9 @@
             setSelesai() {
                 const id = '{{ $data->id ?? '' }}';
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const type = window.location.pathname.split('/')[1];
 
-                fetch('/transfer/set-selesai/' + id, {
+                fetch('/' + type + '/set-selesai/' + id, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1104,7 +1111,14 @@
         }
     }
     function redirectToHome(transaksiId) {
-        window.location.href = '/transfer';
+        let type = window.location.pathname.split('/')[1];
+        if (type === 'transfer-penerima') {
+            window.location.href = '/transfer-penerima';
+        } else if (type === 'transfer-pengirim') {
+            window.location.href = '/transfer-pengirim';
+        } else {
+            window.location.href = '/transfer';
+        }
     }
 
     function redirectToPayment(transaksiId) {

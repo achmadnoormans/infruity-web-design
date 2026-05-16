@@ -164,7 +164,7 @@ WITH base AS (
 		- transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer asal' AS reff,
+		'mengirim' AS reff,
 		'transfer' AS url,
 		transfer.id AS id,
 		u10.nm_user
@@ -182,7 +182,7 @@ WITH base AS (
 		transfer_detail.quantity,
 		transfer_detail.price,
 		transfer.created_at,
-		'transfer tujuan' AS reff,
+		'menerima' AS reff,
 		'transfer' AS url,
 		transfer.id AS id,
 		u11.nm_user

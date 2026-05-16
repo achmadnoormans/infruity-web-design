@@ -46,7 +46,7 @@ class TransferController extends Controller
         $data['data']           = null;
         $data['detail']         = null;
         $data['invoice_number'] = Transfer::getOrderNumber();
-        $data['type']           = request('type');
+        $data['type']           = request()->segment(1);
         $data['branches']       = Branch::whereIn('id', UserBranch::getUserBranch())->get();
         return view('transaction::transfer.create', $data);
     }
@@ -77,9 +77,10 @@ class TransferController extends Controller
         }
 
         $transfer = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
+        $type = request()->segment(1);
 
         // Ubah status ke proses jika status sebelumnya pending dan bukan pengirim yang melihat
-        if ($transfer->status == 'pending' && request('type') != 'transfer-pengirim') {
+        if ($transfer->status == 'pending' && $type != 'transfer-pengirim') {
             $transfer->update(['status' => 'proses']);
             $transfer->refresh();
         }
@@ -89,7 +90,7 @@ class TransferController extends Controller
         $data['detail']         = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $transfer->invoice_number;
         $data['is_view']        = true;
-        $data['type']           = request('type');
+        $data['type']           = $type;
         return view('transaction::transfer.create', $data);
     }
 
@@ -108,7 +109,7 @@ class TransferController extends Controller
         $data['data']           = Transfer::with('branch', 'branchDestination', 'createdBy')->findOrFail($id);
         $data['detail']         = TransferDetail::with(['product', 'product.unit', 'corrections.user'])->where('transfer_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
-        $data['type']           = request('type');
+        $data['type']           = request()->segment(1);
         return view('transaction::transfer.create', $data);
     }
 
@@ -218,10 +219,19 @@ class TransferController extends Controller
             DB::commit();
             DB::disconnect();
 
+            $type = request('type');
+            $redirectUrl = '/transfer';
+            if ($type === 'transfer-penerima') {
+                $redirectUrl = '/transfer-penerima';
+            } elseif ($type === 'transfer-pengirim') {
+                $redirectUrl = '/transfer-pengirim';
+            }
+
             return response()->json([
                 'success'      => true,
                 'message'      => 'Transaksi berhasil disimpan',
                 'transaksi_id' => $transaksiId,
+                'redirect_url' => $redirectUrl,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -369,7 +379,7 @@ class TransferController extends Controller
             ->addColumn('name', function ($item) use ($request) {
                 $html  = '<div class="d-flex align-items-center">';
                 $html .= '<div class="ms-5">';
-                $html .= '<a href="' . route('transfer.show', ['id' => $item->id, 'type' => $request->url]) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
+                $html .= '<a href="' . route($request->url . '.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
                 $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? 'unknown')) . '</span>';
                 return $html;
@@ -409,14 +419,14 @@ class TransferController extends Controller
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('transfer.show', ['id' => $item->id, 'type' => $request->url]) . '">
+                                <a class="dropdown-item" href="' . route($request->url . '.show', $item->id) . '">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
                 if ($request->url == 'transfer-pengirim') {
                     $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('transfer.edit', ['transfer' => $item->id, 'type' => $request->url]) . '">
+                                <a class="dropdown-item" href="' . route($request->url . '.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';

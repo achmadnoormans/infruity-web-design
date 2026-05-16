@@ -24,7 +24,7 @@
                             <div class="d-flex align-items-center">
                                 <h6 class="mb-1 fw-bold" x-text="item.name"></h6>
                                 <template x-if="item.original_qty != item.qty">
-                                    @if (request('type') != 'transfer-pengirim')
+                                    @if (($type ?? '') != 'transfer-pengirim')
                                         <span class="badge badge-light-danger ms-2 py-1 px-2"
                                             style="font-size: 0.65rem;">
                                             Dikoreksi

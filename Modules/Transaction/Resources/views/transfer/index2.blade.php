@@ -125,11 +125,13 @@
             <!--end::Card body-->
         </div>
     </div>
-    <a href="{{ url('transfer/create') }}?type={{ request()->segment(1) }}"
+    @if (request()->segment(1) != 'transfer-penerima')
+    <a href="{{ url(request()->segment(1) . '/create') }}"
         class="btn btn-primary rounded-circle shadow-lg position-fixed"
         style="bottom: 60px; right: 30px; width: 60px; height: 60px; z-index: 1050; display: flex; align-items: center; justify-content: center;">
         <i class="fa fa-plus text-white"></i>
     </a>
+    @endif
 @endsection
 
 @section('script')
@@ -234,7 +236,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ url('transfer') }}/" + id,
+                        url: "{{ url(request()->segment(1) . '/delete') }}/" + id,
                         type: 'DELETE',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content')

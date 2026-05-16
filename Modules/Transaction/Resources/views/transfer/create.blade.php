@@ -7,11 +7,7 @@
 
     <div class="mb-3">
         @php
-            $backUrl = route('transfer.index');
-            if(isset($type)) {
-                if($type == 'transfer-penerima') $backUrl = route('transfer-penerima.index');
-                elseif($type == 'transfer-pengirim') $backUrl = route('transfer-pengirim.index');
-            }
+            $backUrl = isset($type) ? route($type . '.index') : route('transfer.index');
         @endphp
         <a href="{{ $backUrl }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Kembali
