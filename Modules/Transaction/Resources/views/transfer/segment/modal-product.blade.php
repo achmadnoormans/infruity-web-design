@@ -60,12 +60,6 @@
                                 @input="updateTotalFromEditQty">
                         </div>
                     </div>
-                    <!-- Input Mode Harga -->
-                    <div class="mb-3">
-                        <label class="form-label">Jml Hpp terbuang</label>
-                        <input type="text" class="form-control" x-model="editTotalFormatted"
-                            @input="updateEditTotalFormatted" inputmode="numeric">
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">
