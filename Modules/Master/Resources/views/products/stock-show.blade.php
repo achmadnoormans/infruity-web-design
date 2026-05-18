@@ -21,10 +21,10 @@
                         <select class="form-select form-select-solid" data-control="select2"
                             data-hide-search="true" data-placeholder="Cabang"
                             data-kt-ecommerce-product-filter="branch">
-                            <option value="all">Semua</option>
                             @foreach ($branch as $item)
                                 <option value="{{ $item->id }}">{{ ucwords($item->name) }}</option>
                             @endforeach
+                            <option value="all">Semua</option>
                         </select>
                     </div>
                     <div class="w-100 w-md-auto">

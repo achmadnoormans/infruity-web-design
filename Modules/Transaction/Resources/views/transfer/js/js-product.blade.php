@@ -1010,7 +1010,7 @@
                                 title: 'Berhasil',
                                 text: json.message || 'Status berhasil diubah',
                             }).then(() => {
-                                window.location.reload();
+                                window.location.href = '/' + type;
                             });
                         } else {
                             Swal.fire({
