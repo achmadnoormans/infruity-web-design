@@ -1319,7 +1319,8 @@ class ProductController extends Controller
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = is_array($request->start_date) ? ($request->start_date[0] ?? $request->start_date) : $request->start_date;
             $endDate = is_array($request->end_date) ? ($request->end_date[0] ?? $request->end_date) : $request->end_date;
-            $query->whereBetween('transaction_stock.date', [$startDate, $endDate]);
+            $query->whereDate('transaction_stock.date', '>=', $startDate)
+                  ->whereDate('transaction_stock.date', '<=', $endDate);
         }
 
         if ($request->filled('search')) {
