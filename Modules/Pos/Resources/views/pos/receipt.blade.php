@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt - Invoice #{{ $data->invoice_number ?? $data->id }}</title>
+    <title>Invoice #{{ $data->invoice_number ?? $data->id }}</title>
     <style>
         * {
             margin: 0;
@@ -13,487 +13,762 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: white;
-            padding: 0;
-            line-height: 1.4;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f0f2f5;
+            padding: 24px;
+            line-height: 1.6;
+            color: #1a1a2e;
         }
 
-        .receipt-container {
-            max-width: 100%;
-            margin: 0;
-            background: white;
-            box-shadow: none;
-            border-radius: 0;
-            overflow: visible;
-            min-height: 100vh;
+        .page-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
         }
 
         .receipt-header {
-            background: linear-gradient(135deg, #86af8f 0%, #099204 100%);
-            color: white;
-            padding: 20px;
+            background: linear-gradient(135deg, #0d6b3a 0%, #1a9e5c 50%, #28c76f 100%);
+            padding: 32px 28px 28px;
             text-align: center;
+            position: relative;
+        }
+
+        .receipt-header::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 70%);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            margin-bottom: 12px;
         }
 
         .store-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
         }
 
-        .store-info {
-            font-size: 14px;
-            opacity: 0.9;
+        .store-tagline {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
         }
 
-        .receipt-body {
-            padding: 20px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
+        .invoice-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
+            font-weight: 500;
+            margin-top: 16px;
         }
 
-        .invoice-info {
+        .invoice-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .body-content {
+            padding: 28px;
+        }
+
+        .info-grid {
             display: grid;
-            /* grid-template-columns: 1fr 1fr; */
-            gap: 10px;
-            font-size: 14px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px 14px;
         }
 
-        .info-label {
-            color: #666;
+        .info-item .label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .info-item .value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .customer-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #bbf7d0;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 24px;
+        }
+
+        .customer-card .customer-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 4px;
+        }
+
+        .customer-card .customer-detail {
+            font-size: 13px;
+            color: #4ade80;
             font-weight: 500;
         }
 
-        .info-value {
-            color: #333;
-            font-weight: bold;
+        .customer-card .customer-detail span {
+            color: #15803d;
         }
 
-        .customer-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #86af8f;
+        .shipping-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 24px;
         }
 
-        .customer-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 16px;
-            margin-bottom: 5px;
+        .shipping-card .shipping-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #3b82f6;
+            margin-bottom: 6px;
         }
 
-        .customer-details {
-            color: #666;
-            font-size: 14px;
+        .shipping-card .shipping-content {
+            font-size: 13px;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, #e2e8f0, transparent);
         }
 
         .items-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
+            border-collapse: separate;
+            border-spacing: 0 6px;
         }
 
-        .items-table th {
-            background: #f8f9fa;
-            padding: 12px 8px;
-            text-align: left;
+        .items-table thead th {
+            font-size: 11px;
             font-weight: 600;
-            color: #333;
-            border-bottom: 2px solid #e9ecef;
-            font-size: 12px;
+            color: #94a3b8;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #f1f5f9;
         }
 
-        .items-table td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #e9ecef;
-            font-size: 14px;
+        .items-table thead th:last-child,
+        .items-table thead th:nth-last-child(2) {
+            text-align: right;
         }
 
-        .item-name {
-            font-weight: 500;
-            color: #333;
+        .items-table tbody tr {
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: background 0.15s ease;
         }
 
-        .item-qty {
+        .items-table tbody td {
+            padding: 12px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .items-table tbody td:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .items-table tbody td:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .items-table tbody td:nth-child(2) {
             text-align: center;
-            color: #666;
+            font-weight: 500;
+            color: #64748b;
         }
 
-        .item-price {
+        .items-table tbody td:nth-child(3),
+        .items-table tbody td:nth-child(4) {
             text-align: right;
             font-weight: 600;
-            color: #333;
         }
 
-        .summary {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
+        .item-name-main {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .parcel-details {
+            padding: 6px 12px 12px !important;
+            background: transparent !important;
+        }
+
+        .parcel-list {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-top: 4px;
+        }
+
+        .parcel-list-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .parcel-item {
+            font-size: 12px;
+            color: #475569;
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .parcel-item::before {
+            content: '•';
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .discount-row td {
+            color: #ef4444 !important;
+        }
+
+        .discount-row .item-name-main {
+            color: #ef4444 !important;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
             margin-top: 20px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: center;
+            padding: 6px 0;
             font-size: 14px;
         }
 
-        .summary-label {
-            color: #666;
+        .summary-row .label {
+            color: #64748b;
+            font-weight: 500;
         }
 
-        .summary-value {
+        .summary-row .value {
             font-weight: 600;
-            color: #333;
+            color: #334155;
         }
 
-        .total-row {
-            border-top: 2px solid #dee2e6;
-            padding-top: 10px;
-            margin-top: 10px;
+        .summary-row.divider {
+            border-top: 1px dashed #cbd5e1;
+            margin-top: 8px;
+            padding-top: 12px;
         }
 
-        .total-row .summary-label {
-            font-weight: bold;
-            color: #333;
+        .summary-row.total {
+            padding: 10px 0 4px;
+        }
+
+        .summary-row.total .label {
             font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
         }
 
-        .total-row .summary-value {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 16px;
+        .summary-row.total .value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #16a34a;
+        }
+
+        .payment-info {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-top: 14px;
+        }
+
+        .payment-info .summary-row .label {
+            font-size: 13px;
+        }
+
+        .payment-info .summary-row .value {
+            font-size: 13px;
+        }
+
+        .payment-info .summary-row.return .label {
+            color: #16a34a;
+        }
+
+        .payment-info .summary-row.return .value {
+            color: #16a34a;
         }
 
         .receipt-footer {
-            background: #f8f9fa;
-            padding: 20px;
             text-align: center;
-            color: #666;
-            font-size: 12px;
-            border-top: 1px solid #e9ecef;
+            padding: 24px 28px 28px;
+            border-top: 1px solid #f1f5f9;
         }
 
         .thank-you {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 4px;
         }
 
-        .print-button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+        .footer-text {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 28px 28px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
+            text-decoration: none;
             cursor: pointer;
-            margin: 20px auto;
-            display: block;
-            transition: background 0.3s ease;
+            border: none;
+            transition: all 0.15s ease;
         }
 
-        .print-button:hover {
-            background: #5a6fd8;
+        .btn-primary {
+            background: #16a34a;
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(22, 163, 74, 0.3);
         }
 
-        /* Responsive Design */
-        @media (max-width: 480px) {
+        .btn-primary:hover {
+            background: #15803d;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.4);
+            transform: translateY(-1px);
+        }
 
-            .invoice-info {
-                grid-template-columns: 1fr;
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #475569;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 0;
+                background: #fff;
+            }
+
+            .card {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .receipt-header {
+                padding: 28px 20px 24px;
+            }
+
+            .body-content {
+                padding: 20px;
+            }
+
+            .info-grid {
                 gap: 8px;
             }
 
-            .items-table th,
-            .items-table td {
-                padding: 8px 4px;
-                font-size: 12px;
+            .info-item {
+                padding: 10px 12px;
             }
 
-            .store-name {
-                font-size: 20px;
+            .actions {
+                padding: 0 20px 24px;
+                flex-direction: column;
+            }
+
+            .summary-row.total .value {
+                font-size: 18px;
             }
         }
 
-        /* Print Styles */
         @media print {
             body {
-                background: white;
+                background: #fff;
                 padding: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
-            .receipt-container {
-                box-shadow: none;
-                border-radius: 0;
+            .page-wrapper {
                 max-width: 100%;
             }
 
-            .print-button {
+            .card {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .receipt-header {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .customer-card {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .shipping-card {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .summary-card {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .actions {
+                display: none !important;
+            }
+
+            .btn {
+                display: none !important;
+            }
+
+            .receipt-header::after {
                 display: none;
+            }
+
+            .items-table tbody tr {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="receipt-container">
-        {{-- <!-- Header -->
-        <div class="receipt-header">
-            <div class="store-name">{{ $setting->brand_name ?? 'in!fruity' }}</div>
-            <div class="store-info">
-                {{ $setting->brand_address ?? 'Jl. Merdeka No. 123, Surabaya' }}<br>
-                Telp: {{ $setting->brand_phone ?? '(031) 123-4567' }}
-            </div>
-        </div> --}}
-
-        <!-- Body -->
-        <div class="receipt-body">
-            <!-- Invoice Info -->
-            <div class="section">
-                <div class="section-title">Informasi Transaksi</div>
-                <div class="invoice-info">
-                    <div class="info-item">
-                        <span class="info-label">No:</span>
-                        <span
-                            class="info-value">#{{ $data->invoice_number ?? 'INV-' . str_pad($data->id, 6, '0', STR_PAD_LEFT) }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Tanggal:</span>
-                        <span class="info-value">{{ $data->created_at->format('d M Y') }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Waktu:</span>
-                        <span class="info-value">{{ $data->created_at->format('H:i') }} WIB</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Kasir:</span>
-                        <span class="info-value">{{ $data->cashier_name ?? 'Admin' }}</span>
-                    </div>
+    <div class="page-wrapper">
+        <div class="card">
+            <div class="receipt-header">
+                <div class="status-badge">
+                    {{ ucfirst($data->status ?? 'Paid') }}
+                </div>
+                <div class="store-name">
+                    {{ $setting->brand_name ?? 'in!fruity' }}
+                </div>
+                <div class="store-tagline">
+                    {{ $setting->brand_address ?? 'Fresh & Healthy Beverages' }}
+                </div>
+                <div class="invoice-title">Invoice</div>
+                <div class="invoice-number">
+                    #{{ $data->invoice_number ?? 'INV-' . str_pad($data->id, 6, '0', STR_PAD_LEFT) }}
                 </div>
             </div>
 
-            <!-- Customer Info -->
-            @if ($data->customer)
-                <div class="section">
-                    <div class="section-title">Informasi Pelanggan</div>
-                    <div class="customer-info">
-                        <div class="customer-name">{{ $data->customer->name ?? 'No Name' }}</div>
-                        <div class="customer-details">
+            <div class="body-content">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="label">Tanggal</div>
+                        <div class="value">{{ $data->created_at->format('d M Y') }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Waktu</div>
+                        <div class="value">{{ $data->created_at->format('H:i') }} WIB</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Kasir</div>
+                        <div class="value">{{ $data->user?->name ?? 'Admin' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="label">Metode</div>
+                        <div class="value">
+                            @if ($data->payment)
+                                {{ $data->payment->name }}
+                            @else
+                                Tunai
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                @if ($data->customer)
+                    <div class="customer-card">
+                        <div class="customer-name">{{ $data->customer->name ?? 'Pelanggan' }}</div>
+                        <div class="customer-detail">
                             @if ($data->customer->phone)
-                                Telp: {{ $data->customer->phone }}<br>
+                                <span>&#9742;</span> {{ $data->customer->phone }}
+                            @endif
+                            @if ($data->customer->phone && $data->customer->email)
+                                &nbsp;|&nbsp;
                             @endif
                             @if ($data->customer->email)
-                                Email: {{ $data->customer->email }}
+                                <span>&#9993;</span> {{ $data->customer->email }}
                             @endif
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
 
-            @if ($data->ongkir && $data->ongkir > 0)
-                <div class="section" style="margin-top: 20px">
-                    <div class="section-title">Informasi Pengiriman</div>
-                    <div class="customer-info">
-                        <div class="customer-name"></div>
-                        <div class="customer-details">
-                            Pesanan dikirim oleh : {{ $data->courier->name ?? '-' }}<br>
-                            ke : {{ $data->ongkir_address ?? '-' }}
+                @if ($data->ongkir && $data->ongkir > 0)
+                    <div class="shipping-card">
+                        <div class="shipping-title">&#128666; Informasi Pengiriman</div>
+                        <div class="shipping-content">
+                            Kurir: {{ $data->courier->name ?? '-' }}<br>
+                            Alamat: {{ $data->ongkir_address ?? '-' }}
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
 
-            <!-- Items -->
-            <div class="section">
-                <div class="section-title">Detail Pembelian</div>
+                <div class="section-title">Pesanan</div>
+
                 <table class="items-table">
                     <thead>
                         <tr>
                             <th>Item</th>
                             <th>Qty</th>
-                            <th style="text-align: right">Harga</th>
-                            <th style="text-align: right">Total</th>
+                            <th>Harga</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php $subtotal = 0; @endphp
                         @foreach ($detail as $item)
                             @php
-                                $itemTotal =
-                                    isset($item->discount) && $item->discount > 0
-                                        ? $item->subtotal + $item->discount * $item->quantity
-                                        : $item->subtotal;
+                                $itemTotal = $item->subtotal;
+                                if (isset($item->discount) && $item->discount > 0) {
+                                    $itemTotal = $item->subtotal + $item->discount * $item->quantity;
+                                }
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>
-                                <td class="item-name">
-                                    {{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}
+                                <td>
+                                    <div class="item-name-main">
+                                        {{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}
+                                    </div>
                                 </td>
-                                <td class="item-qty">{{ $item->quantity }}</td>
-                                <td class="item-price">{{ number_format($item->price, 0, ',', '.') }}</td>
-                                <td class="item-price">{{ number_format($itemTotal, 0, ',', '.') }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>Rp{{ number_format($item->price, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($itemTotal, 0, ',', '.') }}</td>
                             </tr>
                             @if ($item->discount && $item->discount > 0)
-                                <tr>
-                                    <td colspan="2">Diskon</td>
-                                    <td style="text-align: right">{{ number_format($item->discount, 0, ',', '.') }}
+                                <tr class="discount-row">
+                                    <td colspan="3">
+                                        <div class="item-name-main">Diskon</div>
                                     </td>
-                                    <td style="text-align: right">
-                                        {{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
+                                    <td>-Rp{{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
                                 </tr>
                                 @php
                                     $subtotal -= $item->discount * $item->quantity;
                                 @endphp
                             @endif
                             @if (isset($parcelDetail) && count($parcelDetail) > 0)
-                                <tr>
-                                    <td colspan="4" style="border: none;  padding: 0 !important;" class="item-name">
-                                        List Bahan :
-                                    </td>
-                                </tr>
-                                @foreach ($parcelDetail as $key => $parcel)
-                                    @if ($parcel->production_id == $item->product_id)
-                                        <tr style="border: none;">
-                                            <td colspan="4"
-                                                style="border: none;  padding-top: 0 !important;
-                                            padding-bottom: 0 !important;"
-                                                class="item-name">
-                                                {{ $key + 1 }}.
-                                                {{ $parcel->product->name ?? '-' }}
-                                                ({{ $parcel->quantity }}
-                                                {{ $parcel->product->unit->abbreviation ?? '-' }})
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @endforeach
+                                @php
+                                    $filteredParcels = $parcelDetail->filter(function ($p) use ($item) {
+                                        return $p->production_id == $item->product_id;
+                                    });
+                                @endphp
+                                @if ($filteredParcels->count() > 0)
+                                    <tr>
+                                        <td colspan="4" class="parcel-details">
+                                            <div class="parcel-list">
+                                                <div class="parcel-list-title">Bahan</div>
+                                                @foreach ($filteredParcels as $parcel)
+                                                    <div class="parcel-item">
+                                                        {{ $parcel->product->name ?? '-' }}
+                                                        ({{ $parcel->quantity }}
+                                                        {{ $parcel->product->unit->abbreviation ?? 'pcs' }})
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endif
                         @endforeach
                     </tbody>
                 </table>
+
+                @php
+                    $discount = $data->discount;
+                    $ongkir_discount = $data->ongkir_discount;
+                    if ($discount <= 100 && $discount > 0) {
+                        $discount = ($discount / 100) * $subtotal;
+                    }
+                    if ($ongkir_discount <= 100 && $ongkir_discount > 0) {
+                        $ongkir_discount = ($ongkir_discount / 100) * $data->ongkir;
+                    }
+                @endphp
+
+                <div class="summary-card">
+                    <div class="summary-row">
+                        <span class="label">Subtotal</span>
+                        <span class="value">Rp{{ number_format($subtotal, 0, ',', '.') }}</span>
+                    </div>
+                    @if ($discount > 0)
+                        <div class="summary-row">
+                            <span class="label">Diskon</span>
+                            <span class="value" style="color:#ef4444;">-Rp{{ number_format($discount, 0, ',', '.') }}</span>
+                        </div>
+                        @php $subtotal -= $discount; @endphp
+                    @endif
+                    @if ($data->ongkir && $data->ongkir > 0)
+                        <div class="summary-row">
+                            <span class="label">Ongkos Kirim</span>
+                            <span class="value">Rp{{ number_format($data->ongkir, 0, ',', '.') }}</span>
+                        </div>
+                        @php $subtotal += $data->ongkir; @endphp
+                    @endif
+                    @if ($ongkir_discount > 0)
+                        <div class="summary-row">
+                            <span class="label">Diskon Ongkir</span>
+                            <span class="value" style="color:#ef4444;">-Rp{{ number_format($ongkir_discount, 0, ',', '.') }}</span>
+                        </div>
+                        @php $subtotal -= $ongkir_discount; @endphp
+                    @endif
+                    <div class="summary-row divider"></div>
+                    <div class="summary-row total">
+                        <span class="label">Total Pembayaran</span>
+                        <span class="value">Rp{{ number_format($data->total_amount ?? $subtotal, 0, ',', '.') }}</span>
+                    </div>
+
+                    @if ($data->paid && $data->paid > 0)
+                        <div class="payment-info">
+                            <div class="summary-row">
+                                <span class="label">Tunai</span>
+                                <span class="value">Rp{{ number_format($data->paid, 0, ',', '.') }}</span>
+                            </div>
+                            <div class="summary-row return">
+                                <span class="label">Kembali</span>
+                                <span class="value">Rp{{ number_format(max($data->return, 0), 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                @if ($data->note)
+                    <div style="margin-top:16px; padding:14px 16px; background:#fffbeb; border:1px solid #fde68a; border-radius:12px;">
+                        <div style="font-size:12px; font-weight:600; color:#d97706; margin-bottom:4px;">&#128221; Catatan</div>
+                        <div style="font-size:13px; color:#92400e;">{{ $data->note }}</div>
+                    </div>
+                @endif
             </div>
 
-            <!-- Summary -->
-            @php
-                $discount = $data->discount;
-                $ongkir_discount = $data->ongkir_discount;
-                if ($discount <= 100) {
-                    $discount = ($discount / 100) * $subtotal;
-                }
-                if ($ongkir_discount <= 100) {
-                    $ongkir_discount = ($ongkir_discount / 100) * $data->ongkir;
-                }
-            @endphp
-            <div class="summary">
-                <div class="summary-row">
-                    <span class="summary-label">Subtotal:</span>
-                    <span class="summary-value">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+            <div class="receipt-footer">
+                <div class="thank-you">Terima Kasih</div>
+                <div class="footer-text">
+                    {{ $setting->brand_name ?? 'in!fruity' }}<br>
+                    {{ $setting->brand_address ?? 'Fresh & Healthy Beverages' }}<br>
+                    @if ($setting->brand_phone ?? false)
+                        Telp: {{ $setting->brand_phone }}
+                    @endif
                 </div>
-                @if ($discount > 0)
-                    <div class="summary-row">
-                        <span class="summary-label">Diskon:</span>
-                        <span class="summary-value">-Rp
-                            {{ number_format($discount ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    @php
-                        $subtotal -= $discount;
-                    @endphp
-                @endif
-                @if ($data->ongkir && $data->ongkir > 0)
-                    <div class="summary-row">
-                        <span class="summary-label">Ongkir:</span>
-                        <span class="summary-value">Rp {{ number_format($data->ongkir, 0, ',', '.') }}</span>
-                    </div>
-                    @php
-                        $subtotal += $data->ongkir;
-                    @endphp
-                @endif
-                @if ($ongkir_discount > 0)
-                    <div class="summary-row">
-                        <span class="summary-label">Diskon Ongkir:</span>
-                        <span class="summary-value">-Rp
-                            {{ number_format($ongkir_discount ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    @php
-                        $subtotal -= $ongkir_discount;
-                    @endphp
-                @endif
-                <div class="summary-row total-row">
-                    <span class="summary-label">TOTAL:</span>
-                    <span class="summary-value">Rp
-                        {{ number_format($data->total_amount ?? $subtotal, 0, ',', '.') }}</span>
-                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{{ url(Request::segment(1)) }}" class="btn btn-primary" style="flex:none; padding:12px 32px;">
+                    &#8592; Kembali
+                </a>
             </div>
         </div>
     </div>
 
-    {{-- <button class="print-button" onclick="window.print()">🖨️ Cetak Receipt</button> --}}
-    <a class="print-button" href="{{ url(Request::segment(1)) }}"
-        style="text-align: center; text-decoration: none;">Kembali</a>
-
     <script>
-        // Auto print ketika halaman dimuat (opsional)
-        // window.onload = function() {
-        //     window.print();
-        // }
-
-        // Auto print jika ada parameter print=true di URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('print') === 'true') {
             window.print();
         }
-
-        const displayInput = document.getElementById('paid_amount_display');
-        const hiddenInput = document.getElementById('paid_amount');
-        const changeOutput = document.getElementById('change_amount');
-
-        // Ubah ini ke nilai total sebenarnya
-        const total = {{ $data->total ?? $subtotal }};
-
-        function formatRupiah(number) {
-            return 'Rp ' + number.toLocaleString('id-ID');
-        }
-
-        function parseRupiah(rupiahString) {
-            return parseInt(rupiahString.replace(/[^\d]/g, '')) || 0;
-        }
-
-        displayInput.addEventListener('input', function() {
-            let numericValue = parseRupiah(this.value);
-
-            // Set hidden input untuk dikirim ke backend
-            hiddenInput.value = numericValue;
-
-            // Format ulang input yang ditampilkan
-            this.value = formatRupiah(numericValue);
-
-            // Hitung dan tampilkan kembalian
-            const change = numericValue - total;
-            changeOutput.value = change >= 0 ? formatRupiah(change) : 'Rp 0';
-        });
     </script>
 </body>
 

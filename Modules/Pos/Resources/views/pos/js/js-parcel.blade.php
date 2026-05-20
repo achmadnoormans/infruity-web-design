@@ -313,8 +313,9 @@
                     displayName: item.displayName || this.formatParcelProductName(item)
                 }));
 
+                const parcelId = 'parcel' + kemasanId + this.formatShortNumber(budget) + '_' + Date.now();
                 const parcel = {
-                    id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                    id: parcelId,
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
                     price: budgetValue,
                     fee: feeValue,
@@ -330,7 +331,7 @@
                     typeProduct: 'parcel',
                 };
                 const posParcel = {
-                    id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                    id: parcelId,
                     budget: budgetValue,
                     qty: qty,
                     kemasan: kemasan,
@@ -391,7 +392,7 @@
                 }));
 
                 const parcel = {
-                    id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                    id: parcelId,
                     name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
                     price: budgetValue,
                     fee: feeValue,
@@ -408,7 +409,7 @@
                 };
 
                 const posParcel = {
-                    id: 'parcel' + kemasanId + this.formatShortNumber(budget),
+                    id: parcelId,
                     budget: budgetValue,
                     qty: qty,
                     kemasan: kemasan,

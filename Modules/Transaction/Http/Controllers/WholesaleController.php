@@ -46,6 +46,7 @@ class WholesaleController extends Controller
             ->select('product_stock.*', 'branch.name as branch_name')
             ->whereIn('product_stock.branch_id', $userBranches)
             ->where('stock_available', '<', 0)
+            ->whereNull('is_variant')
             ->get();
 
         $data['emptyStockData'] = $emptyStockProducts;
