@@ -619,29 +619,38 @@ class PosController extends Controller
                         $lastProduction->delete();
                     }
                 }
-                foreach ($data['jus'] as $key => $value) {
+                foreach ($data['jus'] as $index => $value) {
                     $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
                     $currentStock = $productStock?->stock_available ?? 0;
-                    $newStock     = $currentStock - $value['qty'];
-                    if ($newStock <= 0) {
+
+                    // Tentukan qty produksi berdasarkan ketersediaan stok
+                    if ($currentStock <= 0) {
+                        $productionQty = $value['qty'];
+                    } elseif ($currentStock < $value['qty']) {
+                        $productionQty = $value['qty'] - $currentStock;
+                    } else {
+                        $productionQty = 0;
+                    }
+
+                    if ($productionQty > 0) {
                         $production = new Production([
                             'production_number' => Production::getOrderNumber(),
                             'product_id'        => $value['productId'],
                             'production_date'   => now(),
                             'status'            => $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft',
                             'created_by'        => Auth::user()->id_user,
-                            'quantity'          => $value['qty'],
+                            'quantity'          => $productionQty,
                             'staff_id'          => Auth::user()->id_user,
                             'pos_id'            => $transaksiId,
                             'branch_id'         => $data['branch_id'] ?? null,
                         ]);
                         $production->save();
                         if (isset($value['product_receipt_id'])) {
-                            foreach ($value['product_receipt_id'] as $key => $productReceiptId) {
+                            foreach ($value['product_receipt_id'] as $receiptKey => $productReceiptId) {
                                 $productionDetail = new ProductionDetail([
                                     'production_id' => $production->id,
                                     'product_id'    => $productReceiptId,
-                                    'quantity'      => $value['product_receipt_qty'][$key] * $value['qty'],
+                                    'quantity'      => $value['product_receipt_qty'][$receiptKey] * $productionQty,
                                 ]);
                                 $productionDetail->save();
                             }
