@@ -45,8 +45,317 @@
                     width: 100%;
                 }
             }
+
+            .stock-opname-modal .modal-content {
+                border-radius: 28px;
+                border: 0;
+                overflow: hidden;
+            }
+
+            .stock-opname-modal .modal-header {
+                border-bottom: 1px solid #eef1f7;
+                padding: 1.25rem 1.5rem;
+            }
+
+            .stock-opname-modal .modal-title {
+                color: #1f2937;
+                font-size: 1.45rem;
+                letter-spacing: -0.01em;
+            }
+
+            .stock-opname-modal .btn-close-soft {
+                width: 40px;
+                height: 40px;
+                border: 0;
+                border-radius: 50%;
+                background: #eef1f7;
+                color: #6b7280;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .stock-opname-modal .modal-body {
+                padding: 1.5rem;
+                background: #fbfcff;
+            }
+
+            .stock-opname-modal .time-card {
+                border: 1px solid #dbe6ff;
+                border-radius: 14px;
+                background: #edf3ff;
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .stock-opname-modal .time-title {
+                color: #2557d6;
+                font-weight: 700;
+            }
+
+            .stock-opname-modal .time-subtitle {
+                color: #4f73ca;
+                font-size: 0.9rem;
+            }
+
+            .stock-opname-modal .stock-box {
+                border: 1px solid #d9dde6;
+                border-radius: 12px;
+                background: #f2f3f7;
+                min-height: 56px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.75rem 0.95rem;
+                font-weight: 700;
+                color: #5f6878;
+            }
+
+            .stock-opname-modal .stock-box.stock-input {
+                background: #fff;
+                border: 2px solid #2f66ef;
+                color: #111827;
+            }
+
+            .stock-opname-modal .stock-box input {
+                border: 0;
+                background: transparent;
+                width: 100%;
+                text-align: center;
+                font-size: 1.35rem;
+                font-weight: 800;
+                color: inherit;
+                outline: none;
+            }
+
+            .stock-opname-modal .summary-card {
+                border: 1px solid #f3c5cb;
+                border-radius: 12px;
+                background: #fff6f7;
+                color: #b4232d;
+                padding: 0.95rem;
+            }
+
+            .stock-opname-modal .summary-card.summary-positive {
+                border-color: #b8e6c9;
+                background: #f0fdf4;
+                color: #067647;
+            }
+
+            .stock-opname-modal .summary-value {
+                font-size: 1.95rem;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+            .stock-opname-modal .modal-footer {
+                border-top: 1px solid #eef1f7;
+                background: #fff;
+                padding: 1rem 1.5rem 1.35rem;
+            }
+
+            .stock-opname-modal .btn-submit-stock {
+                width: 100%;
+                border-radius: 12px;
+                min-height: 52px;
+                font-weight: 700;
+                font-size: 1.08rem;
+            }
+
+            .so-card {
+                background: #fff;
+                border-radius: 16px;
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+                border: 1px solid rgba(229, 231, 235, 0.8);
+                box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+                transition: box-shadow .2s;
+            }
+            .so-card:hover {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            }
+            .so-card-title {
+                font-size: 1.125rem;
+                font-weight: 800;
+                color: #111827;
+                line-height: 1.3;
+            }
+            .so-card-badge {
+                font-size: 10px;
+                font-weight: 600;
+                background: #f3f4f6;
+                color: #4b5563;
+                border: 1px solid #e5e7eb;
+                border-radius: 999px;
+                padding: 0.1rem 0.5rem;
+                white-space: nowrap;
+            }
+            .so-card-date {
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: #1f2937;
+            }
+            .so-card-creator {
+                font-size: 0.75rem;
+                color: #6b7280;
+            }
+            .so-grid-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0;
+                background: rgba(249,250,251,0.8);
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                overflow: hidden;
+                margin-top: 1rem;
+            }
+            .so-grid-cell {
+                padding: 0.75rem 0.25rem;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            .so-grid-cell + .so-grid-cell {
+                border-left: 1px solid rgba(229,231,235,0.6);
+            }
+            .so-grid-cell.is-active {
+                background: #fff;
+                cursor: pointer;
+                transition: background .15s, box-shadow .15s;
+            }
+            .so-grid-cell.is-active:hover {
+                background: #eff6ff;
+                box-shadow: inset 0 0 0 1px #bfdbfe;
+            }
+            .so-grid-label {
+                font-size: 11px;
+                font-weight: 700;
+                color: #6b7280;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.15rem;
+            }
+            .so-grid-label.has-icon {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.2rem;
+            }
+            .so-grid-label.has-icon svg {
+                width: 10px;
+                height: 10px;
+            }
+            .so-grid-label.is-primary {
+                color: #2563eb;
+            }
+            .so-grid-number {
+                font-weight: 700;
+                color: #1f2937;
+            }
+            .so-grid-number.lg {
+                font-size: 1.125rem;
+            }
+            .so-grid-unit {
+                font-size: 0.75rem;
+                font-weight: 400;
+                color: #6b7280;
+            }
+            .so-chip {
+                display: inline-block;
+                font-size: 0.8125rem;
+                font-weight: 700;
+                border-radius: 6px;
+                padding: 0.1rem 0.5rem;
+                border: 1px solid;
+                line-height: 1.5;
+            }
+            .so-chip.danger {
+                color: #dc2626;
+                background: #fef2f2;
+                border-color: #fecaca;
+            }
+            .so-chip.success {
+                color: #059669;
+                background: #ecfdf5;
+                border-color: #a7f3d0;
+            }
+            .so-chip .so-chip-unit {
+                font-size: 10px;
+                font-weight: 400;
+            }
+            .so-loss-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 0.75rem;
+                border: 1px solid #fecaca;
+                background: #fef2f2;
+                border-radius: 12px;
+                padding: 0.65rem 1rem;
+                color: #dc2626;
+            }
+            .so-loss-bar.success {
+                border-color: #a7f3d0;
+                background: #ecfdf5;
+                color: #059669;
+            }
+            .so-loss-label {
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            .so-loss-value {
+                font-size: 0.875rem;
+                font-weight: 900;
+            }
+            .so-actions {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 0.25rem;
+                padding-top: 0.25rem;
+            }
+            .so-btn-group {
+                display: flex;
+                gap: 0.3rem;
+            }
+            .so-btn-sm {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                font-size: 0.8125rem;
+                font-weight: 500;
+                border: 0;
+                border-radius: 8px;
+                padding: 0.35rem 0.65rem;
+                cursor: pointer;
+                transition: background .15s;
+                text-decoration: none;
+            }
+            .so-btn-sm svg {
+                width: 14px;
+                height: 14px;
+            }
+            .so-btn-ghost {
+                background: transparent;
+                color: #9ca3af;
+                border: 0;
+                cursor: pointer;
+                padding: 0.15rem;
+                transition: color .15s;
+            }
+            .so-btn-ghost:hover {
+                color: #3b82f6;
+            }
+            #transaction-table tbody tr td {
+                border: 0;
+                padding: 0;
+                background: transparent;
+            }
         </style>
-        <div class="card card-flush">
+        <div class="card card-flush" style="border:0px">
             <div class="card-header align-items-stretch py-3 gap-3 flex-column flex-md-row">
                 <div class="card-title flex-grow-1 w-100 mb-0">
                     <div class="d-flex align-items-center position-relative my-1 pos-index-search">
@@ -89,23 +398,12 @@
                 </div>
             </div>
             <!--begin::Card body-->
-            <div class="card-body pt-0">
+            <div class="card-body p-0">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="transaction-table" width="100%">
-                    <thead>
-                        <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0">
-                            {{-- <th class="w-10px pe-2">
-                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                    <input class="form-check-input" type="checkbox" data-kt-check="true"
-                                        data-kt-check-target="#kt_ecommerce_sortir_table .form-check-input"
-                                        value="1" />
-                                </div>
-                            </th> --}}
-                            <th class="text-start min-w-100px">Nama</th>
-                            <th class="text-end min-w-70px">Selisih</th>
-                            <th class="text-end min-w-120px">Nilai Selisih (idr)</th>
-                            <th class="text-end min-w-90px">Prosentase</th>
-                            <th class="text-end min-w-70px">Aksi</th>
+                <table class="table fs-6" id="transaction-table" width="100%">
+                    <thead class="d-none">
+                        <tr>
+                            <th>Transaksi</th>
                         </tr>
                     </thead>
                     <tbody class="fw-semibold text-gray-600"></tbody>
@@ -123,9 +421,9 @@
             <span class="path2"></span>
         </i>
     </button>
-    <div class="modal fade" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
+    <div class="modal fade stock-opname-modal" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
         <!--begin::Modal dialog-->
-        <div class="modal-dialog modal-dialog-centered mw-650px">
+        <div class="modal-dialog modal-fullscreen">
             <!--begin::Modal content-->
             <div class="modal-content">
                 <!--begin::Form-->
@@ -135,34 +433,43 @@
                     <!--begin::Modal header-->
                     <div class="modal-header" id="kt_modal_add_customer_header">
                         <!--begin::Modal title-->
-                        <h2 class="fw-bold">Tambah Transaksi</h2>
+                        <h2 class="modal-title fw-bold">Input Stock Fisik &amp; Akumulasi</h2>
                         <!--end::Modal title-->
                         <!--begin::Close-->
-                        <div id="kt_modal_add_customer_close" class="btn btn-icon btn-sm btn-active-icon-primary">
-                            <i class="ki-outline ki-cross fs-1"></i>
-                        </div>
+                        <button type="button" id="kt_modal_add_customer_close" class="btn-close-soft"
+                            data-bs-dismiss="modal" aria-label="Close">
+                            <i class="ki-outline ki-cross fs-2"></i>
+                        </button>
                         <!--end::Close-->
                     </div>
                     <!--end::Modal header-->
                     <!--begin::Modal body-->
-                    <div class="modal-body py-10 px-lg-17">
+                    <div class="modal-body">
                         <!--begin::Scroll-->
-                        <div class="scroll-y me-n7 pe-7" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
+                        <div class="scroll-y" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
                             data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
-                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="300px">
+                            data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="220px">
                             <!--begin::Input group-->
+                            <div class="time-card d-flex align-items-center gap-4">
+                                <i class="ki-outline ki-calendar fs-2 text-primary"></i>
+                                <div>
+                                    <div class="time-title">Waktu Pencatatan</div>
+                                    <div class="time-subtitle">Otomatis saat ini</div>
+                                </div>
+                                <input type="hidden" id="date" name="date" value="{{ date('Y-m-d') }}" />
+                            </div>
+
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required form-label">Cabang</label>
+                                <label class="required form-label text-gray-700 fw-semibold">Cabang</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select class="form-select mb-2" name="branch_id" id="branch_id"
-                                    data-placeholder="Pilih Cabin">
+                                <select class="form-select form-select-solid" name="branch_id" id="branch_id"
+                                    data-placeholder="Pilih Cabang">
                                     @foreach ($branches as $branch)
                                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                     @endforeach
-                                    <option value="">Semua</option>
                                 </select>
                                 <!--end::Input-->
                             </div>
@@ -170,47 +477,55 @@
                             <!--begin::Input group-->
                             <div class="fv-row mb-7">
                                 <!--begin::Label-->
-                                <label class="required form-label">Produk</label>
+                                <label class="required form-label text-gray-700 fw-semibold">Pilih Produk</label>
                                 <!--end::Label-->
                                 <!--begin::Input-->
-                                <select class="form-select mb-2" name="product_id" id="product_id"
+                                <select class="form-select form-select-solid" name="product_id" id="product_id"
                                     data-placeholder="Pilih Produk">
                                     <option value="">Pilih Product</option>
                                 </select>
                                 <!--end::Input-->
                             </div>
                             <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required fs-6 fw-semibold mb-2">Tanggal</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="text" id="date" class="form-control form-control-solid" placeholder=""
-                                    name="date" value="{{ date('Y-m-d') }}" />
-                                <!--end::Input-->
+
+                            <div class="separator my-8"></div>
+
+                            <div class="row g-5 mb-7">
+                                <div class="col-6">
+                                    <label class="form-label text-gray-600 fw-semibold mb-2">Stock Sistem</label>
+                                    <div class="stock-box">
+                                        <input type="number" step="0.01" name="quantity" value="0" readonly />
+                                        <span class="text-gray-500">Kg</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-primary fw-semibold mb-2">Stock Fisik</label>
+                                    <div class="stock-box stock-input">
+                                        <input type="number" step="0.01" name="real_stock" value="0" />
+                                        <span class="text-gray-500">Kg</span>
+                                    </div>
+                                </div>
                             </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-15">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Stok</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
-                                    name="quantity" />
-                                <!--end::Input-->
+
+                            <div class="summary-card mb-8">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-6">
+                                        <div class="fw-semibold fs-7">Total Selisih Stock:</div>
+                                        <div class="summary-value" id="stock-difference-text">0 Kg</div>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <div class="fw-semibold fs-7">Nilai Kerugian/Lebih:</div>
+                                        <div class="summary-value" id="stock-difference-value">Rp 0</div>
+                                    </div>
+                                </div>
                             </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-15">
-                                <!--begin::Label-->
-                                <label class="fs-6 fw-semibold mb-2">Stok Nyata</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <input type="number" step="0.01" class="form-control form-control-solid" placeholder=""
-                                    name="real_stock" />
-                                <!--end::Input-->
+
+                            <div class="fv-row mb-2">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="form-label text-gray-700 fw-semibold mb-0">Catatan Audit</label>
+                                    <span class="badge badge-light-primary">Draft Otomatis</span>
+                                </div>
+                                <textarea class="form-control form-control-solid" rows="3" placeholder="Tulis catatan audit..."></textarea>
                             </div>
                             <!--end::Input group-->
                         </div>
@@ -218,13 +533,10 @@
                     </div>
                     <!--end::Modal body-->
                     <!--begin::Modal footer-->
-                    <div class="modal-footer flex-center">
+                    <div class="modal-footer">
                         <!--begin::Button-->
-                        <button type="reset" id="kt_modal_add_customer_cancel" class="btn btn-light me-3">Batal</button>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary">
-                            <span class="indicator-label">Simpan</span>
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-submit-stock">
+                            <span class="indicator-label">Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i></span>
                             <span class="indicator-progress">Mohon tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
@@ -284,6 +596,145 @@
 
         const segment1 = "{{ Request::segment(1) }}";
 
+        function formatRupiah(value) {
+            return new Intl.NumberFormat('id-ID').format(Number(value || 0));
+        }
+
+        function updateStockSummary(unitPrice = null) {
+            const systemStock = Number($('input[name="quantity"]').val() || 0);
+            const realStock = Number($('input[name="real_stock"]').val() || 0);
+            const difference = realStock - systemStock;
+            const price = Number(unitPrice ?? $('#product_id').data('unit-price') ?? 0);
+            const value = difference * price;
+            const diffRounded = Math.round(difference * 100) / 100;
+
+            $('#stock-difference-text').text(`${diffRounded} Kg`);
+            $('#stock-difference-value').text(`${value < 0 ? '-' : ''}Rp ${formatRupiah(Math.abs(value))}`);
+
+            const $card = $('.summary-card');
+            if (difference > 0) {
+                $card.addClass('summary-positive').removeClass('summary-negative');
+            } else if (difference < 0) {
+                $card.removeClass('summary-positive').addClass('summary-negative');
+            } else {
+                $card.removeClass('summary-positive summary-negative');
+            }
+        }
+
+        function formatShortDate(dateValue) {
+            if (!dateValue) {
+                return '-';
+            }
+            const dt = new Date(dateValue);
+            if (Number.isNaN(dt.getTime())) {
+                return dateValue;
+            }
+            return new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            }).format(dt);
+        }
+
+        function escapeHtml(value) {
+            return $('<div>').text(value ?? '').html();
+        }
+
+        function formatTime(dateValue) {
+            if (!dateValue) return '';
+            const dt = new Date(dateValue);
+            if (Number.isNaN(dt.getTime())) return '';
+            const h = String(dt.getHours()).padStart(2, '0');
+            const m = String(dt.getMinutes()).padStart(2, '0');
+            return `${h}.${m}`;
+        }
+
+        function renderStockOpnameCard(row) {
+            const productName = row?.product?.name || row?.name || '-';
+            const code = row?.code ? `#${row.code}` : '-';
+            const dateLabel = formatShortDate(row?.date);
+            const timeLabel = formatTime(row?.created_at);
+            const creatorName = row?.creator_name || '';
+            const stockSystem = Number(row?.stock || 0);
+            const stockFisik = Number(row?.real_stock || 0);
+            const selisih = Number(row?.difference || 0);
+            const hpp = Number(row?.avg_price || 0);
+            const nilaiSelisih = selisih * hpp;
+            const id = row?.id || 0;
+
+            const isMinus = selisih < 0;
+            const chipClass = isMinus ? 'danger' : 'success';
+            const lossClass = isMinus ? '' : 'success';
+            const hppText = `HPP: Rp ${formatRupiah(Math.abs(hpp))}/Kg`;
+            const nilaiText = `${nilaiSelisih < 0 ? '-' : ''}Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
+            const chipSign = selisih > 0 ? '+' : '';
+
+            const creatorHtml = creatorName
+                ? `<span class="so-card-creator">${escapeHtml(timeLabel)} &bull; ${escapeHtml(creatorName)}</span>`
+                : '';
+
+            return `
+                <div class="so-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="so-card-title">${escapeHtml(productName)}</div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span style="font-size:0.8125rem;font-weight:500;color:#6b7280;">${escapeHtml(code)}</span>
+                                <span class="so-card-badge">${escapeHtml(hppText)}</span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="so-card-date">${escapeHtml(dateLabel)}</div>
+                            ${creatorHtml}
+                        </div>
+                    </div>
+
+                    <div class="so-grid-row">
+                        <div class="so-grid-cell">
+                            <div class="so-grid-label">Sistem</div>
+                            <div><span class="so-grid-number lg">${formatRupiah(stockSystem)}</span> <span class="so-grid-unit">Kg</span></div>
+                        </div>
+                        <div class="so-grid-cell is-active" onclick="editProduct(${id})" title="Klik untuk sesuaikan stock fisik">
+                            <div class="so-grid-label is-primary has-icon">
+                                Fisik
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
+                            </div>
+                            <div><span class="so-grid-number lg" style="color:#111827;">${formatRupiah(stockFisik)}</span> <span class="so-grid-unit">Kg</span></div>
+                        </div>
+                        <div class="so-grid-cell">
+                            <div class="so-grid-label">Selisih Qty</div>
+                            <div><span class="so-chip ${chipClass}">${chipSign}${formatRupiah(Math.abs(selisih))} <span class="so-chip-unit">Kg</span></span></div>
+                        </div>
+                    </div>
+
+                    <div class="so-loss-bar ${lossClass}">
+                        <span class="so-loss-label">Potensi Kerugian</span>
+                        <span class="so-loss-value">${nilaiText}</span>
+                    </div>
+
+                    <div class="so-actions">
+                        <div class="so-btn-group">
+                            <button class="so-btn-sm" style="background:#eff6ff;color:#2563eb;" onclick="viewProduct(${id})">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                History
+                            </button>
+                            <button class="so-btn-sm" style="background:#fff7ed;color:#ea580c;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                Obrolan
+                            </button>
+                            <button class="so-btn-sm" style="background:#fef2f2;color:#dc2626;" onclick="deleteProduct(${id})">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                Hapus
+                            </button>
+                        </div>
+                        <button class="so-btn-ghost" onclick="viewProduct(${id})">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
         $(document).ready(function() {
             const $branchFilter = $('[data-kt-ecommerce-product-filter="cabang"]');
             const $activeBranchButtonLabel = $('#active-branch-button-label');
@@ -296,6 +747,7 @@
             dataTable = $('#transaction-table').DataTable({
                 processing: true,
                 serverSide: true,
+                ordering: false,
                 ajax: {
                     url: "{{ route('stock-opname.data') }}",
                     data: function(d) {
@@ -304,33 +756,14 @@
                     }
                 },
                 columns: [{
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'quantity',
-                        name: 'quantity',
-                        className: 'text-end'
-                    },
-                    {
-                        data: 'difference_value',
-                        name: 'difference_value',
-                        className: 'text-end'
-                    },
-                    {
-                        data: 'percentage',
-                        name: 'percentage',
-                        className: 'text-end'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        className: 'text-end',
-                        orderable: false,
-                        searchable: false
-                    },
-
-                ]
+                    data: null,
+                    name: 'name',
+                    orderable: false,
+                    searchable: true,
+                    render: function(data, type, row) {
+                        return renderStockOpnameCard(row);
+                    }
+                }]
             });
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
@@ -345,33 +778,34 @@
             updateActiveFilterInfo();
             showStockAlert($('[data-kt-ecommerce-product-filter="cabang"]').val());
 
-            document.getElementById('kt_modal_add_customer_cancel').addEventListener('click', function(e) {
-                e.preventDefault(); // Mencegah form reset langsung
-                Swal.fire({
-                    text: "Apakah Anda yakin ingin membatalkan?",
-                    icon: "warning",
-                    showCancelButton: !0,
-                    buttonsStyling: !1,
-                    confirmButtonText: "Ya, Batalkan!",
-                    cancelButtonText: "Tidak, Kembali",
-                    customClass: {
-                        confirmButton: "btn btn-primary",
-                        cancelButton: "btn btn-active-light"
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Tutup modal manual
-                        const modal = bootstrap.Modal.getInstance(document.getElementById(
-                            'kt_modal_add_customer'));
-                        var form = $('#kt_modal_add_customer_form');
-                        // --- DISABLE semua input/select/textarea di form supaya read-only ---
-                        form.find('input, select, textarea, button[type="submit"]').prop('disabled',
-                            false);
-                        modal.hide();
-                        document.getElementById('kt_modal_add_customer_form').reset();
-                    }
+            const cancelButton = document.getElementById('kt_modal_add_customer_cancel');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        text: "Apakah Anda yakin ingin membatalkan?",
+                        icon: "warning",
+                        showCancelButton: !0,
+                        buttonsStyling: !1,
+                        confirmButtonText: "Ya, Batalkan!",
+                        cancelButtonText: "Tidak, Kembali",
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                            cancelButton: "btn btn-active-light"
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById(
+                                'kt_modal_add_customer'));
+                            var form = $('#kt_modal_add_customer_form');
+                            form.find('input, select, textarea, button[type="submit"]').prop('disabled',
+                                false);
+                            modal.hide();
+                            document.getElementById('kt_modal_add_customer_form').reset();
+                        }
+                    });
                 });
-            });
+            }
 
             $('#kt_modal_add_customer_form').on('submit', function(e) {
                 e.preventDefault();
@@ -412,7 +846,11 @@
 
                             // 4. Kembalikan judul modal (opsional)
                             $('#kt_modal_add_customer_header h2').text(
-                                'Tambah Transaksi');
+                                'Input Stock Fisik & Akumulasi');
+
+                            $('#kt_modal_add_customer_submit .indicator-label').html(
+                                'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
+                            updateStockSummary();
 
                             // 5. Tutup modal
                             const modal = bootstrap.Modal.getInstance(document
@@ -530,6 +968,7 @@
                     // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
+                    updateStockSummary(response.avg_price || 0);
 
                     // Ubah action form untuk update
                     var form = $('#kt_modal_add_customer_form');
@@ -544,6 +983,7 @@
 
                     // Ubah judul modal
                     $('#kt_modal_add_customer_header h2').text('Edit Transaksi');
+                    $('#kt_modal_add_customer_submit .indicator-label').text('Simpan Perubahan');
 
                     // Tampilkan modal untuk edit produk
                     var modal = new bootstrap.Modal(document.getElementById('kt_modal_add_customer'));
@@ -588,6 +1028,7 @@
                     // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
+                    updateStockSummary(response.avg_price || 0);
 
                     // Ubah action form untuk view (no action)
                     var form = $('#kt_modal_add_customer_form');
@@ -614,16 +1055,22 @@
             });
         }
 
-        $("#date").flatpickr({
-            altInput: !0,
-            altFormat: "d F, Y",
-            dateFormat: "Y-m-d"
-        });
-
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
             const $branch = $('#branch_id');
             const $product = $('#product_id');
             const $quantity = $('input[name="quantity"]');
+            const $realStock = $('input[name="real_stock"]');
+            const $form = $('#kt_modal_add_customer_form');
+
+            if (!$form.find('input[name="_method"]').length) {
+                $('#kt_modal_add_customer_header h2').text('Input Stock Fisik & Akumulasi');
+                $('#kt_modal_add_customer_submit .indicator-label').html(
+                    'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
+            }
+
+            if (!$realStock.val()) {
+                $realStock.val(0);
+            }
 
             if ($product.hasClass('select2-hidden-accessible')) {
                 $product.select2('destroy');
@@ -644,13 +1091,16 @@
                         results: data.map(item => ({
                             id: item.id,
                             text: item.name,
-                            stock_available: item.stock_available
+                            stock_available: item.stock_available,
+                            unit_price: item.hpp || item.price || item.cost_price || item.purchase_price || 0
                         }))
                     })
                 }
             }).on('select2:select', function(e) {
                 const data = e.params.data;
                 $quantity.val(data.stock_available || 0);
+                $product.data('unit-price', data.unit_price || 0);
+                updateStockSummary(data.unit_price || 0);
             });
 
             if ($branch.hasClass('select2-hidden-accessible')) {
@@ -667,6 +1117,7 @@
                 const productId = $product.val();
 
                 $quantity.val('');
+                updateStockSummary();
 
                 if (!branchId) {
                     $product.val(null).trigger('change');
@@ -690,6 +1141,9 @@
 
                         if (selected) {
                             $quantity.val(selected.stock_available || 0);
+                            $product.data('unit-price', selected.hpp || selected.price || selected.cost_price ||
+                                selected.purchase_price || 0);
+                            updateStockSummary();
                             return;
                         }
 
@@ -700,6 +1154,13 @@
                     }
                 });
             });
+
+            $realStock.off('input.stockSummary change.stockSummary').on('input.stockSummary change.stockSummary',
+                function() {
+                    updateStockSummary();
+                });
+
+            updateStockSummary();
         });
     </script>
 @endsection

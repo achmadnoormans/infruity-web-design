@@ -220,10 +220,13 @@ class StockOpnameController extends Controller
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
-        $query = StockOpname::with('product')->whereIn('branch_id', $userBranches);
+        $query = StockOpname::with('product')
+            ->leftJoin('users', 'stock_opname.created_by', '=', 'users.id_user')
+            ->select('stock_opname.*', 'users.nm_user as creator_name')
+            ->whereIn('stock_opname.branch_id', $userBranches);
 
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
-            $query->where('branch_id', $request->cabang_filter);
+            $query->where('stock_opname.branch_id', $request->cabang_filter);
         }
 
         $data = $query->get();

@@ -1295,7 +1295,7 @@ class ProductController extends Controller
         $query = DB::table('product_stock')
             // ->where('stock_available', '>', 0)
             ->where('name', 'like', '%' . $request->search . '%')
-            ->select('id', 'name', 'stock_available');
+            ->select('id', 'name', 'stock_available', 'hpp');
 
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
