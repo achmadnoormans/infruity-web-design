@@ -1307,12 +1307,8 @@ class ProductController extends Controller
     public function get_data_stock_show(Request $request)
     {
         $productId = is_array($request->product_id) ? ($request->product_id[0] ?? $request->product_id) : $request->product_id;
-        
-        $child = ProductChild::where('parent_id', $productId)
-            ->pluck('product_id')
-            ->toArray();
 
-        $query = DB::table('transaction_stock')
+        $query = DB::table('transaction_stock_show AS transaction_stock')
             ->join('products', 'transaction_stock.product_id', '=', 'products.id')
             ->join('product_units', 'products.product_unit', '=', 'product_units.id')
             ->select('transaction_stock.*', 'products.name', 'product_units.abbreviation as unit');
@@ -1321,9 +1317,9 @@ class ProductController extends Controller
             $query->where('transaction_stock.branch_id', $request->branch);
         }
 
-        $query->where(function($q) use ($productId, $child) {
+        $query->where(function($q) use ($productId) {
             $q->where('transaction_stock.product_id', $productId)
-              ->orWhereIn('transaction_stock.product_id', $child);
+              ->orWhere('transaction_stock.stock_parent_id', $productId);
         });
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
