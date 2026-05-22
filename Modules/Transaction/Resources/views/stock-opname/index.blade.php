@@ -658,8 +658,8 @@
             const stockSystem = Number(row?.stock || 0);
             const stockFisik = Number(row?.real_stock || 0);
             const selisih = Number(row?.difference || 0);
-            const hpp = Number(row?.avg_price || 0);
-            const nilaiSelisih = selisih * hpp;
+            const hpp = Number(row?.avg_hpp_calc || row?.avg_price || 0);
+            const nilaiSelisih = Math.floor(selisih * hpp);
             const id = row?.id || 0;
 
             const isMinus = selisih < 0;

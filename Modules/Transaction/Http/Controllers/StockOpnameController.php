@@ -89,7 +89,7 @@ class StockOpnameController extends Controller
                     'message' => 'Stok produk tidak ditemukan.',
                 ], 404);
             }
-            $avg_price = $productStock->hpp;
+            $avg_price = $productStock->avg_hpp;
             $stockAvailable = $productStock->stock_available;
             $stock = new StockOpname();
             $stock->code = StockOpname::getOrderNumber();
@@ -222,7 +222,11 @@ class StockOpnameController extends Controller
         $userBranches = UserBranch::getUserBranch();
         $query = StockOpname::with('product')
             ->leftJoin('users', 'stock_opname.created_by', '=', 'users.id_user')
-            ->select('stock_opname.*', 'users.nm_user as creator_name')
+            ->leftJoin('product_stock', function ($j) {
+                $j->on('product_stock.id', '=', 'stock_opname.product_id')
+                  ->on('product_stock.branch_id', '=', 'stock_opname.branch_id');
+            })
+            ->select('stock_opname.*', 'users.nm_user as creator_name', 'product_stock.avg_hpp as avg_hpp_calc')
             ->whereIn('stock_opname.branch_id', $userBranches);
 
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
@@ -251,7 +255,8 @@ class StockOpnameController extends Controller
                 return '<span class="' . $class . '" data-id="' . $item->id . '" data-value="' . $item->difference . '">' . toNumber($item->difference) . ' ' . $item->product->unit->abbreviation . '</span>';
             })
             ->addColumn('difference_value', function ($item) {
-                $value = (float) $item->difference * (float) ($item->avg_price ?? 0);
+                $hpp = $item->avg_hpp_calc ?? $item->avg_price ?? 0;
+                $value = floor((float) $item->difference * (float) $hpp);
                 $class = $value < 0 ? 'text-danger' : 'text-success';
 
                 return '<span class="' . $class . '">Rp ' . toNumber($value) . '</span>';

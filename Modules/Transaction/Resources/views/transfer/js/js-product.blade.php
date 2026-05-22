@@ -367,11 +367,12 @@
                             delay: 250,
                             data: function(params) {
                                 return {
-                                    term: params.term, // term dari select2 untuk pencarian
-                                    status: 'aktif', // contoh nilai statis
+                                    term: params.term,
+                                    status: 'aktif',
+                                    variant: '0',
                                     branch: branchId,
                                     has_stock: '{{ ($type ?? "") == "transfer-pengirim" ? 1 : 0 }}',
-                                    limit: 10 // contoh parameter tambahan
+                                    limit: 10
                                 };
                             },
                             processResults: data => ({
