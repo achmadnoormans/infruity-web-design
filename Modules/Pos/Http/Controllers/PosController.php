@@ -452,17 +452,25 @@ class PosController extends Controller
                 }
             }
 
-            // Validasi stok untuk jus
+            // Validasi stok bahan baku jus
             if (isset($data['jus'])) {
                 foreach ($data['jus'] as $jus) {
-                    $productStock = ProductStock::where('id', $jus['productId'])
-                        ->where('branch_id', $data['branch_id'])
-                        ->first();
-                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
-                    if ($currentStock < (float)$jus['qty']) {
-                        $product     = Product::find($jus['productId']);
-                        $productName = $product ? $product->name : 'Produk #' . $jus['productId'];
-                        throw new \Exception("Stok jus \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$jus['qty']}");
+                    if (isset($jus['product_receipt_id']) && is_array($jus['product_receipt_id'])) {
+                        foreach ($jus['product_receipt_id'] as $key => $receiptProductId) {
+                            $receiptQty  = (float)($jus['product_receipt_qty'][$key] ?? 0);
+                            $requiredQty = $receiptQty * (float)$jus['qty'];
+
+                            $productStock = ProductStock::where('id', $receiptProductId)
+                                ->where('branch_id', $data['branch_id'])
+                                ->first();
+                            $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+
+                            if ($currentStock < $requiredQty) {
+                                $product     = Product::find($receiptProductId);
+                                $productName = $product ? $product->name : 'Bahan #' . $receiptProductId;
+                                throw new \Exception("Stok bahan baku jus \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                            }
+                        }
                     }
                 }
             }
