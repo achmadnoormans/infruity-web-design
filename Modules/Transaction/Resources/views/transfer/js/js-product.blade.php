@@ -66,7 +66,7 @@
                 const self = this; // simpan konteks Alpine
                 let url = '{{ Request::segment(3) }}';
                 let segment2 = '{{ Request::segment(2) }}';
-                if ((url == 'edit' || segment2 == 'show') && !this._loaded) {
+                if ((segment2 == 'edit' || segment2 == 'show') && !this._loaded) {
                     const data = @json($data ?? null);
                     const detail = @json($detail ?? null);
                     this.loadExistingData(data, detail);

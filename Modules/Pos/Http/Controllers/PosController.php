@@ -434,6 +434,39 @@ class PosController extends Controller
         ]);
 
         try {
+            // Validasi stok untuk parcel
+            if (isset($data['parcel'])) {
+                foreach ($data['parcel'] as $parcel) {
+                    foreach ($parcel['data'] as $item) {
+                        $productStock = ProductStock::where('id', $item['product'])
+                            ->where('branch_id', $data['branch_id'])
+                            ->first();
+                        $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+                        $requiredQty  = ((float)($item['qty'] ?? 0)) * ((float)($parcel['qty'] ?? 0));
+                        if ($currentStock < $requiredQty) {
+                            $product     = Product::find($item['product']);
+                            $productName = $product ? $product->name : 'Produk #' . $item['product'];
+                            throw new \Exception("Stok bahan parcel \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                        }
+                    }
+                }
+            }
+
+            // Validasi stok untuk jus
+            if (isset($data['jus'])) {
+                foreach ($data['jus'] as $jus) {
+                    $productStock = ProductStock::where('id', $jus['productId'])
+                        ->where('branch_id', $data['branch_id'])
+                        ->first();
+                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+                    if ($currentStock < (float)$jus['qty']) {
+                        $product     = Product::find($jus['productId']);
+                        $productName = $product ? $product->name : 'Produk #' . $jus['productId'];
+                        throw new \Exception("Stok jus \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$jus['qty']}");
+                    }
+                }
+            }
+
             $userId     = Auth::id();
             $isTempSave = ($data['status'] ?? null) === 'temp';
             DB::beginTransaction();
@@ -735,8 +768,7 @@ class PosController extends Controller
             DB::disconnect();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan transaksi',
-                'error'   => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
