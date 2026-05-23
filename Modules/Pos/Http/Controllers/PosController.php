@@ -644,7 +644,9 @@ class PosController extends Controller
                             'production_id' => $product->id,
                             'pos_id'        => $transaksiId,
                             'product_id'    => $item['product'],
+                            'kemasan_id'    => $parcel['kemasanId'] ?? null,
                             'quantity'      => $parcelQtyPerSet * $value['qty'],
+                            'quantity_kemasan'  => $parcel['qty'],
                             'price'         => $parcelLinePrice,
                             'price_awal'    => $parcelBasePrice,
                         ]);

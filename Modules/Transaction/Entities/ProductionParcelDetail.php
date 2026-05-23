@@ -13,7 +13,9 @@ class ProductionParcelDetail extends Model
         'production_id',
         'pos_id',
         'product_id',
+        'kemasan_id',
         'quantity',
+        'quantity_kemasan',
         'price',
         'price_awal',
     ];

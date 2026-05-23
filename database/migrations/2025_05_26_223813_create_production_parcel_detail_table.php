@@ -16,7 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('production_id')->nullable();
             $table->unsignedBigInteger('pos_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('kemasan_id')->nullable();
             $table->decimal('quantity', 10, 2);
+            $table->decimal('quantity_kemasan', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

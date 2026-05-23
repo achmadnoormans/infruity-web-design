@@ -208,6 +208,25 @@ WITH base AS (
 	JOIN pos_transaction ON pos_transaction.id = production_parcel_detail.pos_id
 	LEFT JOIN users u12 ON u12.id_user = pos_transaction.created_by
 	WHERE pos_transaction.`status` IN ('paid', 'debt')
+	AND pos_transaction.deleted_at IS NULL
+
+	UNION ALL
+
+	-- POS PARCEL (KEMASAN)
+	SELECT
+		pos_transaction.branch_id,
+		production_parcel_detail.kemasan_id AS product_id,
+		- production_parcel_detail.quantity_kemasan,
+		production_parcel_detail.price,
+		pos_transaction.created_at,
+		'pos-parcel (kemasan)' AS reff,
+		'pos' AS url,
+		pos_transaction.id AS id,
+		u12.nm_user
+	FROM production_parcel_detail
+	JOIN pos_transaction ON pos_transaction.id = production_parcel_detail.pos_id
+	LEFT JOIN users u12 ON u12.id_user = pos_transaction.created_by
+	WHERE pos_transaction.`status` IN ('paid', 'debt')
 		AND pos_transaction.deleted_at IS NULL
 )
 SELECT *,
