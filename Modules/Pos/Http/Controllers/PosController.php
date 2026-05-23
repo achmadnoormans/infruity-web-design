@@ -449,6 +449,25 @@ class PosController extends Controller
                             throw new \Exception("Stok bahan parcel \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
                         }
                     }
+
+                    // Validasi stok kemasan
+                    $kemasanId = $parcel['kemasanId'] ?? null;
+                    if (empty($kemasanId) && !empty($parcel['kemasan'])) {
+                        $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
+                        $kemasanId = $kemasanProduct?->id;
+                    }
+                    if (!empty($kemasanId)) {
+                        $kemasanStock = ProductStock::where('id', $kemasanId)
+                            ->where('branch_id', $data['branch_id'])
+                            ->first();
+                        $currentKemasanStock = $kemasanStock ? (float)$kemasanStock->stock_available : 0;
+                        $requiredKemasanQty  = (float)($parcel['qty'] ?? 0);
+                        if ($currentKemasanStock < $requiredKemasanQty) {
+                            $kemasan     = Product::find($kemasanId);
+                            $kemasanName = $kemasan ? $kemasan->name : 'Kemasan #' . $kemasanId;
+                            throw new \Exception("Stok kemasan \"{$kemasanName}\" tidak mencukupi. Stok tersedia: {$currentKemasanStock}, dibutuhkan: {$requiredKemasanQty}");
+                        }
+                    }
                 }
             }
 

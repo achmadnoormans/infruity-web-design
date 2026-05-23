@@ -247,21 +247,22 @@ WITH base AS (
     -- POS PARCEL (KEMASAN)
     SELECT
         pos_transaction.branch_id,
-        production_parcel_detail.kemasan_id,
-        -production_parcel_detail.quantity_kemasan AS quantity,
-        production_parcel_detail.price AS avg_price,
+        pos_transaction_detail.parcel_id AS product_id,
+        -pos_transaction_detail.quantity AS quantity,
+        pos_transaction_detail.price AS avg_price,
         pos_transaction.created_at AS date,
         'pos-parcel (kemasan)' AS reff,
         'pos' AS url,
         pos_transaction.id AS id,
-        'pos_parcel' AS source_table,
-        u12.nm_user AS created_by
-    FROM production_parcel_detail
+        'pos_transaction' AS source_table,
+        u8.nm_user AS created_by
+    FROM pos_transaction_detail
     JOIN pos_transaction
-        ON pos_transaction.id = production_parcel_detail.pos_id
-    LEFT JOIN users u12
-        ON u12.id_user = pos_transaction.created_by
-    WHERE pos_transaction.status IN ('paid', 'debt')
+        ON pos_transaction.id = pos_transaction_detail.pos_id
+    LEFT JOIN users u8
+        ON u8.id_user = pos_transaction.created_by
+    WHERE pos_transaction_detail.deleted_at IS NULL
+        AND pos_transaction.status IN ('paid', 'debt')
         AND pos_transaction.deleted_at IS NULL
 )
 
