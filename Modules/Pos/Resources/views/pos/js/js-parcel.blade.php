@@ -177,19 +177,21 @@
                         }
                     },
                     dropdownParent: $('#parcelModal'),
-                    templateResult: (item) => {
-                        if (item.loading) {
-                            return item.text;
+                    templateResult: (data) => {
+                        if (data.loading) return data.text;
+                        const stock = data.stock_available ?? 0;
+                        const disabled = stock <= 0;
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                        if (disabled) {
+                            $el.css('cursor', 'not-allowed');
                         }
-
-                        return this.formatParcelProductName(item);
+                        return $el;
                     },
-                    templateSelection: (item) => {
-                        if (!item.id) {
-                            return item.text;
-                        }
-
-                        return this.formatParcelProductName(item);
+                    templateSelection: (data) => {
+                        if (!data.id) return data.text;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                        return data.text;
                     },
                     ajax: {
                         url: '/ajax/listProduct',
@@ -199,6 +201,7 @@
                             return {
                                 term: params.term,
                                 branch: $('#branch_id').val(),
+                                status: 'aktif',
                                 limit: 10
                             };
                         },
@@ -210,6 +213,7 @@
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
                             };
                         },
@@ -218,6 +222,16 @@
                 }).on('select2:select', (e) => {
                     let index = $(e.target).data('index');
                     let data = e.params.data;
+                    const stock = data.stock_available ?? 0;
+                    if (stock <= 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok tidak mencukupi',
+                            text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                        });
+                        $(e.target).val(null).trigger('change');
+                        return;
+                    }
                     this.parcels[index].product = data.id;
                     this.parcels[index].name = data.text;
                     this.parcels[index].unit = data.unit;
@@ -236,19 +250,21 @@
                 $('.parcel-select-edit').select2({
                     placeholder: 'Pilih Parcel',
                     dropdownParent: $('#parcelEditModal'),
-                    templateResult: (item) => {
-                        if (item.loading) {
-                            return item.text;
+                    templateResult: (data) => {
+                        if (data.loading) return data.text;
+                        const stock = data.stock_available ?? 0;
+                        const disabled = stock <= 0;
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                        if (disabled) {
+                            $el.css('cursor', 'not-allowed');
                         }
-
-                        return this.formatParcelProductName(item);
+                        return $el;
                     },
-                    templateSelection: (item) => {
-                        if (!item.id) {
-                            return item.text;
-                        }
-
-                        return this.formatParcelProductName(item);
+                    templateSelection: (data) => {
+                        if (!data.id) return data.text;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                        return data.text;
                     },
                     ajax: {
                         url: '/ajax/listProduct',
@@ -258,6 +274,7 @@
                             return {
                                 term: params.term,
                                 branch: $('#branch_id').val(),
+                                status: 'aktif',
                                 limit: 10
                             };
                         },
@@ -269,6 +286,7 @@
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
                             };
                         },
@@ -277,6 +295,16 @@
                 }).on('select2:select', (e) => {
                     let index = $(e.target).data('index');
                     let data = e.params.data;
+                    const stock = data.stock_available ?? 0;
+                    if (stock <= 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok tidak mencukupi',
+                            text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                        });
+                        $(e.target).val(null).trigger('change');
+                        return;
+                    }
                     this.parcels[index].product = data.id;
                     this.parcels[index].name = data.text;
                     this.parcels[index].unit = data.unit;
