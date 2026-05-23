@@ -310,7 +310,8 @@
                                     term: params.term,
                                     status: 'aktif',
                                     variant: '0',
-                                    limit: 10
+                                    limit: 10,
+                                    branch: document.querySelector('select[name="branch_id"]').value
                                 };
                             },
                             processResults: data => ({
