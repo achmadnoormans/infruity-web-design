@@ -382,11 +382,37 @@
                                     unit: item.unit,
                                     price: item.hpp || 0,
                                     hpp: item.hpp || 0,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
                             })
+                        },
+                        templateResult: data => {
+                            if (data.loading) return data.text;
+                            const stock = data.stock_available ?? 0;
+                            const disabled = stock <= 0;
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            if (disabled) {
+                                $el.css('cursor', 'not-allowed');
+                            }
+                            return $el;
+                        },
+                        templateSelection: data => {
+                            const stock = data.stock_available ?? 0;
+                            if (stock <= 0) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                            return data.text;
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Stok tidak mencukupi',
+                                text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                            });
+                            $('#select_product').val(null).trigger('change');
+                            return;
+                        }
                         this.addProduct.id = data.id;
                         this.addProduct.name = data.text;
                         this.addProduct.unit = data.unit.abbreviation;

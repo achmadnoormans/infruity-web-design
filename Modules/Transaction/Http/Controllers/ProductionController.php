@@ -16,6 +16,7 @@ use Modules\Master\Entities\UserBranch;
 use Modules\Transaction\Entities\Production;
 use Modules\Transaction\Entities\ProductionDetail;
 use Modules\Transaction\Entities\ProductReceipt;
+use Modules\Transaction\Entities\ProductStock;
 use Modules\Transaction\Entities\Receipt;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -110,6 +111,23 @@ class ProductionController extends Controller
         }
 
         try {
+            // Validasi stok bahan baku (seperti PosController saveTransaction)
+            if (in_array($request->submit_type, ['draft', 'posting'])) {
+                foreach ($request->ingredients as $ingredient) {
+                    $requiredQty = (float)$ingredient['quantity'];
+                    $productName = Product::where('id', $ingredient['id'])->value('name') ?? 'Bahan #' . $ingredient['id'];
+
+                    $productStock = ProductStock::where('id', $ingredient['id'])
+                        ->where('branch_id', $request->branch_id)
+                        ->first();
+                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+
+                    if ($currentStock < $requiredQty) {
+                        throw new \Exception("Stok bahan baku \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                    }
+                }
+            }
+
             DB::beginTransaction();
 
             // Check if this is an update (id is provided) or a new record

@@ -632,15 +632,15 @@
                             window.location.href = '{{ route('production.index') }}';
                         }, 1500);
                     } else {
-                        // Handle error responses
-                        this.showNotification(result.message || 'Gagal menyimpan produksi', 'error');
+                        // Handle error responses - tampilkan Swal.fire seperti di PosController
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Produksi Gagal',
+                            text: result.message || 'Gagal menyimpan produksi',
+                            confirmButtonText: 'OK'
+                        });
                         if (result.errors) {
                             console.error('Validation errors:', result.errors);
-                            // Show first validation error
-                            const firstError = Object.values(result.errors)[0];
-                            if (firstError && firstError[0]) {
-                                this.showNotification(firstError[0], 'error');
-                            }
                         }
                         if (callback) callback();
                     }
