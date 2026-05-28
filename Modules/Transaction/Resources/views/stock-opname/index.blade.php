@@ -376,17 +376,27 @@
                 border-radius: 8px;
                 transition: all 0.2s ease;
                 cursor: pointer;
-                font-size: 11.5px;
+                font-size: 10px;
                 font-weight: 700;
-                gap: 0.35rem;
-                padding: 0.5rem 0.85rem;
+                gap: 0.25rem;
+                padding: 0.5rem 0.65rem;
                 border: 1px solid transparent;
+                white-space: nowrap;
+            }
+            .so-btn-quick-adj svg {
+                width: 14px;
+                height: 14px;
+                flex-shrink: 0;
             }
             @media (min-width: 992px) {
                 .so-btn-quick-adj {
                     width: 36px;
                     height: 36px;
                     padding: 0;
+                }
+                .so-btn-quick-adj svg {
+                    width: 16px;
+                    height: 16px;
                 }
             }
             .so-btn-quick-adj.is-up {
@@ -478,12 +488,20 @@
                 line-height: 1.4;
             }
             .history-qty-badge {
-                font-size: 12px;
+                font-size: 10.5px;
                 font-weight: 800;
                 background-color: #eff6ff;
                 color: #2563eb;
-                border-radius: 8px;
-                padding: 0.35rem 0.75rem;
+                border-radius: 6px;
+                padding: 0.25rem 0.45rem;
+                white-space: nowrap;
+            }
+            @media (min-width: 992px) {
+                .history-qty-badge {
+                    font-size: 12px;
+                    border-radius: 8px;
+                    padding: 0.35rem 0.75rem;
+                }
             }
             #kt_stock_opname_history {
                 border-left: 1px solid rgba(229, 231, 235, 0.5);
@@ -806,7 +824,7 @@
     <!--begin::Stock Opname History Drawer-->
     <div id="kt_stock_opname_history" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-history"
         data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
-        data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end"
+        data-kt-drawer-width="{default:'100%', 'md': '500px'}" data-kt-drawer-direction="end"
         data-kt-drawer-close="#kt_stock_opname_history_close">
         <div class="card w-100 shadow-none border-0 rounded-0" style="height: 100vh;">
             <!--begin::Header-->
@@ -848,10 +866,9 @@
     </div>
     <!--end::Stock Opname History Drawer-->
 
-    <!--begin::Stock Opname Discussion Drawer-->
     <div id="kt_stock_opname_discussion" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-discussion"
         data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
-        data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end"
+        data-kt-drawer-width="{default:'100%', 'md': '500px'}" data-kt-drawer-direction="end"
         data-kt-drawer-close="#kt_stock_opname_discussion_close">
         <div class="card w-100 shadow-none border-0 rounded-0 d-flex flex-column" style="height: 100vh;">
             <!--begin::Header-->
@@ -1116,7 +1133,7 @@
                     <div class="so-mobile-divider d-lg-none mt-2 mb-3"></div>
 
                     <!-- Right: Match, Actions, Delete -->
-                    <div class="d-flex align-items-center justify-content-between justify-content-lg-end gap-3 flex-wrap w-100 w-lg-auto">
+                    <div class="d-flex align-items-center justify-content-between justify-content-lg-end gap-2 gap-lg-3 flex-nowrap w-100 w-lg-auto">
                         <!-- Value Match -->
                         <div class="so-match-section d-none d-lg-flex">
                             <span class="so-match-label">${stockMatchLabel}</span>
@@ -1164,7 +1181,7 @@
                             </button>
                         </div>
 
-                        <div class="so-divider d-none d-lg-block"></div>
+                        <div class="so-divider"></div>
 
                         <!-- Delete -->
                         <button class="so-btn-delete-clean" onclick="deleteProduct(${id})" title="Hapus Transaksi">
@@ -1671,7 +1688,7 @@
                                     badgeClass = 'is-kredit';
                                     actionLabel = '+ KREDIT';
                                     qtyHtml = `
-                                        <div class="d-flex align-items-center gap-1">
+                                        <div class="d-flex align-items-center gap-1 flex-nowrap">
                                             <span class="text-muted text-decoration-line-through fs-7">${formatNum(oldStock)}</span>
                                             <span class="text-muted fs-7 mx-1">&rarr;</span>
                                             <span class="history-qty-badge is-kredit">${formatNum(newStock)} ${unit}</span>
@@ -1681,7 +1698,7 @@
                                     badgeClass = 'is-debit';
                                     actionLabel = '- DEBIT';
                                     qtyHtml = `
-                                        <div class="d-flex align-items-center gap-1">
+                                        <div class="d-flex align-items-center gap-1 flex-nowrap">
                                             <span class="text-muted text-decoration-line-through fs-7">${formatNum(oldStock)}</span>
                                             <span class="text-muted fs-7 mx-1">&rarr;</span>
                                             <span class="history-qty-badge is-debit">${formatNum(newStock)} ${unit}</span>
