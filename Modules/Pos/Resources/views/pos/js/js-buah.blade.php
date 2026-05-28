@@ -1805,6 +1805,7 @@
                                 return {
                                     term: params.term, // term dari select2 untuk pencarian
                                     jenis: 'receipt', // contoh ambil dari input lain
+                                    branch: $('#branch_id').val(),
                                     limit: 10 // contoh parameter tambahan
                                 };
                             },
