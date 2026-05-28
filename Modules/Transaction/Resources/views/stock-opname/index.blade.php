@@ -165,194 +165,252 @@
             .so-card {
                 background: #fff;
                 border-radius: 16px;
-                padding: 1.25rem;
-                margin-bottom: 1rem;
-                border: 1px solid rgba(229, 231, 235, 0.8);
-                box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-                transition: box-shadow .2s;
+                padding: 1.5rem;
+                margin-bottom: 1.25rem;
+                border: 1px solid rgba(229, 231, 235, 0.7);
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .so-card:hover {
-                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
             }
             .so-card-title {
-                font-size: 1.125rem;
+                font-size: 1.15rem;
                 font-weight: 800;
                 color: #111827;
                 line-height: 1.3;
+                letter-spacing: -0.015em;
             }
-            .so-card-badge {
-                font-size: 10px;
-                font-weight: 600;
+            .so-card-code {
+                font-size: 11px;
+                font-weight: 700;
                 background: #f3f4f6;
                 color: #4b5563;
                 border: 1px solid #e5e7eb;
-                border-radius: 999px;
-                padding: 0.1rem 0.5rem;
+                border-radius: 6px;
+                padding: 0.2rem 0.5rem;
                 white-space: nowrap;
             }
-            .so-card-date {
-                font-size: 0.875rem;
-                font-weight: 600;
-                color: #1f2937;
-            }
-            .so-card-creator {
-                font-size: 0.75rem;
+            .so-meta-item {
+                font-size: 12.5px;
+                font-weight: 500;
                 color: #6b7280;
             }
-            .so-grid-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
-                gap: 0;
-                background: rgba(249,250,251,0.8);
-                border: 1px solid #e5e7eb;
-                border-radius: 12px;
-                overflow: hidden;
-                margin-top: 1rem;
+            .so-time-row {
+                font-size: 12.5px;
+                font-weight: 500;
+                color: #6b7280;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
             }
-            .so-grid-cell {
-                padding: 0.75rem 0.25rem;
-                text-align: center;
+            .so-creator-avatar {
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1px solid #e5e7eb;
+            }
+            .so-stock-box-container {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .so-stock-box {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
+                width: 78px;
+                height: 64px;
+                border-radius: 10px;
+                border: 1px solid #e5e7eb;
+                background: #f9fafb;
+                transition: all 0.2s ease;
             }
-            .so-grid-cell + .so-grid-cell {
-                border-left: 1px solid rgba(229,231,235,0.6);
-            }
-            .so-grid-cell.is-active {
-                background: #fff;
+            .so-stock-box.is-active {
+                border: 1.5px solid #dbe6ff;
+                background: #f5f8ff;
                 cursor: pointer;
-                transition: background .15s, box-shadow .15s;
             }
-            .so-grid-cell.is-active:hover {
-                background: #eff6ff;
-                box-shadow: inset 0 0 0 1px #bfdbfe;
+            .so-stock-box.is-active:hover {
+                border-color: #2f66ef;
+                background: #edf3ff;
+                transform: translateY(-1px);
             }
-            .so-grid-label {
-                font-size: 11px;
+            .so-stock-label {
+                font-size: 9px;
                 font-weight: 700;
-                color: #6b7280;
+                color: #8892a2;
                 text-transform: uppercase;
-                letter-spacing: 0.05em;
+                letter-spacing: 0.06em;
                 margin-bottom: 0.15rem;
             }
-            .so-grid-label.has-icon {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.2rem;
-            }
-            .so-grid-label.has-icon svg {
-                width: 10px;
-                height: 10px;
-            }
-            .so-grid-label.is-primary {
+            .so-stock-label.is-primary {
                 color: #2563eb;
             }
-            .so-grid-number {
-                font-weight: 700;
+            .so-stock-number {
+                font-size: 16px;
+                font-weight: 800;
                 color: #1f2937;
             }
-            .so-grid-number.lg {
-                font-size: 1.125rem;
+            .so-stock-number.is-primary {
+                color: #2563eb;
             }
-            .so-grid-unit {
-                font-size: 0.75rem;
-                font-weight: 400;
-                color: #6b7280;
+            .so-match-section {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                min-width: 110px;
             }
-            .so-chip {
-                display: inline-block;
-                font-size: 0.8125rem;
+            @media (min-width: 992px) {
+                .so-match-section {
+                    align-items: flex-end;
+                }
+            }
+            .so-match-label {
+                font-size: 9px;
                 font-weight: 700;
-                border-radius: 6px;
-                padding: 0.1rem 0.5rem;
-                border: 1px solid;
-                line-height: 1.5;
-            }
-            .so-chip.danger {
-                color: #dc2626;
-                background: #fef2f2;
-                border-color: #fecaca;
-            }
-            .so-chip.success {
-                color: #059669;
-                background: #ecfdf5;
-                border-color: #a7f3d0;
-            }
-            .so-chip .so-chip-unit {
-                font-size: 10px;
-                font-weight: 400;
-            }
-            .so-loss-bar {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-top: 0.75rem;
-                border: 1px solid #fecaca;
-                background: #fef2f2;
-                border-radius: 12px;
-                padding: 0.65rem 1rem;
-                color: #dc2626;
-            }
-            .so-loss-bar.success {
-                border-color: #a7f3d0;
-                background: #ecfdf5;
-                color: #059669;
-            }
-            .so-loss-label {
-                font-size: 11px;
-                font-weight: 800;
+                color: #8892a2;
                 text-transform: uppercase;
-                letter-spacing: 0.05em;
+                letter-spacing: 0.06em;
+                margin-bottom: 0.15rem;
             }
-            .so-loss-value {
-                font-size: 0.875rem;
-                font-weight: 900;
+            .so-match-value {
+                font-size: 16px;
+                font-weight: 800;
             }
-            .so-actions {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-top: 0.25rem;
-                padding-top: 0.25rem;
+            .so-divider {
+                width: 1px;
+                height: 28px;
+                background-color: #e5e7eb;
             }
-            .so-btn-group {
-                display: flex;
-                gap: 0.3rem;
-            }
-            .so-btn-sm {
+            .so-btn-icon-clean {
+                background: transparent;
+                border: 0;
+                color: #6b7280;
+                width: 36px;
+                height: 36px;
                 display: inline-flex;
                 align-items: center;
-                gap: 0.25rem;
-                font-size: 0.8125rem;
-                font-weight: 500;
-                border: 0;
+                justify-content: center;
                 border-radius: 8px;
-                padding: 0.35rem 0.65rem;
+                transition: all 0.2s ease;
                 cursor: pointer;
-                transition: background .15s;
-                text-decoration: none;
             }
-            .so-btn-sm svg {
-                width: 14px;
-                height: 14px;
+            .so-btn-icon-clean:hover {
+                background-color: #f3f4f6;
+                color: #111827;
             }
-            .so-btn-ghost {
+            .so-btn-icon-clean.is-blue {
+                color: #0d6efd;
+            }
+            .so-btn-icon-clean.is-blue:hover {
+                background-color: #eef2ff;
+                color: #0056b3;
+            }
+            .so-btn-quick-adj {
+                width: 36px;
+                height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+            .so-btn-quick-adj.is-up {
+                background-color: #ecfdf5;
+                border: 1px solid #a7f3d0;
+                color: #059669;
+            }
+            .so-btn-quick-adj.is-up:hover {
+                background-color: #d1fae5;
+                border-color: #34d399;
+                color: #047857;
+            }
+            .so-btn-quick-adj.is-down {
+                background-color: #fef2f2;
+                border: 1px solid #fecaca;
+                color: #dc2626;
+            }
+            .so-btn-quick-adj.is-down:hover {
+                background-color: #fee2e2;
+                border-color: #f87171;
+                color: #b91c1c;
+            }
+            .so-btn-delete-clean {
                 background: transparent;
-                color: #9ca3af;
                 border: 0;
+                color: #9ca3af;
+                width: 36px;
+                height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                transition: all 0.2s ease;
                 cursor: pointer;
-                padding: 0.15rem;
-                transition: color .15s;
             }
-            .so-btn-ghost:hover {
-                color: #3b82f6;
+            .so-btn-delete-clean:hover {
+                background-color: #fef2f2;
+                color: #ef4444;
             }
             #transaction-table tbody tr td {
                 border: 0;
                 padding: 0;
                 background: transparent;
+            }
+
+            /* History Timeline Drawer Styles */
+            .history-card {
+                background: #fff;
+                border: 1px solid #f1f3f7;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+                border-radius: 14px;
+                padding: 1.15rem;
+                margin-bottom: 0.5rem;
+                position: relative;
+            }
+            .history-action-badge {
+                font-size: 10px;
+                font-weight: 700;
+                border-radius: 6px;
+                padding: 0.2rem 0.5rem;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+            .history-action-badge.is-initial {
+                background-color: #eef2ff;
+                color: #4f46e5;
+            }
+            .history-action-badge.is-update {
+                background-color: #fff7ed;
+                color: #ea580c;
+            }
+            .history-time-text {
+                font-size: 11.5px;
+                color: #8892a2;
+                font-weight: 500;
+            }
+            .history-note-text {
+                font-size: 13.5px;
+                font-weight: 700;
+                color: #1f2937;
+                line-height: 1.4;
+            }
+            .history-qty-badge {
+                font-size: 12px;
+                font-weight: 800;
+                background-color: #eff6ff;
+                color: #2563eb;
+                border-radius: 8px;
+                padding: 0.35rem 0.75rem;
+            }
+            #kt_stock_opname_history {
+                border-left: 1px solid rgba(229, 231, 235, 0.5);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
             }
         </style>
         <div class="card card-flush" style="border:0px">
@@ -525,7 +583,7 @@
                                     <label class="form-label text-gray-700 fw-semibold mb-0">Catatan Audit</label>
                                     <span class="badge badge-light-primary">Draft Otomatis</span>
                                 </div>
-                                <textarea class="form-control form-control-solid" rows="3" placeholder="Tulis catatan audit..."></textarea>
+                                <textarea class="form-control form-control-solid" name="note" rows="3" placeholder="Tulis catatan audit..."></textarea>
                             </div>
                             <!--end::Input group-->
                         </div>
@@ -548,6 +606,52 @@
             </div>
         </div>
     </div>
+
+    <!--begin::Stock Opname History Drawer-->
+    <div id="kt_stock_opname_history" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-history"
+        data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
+        data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end"
+        data-kt-drawer-close="#kt_stock_opname_history_close">
+        <div class="card w-100 shadow-none border-0 rounded-0" style="height: 100vh;">
+            <!--begin::Header-->
+            <div class="card-header border-0 pe-5" id="kt_stock_opname_history_header" style="min-height: 70px;">
+                <div class="card-title d-flex flex-column align-items-start">
+                    <h3 class="fw-bold text-gray-900 mb-1 d-flex align-items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #4b5563;">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                            <path d="M12 7v5l4 2"/>
+                        </svg>
+                        Audit Timeline
+                    </h3>
+                    <span class="text-muted fs-7 fw-semibold" id="history-transaction-code">-</span>
+                </div>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_stock_opname_history_close">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </button>
+                </div>
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body position-relative pt-0" id="kt_stock_opname_history_body">
+                <!--begin::Scroll-->
+                <div id="kt_stock_opname_history_scroll" class="position-relative scroll-y me-n5 pe-5" data-kt-scroll="true"
+                    data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_stock_opname_history_body"
+                    data-kt-scroll-dependencies="#kt_stock_opname_history_header" data-kt-scroll-offset="5px" style="height: calc(100vh - 100px);">
+                    
+                    <div class="timeline timeline-border-dashed mt-5" id="history-timeline-items">
+                        <!-- Timeline items rendered dynamically -->
+                    </div>
+
+                </div>
+                <!--end::Scroll-->
+            </div>
+            <!--end::Body-->
+        </div>
+    </div>
+    <!--end::Stock Opname History Drawer-->
+
 @section('script')
     <script type="text/javascript">
         // Data stock kosong dari server
@@ -621,39 +725,29 @@
             }
         }
 
-        function formatShortDate(dateValue) {
-            if (!dateValue) {
-                return '-';
-            }
+        function formatLongDateTime(dateValue) {
+            if (!dateValue) return '-';
             const dt = new Date(dateValue);
-            if (Number.isNaN(dt.getTime())) {
-                return dateValue;
-            }
-            return new Intl.DateTimeFormat('id-ID', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            }).format(dt);
+            if (Number.isNaN(dt.getTime())) return dateValue;
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const day = dt.getDate();
+            const month = months[dt.getMonth()];
+            const year = dt.getFullYear();
+            const h = String(dt.getHours()).padStart(2, '0');
+            const m = String(dt.getMinutes()).padStart(2, '0');
+            return `${day} ${month} ${year}, ${h}.${m}`;
         }
 
         function escapeHtml(value) {
             return $('<div>').text(value ?? '').html();
         }
 
-        function formatTime(dateValue) {
-            if (!dateValue) return '';
-            const dt = new Date(dateValue);
-            if (Number.isNaN(dt.getTime())) return '';
-            const h = String(dt.getHours()).padStart(2, '0');
-            const m = String(dt.getMinutes()).padStart(2, '0');
-            return `${h}.${m}`;
-        }
-
         function renderStockOpnameCard(row) {
             const productName = row?.product?.name || row?.name || '-';
             const code = row?.code ? `#${row.code}` : '-';
-            const dateLabel = formatShortDate(row?.date);
-            const timeLabel = formatTime(row?.created_at);
+            const cleanCode = row?.code ? row.code : '-';
+            const branchName = row?.branch_name || 'Semua Cabang';
+            const dateLabel = formatLongDateTime(row?.created_at || row?.date);
             const creatorName = row?.creator_name || '';
             const stockSystem = Number(row?.stock || 0);
             const stockFisik = Number(row?.real_stock || 0);
@@ -663,72 +757,138 @@
             const id = row?.id || 0;
 
             const isMinus = selisih < 0;
-            const chipClass = isMinus ? 'danger' : 'success';
-            const lossClass = isMinus ? '' : 'success';
-            const hppText = `HPP: Rp ${formatRupiah(Math.abs(hpp))}/Kg`;
-            const nilaiText = `${nilaiSelisih < 0 ? '-' : ''}Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
-            const chipSign = selisih > 0 ? '+' : '';
+            const hppText = `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/Kg`;
+            const nilaiText = `Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
+            
+            // Dynamic Stock Match Label & Color
+            let stockMatchLabel = 'STOCK MATCH';
+            let stockMatchColor = '#111827';
+            if (selisih < 0) {
+                stockMatchLabel = 'POTENSI RUGI';
+                stockMatchColor = '#ef4444';
+            } else if (selisih > 0) {
+                stockMatchLabel = 'SURPLUS STOK';
+                stockMatchColor = '#10b981';
+            }
+
+            // Dynamic User Avatar using userId modulo
+            const userId = row?.created_by || 1;
+            const avatarNum = (userId % 30) + 1;
+            const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
+
+            // Helper to format quantity nicely (e.g. keeping decimal if needed)
+            const formatQty = (val) => {
+                const num = Number(val || 0);
+                if (num === 0) return '0.0';
+                return num % 1 === 0 ? num.toString() : num.toFixed(2);
+            };
 
             const creatorHtml = creatorName
-                ? `<span class="so-card-creator">${escapeHtml(timeLabel)} &bull; ${escapeHtml(creatorName)}</span>`
+                ? `
+                <span class="text-muted mx-1">•</span>
+                <span class="so-time-row">
+                    <img src="${avatarUrl}" class="so-creator-avatar" alt="Avatar">
+                    <span>${escapeHtml(creatorName)}</span>
+                </span>
+                `
                 : '';
 
             return `
-                <div class="so-card">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="so-card-title">${escapeHtml(productName)}</div>
-                            <div class="d-flex align-items-center gap-2 mt-1">
-                                <span style="font-size:0.8125rem;font-weight:500;color:#6b7280;">${escapeHtml(code)}</span>
-                                <span class="so-card-badge">${escapeHtml(hppText)}</span>
-                            </div>
+                <div class="so-card d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
+                    <!-- Left: Info -->
+                    <div class="d-flex flex-column flex-grow-1" style="min-width: 280px;">
+                        <h4 class="so-card-title mb-1">${escapeHtml(productName)}</h4>
+                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap text-muted fs-7">
+                            <span class="so-card-code">${escapeHtml(cleanCode)}</span>
+                            <span class="text-muted">•</span>
+                            <span class="so-meta-item">${escapeHtml(branchName)}</span>
+                            <span class="text-muted">•</span>
+                            <span class="so-meta-item">${escapeHtml(hppText)}</span>
                         </div>
-                        <div class="text-end">
-                            <div class="so-card-date">${escapeHtml(dateLabel)}</div>
+                        <div class="d-flex align-items-center gap-1 text-muted fs-8 flex-wrap">
+                            <span class="so-time-row">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>${escapeHtml(dateLabel)}</span>
+                            </span>
                             ${creatorHtml}
                         </div>
                     </div>
 
-                    <div class="so-grid-row">
-                        <div class="so-grid-cell">
-                            <div class="so-grid-label">Sistem</div>
-                            <div><span class="so-grid-number lg">${formatRupiah(stockSystem)}</span> <span class="so-grid-unit">Kg</span></div>
+                    <!-- Middle: Stock Boxes -->
+                    <div class="so-stock-box-container justify-content-start justify-content-lg-center">
+                        <!-- Box 1: Sistem -->
+                        <div class="so-stock-box">
+                            <span class="so-stock-label">Sistem</span>
+                            <span class="so-stock-number">${formatQty(stockSystem)}</span>
                         </div>
-                        <div class="so-grid-cell is-active" onclick="editProduct(${id})" title="Klik untuk sesuaikan stock fisik">
-                            <div class="so-grid-label is-primary has-icon">
-                                Fisik
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
-                            </div>
-                            <div><span class="so-grid-number lg" style="color:#111827;">${formatRupiah(stockFisik)}</span> <span class="so-grid-unit">Kg</span></div>
+                        <!-- Box 2: Fisik -->
+                        <div class="so-stock-box is-active" onclick="editProduct(${id})" title="Klik untuk sesuaikan stock fisik">
+                            <span class="so-stock-label is-primary">Fisik</span>
+                            <span class="so-stock-number is-primary">${formatQty(stockFisik)}</span>
                         </div>
-                        <div class="so-grid-cell">
-                            <div class="so-grid-label">Selisih Qty</div>
-                            <div><span class="so-chip ${chipClass}">${chipSign}${formatRupiah(Math.abs(selisih))} <span class="so-chip-unit">Kg</span></span></div>
+                        <!-- Box 3: Selisih -->
+                        <div class="so-stock-box">
+                            <span class="so-stock-label">Selisih</span>
+                            <span class="so-stock-number">${formatQty(selisih)}</span>
                         </div>
                     </div>
 
-                    <div class="so-loss-bar ${lossClass}">
-                        <span class="so-loss-label">Potensi Kerugian</span>
-                        <span class="so-loss-value">${nilaiText}</span>
-                    </div>
+                    <!-- Right: Match, Actions, Delete -->
+                    <div class="d-flex align-items-center justify-content-between justify-content-lg-end gap-3 flex-wrap">
+                        <!-- Value Match -->
+                        <div class="so-match-section">
+                            <span class="so-match-label">${stockMatchLabel}</span>
+                            <span class="so-match-value" style="color: ${stockMatchColor};">${selisih < 0 ? '-' : ''}${nilaiText}</span>
+                        </div>
 
-                    <div class="so-actions">
-                        <div class="so-btn-group">
-                            <button class="so-btn-sm" style="background:#eff6ff;color:#2563eb;" onclick="viewProduct(${id})">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                History
+                        <!-- Logs & Chats -->
+                        <div class="d-flex align-items-center gap-1">
+                            <!-- History -->
+                            <button class="so-btn-icon-clean" onclick="showHistory(${id})" title="History Transaksi">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                    <path d="M3 3v5h5"/>
+                                    <path d="M12 7v5l4 2"/>
+                                </svg>
                             </button>
-                            <button class="so-btn-sm" style="background:#fff7ed;color:#ea580c;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                                Obrolan
-                            </button>
-                            <button class="so-btn-sm" style="background:#fef2f2;color:#dc2626;" onclick="deleteProduct(${id})">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                                Hapus
+                            <!-- Chat/Discussion -->
+                            <button class="so-btn-icon-clean is-blue" title="Diskusi / Catatan" onclick="editProduct(${id})">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
                             </button>
                         </div>
-                        <button class="so-btn-ghost" onclick="viewProduct(${id})">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+
+                        <div class="so-divider d-none d-lg-block"></div>
+
+                        <!-- Quick Adjustments -->
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Adjust Up -->
+                            <button class="so-btn-quick-adj is-up" onclick="editProduct(${id})" title="Sesuaikan Stok Masuk">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="7" y1="17" x2="17" y2="7"/>
+                                    <polyline points="7 7 17 7 17 17"/>
+                                </svg>
+                            </button>
+                            <!-- Adjust Down -->
+                            <button class="so-btn-quick-adj is-down" onclick="editProduct(${id})" title="Sesuaikan Stok Keluar">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="7" y1="7" x2="17" y2="17"/>
+                                    <polyline points="17 7 17 17 7 17"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="so-divider d-none d-lg-block"></div>
+
+                        <!-- Delete -->
+                        <button class="so-btn-delete-clean" onclick="deleteProduct(${id})" title="Hapus Transaksi">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                <line x1="14" y1="11" x2="14" y2="17"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -968,6 +1128,7 @@
                     // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
+                    $('textarea[name="note"]').val(response.note || '');
                     updateStockSummary(response.avg_price || 0);
 
                     // Ubah action form untuk update
@@ -1028,6 +1189,7 @@
                     // Set form fields from database values (not live stock)
                     $('input[name="quantity"]').val(response.stock);
                     $('input[name="real_stock"]').val(response.real_stock);
+                    $('textarea[name="note"]').val(response.note || '');
                     updateStockSummary(response.avg_price || 0);
 
                     // Ubah action form untuk view (no action)
@@ -1055,6 +1217,83 @@
             });
         }
 
+        function showHistory(id) {
+            $.ajax({
+                url: `/stock-opname/${id}/history`,
+                type: 'GET',
+                success: function(response) {
+                    $('#history-transaction-code').text(response.code || '-');
+                    
+                    const $timeline = $('#history-timeline-items');
+                    $timeline.empty();
+                    
+                    if (response.history && response.history.length > 0) {
+                        response.history.forEach((item, index) => {
+                            const isInitial = item.action === 'INITIAL';
+                            const badgeClass = isInitial ? 'is-initial' : 'is-update';
+                            const actionLabel = isInitial ? 'INITIAL' : 'UPDATE';
+                            const formattedTime = formatLongDateTime(item.created_at);
+                            
+                            // Dynamic User Avatar using userId modulo
+                            const userId = item.created_by || 1;
+                            const avatarNum = (userId % 30) + 1;
+                            const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
+                            
+                            const timelineItemHtml = `
+                                <div class="timeline-item">
+                                    <div class="timeline-line"></div>
+                                    <div class="timeline-icon">
+                                        <span class="bullet bullet-dot bg-primary h-10px w-10px"></span>
+                                    </div>
+                                    <div class="timeline-content mb-8 mt-n1">
+                                        <div class="history-card">
+                                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                                <span class="history-action-badge ${badgeClass}">${actionLabel}</span>
+                                                <span class="history-time-text d-flex align-items-center gap-1">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                    ${formattedTime}
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="history-note-text mb-3">
+                                                "${escapeHtml(item.note || '')}"
+                                            </div>
+                                            
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="${avatarUrl}" class="so-creator-avatar" alt="Avatar">
+                                                    <span class="fs-7 fw-semibold text-gray-700">${escapeHtml(item.creator_name || 'System')}</span>
+                                                </div>
+                                                <span class="history-qty-badge">${item.real_stock} Kg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $timeline.append(timelineItemHtml);
+                        });
+                    } else {
+                        $timeline.append('<div class="text-muted text-center py-5">Belum ada riwayat audit.</div>');
+                    }
+                    
+                    // Show Metronic Drawer
+                    const drawerEl = document.getElementById('kt_stock_opname_history');
+                    let drawer = KTDrawer.getInstance(drawerEl);
+                    if (!drawer) {
+                        drawer = new KTDrawer(drawerEl);
+                    }
+                    drawer.show();
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memuat data riwayat audit.'
+                    });
+                }
+            });
+        }
+
         $('#kt_modal_add_customer').on('shown.bs.modal', function() {
             const $branch = $('#branch_id');
             const $product = $('#product_id');
@@ -1066,6 +1305,7 @@
                 $('#kt_modal_add_customer_header h2').text('Input Stock Fisik & Akumulasi');
                 $('#kt_modal_add_customer_submit .indicator-label').html(
                     'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
+                $('textarea[name="note"]').val('');
             }
 
             if (!$realStock.val()) {

@@ -75,6 +75,7 @@ class StockOpnameController extends Controller
             'branch_id' => 'required|exists:branch,id',
             'date' => 'required|date',
             'real_stock' => 'required|numeric',
+            'note' => 'nullable|string',
         ]);
 
         // Simpan data ke database
@@ -102,6 +103,19 @@ class StockOpnameController extends Controller
             $stock->difference =  (Double)$validated['real_stock'] - (Double)$stockAvailable;
             $stock->created_by = Auth::user()->id_user;
             $stock->save();
+
+            $noteText = $request->input('note') ?: 'Input Stock Fisik Awal';
+            DB::table('stock_opname_history')->insert([
+                'stock_opname_id' => $stock->id,
+                'action' => 'INITIAL',
+                'note' => $noteText,
+                'real_stock' => $stock->real_stock,
+                'difference' => $stock->difference,
+                'created_by' => Auth::user()->id_user,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -141,6 +155,14 @@ class StockOpnameController extends Controller
 
         $stock = StockOpname::with('product')->findOrFail($id);
         $stock->name = $stock->product->name;
+
+        // Fetch latest history note
+        $latestHistory = DB::table('stock_opname_history')
+            ->where('stock_opname_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        $stock->note = $latestHistory ? $latestHistory->note : '';
+
         return response()->json($stock);
     }
 
@@ -161,6 +183,7 @@ class StockOpnameController extends Controller
             'branch_id' => 'required|exists:branch,id',
             'date' => 'required|date',
             'real_stock' => 'required|numeric',
+            'note' => 'nullable|string',
         ]);
 
         try {
@@ -174,6 +197,19 @@ class StockOpnameController extends Controller
             $stock->difference = (Double)$validated['real_stock'] - (Double)$stock->stock;
             $stock->updated_by = Auth::user()->id_user;
             $stock->save();
+
+            $noteText = $request->input('note') ?: 'Penyesuaian Stok Fisik';
+            DB::table('stock_opname_history')->insert([
+                'stock_opname_id' => $stock->id,
+                'action' => 'UPDATE',
+                'note' => $noteText,
+                'real_stock' => $stock->real_stock,
+                'difference' => $stock->difference,
+                'created_by' => Auth::user()->id_user,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
@@ -222,11 +258,17 @@ class StockOpnameController extends Controller
         $userBranches = UserBranch::getUserBranch();
         $query = StockOpname::with('product')
             ->leftJoin('users', 'stock_opname.created_by', '=', 'users.id_user')
+            ->leftJoin('branch', 'stock_opname.branch_id', '=', 'branch.id')
             ->leftJoin('product_stock', function ($j) {
                 $j->on('product_stock.id', '=', 'stock_opname.product_id')
                   ->on('product_stock.branch_id', '=', 'stock_opname.branch_id');
             })
-            ->select('stock_opname.*', 'users.nm_user as creator_name', 'product_stock.avg_hpp as avg_hpp_calc')
+            ->select(
+                'stock_opname.*',
+                'users.nm_user as creator_name',
+                'branch.name as branch_name',
+                'product_stock.avg_hpp as avg_hpp_calc'
+            )
             ->whereIn('stock_opname.branch_id', $userBranches);
 
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
@@ -306,5 +348,35 @@ class StockOpnameController extends Controller
             })
             ->rawColumns(['name', 'quantity', 'difference_value', 'percentage', 'action'])
             ->make(true);
+    }
+
+    public function get_history($id)
+    {
+        $stockOpname = StockOpname::findOrFail($id);
+        
+        $history = DB::table('stock_opname_history')
+            ->leftJoin('users', 'stock_opname_history.created_by', '=', 'users.id_user')
+            ->select('stock_opname_history.*', 'users.nm_user as creator_name')
+            ->where('stock_opname_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        if ($history->isEmpty()) {
+            $creator = DB::table('users')->where('id_user', $stockOpname->created_by)->first();
+            $history = collect([[
+                'action' => 'INITIAL',
+                'note' => 'Input Stock Fisik Awal',
+                'real_stock' => $stockOpname->real_stock,
+                'difference' => $stockOpname->difference,
+                'created_by' => $stockOpname->created_by,
+                'creator_name' => $creator ? $creator->nm_user : 'System',
+                'created_at' => $stockOpname->created_at->toDateTimeString(),
+            ]]);
+        }
+        
+        return response()->json([
+            'code' => $stockOpname->code,
+            'history' => $history
+        ]);
     }
 }

@@ -85,6 +85,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::resource('stock-out', StockOutController::class)->names('stock-out')->except('show');
 
     Route::resource('stock-opname', StockOpnameController::class)->names('stock-opname')->except('show');
+    Route::get('stock-opname/{id}/history', [StockOpnameController::class, 'get_history'])->name('stock-opname.history');
 
     Route::resource('stock-out-type', StockOutTypeController::class)->names('stock-out-type')->except('show');
 
