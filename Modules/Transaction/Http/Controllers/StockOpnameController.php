@@ -153,7 +153,7 @@ class StockOpnameController extends Controller
             return $denied;
         }
 
-        $stock = StockOpname::with('product')->findOrFail($id);
+        $stock = StockOpname::with('product.unit')->findOrFail($id);
         $stock->name = $stock->product->name;
 
         // Fetch latest history note
@@ -256,7 +256,7 @@ class StockOpnameController extends Controller
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
-        $query = StockOpname::with('product')
+        $query = StockOpname::with('product.unit')
             ->leftJoin('users', 'stock_opname.created_by', '=', 'users.id_user')
             ->leftJoin('branch', 'stock_opname.branch_id', '=', 'branch.id')
             ->leftJoin('product_stock', function ($j) {
@@ -425,5 +425,67 @@ class StockOpnameController extends Controller
             'message' => 'Pesan berhasil dikirim.',
             'discussion' => $newDiscussion
         ], 201);
+    }
+
+    public function adjust(Request $request, $id)
+    {
+        if ($denied = $this->requireAccess('stock-opname.update')) {
+            return $denied;
+        }
+
+        $validated = $request->validate([
+            'qty' => 'required|numeric|min:0.01',
+            'type' => 'required|in:up,down',
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $stock = StockOpname::findOrFail($id);
+
+            $oldRealStock = (double)$stock->real_stock;
+            $adjustQty = (double)$validated['qty'];
+
+            if ($validated['type'] === 'up') {
+                $newRealStock = $oldRealStock + $adjustQty;
+            } else {
+                $newRealStock = $oldRealStock - $adjustQty;
+            }
+
+            if ($newRealStock < 0) {
+                return response()->json([
+                    'message' => 'Stok fisik setelah penyesuaian tidak boleh kurang dari 0.'
+                ], 422);
+            }
+
+            $stock->real_stock = $newRealStock;
+            $stock->difference = $newRealStock - (double)$stock->stock;
+            $stock->updated_by = Auth::user()->id_user;
+            $stock->save();
+
+            DB::table('stock_opname_history')->insert([
+                'stock_opname_id' => $stock->id,
+                'action' => 'UPDATE',
+                'note' => $validated['reason'],
+                'real_stock' => $stock->real_stock,
+                'difference' => $stock->difference,
+                'created_by' => Auth::user()->id_user,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Gagal melakukan penyesuaian stok: ' . $e->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Penyesuaian stok berhasil disimpan.',
+            'data' => $stock
+        ]);
     }
 }

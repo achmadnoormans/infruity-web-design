@@ -88,6 +88,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('stock-opname/{id}/history', [StockOpnameController::class, 'get_history'])->name('stock-opname.history');
     Route::get('stock-opname/{id}/discussion', [StockOpnameController::class, 'get_discussion'])->name('stock-opname.discussion');
     Route::post('stock-opname/{id}/discussion', [StockOpnameController::class, 'post_discussion'])->name('stock-opname.discussion.post');
+    Route::post('stock-opname/{id}/adjust', [StockOpnameController::class, 'adjust'])->name('stock-opname.adjust');
 
     Route::resource('stock-out-type', StockOutTypeController::class)->names('stock-out-type')->except('show');
 

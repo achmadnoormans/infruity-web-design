@@ -740,6 +740,61 @@
         </div>
     </div>
 
+    <!--begin::Stock Adjustment Modal-->
+    <div class="modal fade stock-opname-modal" id="kt_modal_stock_adjustment" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content" style="border-radius: 20px; border: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);">
+                <form id="kt_modal_stock_adjustment_form" class="form">
+                    @csrf
+                    <!--begin::Modal header-->
+                    <div class="modal-header d-flex align-items-center justify-content-between py-4 px-6 border-0" id="adj-modal-header" style="border-top-left-radius: 20px; border-top-right-radius: 20px; min-height: 60px;">
+                        <h2 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0" id="adj-modal-title" style="font-size: 1.25rem;">
+                            <!-- Dynamic Arrow Icon and Text -->
+                        </h2>
+                        <button type="button" class="btn-close-soft" data-bs-dismiss="modal" aria-label="Close" style="width: 32px; height: 32px; background: rgba(0,0,0,0.05); border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i class="ki-outline ki-cross fs-3 text-gray-700"></i>
+                        </button>
+                    </div>
+                    <!--end::Modal header-->
+                    <!--begin::Modal body-->
+                    <div class="modal-body p-6" style="background: #fbfcff;">
+                        <!-- Current Stock Box -->
+                        <div class="d-flex align-items-center justify-content-between p-4 mb-5" style="background-color: #f9fafb; border-radius: 12px; border: 1px solid #f1f3f7;">
+                            <span class="text-gray-600 fw-semibold">Stock Fisik Saat Ini:</span>
+                            <span class="fs-4 fw-bold text-gray-900" id="adj-current-stock-label">0 Kg</span>
+                        </div>
+
+                        <!-- Qty Input Group -->
+                        <div class="fv-row mb-5">
+                            <label class="required form-label text-gray-700 fw-semibold mb-2">Qty Penyesuaian</label>
+                            <div class="input-group input-group-solid rounded" style="border: 1px solid #d9dde6; overflow: hidden; background: #fff;">
+                                <span class="input-group-text border-0 fw-bold fs-3 justify-content-center" id="adj-type-badge" style="width: 46px;">+</span>
+                                <input type="number" step="0.01" class="form-control border-0 fw-bold text-gray-900 px-3 fs-3" id="adj-qty-input" name="qty" placeholder="1" required min="0.01" style="background: transparent;">
+                            </div>
+                            <div class="text-muted fs-7 mt-2 text-end">
+                                Menjadi: <strong class="text-gray-900" id="adj-result-stock-label">0 Kg</strong>
+                            </div>
+                        </div>
+
+                        <!-- Reason Input -->
+                        <div class="fv-row mb-2">
+                            <label class="required form-label text-gray-700 fw-semibold mb-2">Alasan Penyesuaian</label>
+                            <textarea class="form-control form-control-solid rounded-lg px-4 py-3" id="adj-reason-input" name="reason" rows="3" placeholder="Contoh: Salah hitung saat audit awal" required style="background-color: #f9fafb; border: 1px solid #d9dde6;"></textarea>
+                        </div>
+                    </div>
+                    <!--end::Modal body-->
+                    <!--begin::Modal footer-->
+                    <div class="modal-footer border-0 d-flex justify-content-end gap-3 pt-0 pb-6 px-6" style="background: #fbfcff; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600; background: #f3f4f6; color: #4b5563;">Batal</button>
+                        <button type="submit" class="btn btn-primary" id="adj-submit-btn" style="border-radius: 10px; font-weight: 600; padding: 0.75rem 1.75rem;">Simpan</button>
+                    </div>
+                    <!--end::Modal footer-->
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--end::Stock Adjustment Modal-->
+
     <!--begin::Stock Opname History Drawer-->
     <div id="kt_stock_opname_history" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-history"
         data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
@@ -949,7 +1004,7 @@
             const discussionsCount = Number(row?.discussions_count || 0);
 
             const isMinus = selisih < 0;
-            const hppText = `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/Kg`;
+            const hppText = `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/${row?.product?.unit?.abbreviation || 'Kg'}`;
             const nilaiText = `Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
             
             // Dynamic Stock Match Label & Color
@@ -1084,7 +1139,7 @@
                         <!-- Quick Adjustments -->
                         <div class="d-flex align-items-center gap-2">
                             <!-- Adjust Up -->
-                            <button class="so-btn-quick-adj is-up" onclick="editProduct(${id})" title="Sesuaikan Stok Masuk">
+                            <button class="so-btn-quick-adj is-up" onclick="openAdjustmentModal(${id}, 'up')" title="Sesuaikan Stok Masuk">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="7" y1="17" x2="17" y2="7"/>
                                     <polyline points="7 7 17 7 17 17"/>
@@ -1092,7 +1147,7 @@
                                 <span class="d-lg-none">+ Kredit</span>
                             </button>
                             <!-- Adjust Down -->
-                            <button class="so-btn-quick-adj is-down" onclick="editProduct(${id})" title="Sesuaikan Stok Keluar">
+                            <button class="so-btn-quick-adj is-down" onclick="openAdjustmentModal(${id}, 'down')" title="Sesuaikan Stok Keluar">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="7" y1="7" x2="17" y2="17"/>
                                     <polyline points="17 7 17 17 7 17"/>
@@ -1225,6 +1280,57 @@
                     },
                     complete: function() {
                         submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+
+            $('#kt_modal_stock_adjustment_form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const form = $(this);
+                const id = form.data('id');
+                const type = form.data('type');
+                const qty = $('#adj-qty-input').val();
+                const reason = $('#adj-reason-input').val();
+                
+                const submitBtn = $('#adj-submit-btn');
+                submitBtn.prop('disabled', true).text('Menyimpan...');
+                
+                $.ajax({
+                    url: `/stock-opname/${id}/adjust`,
+                    type: 'POST',
+                    data: {
+                        qty: qty,
+                        type: type,
+                        reason: reason,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message || 'Penyesuaian stok berhasil disimpan.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('kt_modal_stock_adjustment'));
+                            if (modal) modal.hide();
+                            
+                            // Refresh DataTable
+                            if (typeof dataTable !== 'undefined') {
+                                dataTable.ajax.reload(null, false);
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: xhr.responseJSON?.message || 'Terjadi kesalahan saat memproses penyesuaian.'
+                        });
+                    },
+                    complete: function() {
+                        submitBtn.prop('disabled', false).text('Simpan');
                     }
                 });
             });
@@ -1654,6 +1760,87 @@
                         icon: 'error',
                         title: 'Gagal',
                         text: 'Terjadi kesalahan saat memuat data diskusi.'
+                    });
+                }
+            });
+        }
+
+        function openAdjustmentModal(id, type) {
+            $.ajax({
+                url: `/stock-opname/${id}/edit`,
+                type: 'GET',
+                success: function(response) {
+                    const unit = response.product?.unit?.abbreviation || 'Kg';
+                    const currentStock = Number(response.real_stock || 0);
+                    
+                    $('#adj-current-stock-label').text(`${currentStock} ${unit}`);
+                    $('#adj-qty-input').val('1');
+                    $('#adj-reason-input').val('');
+                    
+                    // Store details on form
+                    const $form = $('#kt_modal_stock_adjustment_form');
+                    $form.data('id', id);
+                    $form.data('type', type);
+                    $form.data('unit', unit);
+                    $form.data('current-stock', currentStock);
+                    
+                    const $header = $('#adj-modal-header');
+                    const $title = $('#adj-modal-title');
+                    const $badge = $('#adj-type-badge');
+                    const $submitBtn = $('#adj-submit-btn');
+                    
+                    if (type === 'up') {
+                        // Up styling
+                        $header.css({ 'background-color': '#ecfdf5', 'color': '#059669' });
+                        $title.css('color', '#059669').html(`
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                <line x1="7" y1="17" x2="17" y2="7"/>
+                                <polyline points="7 7 17 7 17 17"/>
+                            </svg>
+                            Adjustment + Kredit
+                        `);
+                        $badge.text('+').css({ 'background-color': '#ecfdf5', 'color': '#059669' });
+                        $submitBtn.css({ 'background-color': '#5ec5a5', 'border-color': '#5ec5a5', 'color': '#fff' });
+                        $('#adj-reason-input').attr('placeholder', 'Contoh: Salah hitung saat audit awal');
+                    } else {
+                        // Down styling
+                        $header.css({ 'background-color': '#fef2f2', 'color': '#dc2626' });
+                        $title.css('color', '#dc2626').html(`
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                <line x1="7" y1="7" x2="17" y2="17"/>
+                                <polyline points="17 7 17 17 7 17"/>
+                            </svg>
+                            Adjustment - Kredit
+                        `);
+                        $badge.text('-').css({ 'background-color': '#fef2f2', 'color': '#dc2626' });
+                        $submitBtn.css({ 'background-color': '#f87171', 'border-color': '#f87171', 'color': '#fff' });
+                        $('#adj-reason-input').attr('placeholder', 'Contoh: Koreksi buah busuk/penyusutan harian');
+                    }
+                    
+                    function updatePreview() {
+                        const qty = parseFloat($('#adj-qty-input').val()) || 0;
+                        let result = currentStock;
+                        if (type === 'up') {
+                            result = currentStock + qty;
+                        } else {
+                            result = currentStock - qty;
+                        }
+                        // Format preview
+                        const formattedResult = Number(result % 1 === 0 ? result.toString() : result.toFixed(2));
+                        $('#adj-result-stock-label').text(`${formattedResult} ${unit}`);
+                    }
+                    
+                    $('#adj-qty-input').off('input change').on('input change', updatePreview);
+                    updatePreview();
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('kt_modal_stock_adjustment'));
+                    modal.show();
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memuat data produk.'
                     });
                 }
             });
