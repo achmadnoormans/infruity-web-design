@@ -344,6 +344,7 @@
                 background-color: #e5e7eb;
             }
             .so-btn-icon-clean {
+                position: relative;
                 background: transparent;
                 border: 0;
                 color: #6b7280;
@@ -479,6 +480,70 @@
             #kt_stock_opname_history {
                 border-left: 1px solid rgba(229, 231, 235, 0.5);
                 box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
+            }
+            
+            /* Discussion Chat Styles */
+            .chat-message-container {
+                display: flex;
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+            .chat-message-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 1px solid #e5e7eb;
+                flex-shrink: 0;
+            }
+            .chat-message-bubble {
+                background-color: #f3f4f6;
+                color: #1f2937;
+                border-radius: 12px;
+                padding: 0.75rem 1rem;
+                font-size: 13.5px;
+                line-height: 1.4;
+                position: relative;
+            }
+            .chat-message-container.is-self {
+                flex-direction: row-reverse;
+            }
+            .chat-message-container.is-self .chat-message-bubble {
+                background-color: #eef2ff;
+                color: #312e81;
+                border-top-right-radius: 4px;
+            }
+            .chat-message-container:not(.is-self) .chat-message-bubble {
+                border-top-left-radius: 4px;
+                background-color: #f3f4f6;
+                color: #1f2937;
+            }
+            .chat-message-header {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin-bottom: 0.15rem;
+            }
+            .chat-message-author {
+                font-size: 11px;
+                font-weight: 700;
+                color: #4b5563;
+            }
+            .chat-message-container.is-self .chat-message-author {
+                color: #4f46e5;
+            }
+            .chat-message-time {
+                font-size: 9.5px;
+                color: #9ca3af;
+                font-weight: 500;
+            }
+            #kt_stock_opname_discussion {
+                border-left: 1px solid rgba(229, 231, 235, 0.5);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
+            }
+            #kt_stock_opname_discussion_footer {
+                background-color: #fbfcff;
+                border-top: 1px solid #eef1f7;
             }
         </style>
         <div class="card card-flush" style="border:0px">
@@ -720,8 +785,66 @@
     </div>
     <!--end::Stock Opname History Drawer-->
 
+    <!--begin::Stock Opname Discussion Drawer-->
+    <div id="kt_stock_opname_discussion" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-discussion"
+        data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
+        data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end"
+        data-kt-drawer-close="#kt_stock_opname_discussion_close">
+        <div class="card w-100 shadow-none border-0 rounded-0 d-flex flex-column" style="height: 100vh;">
+            <!--begin::Header-->
+            <div class="card-header border-0 pe-5" id="kt_stock_opname_discussion_header" style="min-height: 70px;">
+                <div class="card-title d-flex flex-column align-items-start">
+                    <h3 class="fw-bold text-gray-900 mb-1 d-flex align-items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #0d6efd;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Ruang Diskusi
+                    </h3>
+                    <span class="text-muted fs-7 fw-semibold" id="discussion-product-name">-</span>
+                </div>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_stock_opname_discussion_close">
+                        <i class="ki-outline ki-cross fs-1"></i>
+                    </button>
+                </div>
+            </div>
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div class="card-body position-relative pt-0 flex-grow-1 overflow-hidden d-flex flex-column" id="kt_stock_opname_discussion_body">
+                <!--begin::Scroll-->
+                <div id="kt_stock_opname_discussion_scroll" class="position-relative scroll-y flex-grow-1 me-n5 pe-5 mb-4" data-kt-scroll="true"
+                    data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_stock_opname_discussion_body"
+                    data-kt-scroll-dependencies="#kt_stock_opname_discussion_header, #kt_stock_opname_discussion_footer" data-kt-scroll-offset="5px">
+                    
+                    <div class="d-flex flex-column gap-4" id="discussion-items">
+                        <!-- Chat messages rendered dynamically -->
+                    </div>
+
+                </div>
+                <!--end::Scroll-->
+            </div>
+            <!--end::Body-->
+            <!--begin::Footer-->
+            <div class="card-footer border-0 p-5" id="kt_stock_opname_discussion_footer">
+                <form id="kt_stock_opname_discussion_form" class="d-flex align-items-center gap-2">
+                    <input type="hidden" id="discussion-stock-opname-id" name="stock_opname_id">
+                    <input type="text" class="form-control form-control-solid rounded-pill px-4" id="discussion-message-input" placeholder="Tulis pesan..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary btn-icon rounded-circle w-40px h-40px flex-shrink-0" style="background-color: #3b82f6; border-color: #3b82f6;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <!--end::Footer-->
+        </div>
+    </div>
+    <!--end::Stock Opname Discussion Drawer-->
+
 @section('script')
     <script type="text/javascript">
+        const currentUserId = {{ Auth::user()->id_user }};
         // Data stock kosong dari server
         const emptyStockData = @json($emptyStockData ?? []);
 
@@ -823,6 +946,7 @@
             const hpp = Number(row?.avg_hpp_calc || row?.avg_price || 0);
             const nilaiSelisih = Math.floor(selisih * hpp);
             const id = row?.id || 0;
+            const discussionsCount = Number(row?.discussions_count || 0);
 
             const isMinus = selisih < 0;
             const hppText = `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/Kg`;
@@ -947,10 +1071,11 @@
                                 </svg>
                             </button>
                             <!-- Chat/Discussion -->
-                            <button class="so-btn-icon-clean is-blue" title="Diskusi / Catatan" onclick="editProduct(${id})">
+                            <button class="so-btn-icon-clean is-blue" data-discussion-btn-id="${id}" title="Diskusi / Catatan" onclick="showDiscussion(${id})">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                 </svg>
+                                ${discussionsCount > 0 ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">${discussionsCount}</span>` : ''}
                             </button>
                         </div>
 
@@ -1024,6 +1149,84 @@
             });
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
+            });
+
+            $('#kt_stock_opname_discussion_form').on('submit', function(e) {
+                e.preventDefault();
+                
+                const id = $('#discussion-stock-opname-id').val();
+                const message = $('#discussion-message-input').val();
+                if (!message || !id) return;
+                
+                const submitBtn = $(this).find('button[type="submit"]');
+                submitBtn.prop('disabled', true);
+                
+                $.ajax({
+                    url: `/stock-opname/${id}/discussion`,
+                    type: 'POST',
+                    data: {
+                        message: message,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#discussion-message-input').val('');
+                        
+                        // Remove empty message text if present
+                        $('#discussion-items').find('.text-muted').remove();
+                        
+                        // Append the new message
+                        const item = response.discussion;
+                        const isSelf = String(item.created_by) === String(currentUserId);
+                        const selfClass = isSelf ? 'is-self' : '';
+                        const avatarNum = ((item.created_by || 1) % 30) + 1;
+                        const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
+                        
+                        const itemHtml = `
+                            <div class="chat-message-container ${selfClass}">
+                                <img src="${avatarUrl}" class="chat-message-avatar" alt="Avatar">
+                                <div class="d-flex flex-column align-items-${isSelf ? 'end' : 'start'}">
+                                    <div class="chat-message-header">
+                                        <span class="chat-message-author">${escapeHtml(item.creator_name || 'User')}</span>
+                                        <span class="chat-message-time">${formatLongDateTime(item.created_at)}</span>
+                                    </div>
+                                    <div class="chat-message-bubble shadow-sm">
+                                        ${escapeHtml(item.message || '')}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        $('#discussion-items').append(itemHtml);
+                        
+                        // Scroll to bottom
+                        const scrollEl = document.getElementById('kt_stock_opname_discussion_scroll');
+                        if (scrollEl) {
+                            scrollEl.scrollTop = scrollEl.scrollHeight;
+                        }
+
+                        // Update badge count on the card button dynamically
+                        const $btn = $(`[data-discussion-btn-id="${id}"]`);
+                        if ($btn.length > 0) {
+                            let $badge = $btn.find('.badge');
+                            if ($badge.length > 0) {
+                                const newCount = parseInt($badge.text() || 0) + 1;
+                                $badge.text(newCount);
+                            } else {
+                                $btn.append(`<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">1</span>`);
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Terjadi kesalahan saat mengirim pesan.'
+                        });
+                    },
+                    complete: function() {
+                        submitBtn.prop('disabled', false);
+                    }
+                });
             });
 
             $('[data-kt-ecommerce-product-filter="cabang"]').on('change', function() {
@@ -1386,6 +1589,71 @@
                         icon: 'error',
                         title: 'Gagal',
                         text: 'Terjadi kesalahan saat memuat data riwayat audit.'
+                    });
+                }
+            });
+        }
+
+        function showDiscussion(id) {
+            $.ajax({
+                url: `/stock-opname/${id}/discussion`,
+                type: 'GET',
+                success: function(response) {
+                    $('#discussion-product-name').text(response.product_name || '-');
+                    $('#discussion-stock-opname-id').val(id);
+                    $('#discussion-message-input').val('');
+                    
+                    const $items = $('#discussion-items');
+                    $items.empty();
+                    
+                    if (response.discussions && response.discussions.length > 0) {
+                        response.discussions.forEach((item) => {
+                            const isSelf = String(item.created_by) === String(currentUserId);
+                            const selfClass = isSelf ? 'is-self' : '';
+                            const avatarNum = ((item.created_by || 1) % 30) + 1;
+                            const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
+                            
+                            const itemHtml = `
+                                <div class="chat-message-container ${selfClass}">
+                                    <img src="${avatarUrl}" class="chat-message-avatar" alt="Avatar">
+                                    <div class="d-flex flex-column align-items-${isSelf ? 'end' : 'start'}">
+                                        <div class="chat-message-header">
+                                            <span class="chat-message-author">${escapeHtml(item.creator_name || 'User')}</span>
+                                            <span class="chat-message-time">${formatLongDateTime(item.created_at)}</span>
+                                        </div>
+                                        <div class="chat-message-bubble shadow-sm">
+                                            ${escapeHtml(item.message || '')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $items.append(itemHtml);
+                        });
+                    } else {
+                        $items.append('<div class="text-muted text-center py-20 fs-6">Belum ada diskusi. Mulai percakapan terkait selisih stock ini.</div>');
+                    }
+                    
+                    // Show Metronic Drawer
+                    const drawerEl = document.getElementById('kt_stock_opname_discussion');
+                    let drawer = KTDrawer.getInstance(drawerEl);
+                    if (!drawer) {
+                        drawer = new KTDrawer(drawerEl);
+                    }
+                    drawer.show();
+                    
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        const scrollEl = document.getElementById('kt_stock_opname_discussion_scroll');
+                        if (scrollEl) {
+                            scrollEl.scrollTop = scrollEl.scrollHeight;
+                        }
+                    }, 100);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memuat data diskusi.'
                     });
                 }
             });

@@ -267,7 +267,8 @@ class StockOpnameController extends Controller
                 'stock_opname.*',
                 'users.nm_user as creator_name',
                 'branch.name as branch_name',
-                'product_stock.avg_hpp as avg_hpp_calc'
+                'product_stock.avg_hpp as avg_hpp_calc',
+                DB::raw('(SELECT COUNT(*) FROM stock_opname_discussions WHERE stock_opname_discussions.stock_opname_id = stock_opname.id) as discussions_count')
             )
             ->whereIn('stock_opname.branch_id', $userBranches);
 
@@ -275,7 +276,7 @@ class StockOpnameController extends Controller
             $query->where('stock_opname.branch_id', $request->cabang_filter);
         }
 
-        $data = $query->get();
+        $data = $query->orderBy('stock_opname.created_at', 'desc')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('name', function ($item) {
@@ -378,5 +379,51 @@ class StockOpnameController extends Controller
             'code' => $stockOpname->code,
             'history' => $history
         ]);
+    }
+
+    public function get_discussion($id)
+    {
+        $stockOpname = StockOpname::with('product')->findOrFail($id);
+        
+        $discussions = DB::table('stock_opname_discussions')
+            ->leftJoin('users', 'stock_opname_discussions.created_by', '=', 'users.id_user')
+            ->select('stock_opname_discussions.*', 'users.nm_user as creator_name')
+            ->where('stock_opname_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        return response()->json([
+            'code' => $stockOpname->code,
+            'product_name' => $stockOpname->product->name ?? '-',
+            'discussions' => $discussions
+        ]);
+    }
+
+    public function post_discussion(Request $request, $id)
+    {
+        $stockOpname = StockOpname::findOrFail($id);
+        
+        $validated = $request->validate([
+            'message' => 'required|string|max:1000'
+        ]);
+        
+        $insertedId = DB::table('stock_opname_discussions')->insertGetId([
+            'stock_opname_id' => $id,
+            'message' => $validated['message'],
+            'created_by' => Auth::user()->id_user,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
+        $newDiscussion = DB::table('stock_opname_discussions')
+            ->leftJoin('users', 'stock_opname_discussions.created_by', '=', 'users.id_user')
+            ->select('stock_opname_discussions.*', 'users.nm_user as creator_name')
+            ->where('stock_opname_discussions.id', $insertedId)
+            ->first();
+            
+        return response()->json([
+            'message' => 'Pesan berhasil dikirim.',
+            'discussion' => $newDiscussion
+        ], 201);
     }
 }
