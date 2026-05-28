@@ -216,18 +216,30 @@
                 display: flex;
                 align-items: center;
                 gap: 0.75rem;
+                width: 100%;
+            }
+            @media (min-width: 992px) {
+                .so-stock-box-container {
+                    width: auto;
+                }
             }
             .so-stock-box {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                width: 78px;
+                flex: 1;
                 height: 64px;
                 border-radius: 10px;
                 border: 1px solid #e5e7eb;
                 background: #f9fafb;
                 transition: all 0.2s ease;
+            }
+            @media (min-width: 992px) {
+                .so-stock-box {
+                    flex: none;
+                    width: 78px;
+                }
             }
             .so-stock-box.is-active {
                 border: 1.5px solid #dbe6ff;
@@ -238,6 +250,22 @@
                 border-color: #2f66ef;
                 background: #edf3ff;
                 transform: translateY(-1px);
+            }
+            .so-stock-box.is-surplus {
+                background-color: #ecfdf5;
+                border-color: #c2f0d5;
+            }
+            .so-stock-box.is-surplus .so-stock-label,
+            .so-stock-box.is-surplus .so-stock-number {
+                color: #059669;
+            }
+            .so-stock-box.is-loss {
+                background-color: #fef2f2;
+                border-color: #fcd2d2;
+            }
+            .so-stock-box.is-loss .so-stock-label,
+            .so-stock-box.is-loss .so-stock-number {
+                color: #dc2626;
             }
             .so-stock-label {
                 font-size: 9px;
@@ -281,6 +309,35 @@
                 font-size: 16px;
                 font-weight: 800;
             }
+            .so-mobile-match-bar {
+                width: 100%;
+                min-height: 48px;
+                border-radius: 12px;
+                font-size: 11px;
+                font-weight: 800;
+                letter-spacing: 0.05em;
+                padding: 0.75rem 1rem;
+            }
+            .so-mobile-match-bar.is-surplus {
+                background-color: #ecfdf5;
+                border: 1px solid #c2f0d5;
+                color: #059669;
+            }
+            .so-mobile-match-bar.is-loss {
+                background-color: #fef2f2;
+                border: 1px solid #fcd2d2;
+                color: #dc2626;
+            }
+            .so-mobile-match-bar.is-match {
+                background-color: #f9fafb;
+                border: 1px solid #e5e7eb;
+                color: #1f2937;
+            }
+            .so-mobile-divider {
+                width: 100%;
+                height: 1px;
+                background-color: #f1f3f7;
+            }
             .so-divider {
                 width: 1px;
                 height: 28px;
@@ -311,7 +368,6 @@
                 color: #0056b3;
             }
             .so-btn-quick-adj {
-                width: 36px;
                 height: 36px;
                 display: inline-flex;
                 align-items: center;
@@ -319,6 +375,18 @@
                 border-radius: 8px;
                 transition: all 0.2s ease;
                 cursor: pointer;
+                font-size: 11.5px;
+                font-weight: 700;
+                gap: 0.35rem;
+                padding: 0.5rem 0.85rem;
+                border: 1px solid transparent;
+            }
+            @media (min-width: 992px) {
+                .so-btn-quick-adj {
+                    width: 36px;
+                    height: 36px;
+                    padding: 0;
+                }
             }
             .so-btn-quick-adj.is-up {
                 background-color: #ecfdf5;
@@ -771,6 +839,25 @@
                 stockMatchColor = '#10b981';
             }
 
+            // Dynamic Selisih Box Class
+            let selisihClass = '';
+            if (selisih > 0) {
+                selisihClass = 'is-surplus';
+            } else if (selisih < 0) {
+                selisihClass = 'is-loss';
+            }
+
+            // Mobile Match Bar Class & Content
+            let mobileMatchClass = 'is-match';
+            let mobileMatchText = 'STOCK MATCH: Rp 0';
+            if (selisih > 0) {
+                mobileMatchClass = 'is-surplus';
+                mobileMatchText = `NILAI KELEBIHAN: Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
+            } else if (selisih < 0) {
+                mobileMatchClass = 'is-loss';
+                mobileMatchText = `NILAI KERUGIAN: -Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
+            }
+
             // Dynamic User Avatar using userId modulo
             const userId = row?.created_by || 1;
             const avatarNum = (userId % 30) + 1;
@@ -827,16 +914,24 @@
                             <span class="so-stock-number is-primary">${formatQty(stockFisik)}</span>
                         </div>
                         <!-- Box 3: Selisih -->
-                        <div class="so-stock-box">
+                        <div class="so-stock-box ${selisihClass}">
                             <span class="so-stock-label">Selisih</span>
                             <span class="so-stock-number">${formatQty(selisih)}</span>
                         </div>
                     </div>
 
+                    <!-- Mobile Match Bar (only visible on mobile) -->
+                    <div class="so-mobile-match-bar ${mobileMatchClass} d-flex d-lg-none align-items-center justify-content-center">
+                        <span>${escapeHtml(mobileMatchText)}</span>
+                    </div>
+
+                    <!-- Mobile Divider (only visible on mobile) -->
+                    <div class="so-mobile-divider d-lg-none mt-2 mb-3"></div>
+
                     <!-- Right: Match, Actions, Delete -->
-                    <div class="d-flex align-items-center justify-content-between justify-content-lg-end gap-3 flex-wrap">
+                    <div class="d-flex align-items-center justify-content-between justify-content-lg-end gap-3 flex-wrap w-100 w-lg-auto">
                         <!-- Value Match -->
-                        <div class="so-match-section">
+                        <div class="so-match-section d-none d-lg-flex">
                             <span class="so-match-label">${stockMatchLabel}</span>
                             <span class="so-match-value" style="color: ${stockMatchColor};">${selisih < 0 ? '-' : ''}${nilaiText}</span>
                         </div>
@@ -859,7 +954,7 @@
                             </button>
                         </div>
 
-                        <div class="so-divider d-none d-lg-block"></div>
+                        <div class="so-divider"></div>
 
                         <!-- Quick Adjustments -->
                         <div class="d-flex align-items-center gap-2">
@@ -869,6 +964,7 @@
                                     <line x1="7" y1="17" x2="17" y2="7"/>
                                     <polyline points="7 7 17 7 17 17"/>
                                 </svg>
+                                <span class="d-lg-none">+ Kredit</span>
                             </button>
                             <!-- Adjust Down -->
                             <button class="so-btn-quick-adj is-down" onclick="editProduct(${id})" title="Sesuaikan Stok Keluar">
@@ -876,6 +972,7 @@
                                     <line x1="7" y1="7" x2="17" y2="17"/>
                                     <polyline points="17 7 17 17 7 17"/>
                                 </svg>
+                                <span class="d-lg-none">- Kredit</span>
                             </button>
                         </div>
 
