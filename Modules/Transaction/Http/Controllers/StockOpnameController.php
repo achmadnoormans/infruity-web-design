@@ -353,7 +353,7 @@ class StockOpnameController extends Controller
 
     public function get_history($id)
     {
-        $stockOpname = StockOpname::findOrFail($id);
+        $stockOpname = StockOpname::with('product.unit')->findOrFail($id);
         
         $history = DB::table('stock_opname_history')
             ->leftJoin('users', 'stock_opname_history.created_by', '=', 'users.id_user')
@@ -377,6 +377,7 @@ class StockOpnameController extends Controller
         
         return response()->json([
             'code' => $stockOpname->code,
+            'unit' => $stockOpname->product->unit->abbreviation ?? 'Kg',
             'history' => $history
         ]);
     }

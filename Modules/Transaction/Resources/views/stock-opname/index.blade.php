@@ -458,6 +458,14 @@
                 background-color: #fff7ed;
                 color: #ea580c;
             }
+            .history-action-badge.is-kredit, .history-qty-badge.is-kredit {
+                background-color: #ecfdf5;
+                color: #059669;
+            }
+            .history-action-badge.is-debit, .history-qty-badge.is-debit {
+                background-color: #fef2f2;
+                color: #dc2626;
+            }
             .history-time-text {
                 font-size: 11.5px;
                 color: #8892a2;
@@ -1633,11 +1641,55 @@
                     const $timeline = $('#history-timeline-items');
                     $timeline.empty();
                     
+                    const unit = response.unit || 'Kg';
+                    
+                    // Helper to format quantity nicely
+                    const formatNum = (v) => {
+                        const n = Number(v || 0);
+                        return n % 1 === 0 ? n.toString() : n.toFixed(2);
+                    };
+                    
                     if (response.history && response.history.length > 0) {
                         response.history.forEach((item, index) => {
                             const isInitial = item.action === 'INITIAL';
-                            const badgeClass = isInitial ? 'is-initial' : 'is-update';
-                            const actionLabel = isInitial ? 'INITIAL' : 'UPDATE';
+                            
+                            let badgeClass = 'is-initial';
+                            let actionLabel = 'INITIAL';
+                            let qtyHtml = '';
+                            
+                            if (isInitial) {
+                                badgeClass = 'is-initial';
+                                actionLabel = 'INITIAL';
+                                qtyHtml = `<span class="history-qty-badge">${formatNum(item.real_stock)} ${unit}</span>`;
+                            } else {
+                                // Since history is descending, the item at index+1 is chronological predecessor
+                                const nextItem = response.history[index + 1];
+                                const oldStock = nextItem ? Number(nextItem.real_stock) : Number(item.real_stock);
+                                const newStock = Number(item.real_stock);
+                                
+                                if (newStock >= oldStock) {
+                                    badgeClass = 'is-kredit';
+                                    actionLabel = '+ KREDIT';
+                                    qtyHtml = `
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="text-muted text-decoration-line-through fs-7">${formatNum(oldStock)}</span>
+                                            <span class="text-muted fs-7 mx-1">&rarr;</span>
+                                            <span class="history-qty-badge is-kredit">${formatNum(newStock)} ${unit}</span>
+                                        </div>
+                                    `;
+                                } else {
+                                    badgeClass = 'is-debit';
+                                    actionLabel = '- DEBIT';
+                                    qtyHtml = `
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="text-muted text-decoration-line-through fs-7">${formatNum(oldStock)}</span>
+                                            <span class="text-muted fs-7 mx-1">&rarr;</span>
+                                            <span class="history-qty-badge is-debit">${formatNum(newStock)} ${unit}</span>
+                                        </div>
+                                    `;
+                                }
+                            }
+                            
                             const formattedTime = formatLongDateTime(item.created_at);
                             
                             // Dynamic User Avatar using userId modulo
@@ -1670,7 +1722,7 @@
                                                     <img src="${avatarUrl}" class="so-creator-avatar" alt="Avatar">
                                                     <span class="fs-7 fw-semibold text-gray-700">${escapeHtml(item.creator_name || 'System')}</span>
                                                 </div>
-                                                <span class="history-qty-badge">${item.real_stock} Kg</span>
+                                                ${qtyHtml}
                                             </div>
                                         </div>
                                     </div>
