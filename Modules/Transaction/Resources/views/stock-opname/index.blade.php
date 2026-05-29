@@ -640,20 +640,24 @@
     </button>
     <div class="modal fade stock-opname-modal" id="kt_modal_add_customer" tabindex="-1" aria-hidden="true">
         <!--begin::Modal dialog-->
-        <div class="modal-dialog modal-fullscreen">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <!--begin::Modal content-->
-            <div class="modal-content">
+            <div class="modal-content" style="border-radius: 20px;">
                 <!--begin::Form-->
                 <form class="form" action="{{ url(Request::segment(1)) }}" id="kt_modal_add_customer_form"
                     data-kt-redirect="#">
                     @csrf
                     <!--begin::Modal header-->
-                    <div class="modal-header" id="kt_modal_add_customer_header">
+                    <div class="modal-header border-0 pb-0" id="kt_modal_add_customer_header" style="background-color: #ffffff;">
                         <!--begin::Modal title-->
-                        <h2 class="modal-title fw-bold">Input Stock Fisik &amp; Akumulasi</h2>
+                        <div>
+                            <h2 class="modal-title fw-bold text-dark fs-3">Catat Stock Opname</h2>
+                            <span class="text-muted" style="font-size: 0.85rem;">Data awal bersifat final dan tidak dapat diedit langsung.</span>
+                        </div>
                         <!--end::Modal title-->
                         <!--begin::Close-->
                         <button type="button" id="kt_modal_add_customer_close" class="btn-close-soft"
+                            style="background: transparent; width: 30px; height: 30px; margin-top: -10px;"
                             data-bs-dismiss="modal" aria-label="Close">
                             <i class="ki-outline ki-cross fs-2"></i>
                         </button>
@@ -661,88 +665,56 @@
                     </div>
                     <!--end::Modal header-->
                     <!--begin::Modal body-->
-                    <div class="modal-body">
+                    <div class="modal-body py-5" style="background-color: #ffffff;">
                         <!--begin::Scroll-->
                         <div class="scroll-y" id="kt_modal_add_customer_scroll" data-kt-scroll="true"
                             data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                             data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="220px">
-                            <!--begin::Input group-->
-                            <div class="time-card d-flex align-items-center gap-4">
-                                <i class="ki-outline ki-calendar fs-2 text-primary"></i>
-                                <div>
-                                    <div class="time-title">Waktu Pencatatan</div>
-                                    <div class="time-subtitle">Otomatis saat ini</div>
+                            
+                            <input type="hidden" id="date" name="date" value="{{ date('Y-m-d') }}" />
+
+                            <div class="row g-5 mb-6">
+                                <div class="col-md-6 fv-row">
+                                    <label class="required form-label text-gray-800 fw-bold fs-7 mb-2">Cabang</label>
+                                    <select class="form-select form-select-solid" name="branch_id" id="branch_id"
+                                        data-placeholder="Pilih Cabang">
+                                        @foreach ($branches as $branch)
+                                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <input type="hidden" id="date" name="date" value="{{ date('Y-m-d') }}" />
-                            </div>
-
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required form-label text-gray-700 fw-semibold">Cabang</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <select class="form-select form-select-solid" name="branch_id" id="branch_id"
-                                    data-placeholder="Pilih Cabang">
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                    @endforeach
-                                </select>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-                            <!--begin::Input group-->
-                            <div class="fv-row mb-7">
-                                <!--begin::Label-->
-                                <label class="required form-label text-gray-700 fw-semibold">Pilih Produk</label>
-                                <!--end::Label-->
-                                <!--begin::Input-->
-                                <select class="form-select form-select-solid" name="product_id" id="product_id"
-                                    data-placeholder="Pilih Produk">
-                                    <option value="">Pilih Product</option>
-                                </select>
-                                <!--end::Input-->
-                            </div>
-                            <!--end::Input group-->
-
-                            <div class="separator my-8"></div>
-
-                            <div class="row g-5 mb-7">
-                                <div class="col-6">
-                                    <label class="form-label text-gray-600 fw-semibold mb-2">Stock Sistem</label>
-                                    <div class="stock-box">
-                                        <input type="number" step="0.01" name="quantity" value="0" readonly />
-                                        <span class="text-gray-500">Kg</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label text-primary fw-semibold mb-2">Stock Fisik</label>
-                                    <div class="stock-box stock-input">
-                                        <input type="number" step="0.01" name="real_stock" value="0" />
-                                        <span class="text-gray-500">Kg</span>
-                                    </div>
+                                <div class="col-md-6 fv-row">
+                                    <label class="required form-label text-gray-800 fw-bold fs-7 mb-2">Pilih Produk</label>
+                                    <select class="form-select" style="border-color: #a3bfff;" name="product_id" id="product_id"
+                                        data-placeholder="Pilih Produk">
+                                        <option value="">Pilih Product</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            <div class="summary-card mb-8">
-                                <div class="row g-3 align-items-end">
+                            <div class="p-5 rounded-4 mb-6" style="background-color: #f9fafb;">
+                                <div class="row g-5">
                                     <div class="col-6">
-                                        <div class="fw-semibold fs-7">Total Selisih Stock:</div>
-                                        <div class="summary-value" id="stock-difference-text">0 Kg</div>
+                                        <label class="form-label text-gray-700 fw-bold mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Sistem Saat Ini</label>
+                                        <div class="input-group">
+                                            <input type="number" step="0.01" class="form-control text-end fw-bolder border-0" name="quantity" value="0" readonly style="font-size: 1.15rem; background-color: #ffffff; border-top-left-radius: 0.475rem; border-bottom-left-radius: 0.475rem;" />
+                                            <span class="input-group-text border-0 fw-semibold text-gray-600" style="background-color: #f1f3f7; border-top-right-radius: 0.475rem; border-bottom-right-radius: 0.475rem;">Kg</span>
+                                        </div>
                                     </div>
-                                    <div class="col-6 text-end">
-                                        <div class="fw-semibold fs-7">Nilai Kerugian/Lebih:</div>
-                                        <div class="summary-value" id="stock-difference-value">Rp 0</div>
+                                    <div class="col-6">
+                                        <label class="form-label text-primary fw-bold mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Fisik (Audit)</label>
+                                        <div class="input-group" style="border: 1px solid #a3bfff; border-radius: 0.475rem; overflow: hidden;">
+                                            <input type="number" step="0.01" class="form-control text-end fw-bolder border-0" name="real_stock" value="0" style="font-size: 1.15rem; background-color: #ffffff; color: #8892a2;" />
+                                            <span class="input-group-text border-0 fw-bold text-primary" style="background-color: #eff4ff;">Kg</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="fv-row mb-2">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <label class="form-label text-gray-700 fw-semibold mb-0">Catatan Audit</label>
-                                    <span class="badge badge-light-primary">Draft Otomatis</span>
-                                </div>
-                                <textarea class="form-control form-control-solid" name="note" rows="3" placeholder="Tulis catatan audit..."></textarea>
+                                <label class="form-label text-gray-800 fw-bold fs-7 mb-2">Catatan Audit</label>
+                                <textarea class="form-control" style="border: 1px solid #e5e7eb; border-radius: 0.475rem;" name="note" rows="3" placeholder="Tulis kondisi barang, temuan, atau keterangan lainnya..."></textarea>
                             </div>
                             <!--end::Input group-->
                         </div>
@@ -750,10 +722,11 @@
                     </div>
                     <!--end::Modal body-->
                     <!--begin::Modal footer-->
-                    <div class="modal-footer">
+                    <div class="modal-footer border-0 pt-0 justify-content-end gap-2" style="background-color: #ffffff;">
                         <!--begin::Button-->
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-primary btn-submit-stock">
-                            <span class="indicator-label">Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i></span>
+                        <button type="button" class="btn btn-light btn-sm fw-bold px-6" style="color: #4b5563; background-color: transparent;" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-sm text-white fw-bold px-6" style="background-color: #8fb09d; border-radius: 8px;">
+                            <span class="indicator-label">Simpan Final</span>
                             <span class="indicator-progress">Mohon tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
@@ -1436,11 +1409,9 @@
                                 `/${segment1}`); // Misal segment1 = 'stock-opname'
 
                             // 4. Kembalikan judul modal (opsional)
-                            $('#kt_modal_add_customer_header h2').text(
-                                'Input Stock Fisik & Akumulasi');
+                            $('#kt_modal_add_customer_header h2').text('Catat Stock Opname');
 
-                            $('#kt_modal_add_customer_submit .indicator-label').html(
-                                'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
+                            $('#kt_modal_add_customer_submit .indicator-label').html('Simpan Final');
                             updateStockSummary();
 
                             // 5. Tutup modal
