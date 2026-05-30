@@ -1722,8 +1722,12 @@
 
                 // Load existing cart items
                 detail.map(item => {
-                    let id = item.type == 'parcel' ? 'parcel' + item.product_id + this.formatShortNumber(item
-                        .price) : item.product_id;
+                    let id = item.product_id;
+                    if (item.type == 'parcel') {
+                        id = 'parcel' + item.product_id + this.formatShortNumber(item.price);
+                    } else if (item.type == 'jus') {
+                        id = 'jus' + item.product_id;
+                    }
                     let productName = item.type == 'parcel' ? item.product.description : item.product.name;
                     let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item
                         .quantity : this.sanitizeNumber(Number(item.subtotal || 0));
@@ -1800,6 +1804,49 @@
                         };
 
                         this.parcel.push(parcels);
+                    }
+
+                    if (item.type == 'jus') {
+                        let prod = transactionData.productions ? transactionData.productions.find(p => p.product_id === item.product_id) : null;
+                        let receiptProducts = [];
+                        let receiptProductsQty = [];
+                        let receiptProductsText = [];
+                        
+                        if (prod) {
+                            let details = prod.production_details || prod.productionDetails;
+                            if (details) {
+                                details.forEach(d => {
+                                    receiptProducts.push(d.product_id);
+                                    let qtyPerUnit = d.quantity / (item.quantity > 0 ? item.quantity : 1);
+                                    receiptProductsQty.push(qtyPerUnit);
+                                    receiptProductsText.push(d.products ? d.products.name : ('Bahan ' + d.product_id));
+                                });
+                            }
+                        }
+
+                        const cartIdx = this.cart.findIndex(c => c.key === key);
+                        if (cartIdx !== -1) {
+                            this.cart[cartIdx].data = {
+                                products: receiptProducts,
+                                productsQty: receiptProductsQty,
+                                productsText: receiptProductsText
+                            };
+                        }
+
+                        this.jus.push({
+                            id: id,
+                            productId: item.product_id,
+                            price: obj.price,
+                            hpp: obj.hpp,
+                            qty: obj.qty,
+                            unit: obj.unit,
+                            discount: obj.discount,
+                            discountPercent: obj.discountPercent,
+                            total_input: obj.total_input,
+                            product_receipt_id: receiptProducts,
+                            product_receipt_qty: receiptProductsQty,
+                            type: 'jus'
+                        });
                     }
                 });
 

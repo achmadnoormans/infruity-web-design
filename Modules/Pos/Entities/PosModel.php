@@ -114,6 +114,10 @@ class PosModel extends Model
         return $this->belongsTo(Branch::class, 'branch_process_id');
     }
 
+    public function productions()
+    {
+        return $this->hasMany(\Modules\Transaction\Entities\Production::class, 'pos_id', 'id');
+    }
 
     public static function getOrderNumber()
     {
