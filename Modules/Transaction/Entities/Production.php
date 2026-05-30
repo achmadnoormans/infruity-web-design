@@ -74,4 +74,9 @@ class Production extends Model
     {
         return $this->hasMany('Modules\Transaction\Entities\ProductionDetail', 'production_id', 'id');
     }
+
+    public function pos()
+    {
+        return $this->belongsTo('Modules\Pos\Entities\PosModel', 'pos_id', 'id');
+    }
 }

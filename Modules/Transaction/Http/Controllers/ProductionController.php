@@ -247,7 +247,7 @@ class ProductionController extends Controller
         }
 
         try {
-            $data['data']              = Production::with(['products', 'products.unit', 'staff', 'creator'])->findOrFail($id);
+            $data['data']              = Production::with(['products', 'products.unit', 'staff', 'creator', 'pos.customer'])->findOrFail($id);
             $data['production_detail'] = ProductionDetail::with(['products', 'products.unit', 'products.category'])->where('production_id', $id)->get();
 
             // Calculate totals with null safety
@@ -718,7 +718,7 @@ class ProductionController extends Controller
     public function get_data(Request $request)
     {
         try {
-            $query = Production::with(['products', 'branch', 'productionDetails', 'productionDetails.products'])
+            $query = Production::with(['products', 'branch', 'productionDetails', 'productionDetails.products', 'pos.customer'])
                 ->whereNotNull('product_id');
 
             if ($request->has('status_filter') && $request->status_filter !== 'all' && ! empty($request->status_filter)) {
@@ -813,7 +813,13 @@ class ProductionController extends Controller
                 ->addColumn('status', function ($item) {
                     $posBadge = '';
                     if ($item->pos_id) {
-                        $posBadge = ' <br><span class="badge badge-light-danger">POS</span>';
+                        $customerName = '';
+                        if ($item->pos && $item->pos->customer) {
+                            $customerName = '<br><span class="text-muted fs-8">' . e($item->pos->customer->name) . '</span>';
+                        } else {
+                            $customerName = '<br><span class="text-muted fs-8">Pelanggan Umum</span>';
+                        }
+                        $posBadge = ' <br><span class="badge badge-light-danger">POS</span>' . $customerName;
                     }
 
                     switch ($item->status) {
