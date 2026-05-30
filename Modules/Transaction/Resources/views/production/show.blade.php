@@ -144,6 +144,11 @@
                         @endif
                         @if($data->pos_id)
                             <span class="badge badge-light-primary fs-7 fw-bold ms-2">POS</span>
+                            <div class="mt-2">
+                                <a href="{{ route('pos.show', $data->pos_id) }}" class="text-primary fs-6 text-hover-primary fw-bold">
+                                    {{ $data->pos && $data->pos->customer ? $data->pos->customer->name : 'Pelanggan Umum' }}
+                                </a>
+                            </div>
                         @endif
                     </div>
                     <!--end::Col-->
