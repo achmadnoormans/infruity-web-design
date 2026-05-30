@@ -1723,15 +1723,15 @@
                 // Load existing cart items
                 detail.map(item => {
                     let id = item.product_id;
+                    const key = Date.now() + Math.floor(Math.random() * 1000);
                     if (item.type == 'parcel') {
-                        id = 'parcel' + item.product_id + this.formatShortNumber(item.price);
+                        id = 'parcel' + item.product_id + this.formatShortNumber(item.price) + '_' + key;
                     } else if (item.type == 'jus') {
-                        id = 'jus' + item.product_id;
+                        id = 'jus' + item.product_id + '_' + key;
                     }
                     let productName = item.type == 'parcel' ? item.product.description : item.product.name;
                     let total = item.type == 'parcel' ? this.sanitizeNumber(Number(item.subtotal || 0)) * item
                         .quantity : this.sanitizeNumber(Number(item.subtotal || 0));
-                    const key = Date.now() + Math.floor(Math.random() * 1000);
                     const obj = {
                         key: key,
                         id: id,
@@ -2118,17 +2118,7 @@
                     });
                     return;
                 }
-
-                existId = 'jus' + this.addProduct.id;
-                const isExist = this.cart.some(item => item.id === existId);
-                if (isExist) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Produk sudah ditambahkan',
-                        text: 'Produk ini sudah ada di keranjang.',
-                    });
-                    return;
-                }
+                let uniqueId = 'jus' + this.addProduct.id + '_' + Date.now();
 
                 const discount = Number(this.addProduct.discount || 0);
                 const total_input = this.addProduct.total;
@@ -2149,7 +2139,8 @@
                     .get();
 
                 this.cart.push({
-                    id: 'jus' + this.addProduct.id,
+                    key: Date.now() + Math.floor(Math.random() * 1000),
+                    id: uniqueId,
                     name: this.addProduct.name,
                     price: this.addProduct.price,
                     hpp: this.addProduct.hpp,
@@ -2167,7 +2158,7 @@
                 });
 
                 this.jus.push({
-                    id: 'jus' + this.addProduct.id,
+                    id: uniqueId,
                     productId: this.addProduct.id,
                     price: this.addProduct.price,
                     hpp: this.addProduct.hpp,
