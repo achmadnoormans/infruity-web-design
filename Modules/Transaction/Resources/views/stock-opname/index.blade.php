@@ -171,10 +171,12 @@
                 box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
                 transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             }
+
             .so-card:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
             }
+
             .so-card-title {
                 font-size: 1.15rem;
                 font-weight: 800;
@@ -182,6 +184,7 @@
                 line-height: 1.3;
                 letter-spacing: -0.015em;
             }
+
             .so-card-code {
                 font-size: 11px;
                 font-weight: 700;
@@ -192,11 +195,13 @@
                 padding: 0.2rem 0.5rem;
                 white-space: nowrap;
             }
+
             .so-meta-item {
                 font-size: 12.5px;
                 font-weight: 500;
                 color: #6b7280;
             }
+
             .so-time-row {
                 font-size: 12.5px;
                 font-weight: 500;
@@ -205,6 +210,7 @@
                 align-items: center;
                 gap: 0.35rem;
             }
+
             .so-creator-avatar {
                 width: 18px;
                 height: 18px;
@@ -212,17 +218,20 @@
                 object-fit: cover;
                 border: 1px solid #e5e7eb;
             }
+
             .so-stock-box-container {
                 display: flex;
                 align-items: center;
                 gap: 0.75rem;
                 width: 100%;
             }
+
             @media (min-width: 992px) {
                 .so-stock-box-container {
                     width: auto;
                 }
             }
+
             .so-stock-box {
                 display: flex;
                 flex-direction: column;
@@ -235,38 +244,46 @@
                 background: #f9fafb;
                 transition: all 0.2s ease;
             }
+
             @media (min-width: 992px) {
                 .so-stock-box {
                     flex: none;
                     width: 78px;
                 }
             }
+
             .so-stock-box.is-active {
                 border: 1.5px solid #dbe6ff;
                 background: #f5f8ff;
                 cursor: pointer;
             }
+
             .so-stock-box.is-active:hover {
                 border-color: #2f66ef;
                 background: #edf3ff;
                 transform: translateY(-1px);
             }
+
             .so-stock-box.is-surplus {
                 background-color: #ecfdf5;
                 border-color: #c2f0d5;
             }
+
             .so-stock-box.is-surplus .so-stock-label,
             .so-stock-box.is-surplus .so-stock-number {
                 color: #059669;
             }
+
             .so-stock-box.is-loss {
                 background-color: #fef2f2;
                 border-color: #fcd2d2;
             }
+
             .so-stock-box.is-loss .so-stock-label,
             .so-stock-box.is-loss .so-stock-number {
                 color: #dc2626;
             }
+
             .so-stock-label {
                 font-size: 9px;
                 font-weight: 700;
@@ -275,28 +292,34 @@
                 letter-spacing: 0.06em;
                 margin-bottom: 0.15rem;
             }
+
             .so-stock-label.is-primary {
                 color: #2563eb;
             }
+
             .so-stock-number {
                 font-size: 16px;
                 font-weight: 800;
                 color: #1f2937;
             }
+
             .so-stock-number.is-primary {
                 color: #2563eb;
             }
+
             .so-match-section {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
                 min-width: 110px;
             }
+
             @media (min-width: 992px) {
                 .so-match-section {
                     align-items: flex-end;
                 }
             }
+
             .so-match-label {
                 font-size: 9px;
                 font-weight: 700;
@@ -305,10 +328,12 @@
                 letter-spacing: 0.06em;
                 margin-bottom: 0.15rem;
             }
+
             .so-match-value {
                 font-size: 16px;
                 font-weight: 800;
             }
+
             .so-mobile-match-bar {
                 width: 100%;
                 min-height: 48px;
@@ -318,31 +343,37 @@
                 letter-spacing: 0.05em;
                 padding: 0.75rem 1rem;
             }
+
             .so-mobile-match-bar.is-surplus {
                 background-color: #ecfdf5;
                 border: 1px solid #c2f0d5;
                 color: #059669;
             }
+
             .so-mobile-match-bar.is-loss {
                 background-color: #fef2f2;
                 border: 1px solid #fcd2d2;
                 color: #dc2626;
             }
+
             .so-mobile-match-bar.is-match {
                 background-color: #f9fafb;
                 border: 1px solid #e5e7eb;
                 color: #1f2937;
             }
+
             .so-mobile-divider {
                 width: 100%;
                 height: 1px;
                 background-color: #f1f3f7;
             }
+
             .so-divider {
                 width: 1px;
                 height: 28px;
                 background-color: #e5e7eb;
             }
+
             .so-btn-icon-clean {
                 position: relative;
                 background: transparent;
@@ -357,17 +388,21 @@
                 transition: all 0.2s ease;
                 cursor: pointer;
             }
+
             .so-btn-icon-clean:hover {
                 background-color: #f3f4f6;
                 color: #111827;
             }
+
             .so-btn-icon-clean.is-blue {
                 color: #0d6efd;
             }
+
             .so-btn-icon-clean.is-blue:hover {
                 background-color: #eef2ff;
                 color: #0056b3;
             }
+
             .so-btn-quick-adj {
                 height: 36px;
                 display: inline-flex;
@@ -383,42 +418,50 @@
                 border: 1px solid transparent;
                 white-space: nowrap;
             }
+
             .so-btn-quick-adj svg {
                 width: 14px;
                 height: 14px;
                 flex-shrink: 0;
             }
+
             @media (min-width: 992px) {
                 .so-btn-quick-adj {
                     width: 36px;
                     height: 36px;
                     padding: 0;
                 }
+
                 .so-btn-quick-adj svg {
                     width: 16px;
                     height: 16px;
                 }
             }
+
             .so-btn-quick-adj.is-up {
                 background-color: #ecfdf5;
                 border: 1px solid #a7f3d0;
                 color: #059669;
             }
+
             .so-btn-quick-adj.is-up:hover {
                 background-color: #d1fae5;
                 border-color: #34d399;
                 color: #047857;
             }
+
             .so-btn-quick-adj.is-down {
                 background-color: #fef2f2;
                 border: 1px solid #fecaca;
                 color: #dc2626;
             }
+
             .so-btn-quick-adj.is-down:hover {
                 background-color: #fee2e2;
                 border-color: #f87171;
                 color: #b91c1c;
             }
+
             .so-btn-delete-clean {
                 background: transparent;
                 border: 0;
@@ -432,10 +475,12 @@
                 transition: all 0.2s ease;
                 cursor: pointer;
             }
+
             .so-btn-delete-clean:hover {
                 background-color: #fef2f2;
                 color: #ef4444;
             }
+
             #transaction-table tbody tr td {
                 border: 0;
                 padding: 0;
@@ -452,6 +497,7 @@
                 margin-bottom: 0.5rem;
                 position: relative;
             }
+
             .history-action-badge {
                 font-size: 10px;
                 font-weight: 700;
@@ -460,33 +506,42 @@
                 text-transform: uppercase;
                 letter-spacing: 0.03em;
             }
+
             .history-action-badge.is-initial {
                 background-color: #eef2ff;
                 color: #4f46e5;
             }
+
             .history-action-badge.is-update {
                 background-color: #fff7ed;
                 color: #ea580c;
             }
-            .history-action-badge.is-kredit, .history-qty-badge.is-kredit {
+
+            .history-action-badge.is-kredit,
+            .history-qty-badge.is-kredit {
                 background-color: #ecfdf5;
                 color: #059669;
             }
-            .history-action-badge.is-debit, .history-qty-badge.is-debit {
+
+            .history-action-badge.is-debit,
+            .history-qty-badge.is-debit {
                 background-color: #fef2f2;
                 color: #dc2626;
             }
+
             .history-time-text {
                 font-size: 11.5px;
                 color: #8892a2;
                 font-weight: 500;
             }
+
             .history-note-text {
                 font-size: 13.5px;
                 font-weight: 700;
                 color: #1f2937;
                 line-height: 1.4;
             }
+
             .history-qty-badge {
                 font-size: 10.5px;
                 font-weight: 800;
@@ -496,6 +551,7 @@
                 padding: 0.25rem 0.45rem;
                 white-space: nowrap;
             }
+
             @media (min-width: 992px) {
                 .history-qty-badge {
                     font-size: 12px;
@@ -503,17 +559,19 @@
                     padding: 0.35rem 0.75rem;
                 }
             }
+
             #kt_stock_opname_history {
                 border-left: 1px solid rgba(229, 231, 235, 0.5);
                 box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
             }
-            
+
             /* Discussion Chat Styles */
             .chat-message-container {
                 display: flex;
                 gap: 0.75rem;
                 margin-bottom: 1rem;
             }
+
             .chat-message-avatar {
                 width: 32px;
                 height: 32px;
@@ -522,6 +580,7 @@
                 border: 1px solid #e5e7eb;
                 flex-shrink: 0;
             }
+
             .chat-message-bubble {
                 background-color: #f3f4f6;
                 color: #1f2937;
@@ -531,42 +590,51 @@
                 line-height: 1.4;
                 position: relative;
             }
+
             .chat-message-container.is-self {
                 flex-direction: row-reverse;
             }
+
             .chat-message-container.is-self .chat-message-bubble {
                 background-color: #eef2ff;
                 color: #312e81;
                 border-top-right-radius: 4px;
             }
+
             .chat-message-container:not(.is-self) .chat-message-bubble {
                 border-top-left-radius: 4px;
                 background-color: #f3f4f6;
                 color: #1f2937;
             }
+
             .chat-message-header {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
                 margin-bottom: 0.15rem;
             }
+
             .chat-message-author {
                 font-size: 11px;
                 font-weight: 700;
                 color: #4b5563;
             }
+
             .chat-message-container.is-self .chat-message-author {
                 color: #4f46e5;
             }
+
             .chat-message-time {
                 font-size: 9.5px;
                 color: #9ca3af;
                 font-weight: 500;
             }
+
             #kt_stock_opname_discussion {
                 border-left: 1px solid rgba(229, 231, 235, 0.5);
                 box-shadow: -10px 0 30px rgba(0, 0, 0, 0.03);
             }
+
             #kt_stock_opname_discussion_footer {
                 background-color: #fbfcff;
                 border-top: 1px solid #eef1f7;
@@ -603,10 +671,10 @@
                                     <select class="form-select form-select-solid" data-control="select2"
                                         data-hide-search="true" data-placeholder="Cabang"
                                         data-kt-ecommerce-product-filter="cabang">
-                                        <option value="all">Semua</option>
                                         @foreach ($branches as $branch)
                                             <option value="{{ $branch->id }}">{{ ucwords($branch->name) }}</option>
                                         @endforeach
+                                        <option value="all">Semua</option>
                                     </select>
                                 </div>
                             </div>
@@ -648,11 +716,13 @@
                     data-kt-redirect="#">
                     @csrf
                     <!--begin::Modal header-->
-                    <div class="modal-header border-0 pb-0" id="kt_modal_add_customer_header" style="background-color: #ffffff;">
+                    <div class="modal-header border-0 pb-0" id="kt_modal_add_customer_header"
+                        style="background-color: #ffffff;">
                         <!--begin::Modal title-->
                         <div>
                             <h2 class="modal-title fw-bold text-dark fs-3">Catat Stock Opname</h2>
-                            <span class="text-muted" style="font-size: 0.85rem;">Data awal bersifat final dan tidak dapat diedit langsung.</span>
+                            <span class="text-muted" style="font-size: 0.85rem;">Data awal bersifat final dan tidak dapat
+                                diedit langsung.</span>
                         </div>
                         <!--end::Modal title-->
                         <!--begin::Close-->
@@ -671,7 +741,7 @@
                             data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
                             data-kt-scroll-dependencies="#kt_modal_add_customer_header"
                             data-kt-scroll-wrappers="#kt_modal_add_customer_scroll" data-kt-scroll-offset="220px">
-                            
+
                             <input type="hidden" id="date" name="date" value="{{ date('Y-m-d') }}" />
 
                             <div class="row g-5 mb-6">
@@ -686,8 +756,8 @@
                                 </div>
                                 <div class="col-md-6 fv-row">
                                     <label class="required form-label text-gray-800 fw-bold fs-7 mb-2">Pilih Produk</label>
-                                    <select class="form-select" style="border-color: #a3bfff;" name="product_id" id="product_id"
-                                        data-placeholder="Pilih Produk">
+                                    <select class="form-select" style="border-color: #a3bfff;" name="product_id"
+                                        id="product_id" data-placeholder="Pilih Produk">
                                         <option value="">Pilih Product</option>
                                     </select>
                                 </div>
@@ -696,17 +766,29 @@
                             <div class="p-5 rounded-4 mb-6" style="background-color: #f9fafb;">
                                 <div class="row g-5">
                                     <div class="col-6">
-                                        <label class="form-label text-gray-700 fw-bold mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Sistem Saat Ini</label>
+                                        <label class="form-label text-gray-700 fw-bold mb-3 text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Sistem Saat
+                                            Ini</label>
                                         <div class="input-group">
-                                            <input type="number" step="0.01" class="form-control text-end fw-bolder border-0" name="quantity" value="0" readonly style="font-size: 1.15rem; background-color: #ffffff; border-top-left-radius: 0.475rem; border-bottom-left-radius: 0.475rem;" />
-                                            <span class="input-group-text border-0 fw-semibold text-gray-600" style="background-color: #f1f3f7; border-top-right-radius: 0.475rem; border-bottom-right-radius: 0.475rem;">Kg</span>
+                                            <input type="number" step="0.01"
+                                                class="form-control text-end fw-bolder border-0" name="quantity"
+                                                value="0" readonly
+                                                style="font-size: 1.15rem; background-color: #ffffff; border-top-left-radius: 0.475rem; border-bottom-left-radius: 0.475rem;" />
+                                            <span class="input-group-text border-0 fw-semibold text-gray-600"
+                                                style="background-color: #f1f3f7; border-top-right-radius: 0.475rem; border-bottom-right-radius: 0.475rem;">Kg</span>
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <label class="form-label text-primary fw-bold mb-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Fisik (Audit)</label>
-                                        <div class="input-group" style="border: 1px solid #a3bfff; border-radius: 0.475rem; overflow: hidden;">
-                                            <input type="number" step="0.01" class="form-control text-end fw-bolder border-0" name="real_stock" value="0" style="font-size: 1.15rem; background-color: #ffffff; color: #8892a2;" />
-                                            <span class="input-group-text border-0 fw-bold text-primary" style="background-color: #eff4ff;">Kg</span>
+                                        <label class="form-label text-primary fw-bold mb-3 text-uppercase"
+                                            style="font-size: 0.75rem; letter-spacing: 0.05em;">Stock Fisik (Audit)</label>
+                                        <div class="input-group"
+                                            style="border: 1px solid #a3bfff; border-radius: 0.475rem; overflow: hidden;">
+                                            <input type="number" step="0.01"
+                                                class="form-control text-end fw-bolder border-0" name="real_stock"
+                                                value="0"
+                                                style="font-size: 1.15rem; background-color: #ffffff; color: #8892a2;" />
+                                            <span class="input-group-text border-0 fw-bold text-primary"
+                                                style="background-color: #eff4ff;">Kg</span>
                                         </div>
                                     </div>
                                 </div>
@@ -714,7 +796,8 @@
 
                             <div class="fv-row mb-2">
                                 <label class="form-label text-gray-800 fw-bold fs-7 mb-2">Catatan Audit</label>
-                                <textarea class="form-control" style="border: 1px solid #e5e7eb; border-radius: 0.475rem;" name="note" rows="3" placeholder="Tulis kondisi barang, temuan, atau keterangan lainnya..."></textarea>
+                                <textarea class="form-control" style="border: 1px solid #e5e7eb; border-radius: 0.475rem;" name="note"
+                                    rows="3" placeholder="Tulis kondisi barang, temuan, atau keterangan lainnya..."></textarea>
                             </div>
                             <!--end::Input group-->
                         </div>
@@ -724,8 +807,11 @@
                     <!--begin::Modal footer-->
                     <div class="modal-footer border-0 pt-0 justify-content-end gap-2" style="background-color: #ffffff;">
                         <!--begin::Button-->
-                        <button type="button" class="btn btn-light btn-sm fw-bold px-6" style="color: #4b5563; background-color: transparent;" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" id="kt_modal_add_customer_submit" class="btn btn-sm text-white fw-bold px-6" style="background-color: #8fb09d; border-radius: 8px;">
+                        <button type="button" class="btn btn-light btn-sm fw-bold px-6"
+                            style="color: #4b5563; background-color: transparent;" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" id="kt_modal_add_customer_submit"
+                            class="btn btn-sm text-white fw-bold px-6"
+                            style="background-color: #8fb09d; border-radius: 8px;">
                             <span class="indicator-label">Simpan Final</span>
                             <span class="indicator-progress">Mohon tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -742,15 +828,20 @@
     <!--begin::Stock Adjustment Modal-->
     <div class="modal fade stock-opname-modal" id="kt_modal_stock_adjustment" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content" style="border-radius: 20px; border: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);">
+            <div class="modal-content"
+                style="border-radius: 20px; border: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);">
                 <form id="kt_modal_stock_adjustment_form" class="form">
                     @csrf
                     <!--begin::Modal header-->
-                    <div class="modal-header d-flex align-items-center justify-content-between py-4 px-6 border-0" id="adj-modal-header" style="border-top-left-radius: 20px; border-top-right-radius: 20px; min-height: 60px;">
-                        <h2 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0" id="adj-modal-title" style="font-size: 1.25rem;">
+                    <div class="modal-header d-flex align-items-center justify-content-between py-4 px-6 border-0"
+                        id="adj-modal-header"
+                        style="border-top-left-radius: 20px; border-top-right-radius: 20px; min-height: 60px;">
+                        <h2 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0" id="adj-modal-title"
+                            style="font-size: 1.25rem;">
                             <!-- Dynamic Arrow Icon and Text -->
                         </h2>
-                        <button type="button" class="btn-close-soft" data-bs-dismiss="modal" aria-label="Close" style="width: 32px; height: 32px; background: rgba(0,0,0,0.05); border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <button type="button" class="btn-close-soft" data-bs-dismiss="modal" aria-label="Close"
+                            style="width: 32px; height: 32px; background: rgba(0,0,0,0.05); border: 0; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
                             <i class="ki-outline ki-cross fs-3 text-gray-700"></i>
                         </button>
                     </div>
@@ -758,7 +849,8 @@
                     <!--begin::Modal body-->
                     <div class="modal-body p-6" style="background: #fbfcff;">
                         <!-- Current Stock Box -->
-                        <div class="d-flex align-items-center justify-content-between p-4 mb-5" style="background-color: #f9fafb; border-radius: 12px; border: 1px solid #f1f3f7;">
+                        <div class="d-flex align-items-center justify-content-between p-4 mb-5"
+                            style="background-color: #f9fafb; border-radius: 12px; border: 1px solid #f1f3f7;">
                             <span class="text-gray-600 fw-semibold">Stock Fisik Saat Ini:</span>
                             <span class="fs-4 fw-bold text-gray-900" id="adj-current-stock-label">0 Kg</span>
                         </div>
@@ -766,9 +858,14 @@
                         <!-- Qty Input Group -->
                         <div class="fv-row mb-5">
                             <label class="required form-label text-gray-700 fw-semibold mb-2">Qty Penyesuaian</label>
-                            <div class="input-group input-group-solid rounded" style="border: 1px solid #d9dde6; overflow: hidden; background: #fff;">
-                                <span class="input-group-text border-0 fw-bold fs-3 justify-content-center" id="adj-type-badge" style="width: 46px;">+</span>
-                                <input type="number" step="0.01" class="form-control border-0 fw-bold text-gray-900 px-3 fs-3" id="adj-qty-input" name="qty" placeholder="1" required min="0.01" style="background: transparent;">
+                            <div class="input-group input-group-solid rounded"
+                                style="border: 1px solid #d9dde6; overflow: hidden; background: #fff;">
+                                <span class="input-group-text border-0 fw-bold fs-3 justify-content-center"
+                                    id="adj-type-badge" style="width: 46px;">+</span>
+                                <input type="number" step="0.01"
+                                    class="form-control border-0 fw-bold text-gray-900 px-3 fs-3" id="adj-qty-input"
+                                    name="qty" placeholder="1" required min="0.01"
+                                    style="background: transparent;">
                             </div>
                             <div class="text-muted fs-7 mt-2 text-end">
                                 Menjadi: <strong class="text-gray-900" id="adj-result-stock-label">0 Kg</strong>
@@ -778,14 +875,19 @@
                         <!-- Reason Input -->
                         <div class="fv-row mb-2">
                             <label class="required form-label text-gray-700 fw-semibold mb-2">Alasan Penyesuaian</label>
-                            <textarea class="form-control form-control-solid rounded-lg px-4 py-3" id="adj-reason-input" name="reason" rows="3" placeholder="Contoh: Salah hitung saat audit awal" required style="background-color: #f9fafb; border: 1px solid #d9dde6;"></textarea>
+                            <textarea class="form-control form-control-solid rounded-lg px-4 py-3" id="adj-reason-input" name="reason"
+                                rows="3" placeholder="Contoh: Salah hitung saat audit awal" required
+                                style="background-color: #f9fafb; border: 1px solid #d9dde6;"></textarea>
                         </div>
                     </div>
                     <!--end::Modal body-->
                     <!--begin::Modal footer-->
-                    <div class="modal-footer border-0 d-flex justify-content-end gap-3 pt-0 pb-6 px-6" style="background: #fbfcff; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="border-radius: 10px; font-weight: 600; background: #f3f4f6; color: #4b5563;">Batal</button>
-                        <button type="submit" class="btn btn-primary" id="adj-submit-btn" style="border-radius: 10px; font-weight: 600; padding: 0.75rem 1.75rem;">Simpan</button>
+                    <div class="modal-footer border-0 d-flex justify-content-end gap-3 pt-0 pb-6 px-6"
+                        style="background: #fbfcff; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                            style="border-radius: 10px; font-weight: 600; background: #f3f4f6; color: #4b5563;">Batal</button>
+                        <button type="submit" class="btn btn-primary" id="adj-submit-btn"
+                            style="border-radius: 10px; font-weight: 600; padding: 0.75rem 1.75rem;">Simpan</button>
                     </div>
                     <!--end::Modal footer-->
                 </form>
@@ -804,17 +906,19 @@
             <div class="card-header border-0 pe-5" id="kt_stock_opname_history_header" style="min-height: 70px;">
                 <div class="card-title d-flex flex-column align-items-start">
                     <h3 class="fw-bold text-gray-900 mb-1 d-flex align-items-center gap-2">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #4b5563;">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                            <path d="M12 7v5l4 2"/>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #4b5563;">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                            <path d="M12 7v5l4 2" />
                         </svg>
                         Audit Timeline
                     </h3>
                     <span class="text-muted fs-7 fw-semibold" id="history-transaction-code">-</span>
                 </div>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_stock_opname_history_close">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5"
+                        id="kt_stock_opname_history_close">
                         <i class="ki-outline ki-cross fs-1"></i>
                     </button>
                 </div>
@@ -823,10 +927,12 @@
             <!--begin::Body-->
             <div class="card-body position-relative pt-0" id="kt_stock_opname_history_body">
                 <!--begin::Scroll-->
-                <div id="kt_stock_opname_history_scroll" class="position-relative scroll-y me-n5 pe-5" data-kt-scroll="true"
-                    data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_stock_opname_history_body"
-                    data-kt-scroll-dependencies="#kt_stock_opname_history_header" data-kt-scroll-offset="5px" style="height: calc(100vh - 100px);">
-                    
+                <div id="kt_stock_opname_history_scroll" class="position-relative scroll-y me-n5 pe-5"
+                    data-kt-scroll="true" data-kt-scroll-height="auto"
+                    data-kt-scroll-wrappers="#kt_stock_opname_history_body"
+                    data-kt-scroll-dependencies="#kt_stock_opname_history_header" data-kt-scroll-offset="5px"
+                    style="height: calc(100vh - 100px);">
+
                     <div class="timeline timeline-border-dashed mt-5" id="history-timeline-items">
                         <!-- Timeline items rendered dynamically -->
                     </div>
@@ -839,8 +945,8 @@
     </div>
     <!--end::Stock Opname History Drawer-->
 
-    <div id="kt_stock_opname_discussion" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="stock-opname-discussion"
-        data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
+    <div id="kt_stock_opname_discussion" class="bg-body" data-kt-drawer="true"
+        data-kt-drawer-name="stock-opname-discussion" data-kt-drawer-activate="true" data-kt-drawer-overlay="true"
         data-kt-drawer-width="{default:'100%', 'md': '500px'}" data-kt-drawer-direction="end"
         data-kt-drawer-close="#kt_stock_opname_discussion_close">
         <div class="card w-100 shadow-none border-0 rounded-0 d-flex flex-column" style="height: 100vh;">
@@ -848,27 +954,32 @@
             <div class="card-header border-0 pe-5" id="kt_stock_opname_discussion_header" style="min-height: 70px;">
                 <div class="card-title d-flex flex-column align-items-start">
                     <h3 class="fw-bold text-gray-900 mb-1 d-flex align-items-center gap-2">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #0d6efd;">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #0d6efd;">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                         </svg>
                         Ruang Diskusi
                     </h3>
                     <span class="text-muted fs-7 fw-semibold" id="discussion-product-name">-</span>
                 </div>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_stock_opname_discussion_close">
+                    <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5"
+                        id="kt_stock_opname_discussion_close">
                         <i class="ki-outline ki-cross fs-1"></i>
                     </button>
                 </div>
             </div>
             <!--end::Header-->
             <!--begin::Body-->
-            <div class="card-body position-relative pt-0 flex-grow-1 overflow-hidden d-flex flex-column" id="kt_stock_opname_discussion_body">
+            <div class="card-body position-relative pt-0 flex-grow-1 overflow-hidden d-flex flex-column"
+                id="kt_stock_opname_discussion_body">
                 <!--begin::Scroll-->
-                <div id="kt_stock_opname_discussion_scroll" class="position-relative scroll-y flex-grow-1 me-n5 pe-5 mb-4" data-kt-scroll="true"
-                    data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_stock_opname_discussion_body"
-                    data-kt-scroll-dependencies="#kt_stock_opname_discussion_header, #kt_stock_opname_discussion_footer" data-kt-scroll-offset="5px">
-                    
+                <div id="kt_stock_opname_discussion_scroll" class="position-relative scroll-y flex-grow-1 me-n5 pe-5 mb-4"
+                    data-kt-scroll="true" data-kt-scroll-height="auto"
+                    data-kt-scroll-wrappers="#kt_stock_opname_discussion_body"
+                    data-kt-scroll-dependencies="#kt_stock_opname_discussion_header, #kt_stock_opname_discussion_footer"
+                    data-kt-scroll-offset="5px">
+
                     <div class="d-flex flex-column gap-4" id="discussion-items">
                         <!-- Chat messages rendered dynamically -->
                     </div>
@@ -881,11 +992,14 @@
             <div class="card-footer border-0 p-5" id="kt_stock_opname_discussion_footer">
                 <form id="kt_stock_opname_discussion_form" class="d-flex align-items-center gap-2">
                     <input type="hidden" id="discussion-stock-opname-id" name="stock_opname_id">
-                    <input type="text" class="form-control form-control-solid rounded-pill px-4" id="discussion-message-input" placeholder="Tulis pesan..." required autocomplete="off">
-                    <button type="submit" class="btn btn-primary btn-icon rounded-circle w-40px h-40px flex-shrink-0" style="background-color: #3b82f6; border-color: #3b82f6;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="22" y1="2" x2="11" y2="13"/>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    <input type="text" class="form-control form-control-solid rounded-pill px-4"
+                        id="discussion-message-input" placeholder="Tulis pesan..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary btn-icon rounded-circle w-40px h-40px flex-shrink-0"
+                        style="background-color: #3b82f6; border-color: #3b82f6;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
                         </svg>
                     </button>
                 </form>
@@ -913,11 +1027,12 @@
                     return `<span class="badge badge-light-danger me-1 mb-1">${p.name} (${p.branch_name})</span>`;
                 }).join('');
 
-                const remainingHtml = count > 10
-                    ? `<br><small>...dan ${count - 10} produk lainnya</small>`
-                    : '';
+                const remainingHtml = count > 10 ?
+                    `<br><small>...dan ${count - 10} produk lainnya</small>` :
+                    '';
 
-                const scopeText = (selectedBranchId && selectedBranchId !== 'all') ? 'pada cabang ini' : 'pada seluruh cabang';
+                const scopeText = (selectedBranchId && selectedBranchId !== 'all') ? 'pada cabang ini' :
+                    'pada seluruh cabang';
                 const alertHtml = `Terdapat <strong>${count}</strong> produk dengan stok kosong ${scopeText}.<br><br>` +
                     `<div style="text-align: left; max-height: 200px; overflow-y: auto;">` +
                     badges +
@@ -973,7 +1088,9 @@
             if (!dateValue) return '-';
             const dt = new Date(dateValue);
             if (Number.isNaN(dt.getTime())) return dateValue;
-            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September',
+                'Oktober', 'November', 'Desember'
+            ];
             const day = dt.getDate();
             const month = months[dt.getMonth()];
             const year = dt.getFullYear();
@@ -1002,9 +1119,10 @@
             const discussionsCount = Number(row?.discussions_count || 0);
 
             const isMinus = selisih < 0;
-            const hppText = `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/${row?.product?.unit?.abbreviation || 'Kg'}`;
+            const hppText =
+            `HPP: Rp ${formatRupiah(Math.round(Math.abs(hpp)))}/${row?.product?.unit?.abbreviation || 'Kg'}`;
             const nilaiText = `Rp ${formatRupiah(Math.abs(nilaiSelisih))}`;
-            
+
             // Dynamic Stock Match Label & Color
             let stockMatchLabel = 'STOCK MATCH';
             let stockMatchColor = '#111827';
@@ -1047,15 +1165,15 @@
                 return num % 1 === 0 ? num.toString() : num.toFixed(2);
             };
 
-            const creatorHtml = creatorName
-                ? `
+            const creatorHtml = creatorName ?
+                `
                 <span class="text-muted mx-1">•</span>
                 <span class="so-time-row">
                     <img src="${avatarUrl}" class="so-creator-avatar" alt="Avatar">
                     <span>${escapeHtml(creatorName)}</span>
                 </span>
-                `
-                : '';
+                ` :
+                '';
 
             return `
                 <div class="so-card d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
@@ -1206,14 +1324,14 @@
 
             $('#kt_stock_opname_discussion_form').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 const id = $('#discussion-stock-opname-id').val();
                 const message = $('#discussion-message-input').val();
                 if (!message || !id) return;
-                
+
                 const submitBtn = $(this).find('button[type="submit"]');
                 submitBtn.prop('disabled', true);
-                
+
                 $.ajax({
                     url: `/stock-opname/${id}/discussion`,
                     type: 'POST',
@@ -1223,17 +1341,17 @@
                     },
                     success: function(response) {
                         $('#discussion-message-input').val('');
-                        
+
                         // Remove empty message text if present
                         $('#discussion-items').find('.text-muted').remove();
-                        
+
                         // Append the new message
                         const item = response.discussion;
                         const isSelf = String(item.created_by) === String(currentUserId);
                         const selfClass = isSelf ? 'is-self' : '';
                         const avatarNum = ((item.created_by || 1) % 30) + 1;
                         const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
-                        
+
                         const itemHtml = `
                             <div class="chat-message-container ${selfClass}">
                                 <img src="${avatarUrl}" class="chat-message-avatar" alt="Avatar">
@@ -1248,11 +1366,12 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         $('#discussion-items').append(itemHtml);
-                        
+
                         // Scroll to bottom
-                        const scrollEl = document.getElementById('kt_stock_opname_discussion_scroll');
+                        const scrollEl = document.getElementById(
+                            'kt_stock_opname_discussion_scroll');
                         if (scrollEl) {
                             scrollEl.scrollTop = scrollEl.scrollHeight;
                         }
@@ -1265,7 +1384,9 @@
                                 const newCount = parseInt($badge.text() || 0) + 1;
                                 $badge.text(newCount);
                             } else {
-                                $btn.append(`<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">1</span>`);
+                                $btn.append(
+                                    `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">1</span>`
+                                    );
                             }
                         }
                     },
@@ -1284,16 +1405,16 @@
 
             $('#kt_modal_stock_adjustment_form').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 const form = $(this);
                 const id = form.data('id');
                 const type = form.data('type');
                 const qty = $('#adj-qty-input').val();
                 const reason = $('#adj-reason-input').val();
-                
+
                 const submitBtn = $('#adj-submit-btn');
                 submitBtn.prop('disabled', true).text('Menyimpan...');
-                
+
                 $.ajax({
                     url: `/stock-opname/${id}/adjust`,
                     type: 'POST',
@@ -1307,13 +1428,15 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
-                            text: response.message || 'Penyesuaian stok berhasil disimpan.',
+                            text: response.message ||
+                                'Penyesuaian stok berhasil disimpan.',
                             showConfirmButton: false,
                             timer: 1500
                         }).then(() => {
-                            const modal = bootstrap.Modal.getInstance(document.getElementById('kt_modal_stock_adjustment'));
+                            const modal = bootstrap.Modal.getInstance(document
+                                .getElementById('kt_modal_stock_adjustment'));
                             if (modal) modal.hide();
-                            
+
                             // Refresh DataTable
                             if (typeof dataTable !== 'undefined') {
                                 dataTable.ajax.reload(null, false);
@@ -1324,7 +1447,8 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Gagal',
-                            text: xhr.responseJSON?.message || 'Terjadi kesalahan saat memproses penyesuaian.'
+                            text: xhr.responseJSON?.message ||
+                                'Terjadi kesalahan saat memproses penyesuaian.'
                         });
                     },
                     complete: function() {
@@ -1362,7 +1486,8 @@
                             const modal = bootstrap.Modal.getInstance(document.getElementById(
                                 'kt_modal_add_customer'));
                             var form = $('#kt_modal_add_customer_form');
-                            form.find('input, select, textarea, button[type="submit"]').prop('disabled',
+                            form.find('input, select, textarea, button[type="submit"]').prop(
+                                'disabled',
                                 false);
                             modal.hide();
                             document.getElementById('kt_modal_add_customer_form').reset();
@@ -1401,7 +1526,7 @@
                             // 2. Hapus input _method
                             form.find('input[name="_method"]').remove();
                             $('select[name="product_id"]').val(null).trigger(
-                            'change'); // Reset select2
+                                'change'); // Reset select2
                             $('#product_id select').val(null).trigger('change');
 
                             // 3. Kembalikan action form ke default (untuk create)
@@ -1409,9 +1534,11 @@
                                 `/${segment1}`); // Misal segment1 = 'stock-opname'
 
                             // 4. Kembalikan judul modal (opsional)
-                            $('#kt_modal_add_customer_header h2').text('Catat Stock Opname');
+                            $('#kt_modal_add_customer_header h2').text(
+                                'Catat Stock Opname');
 
-                            $('#kt_modal_add_customer_submit .indicator-label').html('Simpan Final');
+                            $('#kt_modal_add_customer_submit .indicator-label').html(
+                                'Simpan Final');
                             updateStockSummary();
 
                             // 5. Tutup modal
@@ -1625,36 +1752,38 @@
                 type: 'GET',
                 success: function(response) {
                     $('#history-transaction-code').text(response.code || '-');
-                    
+
                     const $timeline = $('#history-timeline-items');
                     $timeline.empty();
-                    
+
                     const unit = response.unit || 'Kg';
-                    
+
                     // Helper to format quantity nicely
                     const formatNum = (v) => {
                         const n = Number(v || 0);
                         return n % 1 === 0 ? n.toString() : n.toFixed(2);
                     };
-                    
+
                     if (response.history && response.history.length > 0) {
                         response.history.forEach((item, index) => {
                             const isInitial = item.action === 'INITIAL';
-                            
+
                             let badgeClass = 'is-initial';
                             let actionLabel = 'INITIAL';
                             let qtyHtml = '';
-                            
+
                             if (isInitial) {
                                 badgeClass = 'is-initial';
                                 actionLabel = 'INITIAL';
-                                qtyHtml = `<span class="history-qty-badge">${formatNum(item.real_stock)} ${unit}</span>`;
+                                qtyHtml =
+                                    `<span class="history-qty-badge">${formatNum(item.real_stock)} ${unit}</span>`;
                             } else {
                                 // Since history is descending, the item at index+1 is chronological predecessor
                                 const nextItem = response.history[index + 1];
-                                const oldStock = nextItem ? Number(nextItem.real_stock) : Number(item.real_stock);
+                                const oldStock = nextItem ? Number(nextItem.real_stock) : Number(item
+                                    .real_stock);
                                 const newStock = Number(item.real_stock);
-                                
+
                                 if (newStock >= oldStock) {
                                     badgeClass = 'is-kredit';
                                     actionLabel = '+ KREDIT';
@@ -1677,14 +1806,14 @@
                                     `;
                                 }
                             }
-                            
+
                             const formattedTime = formatLongDateTime(item.created_at);
-                            
+
                             // Dynamic User Avatar using userId modulo
                             const userId = item.created_by || 1;
                             const avatarNum = (userId % 30) + 1;
                             const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
-                            
+
                             const timelineItemHtml = `
                                 <div class="timeline-item">
                                     <div class="timeline-line"></div>
@@ -1719,9 +1848,10 @@
                             $timeline.append(timelineItemHtml);
                         });
                     } else {
-                        $timeline.append('<div class="text-muted text-center py-5">Belum ada riwayat audit.</div>');
+                        $timeline.append(
+                            '<div class="text-muted text-center py-5">Belum ada riwayat audit.</div>');
                     }
-                    
+
                     // Show Metronic Drawer
                     const drawerEl = document.getElementById('kt_stock_opname_history');
                     let drawer = KTDrawer.getInstance(drawerEl);
@@ -1748,17 +1878,17 @@
                     $('#discussion-product-name').text(response.product_name || '-');
                     $('#discussion-stock-opname-id').val(id);
                     $('#discussion-message-input').val('');
-                    
+
                     const $items = $('#discussion-items');
                     $items.empty();
-                    
+
                     if (response.discussions && response.discussions.length > 0) {
                         response.discussions.forEach((item) => {
                             const isSelf = String(item.created_by) === String(currentUserId);
                             const selfClass = isSelf ? 'is-self' : '';
                             const avatarNum = ((item.created_by || 1) % 30) + 1;
                             const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
-                            
+
                             const itemHtml = `
                                 <div class="chat-message-container ${selfClass}">
                                     <img src="${avatarUrl}" class="chat-message-avatar" alt="Avatar">
@@ -1776,9 +1906,11 @@
                             $items.append(itemHtml);
                         });
                     } else {
-                        $items.append('<div class="text-muted text-center py-20 fs-6">Belum ada diskusi. Mulai percakapan terkait selisih stock ini.</div>');
+                        $items.append(
+                            '<div class="text-muted text-center py-20 fs-6">Belum ada diskusi. Mulai percakapan terkait selisih stock ini.</div>'
+                            );
                     }
-                    
+
                     // Show Metronic Drawer
                     const drawerEl = document.getElementById('kt_stock_opname_discussion');
                     let drawer = KTDrawer.getInstance(drawerEl);
@@ -1786,7 +1918,7 @@
                         drawer = new KTDrawer(drawerEl);
                     }
                     drawer.show();
-                    
+
                     // Scroll to bottom
                     setTimeout(() => {
                         const scrollEl = document.getElementById('kt_stock_opname_discussion_scroll');
@@ -1812,26 +1944,29 @@
                 success: function(response) {
                     const unit = response.product?.unit?.abbreviation || 'Kg';
                     const currentStock = Number(response.real_stock || 0);
-                    
+
                     $('#adj-current-stock-label').text(`${currentStock} ${unit}`);
                     $('#adj-qty-input').val('1');
                     $('#adj-reason-input').val('');
-                    
+
                     // Store details on form
                     const $form = $('#kt_modal_stock_adjustment_form');
                     $form.data('id', id);
                     $form.data('type', type);
                     $form.data('unit', unit);
                     $form.data('current-stock', currentStock);
-                    
+
                     const $header = $('#adj-modal-header');
                     const $title = $('#adj-modal-title');
                     const $badge = $('#adj-type-badge');
                     const $submitBtn = $('#adj-submit-btn');
-                    
+
                     if (type === 'up') {
                         // Up styling
-                        $header.css({ 'background-color': '#ecfdf5', 'color': '#059669' });
+                        $header.css({
+                            'background-color': '#ecfdf5',
+                            'color': '#059669'
+                        });
                         $title.css('color', '#059669').html(`
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1">
                                 <line x1="7" y1="17" x2="17" y2="7"/>
@@ -1839,12 +1974,22 @@
                             </svg>
                             Adjustment + Kredit
                         `);
-                        $badge.text('+').css({ 'background-color': '#ecfdf5', 'color': '#059669' });
-                        $submitBtn.css({ 'background-color': '#5ec5a5', 'border-color': '#5ec5a5', 'color': '#fff' });
+                        $badge.text('+').css({
+                            'background-color': '#ecfdf5',
+                            'color': '#059669'
+                        });
+                        $submitBtn.css({
+                            'background-color': '#5ec5a5',
+                            'border-color': '#5ec5a5',
+                            'color': '#fff'
+                        });
                         $('#adj-reason-input').attr('placeholder', 'Contoh: Salah hitung saat audit awal');
                     } else {
                         // Down styling
-                        $header.css({ 'background-color': '#fef2f2', 'color': '#dc2626' });
+                        $header.css({
+                            'background-color': '#fef2f2',
+                            'color': '#dc2626'
+                        });
                         $title.css('color', '#dc2626').html(`
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1">
                                 <line x1="7" y1="7" x2="17" y2="17"/>
@@ -1852,11 +1997,19 @@
                             </svg>
                             Adjustment - Kredit
                         `);
-                        $badge.text('-').css({ 'background-color': '#fef2f2', 'color': '#dc2626' });
-                        $submitBtn.css({ 'background-color': '#f87171', 'border-color': '#f87171', 'color': '#fff' });
-                        $('#adj-reason-input').attr('placeholder', 'Contoh: Koreksi buah busuk/penyusutan harian');
+                        $badge.text('-').css({
+                            'background-color': '#fef2f2',
+                            'color': '#dc2626'
+                        });
+                        $submitBtn.css({
+                            'background-color': '#f87171',
+                            'border-color': '#f87171',
+                            'color': '#fff'
+                        });
+                        $('#adj-reason-input').attr('placeholder',
+                            'Contoh: Koreksi buah busuk/penyusutan harian');
                     }
-                    
+
                     function updatePreview() {
                         const qty = parseFloat($('#adj-qty-input').val()) || 0;
                         let result = currentStock;
@@ -1866,13 +2019,14 @@
                             result = currentStock - qty;
                         }
                         // Format preview
-                        const formattedResult = Number(result % 1 === 0 ? result.toString() : result.toFixed(2));
+                        const formattedResult = Number(result % 1 === 0 ? result.toString() : result.toFixed(
+                        2));
                         $('#adj-result-stock-label').text(`${formattedResult} ${unit}`);
                     }
-                    
+
                     $('#adj-qty-input').off('input change').on('input change', updatePreview);
                     updatePreview();
-                    
+
                     const modal = new bootstrap.Modal(document.getElementById('kt_modal_stock_adjustment'));
                     modal.show();
                 },
@@ -1924,7 +2078,8 @@
                             id: item.id,
                             text: item.name,
                             stock_available: item.stock_available,
-                            unit_price: item.hpp || item.price || item.cost_price || item.purchase_price || 0
+                            unit_price: item.hpp || item.price || item.cost_price ||
+                                item.purchase_price || 0
                         }))
                     })
                 }
@@ -1969,11 +2124,13 @@
                         search: ''
                     },
                     success: function(items) {
-                        const selected = (items || []).find(item => String(item.id) === String(productId));
+                        const selected = (items || []).find(item => String(item.id) === String(
+                            productId));
 
                         if (selected) {
                             $quantity.val(selected.stock_available || 0);
-                            $product.data('unit-price', selected.hpp || selected.price || selected.cost_price ||
+                            $product.data('unit-price', selected.hpp || selected.price ||
+                                selected.cost_price ||
                                 selected.purchase_price || 0);
                             updateStockSummary();
                             return;
