@@ -784,7 +784,13 @@ class PosController extends Controller
                 }
             }
 
-            // dd($request->all());
+            // Pastikan pos.created_at lebih baru dari production.created_at agar secara alami tampil di atas saat diurutkan DESC
+            $latestProduction = Production::where('pos_id', $transaksiId)->orderBy('created_at', 'desc')->first();
+            if ($latestProduction) {
+                $pos->created_at = \Carbon\Carbon::parse($latestProduction->created_at)->addSeconds(1);
+                $pos->save();
+            }
+
             DB::commit();
             DB::disconnect();
 
