@@ -15,7 +15,7 @@
                         'btn btn-outline btn-outline-dashed btn-outline-success' : ''">
                     <!-- Mobile Layout (Stack Vertically) -->
                     <div class="d-block d-lg-none"
-                        @click="item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)">
+                        @click="item.typeProduct === 'parcel' ? openEditParcelModal(item) : (item.typeProduct === 'jus' ? openEditJusModal(item) : openEditModal(item))">
                         <!-- Product Name & Price -->
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
@@ -47,7 +47,7 @@
 
                     <!-- Desktop Layout (Horizontal) -->
                     <div class="d-none d-lg-block"
-                        @click="item.typeProduct === 'parcel' ? openEditParcelModal(item) : openEditModal(item)">
+                        @click="item.typeProduct === 'parcel' ? openEditParcelModal(item) : (item.typeProduct === 'jus' ? openEditJusModal(item) : openEditModal(item))">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="mb-2">
                                 <h6 class="mb-1 fw-bold" x-text="item.name"></h6>

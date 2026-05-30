@@ -674,6 +674,7 @@ class PosController extends Controller
             }
 
             if (!empty($data['jus'])) {
+                // dd($data['jus']);
                 if (isset($posId)) {
                     $lastProduction = Production::where('pos_id', $posId)->first();
                     if ($lastProduction) {
@@ -735,44 +736,45 @@ class PosController extends Controller
                         'created_by' => $userId,
                     ]);
                 }
-            } elseif (isset($posId)) {
-                // Update status production yang sudah ada sesuai status POS
-                $productionStatus = $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft';
-                Production::where('pos_id', $posId)
-                    ->update(['status' => $productionStatus]);
+            } 
+            // elseif (isset($posId)) {
+            //     // Update status production yang sudah ada sesuai status POS
+            //     $productionStatus = $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft';
+            //     Production::where('pos_id', $posId)
+            //         ->update(['status' => $productionStatus]);
 
-                // Buat production baru untuk produk receipt yang ada di items (jika belum ada)
-                // $existingProductIds = Production::where('pos_id', $posId)
-                //     ->pluck('product_id');
-                // foreach ($data['items'] as $item) {
-                //     if (is_numeric($item['id']) && !$existingProductIds->contains($item['id'])) {
-                //         $hasRecipe = ProductReceipt::where('product_id', $item['id'])->exists();
-                //         if ($hasRecipe) {
-                //             $production = Production::create([
-                //                 'production_number' => Production::getOrderNumber(),
-                //                 'product_id'        => $item['id'],
-                //                 'production_date'   => now(),
-                //                 'status'            => $productionStatus,
-                //                 'created_by'        => $userId,
-                //                 'quantity'          => $item['qty'],
-                //                 'staff_id'          => $userId,
-                //                 'pos_id'            => $transaksiId,
-                //                 'branch_id'         => $data['branch_id'] ?? null,
-                //             ]);
+            //     // Buat production baru untuk produk receipt yang ada di items (jika belum ada)
+            //     $existingProductIds = Production::where('pos_id', $posId)
+            //         ->pluck('product_id');
+            //     foreach ($data['items'] as $item) {
+            //         if (is_numeric($item['id']) && !$existingProductIds->contains($item['id'])) {
+            //             $hasRecipe = ProductReceipt::where('product_id', $item['id'])->exists();
+            //             if ($hasRecipe) {
+            //                 $production = Production::create([
+            //                     'production_number' => Production::getOrderNumber(),
+            //                     'product_id'        => $item['id'],
+            //                     'production_date'   => now(),
+            //                     'status'            => $productionStatus,
+            //                     'created_by'        => $userId,
+            //                     'quantity'          => $item['qty'],
+            //                     'staff_id'          => $userId,
+            //                     'pos_id'            => $transaksiId,
+            //                     'branch_id'         => $data['branch_id'] ?? null,
+            //                 ]);
 
-                //             $productReceipts = ProductReceipt::where('product_id', $item['id'])->get();
-                //             foreach ($productReceipts as $receipt) {
-                //                 ProductionDetail::create([
-                //                     'production_id' => $production->id,
-                //                     'product_id'    => $receipt->product_receipt_id,
-                //                     'quantity'      => $receipt->quantity * $item['qty'],
-                //                 ]);
-                //             }
-                //         }
-                //     }
-                // }
+            //                 $productReceipts = ProductReceipt::where('product_id', $item['id'])->get();
+            //                 foreach ($productReceipts as $receipt) {
+            //                     ProductionDetail::create([
+            //                         'production_id' => $production->id,
+            //                         'product_id'    => $receipt->product_receipt_id,
+            //                         'quantity'      => $receipt->quantity * $item['qty'],
+            //                     ]);
+            //                 }
+            //             }
+            //         }
+            //     }
 
-            }
+            // }
 
             if (! $isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {
                 $orderBook = OrderBook::where('invoice_number', $data['invoice_number'])->first();

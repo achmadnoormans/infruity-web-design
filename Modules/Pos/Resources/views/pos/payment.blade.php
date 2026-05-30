@@ -181,9 +181,14 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-9">
                         <a href="{{ route('pos.edit', $data->id) }}" class="btn btn-warning w-100">
                             <i class="bi bi-arrow-left"></i> Kembali / Edit Lagi
+                        </a>
+                    </div>
+                    <div class="col-3">
+                        <a href="{{ route('pos.index') }}" class="btn btn-danger w-100">
+                            <i class="fa fa-home"></i>
                         </a>
                     </div>
                 </div>

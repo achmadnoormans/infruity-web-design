@@ -336,7 +336,21 @@
                 const index = this.cart.findIndex(item => item.id === this.editItem.id);
                 if (index !== -1) {
                     this.cart.splice(index, 1);
+
+                    const jusIndex = this.jus.findIndex(item => item.id === this.editItem.id);
+                    if(jusIndex !== -1) {
+                        this.jus.splice(jusIndex, 1);
+                    }
+
+                    const parcelIndex = this.parcel.findIndex(item => item.id === this.editItem.id);
+                    if(parcelIndex !== -1) {
+                        this.parcel.splice(parcelIndex, 1);
+                    }
+
                     this.closeEditModal();
+                    if(typeof this.closeEditJusModal === 'function') {
+                        this.closeEditJusModal();
+                    }
                 }
             },
 
@@ -347,6 +361,140 @@
                 const modalEl = document.getElementById('editModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
+            },
+
+            openEditJusModal(item) {
+                console.log('Opening edit jus modal for item:', item);
+                this.editItem = { ...item };
+                this.editProduct = item;
+                this.editProductName = item.name;
+                this.editProductUnit = item.unit;
+                this.editTitle = item.name;
+                this.editPrice = item.price;
+                this.editQty = item.qty;
+                this.editTotal = item.total_input || (item.qty * item.price);
+                this.editTotalFormatted = this.formatRupiah(this.editTotal);
+                this.editDiscount = item.discount || 0;
+                this.editJusModal = true;
+
+                const container = $('#receiptEditContainer');
+                container.empty();
+
+                if (item.data && item.data.products && item.data.products.length > 0) {
+                    item.data.products.forEach((prodId, idx) => {
+                        let qty = item.data.productsQty[idx] || 1;
+                        let row = `
+                        <div class="row receipt-row mb-2">
+                            <div class="col-9 mb-3">
+                                <label class="form-label">Nama Produk</label>
+                                <select name="receipt_edit_product_id[]" class="form-select receipt-edit-select" data-selected-id="${prodId}">
+                                </select>
+                            </div>
+                            <div class="col-3 mb-3">
+                                <label class="form-label">Qty</label>
+                                <input type="number" name="receipt_edit_qty[]" class="form-control" value="${qty}">
+                            </div>
+                        </div>
+                        <div class="row receipt-row mb-2">
+                            <div class="col-12 mb-3 text-center text-muted">
+                                <em>Quantity akan dihitung otomatis berdasarkan Jumlah yang akan dibeli</em>
+                            </div>
+                        </div>`;
+                        container.append(row);
+                    });
+                } else {
+                    let row = `
+                        <div class="row receipt-row mb-2">
+                            <div class="col-12 mb-3 text-center text-muted">
+                                <em>Tidak ada bahan</em>
+                            </div>
+                        </div>`;
+                    container.append(row);
+                }
+
+                container.find('.receipt-edit-select').each(function(idx) {
+                    const selectedId = $(this).data('selected-id');
+                    
+                    $(this).select2({
+                        placeholder: 'Pilih Produk',
+                        dropdownParent: $('#editJusModal'),
+                        ajax: {
+                            url: '/ajax/listProduct',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    term: params.term,
+                                    limit: 10
+                                };
+                            },
+                            processResults: data => ({
+                                results: data.map(i => ({
+                                    id: i.id,
+                                    text: i.name,
+                                    unit: i.unit,
+                                    price: i.price
+                                }))
+                            })
+                        }
+                    });
+
+                    if (selectedId) {
+                        let selectedText = "Bahan " + selectedId;
+                        if (item.data && item.data.productsText && item.data.productsText[idx]) {
+                            selectedText = item.data.productsText[idx];
+                        }
+                        let option = new Option(selectedText, selectedId, true, true);
+                        $(this).append(option).trigger('change');
+                    }
+                });
+
+                setTimeout(() => {
+                    const modal = new bootstrap.Modal(document.getElementById('editJusModal'));
+                    modal.show();
+                }, 0);
+            },
+
+            closeEditJusModal() {
+                this.editJusModal = false;
+                const modalEl = document.getElementById('editJusModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            },
+
+            saveEditJusToCart() {
+                const idx = this.cart.findIndex(i => i.key === this.editItem.key);
+                if (idx !== -1) {
+                    const disc = this.calculateEditDiscountAmount();
+                    this.cart[idx].qty = this.editQty;
+                    this.cart[idx].total_input = this.editTotal;
+                    this.cart[idx].discount = disc;
+                    this.cart[idx].discountPercent = this.editDiscountPercent;
+
+                    let receiptProducts = $("select[name='receipt_edit_product_id[]']")
+                        .map(function() { return $(this).val(); }).get();
+                    let receiptProductsQty = $("input[name='receipt_edit_qty[]']")
+                        .map(function() { return $(this).val(); }).get();
+                    let receiptProductsText = $("select[name='receipt_edit_product_id[]'] option:selected")
+                        .map(function() { return $(this).text(); }).get();
+
+                    this.cart[idx].data = {
+                        products: receiptProducts,
+                        productsQty: receiptProductsQty,
+                        productsText: receiptProductsText
+                    };
+
+                    let jusIdx = this.jus.findIndex(i => i.id === this.editItem.id);
+                    if (jusIdx !== -1) {
+                        this.jus[jusIdx].qty = this.editQty;
+                        this.jus[jusIdx].total_input = this.editTotal;
+                        this.jus[jusIdx].discount = disc;
+                        this.jus[jusIdx].discountPercent = this.editDiscountPercent;
+                        this.jus[jusIdx].product_receipt_id = receiptProducts;
+                        this.jus[jusIdx].product_receipt_qty = receiptProductsQty;
+                    }
+                }
+                this.closeEditJusModal();
             },
 
             // Add Product Section
@@ -1947,6 +2095,11 @@
                         return $(this).val();
                     })
                     .get();
+                let receiptProductsText = $("select[name='receipt_product_id[]'] option:selected")
+                    .map(function() {
+                        return $(this).text();
+                    })
+                    .get();
 
                 this.cart.push({
                     id: 'jus' + this.addProduct.id,
@@ -1960,7 +2113,8 @@
                     total_input: total_input,
                     data: {
                         products: receiptProducts,
-                        productsQty: receiptProductsQty
+                        productsQty: receiptProductsQty,
+                        productsText: receiptProductsText
                     },
                     typeProduct: 'jus',
                 });

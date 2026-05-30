@@ -61,6 +61,68 @@
         </div>
     </div>
 </div>
+{{-- Modal Edit Jus --}}
+<div class="modal fade" id="editJusModal" tabindex="-1" aria-labelledby="editJusModalLabel" aria-hidden="true" x-show="editJusModal"
+    style="display: none;">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content" x-data>
+            <div class="modal-header" style="background-color: #ff000d; color: #fff;">
+                <h5 class="modal-title" style="color: #fff">Edit Jus</h5>
+                <button type="button" class="btn-close" @click="closeEditJusModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div x-show="editItem">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Produk</label>
+                        <input type="text" class="form-control" x-model="editProductName" readonly>
+                    </div>
+
+                    <!-- Satuan & Harga -->
+                    <div class="row">
+                        <div class="col-3 mb-3">
+                            <label class="form-label">Satuan</label>
+                            <input type="text" class="form-control" x-model="editProductUnit" readonly>
+                        </div>
+                        <div class="col-9 mb-3">
+                            <label class="form-label">Harga</label>
+                            <input type="text" class="form-control" :value="formatRupiah(editPrice)" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="mb-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" step="0.01" min="0" x-model="editQty"
+                            @input="updateTotalFromEditQty">
+                    </div>
+
+                    <!-- Diskon -->
+                    <div class="mb-3">
+                        <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
+                        <input type="number" class="form-control" x-model="editDiscount" min="0"
+                            @input="updateEditDiscount">
+                    </div>
+
+                    <!-- Jumlah Harga -->
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah Harga</label>
+                        <input type="text" class="form-control" x-model="editTotalFormatted"
+                            @input="updateEditTotalFormatted" inputmode="numeric">
+                    </div>
+                </div>
+
+                <hr>
+                <div id="receiptEditContainer"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger me-auto" @click="deleteFromCart()">Hapus Produk</button>
+                <button class="btn btn-secondary" @click="closeEditJusModal()">Batal</button>
+                <button class="btn btn-primary" @click="saveEditJusToCart()">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Modal Edit --}}
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true"
     x-show="editModal" style="display: none;">
