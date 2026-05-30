@@ -681,7 +681,17 @@ class PosController extends Controller
                         ProductionDetail::where('production_id', $lastProduction->id)->delete();
                         $lastProduction->delete();
                     }
+                } else {
+                    $cekPos = PosModel::where('invoice_number', $data['invoice_number'])->first();
+                    if(isset($cekPos)){
+                        $lastProduction = Production::where('pos_id', $cekPos->id)->first();
+                        if ($lastProduction) {
+                            ProductionDetail::where('production_id', $lastProduction->id)->delete();
+                            $lastProduction->delete();
+                        }
+                    }
                 }
+
                 foreach ($data['jus'] as $index => $value) {
                     $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
                     $currentStock = $productStock?->stock_available ?? 0;
