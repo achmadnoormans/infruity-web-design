@@ -352,11 +352,12 @@ class PosController extends Controller
             $pos->status = $status;
             $pos->save();
 
-            // if ($status === 'paid') {
-            //     Production::where('pos_id', $pos->id)
-            //         ->where('status', 'draft')
-            //         ->update(['status' => 'complete']);
-            // }
+            if ($status === 'paid') {
+                Production::where('pos_id', $pos->id)
+                    ->where('status', 'draft')
+                    ->delete();
+                    // ->update(['status' => 'complete']);
+            }
 
             DB::commit();
             return response()->json([
@@ -680,15 +681,6 @@ class PosController extends Controller
                     if ($lastProduction) {
                         ProductionDetail::where('production_id', $lastProduction->id)->delete();
                         $lastProduction->delete();
-                    }
-                } else {
-                    $cekPos = PosModel::where('invoice_number', $data['invoice_number'])->first();
-                    if(isset($cekPos)){
-                        $lastProduction = Production::where('pos_id', $cekPos->id)->first();
-                        if ($lastProduction) {
-                            ProductionDetail::where('production_id', $lastProduction->id)->delete();
-                            $lastProduction->delete();
-                        }
                     }
                 }
 
