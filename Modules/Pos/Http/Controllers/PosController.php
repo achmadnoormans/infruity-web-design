@@ -352,11 +352,11 @@ class PosController extends Controller
             $pos->status = $status;
             $pos->save();
 
-            if ($status === 'paid') {
-                Production::where('pos_id', $pos->id)
-                    ->where('status', 'draft')
-                    ->update(['status' => 'complete']);
-            }
+            // if ($status === 'paid') {
+            //     Production::where('pos_id', $pos->id)
+            //         ->where('status', 'draft')
+            //         ->update(['status' => 'complete']);
+            // }
 
             DB::commit();
             return response()->json([
