@@ -664,10 +664,7 @@
                                         {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
                                     </span>
                                     @php
-                                        $subTotal =
-                                            isset($item->discount) && $item->discount > 0
-                                                ? $item->subtotal + $item->discount * $item->quantity
-                                                : $item->subtotal;
+                                        $subTotal = $item->price * $item->quantity;
                                     @endphp
                                     <span class="item-total">Rp
                                         {{ tonumberround($subTotal) }}</span>
@@ -679,12 +676,12 @@
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
                                             <span>Diskon
-                                                ({{ floor(($item->discount / ($item->subtotal + $item->discount)) * 100) }}%)
+                                                ({{ floor(($item->discount / $subTotal) * 100) }}%)
                                                 per Item
                                             </span>
-                                            <span>- {{ tonumberround($item->discount * $item->quantity) }}</span>
+                                            <span>- {{ tonumberround($item->discount) }}</span>
                                             @php
-                                                $total -= $item->discount * $item->quantity;
+                                                $total -= $item->discount;
                                             @endphp
                                         @endif
                                     @endisset

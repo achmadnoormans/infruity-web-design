@@ -626,10 +626,7 @@
                         @php $subtotal = 0; @endphp
                         @foreach ($detail as $item)
                             @php
-                                $itemTotal = $item->subtotal;
-                                if (isset($item->discount) && $item->discount > 0) {
-                                    $itemTotal = $item->subtotal + $item->discount * $item->quantity;
-                                }
+                                $itemTotal = $item->price * $item->quantity;
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>
@@ -637,20 +634,30 @@
                                     <div class="item-name-main">
                                         {{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}
                                     </div>
+                                    @if ($item->discount && $item->discount > 0)
+                                        <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">
+                                            Diskon (-Rp{{ number_format($item->discount, 0, ',', '.') }})
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>Rp{{ number_format($item->price, 0, ',', '.') }}</td>
-                                <td>Rp{{ number_format($itemTotal, 0, ',', '.') }}</td>
+                                <td>
+                                    @if ($item->discount && $item->discount > 0)
+                                        <div style="text-decoration: line-through; font-size: 11px; color: #94a3b8; margin-bottom: 2px;">
+                                            Rp{{ number_format($itemTotal, 0, ',', '.') }}
+                                        </div>
+                                        <div>
+                                            Rp{{ number_format($itemTotal - $item->discount, 0, ',', '.') }}
+                                        </div>
+                                    @else
+                                        Rp{{ number_format($itemTotal, 0, ',', '.') }}
+                                    @endif
+                                </td>
                             </tr>
                             @if ($item->discount && $item->discount > 0)
-                                <tr class="discount-row">
-                                    <td colspan="3">
-                                        <div class="item-name-main">Diskon</div>
-                                    </td>
-                                    <td>-Rp{{ number_format($item->discount * $item->quantity, 0, ',', '.') }}</td>
-                                </tr>
                                 @php
-                                    $subtotal -= $item->discount * $item->quantity;
+                                    $subtotal -= $item->discount;
                                 @endphp
                             @endif
                             @if (isset($parcelDetail) && count($parcelDetail) > 0)
