@@ -1340,7 +1340,10 @@ class ProductController extends Controller
             }
         }
 
-        $query->orderBy('transaction_stock.date', 'asc');
+        $query->orderBy('transaction_stock.date', 'desc')
+              ->orderBy('transaction_stock.source_table', 'desc')
+              ->orderBy('transaction_stock.id', 'desc')
+              ->orderBy('transaction_stock.detail_id', 'desc');
 
         $data = $query->get();
         return DataTables::of($data)
