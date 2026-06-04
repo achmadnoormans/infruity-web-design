@@ -273,15 +273,14 @@
             },
             calculateEditDiscountAmount() {
                 const val = parseFloat(this.editDiscount || 0);
+                let qty = parseFloat(this.editQty || 0);
                 // console.log('Discount:', val);
                 if (val <= 100) {
-                    let qty = parseFloat(this.editQty || 0);
                     let originalPrice = parseFloat(this.editPrice || 0);
-                    let discount = parseFloat(this.editDiscount || 0);
                     let subtotal = qty * originalPrice;
                     return parseFloat(((subtotal || 0) * val / 100).toFixed(2)); // persen
                 } else {
-                    return val; // nominal
+                    return val * qty; // nominal dikali qty
                 }
             },
             // Update otomatis qty berdasarkan total
@@ -308,7 +307,7 @@
 
                 // Jika discount > 100 → anggap sebagai nominal (Rp)
                 // Jika ≤ 100 → anggap sebagai persen
-                let discountValue = discount > 100 ? discount : subtotal * (discount / 100);
+                let discountValue = discount > 100 ? (discount * qty) : subtotal * (discount / 100);
                 let discountPercent = discount > 100 ? 0 : discount;
 
                 let totalAfterDiscount = subtotal - discountValue;
@@ -613,19 +612,19 @@
 
                 if (input > 100) {
                     // Input dianggap nominal rupiah
-                    this.addProduct.discount = input;
+                    this.addProduct.discount = input * qty;
                     this.addProduct.discountNominal = input;
                     this.addProduct.discountPercent = 0;
                 } else {
                     // Input dianggap persen
-                    let diskonRupiah = (input / 100) * price;
+                    let diskonRupiah = (input / 100) * subtotal;
                     this.addProduct.discount = diskonRupiah;
                     this.addProduct.discountNominal = input;
                     this.addProduct.discountPercent = input;
                 }
 
                 // Update total setelah diskon
-                const totalAfterDiscount = subtotal - (this.addProduct.discount * qty);
+                const totalAfterDiscount = subtotal - this.addProduct.discount;
                 this.addProduct.total = totalAfterDiscount;
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(totalAfterDiscount);
             },
@@ -683,7 +682,7 @@
                     hpp: this.addProduct.hpp,
                     qty: this.addProduct.qty,
                     unit: this.addProduct.unit,
-                    discount: discount > 100 ? discount : (discount / 100) * total_input,
+                    discount: discount,
                     discountPercent: this.addProduct.discountPercent,
                     total_input: total_input,
                     typeProduct: 'product',
@@ -742,7 +741,11 @@
 
                     // Recalculate total_input proportionally
                     if (item.total_input && oldQty > 0) {
-                        const pricePerUnit = (item.total_input + item.discount) / oldQty;
+                        const originalTotal = item.total_input + item.discount;
+                        const pricePerUnit = originalTotal / oldQty;
+                        const discountPerUnit = item.discount / oldQty;
+                        
+                        item.discount = discountPerUnit * item.qty;
                         item.total_input = (pricePerUnit * item.qty) - item.discount;
                     } else {
                         item.total_input = item.price * item.qty;
@@ -782,7 +785,7 @@
             // Method untuk menghitung total price
             getTotalPrice() {
                 return this.cart.reduce((sum, item) => {
-                    const itemTotal = (item.total_input || (item.price * item.qty)) - (item.discount || 0);
+                    const itemTotal = item.total_input !== undefined ? item.total_input : ((item.price * item.qty) - (item.discount || 0));
                     return sum + Math.max(0, itemTotal); // Pastikan tidak minus
                 }, 0);
             },
@@ -1466,7 +1469,7 @@
                     hpp: this.addProduct.hpp,
                     qty: this.addProduct.qty,
                     unit: this.addProduct.unit,
-                    discount: discount > 100 ? discount : (discount / 100) * total_input,
+                    discount: discount,
                     discountPercent: this.addProduct.discountPercent,
                     total_input: 0,
                     typeProduct: 'gift', // Tambahkan tipe produk
