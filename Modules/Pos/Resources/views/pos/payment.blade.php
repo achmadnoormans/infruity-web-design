@@ -11,7 +11,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
                     <span class="mb-3">Total Penjualan</span>
-                    <span class="fw-bolder mb-3">{{ toNumber($data->total) }}</span>
+                    <span class="fw-bolder mb-3">{{ toNumber(floor($data->total)) }}</span>
                 </div>
             </div>
         </div>

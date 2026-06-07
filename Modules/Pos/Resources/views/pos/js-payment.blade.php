@@ -56,8 +56,8 @@
                 @php
                     $voucher = $deposito->voucher ?? 0;
                 @endphp
-                totalDue: {{ $data->total - $data->paid >= ($voucher ?? 0) ? $data->total - $data->paid - $voucher : $data->total - $data->paid }}, // Ganti dengan nilai dari data.total misalnya dari backend
-                totalPayment: {{ $data->total - $data->paid }},
+                totalDue: {{ floor($data->total - $data->paid >= ($voucher ?? 0) ? $data->total - $data->paid - $voucher : $data->total - $data->paid) }}, // Ganti dengan nilai dari data.total misalnya dari backend
+                totalPayment: {{ floor($data->total - $data->paid) }},
                 paymentDifference: 0,
                 loading: false,
                 paymentMethods: [],
@@ -204,7 +204,7 @@
                     }
 
                     // Check if total penjualan is 0 and payment is 0
-                    const totalPenjualan = {{ $data->total }};
+                    const totalPenjualan = {{ floor($data->total) }};
                     if (totalPenjualan == 0 && this.totalPayment == 0) {
                         Swal.fire({
                             title: 'Peringatan',
