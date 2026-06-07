@@ -10,12 +10,18 @@
         success: function(data) {
 
             if (window.location.pathname.includes("create")) {
+                @if(isset($branches) && count($branches) > 0)
+                $('#branch_id')
+                    .append(new Option('{{ $branches[0]->name }}', '{{ $branches[0]->id }}', true, true))
+                    .trigger('change');
+                @else
                 if (data.length > 0) {
                     let first = data[0];
                     $('#branch_id')
                         .append(new Option(first.name, first.id, true, true))
                         .trigger('change');
                 }
+                @endif
             }
 
             $('#branch_id').select2({
@@ -50,12 +56,18 @@
         dataType: 'json',
         success: function(data) {
             if (window.location.pathname.includes("create")) {
+                @if(isset($branches) && count($branches) > 0)
+                $('#branch_id')
+                    .append(new Option('{{ $branches[0]->name }}', '{{ $branches[0]->id }}', true, true))
+                    .trigger('change');
+                @else
                 if (data.length > 0) {
                     let first = data[0];
                     $('#branch_id')
                         .append(new Option(first.name, first.id, true, true))
                         .trigger('change');
                 }
+                @endif
             }
             $('#branch_destination_id').select2({
                 placeholder: 'Pilih Cabang',
