@@ -435,6 +435,25 @@ class PosController extends Controller
         ]);
 
         try {
+            // Validasi stok buah
+            if (isset($data['items'])) {
+                foreach ($data['items'] as $item) {
+                    if (isset($item['id']) && is_numeric($item['id'])) {
+                        $productStock = ProductStock::where('id', $item['id'])
+                            ->where('branch_id', $data['branch_id'])
+                            ->first();
+                        $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+                        $requiredQty  = (float)($item['qty'] ?? 0);
+
+                        if ($currentStock < $requiredQty) {
+                            $product     = Product::find($item['id']);
+                            $productName = $product ? $product->name : 'Produk #' . $item['id'];
+                            throw new \Exception("Stok buah \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                        }
+                    }
+                }
+            }
+
             // Validasi stok untuk parcel
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $parcel) {
