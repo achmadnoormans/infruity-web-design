@@ -231,10 +231,13 @@
     $.ajax({
         url: '/ajax/getBranch',
         dataType: 'json',
-        success: function(data) {
+        success: function(response) {
 
-            if (data.length > 0) {
-                let first = data[0];
+            if ($url === 'edit' && data && data.branch) {
+                let branchOption = new Option(data.branch.name, data.branch_id, true, true);
+                $('#branch_id').append(branchOption).trigger('change');
+            } else if (response.length > 0) {
+                let first = response[0];
                 $('#branch_id')
                     .append(new Option(first.name, first.id, true, true))
                     .trigger('change');
@@ -246,8 +249,8 @@
                     url: '/ajax/getBranch',
                     dataType: 'json',
                     delay: 250,
-                    processResults: data => ({
-                        results: data.map(item => ({
+                    processResults: res => ({
+                        results: res.map(item => ({
                             id: item.id,
                             text: item.name,
                         }))
@@ -261,10 +264,13 @@
     $.ajax({
         url: '/ajax/getBranch',
         dataType: 'json',
-        success: function(data) {
+        success: function(response) {
 
-            if (data.length > 0) {
-                let first = data[0];
+            if ($url === 'edit' && data && data.branch_proses) {
+                let branchProcessOption = new Option(data.branch_proses.name, data.branch_process_id, true, true);
+                $('#branch_process_id').append(branchProcessOption).trigger('change');
+            } else if (response.length > 0) {
+                let first = response[0];
                 $('#branch_process_id')
                     .append(new Option(first.name, first.id, true, true))
                     .trigger('change');
@@ -276,8 +282,8 @@
                     url: '/ajax/getBranch',
                     dataType: 'json',
                     delay: 250,
-                    processResults: data => ({
-                        results: data.map(item => ({
+                    processResults: res => ({
+                        results: res.map(item => ({
                             id: item.id,
                             text: item.name,
                         }))
@@ -287,10 +293,6 @@
 
         }
     });
-
-    // Set default value setelah Select2 diinisialisasi
-    const defaultOption = new Option('Pilih Cabang', 0, true, true);
-    $('#branch_id').append(defaultOption).trigger('change');
 
     $('#address_id').select2({
         placeholder: 'Pilih Alamat Pengiriman',
