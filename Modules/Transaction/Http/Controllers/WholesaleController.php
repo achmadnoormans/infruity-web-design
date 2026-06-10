@@ -779,6 +779,8 @@ class WholesaleController extends Controller
             'transfer',
             'transfer_detail',
             'stock_opname',
+            'stock_opname_discussions',
+            'stock_opname_history',
             'order_book',
             'order_book_detail',
             'expenditure',
