@@ -995,7 +995,7 @@ class PosController extends Controller
     public function get_data(Request $request)
     {
         $userId = auth()->id();
-        $query  = PosModel::with('customer', 'paymentDetails', 'details', 'branch');
+        $query  = PosModel::with('customer', 'paymentDetails', 'details', 'branch', 'user');
         // ->whereIn('branch_id', UserBranch::getUserBranch());
 
         $query->where(function ($q) use ($userId) {
@@ -1086,8 +1086,12 @@ class PosController extends Controller
                 if ($item->branch) {
                     $branchLabel = '<span class="badge badge-light-primary ms-1">' . e($item->branch->name) . '</span>';
                 }
+                $userLabel = '';
+                if ($item->user) {
+                    $userLabel = '<span class="text-muted d-block fs-8 mt-1"><i class="bi bi-person"></i> ' . e(ucwords(strtolower($item->user->nm_user))) . '</span>';
+                }
 
-                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}{$branchLabel}";
+                return "<span class=\"text-muted d-block fs-8\">{$date}</span>{$badge}{$branchLabel}{$userLabel}";
             })
             ->addColumn('action', function ($item) {
                 $html  = '';
