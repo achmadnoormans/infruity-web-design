@@ -652,6 +652,13 @@
                 <div class="card-toolbar w-100 w-md-auto ms-md-auto">
                     <div class="d-flex align-items-center justify-content-md-end pos-index-filter-toolbar gap-3"
                         data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-light-success px-4 pos-index-filter-btn" onclick="exportExcel()">
+                            <i class="ki-duotone ki-file-down fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            <span>Export Excel</span>
+                        </button>
                         <button type="button" class="btn btn-light-primary px-4 pos-index-filter-btn"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                             <i class="ki-duotone ki-filter fs-2">
@@ -1309,6 +1316,21 @@
                 const selectedBranch = $branchFilter.find('option:selected').text().trim() || 'Semua cabang';
                 $activeBranchButtonLabel.text(selectedBranch);
             }
+
+            window.exportExcel = function() {
+                let cabang = $('[data-kt-ecommerce-product-filter="cabang"]').val() || '';
+                let range = $('#kt_ecommerce_sales_flatpickr').val() || '';
+                let startDate = '';
+                let endDate = '';
+                if (range) {
+                    let dates = range.split(' to ');
+                    startDate = dates[0];
+                    endDate = dates[1] ?? dates[0];
+                }
+                
+                let url = "{{ route('stock-opname.export') }}?cabang_filter=" + cabang + "&start_date=" + startDate + "&end_date=" + endDate;
+                window.open(url, '_blank');
+            };
 
             $("#kt_ecommerce_sales_flatpickr").flatpickr({
                 altInput: !0,

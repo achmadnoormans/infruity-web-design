@@ -264,6 +264,11 @@ class StockOpnameController extends Controller
         }
     }
 
+    public function export(Request $request)
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StockOpnameExport($request), 'stock-opname-'.date('YmdHis').'.xlsx');
+    }
+
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
