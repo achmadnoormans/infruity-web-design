@@ -25,6 +25,8 @@ class Transfer extends Model
         'branch_id',
         'branch_destination_id',
         'created_by',
+        'pic_penerima',
+        'tanggal_diterima',
     ];
     public function detail()
     {
@@ -44,6 +46,11 @@ class Transfer extends Model
     public function createdBy()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by', 'id_user');
+    }
+
+    public function picPenerima()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'pic_penerima', 'id_user');
     }
 
     public function corrections()

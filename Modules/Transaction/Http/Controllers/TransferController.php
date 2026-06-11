@@ -316,7 +316,11 @@ class TransferController extends Controller
 
         try {
             $transfer = Transfer::findOrFail($id);
-            $transfer->update(['status' => 'selesai']);
+            $transfer->update([
+                'status' => 'selesai',
+                'pic_penerima' => \Illuminate\Support\Facades\Auth::id(),
+                'tanggal_diterima' => now(),
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -333,7 +337,7 @@ class TransferController extends Controller
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
-        $query        = Transfer::with(['createdBy', 'branch', 'branchDestination'])
+        $query        = Transfer::with(['createdBy', 'picPenerima', 'branch', 'branchDestination'])
             ->withSum('corrections as total_old', 'old_quantity')
             ->withSum('corrections as total_new', 'new_quantity');
 
@@ -381,7 +385,7 @@ class TransferController extends Controller
                 $html .= '<div class="ms-5">';
                 $html .= '<a href="' . route($request->url . '.show', $item->id) . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">' . $item->invoice_number . '</a>';
                 $html .= '<br><span class="text-muted d-block fs-7">' . ($item->branch->name ?? '-') . ' <i class="bi bi-arrow-right"></i> ' . ($item->branchDestination->name ?? '-') . '</span>';
-                $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? 'unknown')) . '</span>';
+                $html .= '<span class="badge badge-light-danger">' . ucwords(strtolower($item->createdBy->nm_user ?? $item->createdBy->name ?? 'unknown')) . '</span>';
                 return $html;
             })
             ->addColumn('date', function ($item) {
@@ -398,6 +402,9 @@ class TransferController extends Controller
                 ];
 
                 $html .= $statusBadges[$item->status] ?? '<span class="badge badge-light-dark">' . $item->status . '</span>';
+                if ($item->picPenerima) {
+                    $html .= '<br><span class="badge badge-light-success mt-1">' . ucwords(strtolower($item->picPenerima->nm_user ?? $item->picPenerima->name ?? 'unknown')) . '</span>';
+                }
                 return $html;
             })
             ->addColumn('correction', function ($item) {
