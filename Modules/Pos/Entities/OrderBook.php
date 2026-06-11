@@ -65,4 +65,9 @@ class OrderBook extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
+
+    public function pos()
+    {
+        return $this->hasOne(PosModel::class, 'invoice_number', 'invoice_number');
+    }
 }

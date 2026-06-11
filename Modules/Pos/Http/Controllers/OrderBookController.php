@@ -95,7 +95,12 @@ class OrderBookController extends Controller
         }
 
         $data['alpinejs'] = true;
-        $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit')->find($id);
+        $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'pos')->find($id);
+
+        if ($data['data']->status == 'done' && $data['data']->pos) {
+            return redirect()->back()->with('error', 'Transaksi yang sudah selesai dan memiliki POS tidak dapat diedit.');
+        }
+
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::order-book.create', $data);
     }
@@ -128,7 +133,15 @@ class OrderBookController extends Controller
 
         try {
             DB::beginTransaction();
-            $pos = OrderBook::findOrFail($id);
+            $pos = OrderBook::with('pos')->findOrFail($id);
+
+            if ($pos->status == 'done' && $pos->pos) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaksi yang sudah selesai dan memiliki POS tidak dapat dihapus.'
+                ], 403);
+            }
+
             $pos->delete();
             OrderBookDetail::where('order_book_id', $id)->delete();
 
@@ -245,7 +258,12 @@ class OrderBookController extends Controller
             return $denied;
         }
 
-        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch')->find($id);
+        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch', 'pos')->find($id);
+        
+        if ($orderBook->status == 'done' && $orderBook->pos) {
+            return redirect()->back()->with('error', 'Transaksi yang sudah selesai dan memiliki POS tidak dapat diproses lagi.');
+        }
+
         $data['order'] = $orderBook;
         $data['alpinejs'] = true;
         $data['data'] = $orderBook;
@@ -387,7 +405,7 @@ class OrderBookController extends Controller
 
     public function get_data(Request $request)
     {
-        $query = OrderBook::with('customer')->whereIn('branch_id', UserBranch::getUserBranch());
+        $query = OrderBook::with('customer', 'pos')->whereIn('branch_id', UserBranch::getUserBranch());
         if ($request->has('status_filter') && $request->status_filter !== 'all') {
             $query = $query->where('status', $request->status_filter);
         }
@@ -441,6 +459,11 @@ class OrderBookController extends Controller
                     $customerName = $item->customer->name . $waLast4;
                 }
 
+                $posLink = '';
+                if ($item->status == 'done' && $item->pos) {
+                    $posLink = '<a href="'.route('pos.show', $item->pos->id).'" class="badge badge-info mt-1 px-2 py-1" style="width: fit-content;" title="Lihat POS"><i class="bi bi-box-arrow-up-right text-white me-1"></i> POS</a>';
+                }
+
                 $html = '<div class="d-flex flex-column">';
                 
                 // Row 1: Customer Name + Icons
@@ -456,6 +479,10 @@ class OrderBookController extends Controller
                 }
                 $html .= '<span class="badge badge-light-primary px-2 py-1">' . e($item->branch->name) . '</span>';
                 $html .= '</div>';
+
+                if ($posLink != '') {
+                    $html .= $posLink;
+                }
 
                 $html .= '</div>';
                 return $html;
@@ -485,6 +512,10 @@ class OrderBookController extends Controller
                 return $html;
             })
             ->addColumn('action', function ($item) {
+                if ($item->status == 'done' && $item->pos) {
+                    return '<span class="badge badge-light-secondary"><i class="bi bi-lock-fill"></i> Locked</span>';
+                }
+
                 $html = '';
                 $html .= '
                     <div class="dropstart">

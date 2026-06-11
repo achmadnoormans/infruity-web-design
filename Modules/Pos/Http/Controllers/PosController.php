@@ -522,8 +522,7 @@ class PosController extends Controller
             $posId         = null;
 
             if (! empty($invoiceNumber)) {
-                $pos = PosModel::where('created_by', $userId)
-                    ->where('invoice_number', $invoiceNumber)
+                $pos = PosModel::where('invoice_number', $invoiceNumber)
                     ->lockForUpdate()
                     ->first();
             }
@@ -536,6 +535,7 @@ class PosController extends Controller
             } else {
                 $pos            = new PosModel();
                 $pos->uuid      = Str::uuid();
+                $pos->created_by = $userId;
                 $originalStatus = null;
             }
 
@@ -559,7 +559,6 @@ class PosController extends Controller
                 'process_status'    => $data['process_status'] ?? 'none',
                 'process_date'      => date('Y-m-d H:i:s'),
                 'note'              => $data['note'] ?? null,
-                'created_by'        => $userId,
                 'courier_id'        => $data['courier_id'] ?? null,
                 'courier_type'      => $data['courier_type'] ?? null,
                 'ongkir_address'    => $data['ongkir_address'] ?? null,
@@ -853,8 +852,7 @@ class PosController extends Controller
             return;
         }
 
-        $duplicates = PosModel::where('created_by', $userId)
-            ->where('invoice_number', $invoiceNumber)
+        $duplicates = PosModel::where('invoice_number', $invoiceNumber)
             ->where('id', '!=', $keepPosId)
             ->get();
 
