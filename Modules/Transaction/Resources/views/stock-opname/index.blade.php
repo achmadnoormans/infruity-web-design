@@ -666,7 +666,7 @@
                             </div>
                             <div class="separator border-gray-200"></div>
                             <div class="px-7 py-5" data-kt-user-table-filter="form">
-                                <div>
+                                <div class="mb-5">
                                     <label class="form-label fs-6 fw-semibold">Cabang:</label>
                                     <select class="form-select form-select-solid" data-control="select2"
                                         data-hide-search="true" data-placeholder="Cabang"
@@ -676,6 +676,19 @@
                                         @endforeach
                                         <option value="all">Semua</option>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="form-label fs-6 fw-semibold">Rentang Tanggal:</label>
+                                    <div class="input-group mw-350px">
+                                        <input class="form-control form-control-solid rounded rounded-end-0"
+                                            placeholder="Pilih rentang tanggal" id="kt_ecommerce_sales_flatpickr" />
+                                        <button class="btn btn-icon btn-light" id="kt_ecommerce_sales_flatpickr_clear">
+                                            <i class="ki-duotone ki-cross fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1297,6 +1310,25 @@
                 $activeBranchButtonLabel.text(selectedBranch);
             }
 
+            $("#kt_ecommerce_sales_flatpickr").flatpickr({
+                altInput: !0,
+                altFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
+                mode: "range",
+                onChange: function(e, t, n) {
+                    if (typeof dataTable !== 'undefined') {
+                        dataTable.draw();
+                    }
+                }
+            });
+
+            $("#kt_ecommerce_sales_flatpickr_clear").on("click", function() {
+                $("#kt_ecommerce_sales_flatpickr").val("");
+                if (typeof dataTable !== 'undefined') {
+                    dataTable.draw();
+                }
+            });
+
             dataTable = $('#transaction-table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -1306,6 +1338,12 @@
                     data: function(d) {
                         d.url = "{{ request()->segment(1) }}";
                         d.cabang_filter = $('[data-kt-ecommerce-product-filter="cabang"]').val();
+                        var range = $('#kt_ecommerce_sales_flatpickr').val();
+                        if (range) {
+                            var dates = range.split(' to ');
+                            d.start_date = dates[0];
+                            d.end_date = dates[1] ?? dates[0];
+                        }
                     }
                 },
                 columns: [{

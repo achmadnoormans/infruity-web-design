@@ -78,6 +78,17 @@ class StockOpnameController extends Controller
             'note' => 'nullable|string',
         ]);
 
+        $existing = StockOpname::where('product_id', $validated['product_id'])
+            ->where('branch_id', $validated['branch_id'])
+            ->whereDate('date', $validated['date'])
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'Produk ini sudah di-stock opname pada tanggal yang dipilih di cabang ini.',
+            ], 422);
+        }
+
         // Simpan data ke database
         try {
             DB::beginTransaction();
@@ -274,6 +285,14 @@ class StockOpnameController extends Controller
 
         if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
             $query->where('stock_opname.branch_id', $request->cabang_filter);
+        }
+
+        if ($request->has('start_date') && $request->start_date != '') {
+            $query->whereDate('stock_opname.date', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date') && $request->end_date != '') {
+            $query->whereDate('stock_opname.date', '<=', $request->end_date);
         }
 
         $data = $query->orderBy('stock_opname.created_at', 'desc')->get();
