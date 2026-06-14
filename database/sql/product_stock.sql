@@ -5,7 +5,7 @@ WITH parent_ts AS (
         ts.product_id,
         SUM(ts.quantity) AS parent_stock,
         AVG(ts.avg_price) AS avg_hpp
-    FROM transaction_stock ts
+    FROM transaction_stock_show ts
     GROUP BY
         ts.branch_id,
         ts.product_id
