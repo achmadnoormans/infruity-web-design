@@ -172,6 +172,18 @@ class UserController extends Controller
         }
     }
 
+    public function impersonate($id)
+    {
+        if (Auth::id() != 1) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $user = User::findOrFail($id);
+        Auth::login($user);
+
+        return redirect('/')->with('success', 'Berhasil login sebagai ' . $user->nm_user);
+    }
+
     public function get_data(Request $request)
     {
         if (class_exists(\Debugbar::class)) {
@@ -200,20 +212,32 @@ class UserController extends Controller
                 return $row->nm_user . '<br>' . $row->username;
             })
             ->addColumn('action', function ($row) {
+                $impersonateBtn = '';
+                if(Auth::id() == 1 && $row->id_user != 1) {
+                    $impersonateBtn = '
+                        <li>
+                            <a class="dropdown-item text-success d-flex" href="'.route('user.impersonate', $row->id_user).'" title="Login sebagai user ini">
+                                <i class="bi bi-person-bounding-box text-success me-2"></i> Login
+                            </a>
+                        </li>
+                    ';
+                }
+
                 return '
                     <div class="dropstart">
                         <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
+                            ' . $impersonateBtn . '
                             <li>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id_user . ')">
-                                    <i class="bi bi-pencil-square"></i>
+                                <a class="dropdown-item d-flex" href="javascript:void(0)" onclick="editProduct(' . $row->id_user . ')">
+                                    <i class="bi bi-pencil-square me-2"></i> Edit
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id_user . ')">
-                                    <i class="bi bi-trash"></i>
+                                <a class="dropdown-item text-danger d-flex" href="javascript:void(0)" onclick="deleteProduct(' . $row->id_user . ')">
+                                    <i class="bi bi-trash text-danger me-2"></i> Delete
                                 </a>
                             </li>
                         </ul>
