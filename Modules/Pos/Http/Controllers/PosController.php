@@ -95,9 +95,20 @@ class PosController extends Controller
             $data['detail']         = $draft->details;
             $data['invoice_number'] = $draft->invoice_number;
         } else {
-            $data['data']           = null;
-            $data['detail']         = null;
-            $data['invoice_number'] = PosModel::getOrderNumber();
+            $invoiceNumber = PosModel::getOrderNumber();
+
+            $draft = new PosModel();
+            $draft->uuid = Str::uuid();
+            $draft->invoice_number = $invoiceNumber;
+            $draft->created_by = Auth::id();
+            $draft->status = 'temp';
+            $draft->date = date('Y-m-d');
+            $draft->total = 0;
+            $draft->save();
+
+            $data['data']           = $draft;
+            $data['detail']         = [];
+            $data['invoice_number'] = $invoiceNumber;
         }
 
         return view('pos::pos.create2', $data);
