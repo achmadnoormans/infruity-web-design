@@ -169,23 +169,41 @@
 
                 console.log('Updating recipe ingredients for production quantity:', this.productionQuantity);
 
-                // Start with manual ingredients only
-                let updatedIngredients = this.ingredients.filter(ing => ing.is_manual);
+                let updatedIngredients = [];
+                const processedRecipeIds = new Set();
 
-                // Add recipe ingredients with updated quantities
+                // Preserve the order of existing ingredients and calculate new quantity
+                this.ingredients.forEach(ing => {
+                    const baseIng = this.baseRecipeIngredients.find(b => b.id === ing.id);
+                    if (baseIng) {
+                        const calculatedQuantity = baseIng.base_quantity * this.productionQuantity;
+                        
+                        updatedIngredients.push({
+                            ...ing,
+                            quantity: calculatedQuantity,
+                            total: calculatedQuantity * ing.hpp
+                        });
+                        processedRecipeIds.add(ing.id);
+                    } else {
+                        // Fallback just in case an ingredient isn't in baseRecipeIngredients
+                        updatedIngredients.push(ing);
+                    }
+                });
+
+                // Add any ingredients from baseRecipeIngredients that aren't in the list yet
                 this.baseRecipeIngredients.forEach(recipeIngredient => {
-                    const calculatedQuantity = recipeIngredient.base_quantity * this.productionQuantity;
-                    console.log(`Recipe ingredient ${recipeIngredient.name}: base=${recipeIngredient.base_quantity} × qty=${this.productionQuantity} = ${calculatedQuantity}`);
-
-                    updatedIngredients.push({
-                        id: recipeIngredient.id,
-                        name: recipeIngredient.name,
-                        quantity: calculatedQuantity,
-                        hpp: recipeIngredient.hpp,
-                        unit: recipeIngredient.unit,
-                        total: calculatedQuantity * recipeIngredient.hpp,
-                        is_manual: false // Mark as recipe ingredient
-                    });
+                    if (!processedRecipeIds.has(recipeIngredient.id)) {
+                        const calculatedQuantity = recipeIngredient.base_quantity * this.productionQuantity;
+                        updatedIngredients.push({
+                            id: recipeIngredient.id,
+                            name: recipeIngredient.name,
+                            quantity: calculatedQuantity,
+                            hpp: recipeIngredient.hpp,
+                            unit: recipeIngredient.unit,
+                            total: calculatedQuantity * recipeIngredient.hpp,
+                            is_manual: false
+                        });
+                    }
                 });
 
                 this.ingredients = updatedIngredients;
@@ -286,10 +304,27 @@
                 }
 
                 if (this.editingIndex !== null && this.editingIndex >= 0) {
+                    const newQty = parseFloat(this.editQuantity);
+                    const ingId = this.ingredients[this.editingIndex].id;
+                    
                     // Update the ingredient in the array
-                    this.ingredients[this.editingIndex].quantity = parseFloat(this.editQuantity);
-                    this.ingredients[this.editingIndex].total = this.ingredients[this.editingIndex].hpp * parseFloat(
-                        this.editQuantity);
+                    this.ingredients[this.editingIndex].quantity = newQty;
+                    this.ingredients[this.editingIndex].total = this.ingredients[this.editingIndex].hpp * newQty;
+                    
+                    // Update baseRecipeIngredients to scale with new production quantity later
+                    let baseIng = this.baseRecipeIngredients.find(b => b.id === ingId);
+                    if (baseIng) {
+                        baseIng.base_quantity = newQty / this.productionQuantity;
+                    } else {
+                        this.baseRecipeIngredients.push({
+                            id: ingId,
+                            name: this.ingredients[this.editingIndex].name,
+                            base_quantity: newQty / this.productionQuantity,
+                            hpp: this.ingredients[this.editingIndex].hpp,
+                            unit: this.ingredients[this.editingIndex].unit,
+                            from_recipe: false
+                        });
+                    }
 
                     // Close modal and reset
                     bootstrap.Modal.getInstance(document.getElementById('modal-edit-ingredient')).hide();
@@ -305,9 +340,11 @@
             removeIngredientFromEdit() {
                 if (this.editingIndex !== null && this.editingIndex >= 0) {
                     const ingredientName = this.ingredients[this.editingIndex].name;
+                    const ingredientId = this.ingredients[this.editingIndex].id;
 
                     // Remove the ingredient
                     this.ingredients.splice(this.editingIndex, 1);
+                    this.baseRecipeIngredients = this.baseRecipeIngredients.filter(b => b.id !== ingredientId);
 
                     // Close modal and reset
                     bootstrap.Modal.getInstance(document.getElementById('modal-edit-ingredient')).hide();
@@ -370,6 +407,20 @@
                         this.ingredients[existingIndex].quantity += 1;
                         this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[
                             existingIndex].quantity;
+                        
+                        let baseIng = this.baseRecipeIngredients.find(b => b.id === ingredient.id);
+                        if (baseIng) {
+                            baseIng.base_quantity = this.ingredients[existingIndex].quantity / this.productionQuantity;
+                        } else {
+                            this.baseRecipeIngredients.push({
+                                id: ingredient.id,
+                                name: ingredient.name,
+                                base_quantity: this.ingredients[existingIndex].quantity / this.productionQuantity,
+                                hpp: ingredient.hpp,
+                                unit: ingredient.unit,
+                                from_recipe: false
+                            });
+                        }
                     } else {
                         // Add new ingredient with quantity 1 (manual ingredient)
                         this.ingredients.push({
@@ -379,7 +430,16 @@
                             hpp: ingredient.hpp,
                             unit: ingredient.unit,
                             total: ingredient.hpp * 1,
-                            is_manual: true // Mark as manual ingredient
+                            is_manual: false
+                        });
+                        
+                        this.baseRecipeIngredients.push({
+                            id: ingredient.id,
+                            name: ingredient.name,
+                            base_quantity: 1 / this.productionQuantity,
+                            hpp: ingredient.hpp,
+                            unit: ingredient.unit,
+                            from_recipe: false
                         });
                     }
 
@@ -397,20 +457,45 @@
                 const existingIndex = this.ingredients.findIndex(item => item.id === this.selectedIngredient.id);
 
                 if (existingIndex >= 0) {
+                    const newQty = parseFloat(this.ingredientQuantity);
+                    
                     // Update existing ingredient
-                    this.ingredients[existingIndex].quantity = parseFloat(this.ingredientQuantity);
-                    this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * this.ingredients[
-                        existingIndex].quantity;
+                    this.ingredients[existingIndex].quantity = newQty;
+                    this.ingredients[existingIndex].total = this.ingredients[existingIndex].hpp * newQty;
+                    
+                    let baseIng = this.baseRecipeIngredients.find(b => b.id === this.selectedIngredient.id);
+                    if (baseIng) {
+                        baseIng.base_quantity = newQty / this.productionQuantity;
+                    } else {
+                        this.baseRecipeIngredients.push({
+                            id: this.selectedIngredient.id,
+                            name: this.selectedIngredient.name,
+                            base_quantity: newQty / this.productionQuantity,
+                            hpp: this.selectedIngredient.hpp,
+                            unit: this.selectedIngredient.unit,
+                            from_recipe: false
+                        });
+                    }
                 } else {
+                    const newQty = parseFloat(this.ingredientQuantity);
                     // Add new ingredient (manual ingredient)
                     this.ingredients.push({
                         id: this.selectedIngredient.id,
                         name: this.selectedIngredient.name,
-                        quantity: parseFloat(this.ingredientQuantity),
+                        quantity: newQty,
                         hpp: this.selectedIngredient.hpp,
                         unit: this.selectedIngredient.unit,
-                        total: this.selectedIngredient.hpp * parseFloat(this.ingredientQuantity),
-                        is_manual: true // Mark as manual ingredient
+                        total: this.selectedIngredient.hpp * newQty,
+                        is_manual: false
+                    });
+                    
+                    this.baseRecipeIngredients.push({
+                        id: this.selectedIngredient.id,
+                        name: this.selectedIngredient.name,
+                        base_quantity: newQty / this.productionQuantity,
+                        hpp: this.selectedIngredient.hpp,
+                        unit: this.selectedIngredient.unit,
+                        from_recipe: false
                     });
                 }
 
@@ -432,8 +517,12 @@
 
             // Remove ingredient
             removeIngredient(index) {
-                this.ingredients.splice(index, 1);
-                this.showNotification('Ingredient removed', 'info');
+                if (index >= 0 && index < this.ingredients.length) {
+                    const ingredientId = this.ingredients[index].id;
+                    this.ingredients.splice(index, 1);
+                    this.baseRecipeIngredients = this.baseRecipeIngredients.filter(b => b.id !== ingredientId);
+                    this.showNotification('Ingredient removed', 'info');
+                }
             },
 
             // Clear all ingredients
