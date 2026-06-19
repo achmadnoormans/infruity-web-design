@@ -150,11 +150,6 @@ class PosController extends Controller
                 'created_by'  => $userId,
             ]);
             $pos->save();
-            // $transaction = PosModel::create([
-            //     'customer_id' => $request->customer_id,
-            //     'total' => collect($request->items)->sum(fn($i) => $i['total_input'] - ($i['discount'] ?? 0))
-            // ]);
-            // dd($pos->id);
 
             $posDetail = [];
             foreach ($request->items as $item) {
@@ -233,7 +228,7 @@ class PosController extends Controller
             return $denied;
         }
 
-        //
+        return response()->json(['success' => false, 'message' => 'Method not implemented.'], 501);
     }
 
     /**
@@ -314,31 +309,40 @@ class PosController extends Controller
             // Simpan ke tabel pembayaran
             $paymentNames   = collect($data['payments'])->pluck('payment_name')->toArray();
             $paymentIds     = collect($data['payments'])->pluck('payment_id')->toArray();
-            $paymentAmounts = collect($data['payments'])->pluck('amount')->toArray();
+            $paymentAmounts = collect($data['payments'])->map(function ($item) {
+                return (float) preg_replace('/[^\d]/', '', $item['amount']);
+            })->toArray();
 
             $payment = new Payment([
                 'uuid'              => Str::uuid(),
                 'date'              => $data['date'],
-                'nota_number'       => date('YmdHis'),
+                'nota_number'       => date('YmdHis') . Str::random(4),
                 'pos_id'            => $data['transaction_id'],
                 // 'branch_id' => $data['branch_id'],
                 // 'account_id' => $data['account_id'],
                 'payment_method'    => json_encode($paymentNames),
                 'payment_method_id' => json_encode($paymentIds),
                 'payment_amount'    => json_encode($paymentAmounts),
-                'total'             => $data['total_payment'],
-                'created_by'        => Auth::user()->id_user,
+                'total'             => array_sum($paymentAmounts),
+                'created_by'        => Auth::id(),
             ]);
             // dd($payment);
             $payment->save();
 
-            $deposito = Deposito::where('customer_id', $data['customer_id'])->first();
-            $voucher  = $deposito->voucher ?? 0;
-            PosModel::where("id", $data['transaction_id'])->update([
-                'voucher'     => $voucher,
-                'voucher_qty' => 1,
-                'deposito_id' => $deposito->id ?? null,
-            ]);
+            $posForVoucher = PosModel::findOrFail($data['transaction_id']);
+            if (empty($posForVoucher->deposito_id) && empty($posForVoucher->voucher)) {
+                $deposito = Deposito::where('customer_id', $data['customer_id'])->first();
+                $voucher  = $deposito?->voucher ?? 0;
+                
+                if ($deposito && $voucher > 0 && $deposito->voucher_qty > 0) {
+                    PosModel::where("id", $data['transaction_id'])->update([
+                        'voucher'     => $voucher,
+                        'voucher_qty' => 1,
+                        'deposito_id' => $deposito->id,
+                    ]);
+                    $deposito->decrement('voucher_qty');
+                }
+            }
 
             $totalPayment = Payment::where('pos_id', $data['transaction_id'])
                 ->sum('total');
@@ -406,8 +410,9 @@ class PosController extends Controller
             return $denied;
         }
 
-        $data['data']   = PosModel::with('customer')->findOrFail($id);
-        $data['detail'] = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['data']    = PosModel::with('customer')->findOrFail($id);
+        $data['detail']  = PosDetailModel::with('product')->where('pos_id', $id)->get();
+        $data['setting'] = SettingNota::first();
         // dd($data);
         return view('pos::pos.receipt2', $data);
     }
@@ -425,13 +430,16 @@ class PosController extends Controller
             'date'              => 'required|date',
             'invoice_number'    => 'nullable',
             'items'             => 'required|array',
+            'items.*.id'        => 'nullable',
+            'items.*.price'     => 'nullable|numeric|min:0',
+            'items.*.qty'       => 'nullable|numeric|min:0.01',
             'parcel'            => 'nullable|array',
             'jus'               => 'nullable|array',
-            'subtotal'          => 'required|numeric',
-            'discount'          => 'nullable|numeric',
-            'ongkir'            => 'required|numeric',
-            'discount_ongkir'   => 'required|numeric',
-            'total'             => 'required|numeric',
+            'subtotal'          => 'required|numeric|min:0',
+            'discount'          => 'nullable|numeric|min:0',
+            'ongkir'            => 'required|numeric|min:0',
+            'discount_ongkir'   => 'required|numeric|min:0',
+            'total'             => 'required|numeric|min:0',
             'status'            => 'nullable|in:draft,paid,debt,temp,pending',
             'process_status'    => 'nullable|in:none,pending,done',
             'ongkir_date'       => 'nullable|date',
@@ -440,27 +448,82 @@ class PosController extends Controller
             'courier_id'        => 'nullable',
             'courier_type'      => 'nullable',
             'ongkir_address'    => 'nullable',
-            'kemasan_price'     => 'nullable|numeric',
+            'kemasan_price'     => 'nullable|numeric|min:0',
             'branch_id'         => 'nullable',
             'branch_process_id' => 'nullable',
         ]);
 
         try {
-            // Validasi stok buah
-            if (isset($data['items'])) {
+            $userId     = Auth::id();
+            $isTempSave = ($data['status'] ?? null) === 'temp';
+
+            // Kumpulkan semua ID Produk untuk mengurutkan lockForUpdate (Mencegah Deadlock)
+            $allProductIdsToLock = [];
+            if (!empty($data['items'])) {
                 foreach ($data['items'] as $item) {
                     if (isset($item['id']) && is_numeric($item['id'])) {
-                        $productStock = ProductStock::where('id', $item['id'])
-                            ->where('branch_id', $data['branch_id'])
-                            ->first();
-                        $currentStock = $productStock ? (float)$productStock->stock_available : 0;
-                        $requiredQty  = (float)($item['qty'] ?? 0);
-
-                        if ($currentStock < $requiredQty) {
-                            $product     = Product::find($item['id']);
-                            $productName = $product ? $product->name : 'Produk #' . $item['id'];
-                            throw new \Exception("Stok buah \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                        $allProductIdsToLock[] = $item['id'];
+                    }
+                }
+            }
+            if (!empty($data['parcel'])) {
+                foreach ($data['parcel'] as $parcel) {
+                    if (!empty($parcel['data'])) {
+                        foreach ($parcel['data'] as $item) {
+                            $allProductIdsToLock[] = $item['product'];
                         }
+                    }
+                    $kemasanId = $parcel['kemasanId'] ?? null;
+                    if (empty($kemasanId) && !empty($parcel['kemasan'])) {
+                        $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
+                        $kemasanId = $kemasanProduct?->id;
+                    }
+                    if (!empty($kemasanId)) {
+                        $allProductIdsToLock[] = $kemasanId;
+                    }
+                }
+            }
+            if (!empty($data['jus'])) {
+                foreach ($data['jus'] as $jus) {
+                    if (!empty($jus['product_receipt_id'])) {
+                        foreach ($jus['product_receipt_id'] as $receiptProductId) {
+                            $allProductIdsToLock[] = $receiptProductId;
+                        }
+                    }
+                }
+            }
+            
+            $allProductIdsToLock = array_unique($allProductIdsToLock);
+            sort($allProductIdsToLock);
+
+            DB::beginTransaction();
+
+            // Kunci master produk secara berurutan agar antrean checkout terjaga dan bebas Deadlock
+            foreach ($allProductIdsToLock as $lockId) {
+                Product::where('id', $lockId)->lockForUpdate()->first();
+            }
+
+            // Validasi stok buah
+            if (isset($data['items'])) {
+                $groupedItems = [];
+                foreach ($data['items'] as $item) {
+                    if (isset($item['id']) && is_numeric($item['id'])) {
+                        if (!isset($groupedItems[$item['id']])) {
+                            $groupedItems[$item['id']] = 0;
+                        }
+                        $groupedItems[$item['id']] += (float)($item['qty'] ?? 0);
+                    }
+                }
+                foreach ($groupedItems as $productId => $requiredQty) {
+                    $productStock = ProductStock::where('id', $productId)
+                        ->where('branch_id', $data['branch_id'])
+                        ->first();
+                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+
+                    if ($currentStock < $requiredQty) {
+                        $product     = Product::find($productId);
+                        $productName = $product ? $product->name : 'Produk #' . $productId;
+                        throw new \Exception("Stok buah \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
                     }
                 }
             }
@@ -524,10 +587,6 @@ class PosController extends Controller
                     }
                 }
             }
-
-            $userId     = Auth::id();
-            $isTempSave = ($data['status'] ?? null) === 'temp';
-            DB::beginTransaction();
             $invoiceNumber = $data['invoice_number'] ?? null;
             $pos           = null;
             $posId         = null;
@@ -539,7 +598,9 @@ class PosController extends Controller
             }
 
             if ($pos) {
-                $this->clearExistingPosRelations($pos->id);
+                if (!in_array($pos->status, ['paid', 'debt'])) {
+                    $this->clearExistingPosRelations($pos->id);
+                }
                 $posId          = $pos->id ?? null;
                 $originalStatus = $pos->status;
 
@@ -597,7 +658,8 @@ class PosController extends Controller
                     // Jika product memiliki parent, gunakan parent_id untuk HPP, jika tidak gunakan product itu sendiri
                     $hppProductId = $parentId ?? $product->id;
                     $productHpp   = ProductHppRunning::where('product_id', $hppProductId)
-                        ->latest()
+                        ->orderBy('created_at', 'desc')
+                        ->orderBy('trx_id', 'desc')
                         ->first();
                     $currentStock = $productHpp ? $productHpp->qty_berjalan : 0;
                     $hppValue     = $productHpp ? ($productHpp->hpp_berjalan ?? 0) : 0;
@@ -608,7 +670,7 @@ class PosController extends Controller
                         'price'                => $item['price'],
                         'quantity'             => $item['qty'],
                         'discount'             => $item['discount'] ?? 0,
-                        'subtotal'             => $item['total_input'],
+                        'subtotal'             => $itemTotal,
                         'price_after_discount' => $item['price'] - $posDiscount,
                         'exp'                  => $item['price'] - $hppValue,
                         'exp_value'            => ($item['price'] - $hppValue) * $settingExp->value_exp,
@@ -649,20 +711,23 @@ class PosController extends Controller
                     if (! empty($parcel['kemasan'])) {
                         $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
                     }
-                    $productNameBase    = $value['kemasan'] . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
-                    $productDescription = 'Parcel ' . $parcel['kemasan'] . '-' . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
-                    $product            = new Product([
-                        'name'         => Product::generateProductName($productNameBase),
-                        'description'  => $productDescription,
-                        'price'        => preg_replace('/[^0-9]/', '', $parcel['budget']),
-                        'product_unit' => 3,
-                        'status'       => 'no-receipt',
-                        'tipe'         => 'parcel',
-                        'hpp'          => preg_replace('/[^0-9]/', '', $parcel['hpp']),
-                        'fee'          => preg_replace('/[^0-9]/', '', $parcel['fee']),
-                        'created_by'   => $userId,
-                    ]);
-                    $product->save();
+                    $productNameBase    = 'Parcel ' . $value['kemasan'] . '-' . formatRibuanToK(preg_replace('/[^0-9]/', '', $parcel['budget']));
+                    $productPrice       = preg_replace('/[^0-9]/', '', $parcel['budget']);
+                    
+                    // Reusable Parcel Product (Anti-Bloat)
+                    $product = Product::firstOrCreate(
+                        ['name' => $productNameBase, 'tipe' => 'parcel'],
+                        [
+                            'description'  => $productNameBase,
+                            'price'        => $productPrice,
+                            'product_unit' => 3,
+                            'status'       => 'no-receipt',
+                            'hpp'          => preg_replace('/[^0-9]/', '', $parcel['hpp']),
+                            'fee'          => preg_replace('/[^0-9]/', '', $parcel['fee']),
+                            'created_by'   => $userId,
+                        ]
+                    );
+
                     PosDetailModel::insert([
                         'pos_id'        => $transaksiId,
                         'parcel_id'     => ! empty($parcel['kemasanId']) ? $parcel['kemasanId'] : ($kemasanProduct->id ?? null),
@@ -767,45 +832,7 @@ class PosController extends Controller
                         'created_by' => $userId,
                     ]);
                 }
-            } 
-            // elseif (isset($posId)) {
-            //     // Update status production yang sudah ada sesuai status POS
-            //     $productionStatus = $statusToSave === 'paid' || $statusToSave === 'debt' ? 'complete' : 'draft';
-            //     Production::where('pos_id', $posId)
-            //         ->update(['status' => $productionStatus]);
-
-            //     // Buat production baru untuk produk receipt yang ada di items (jika belum ada)
-            //     $existingProductIds = Production::where('pos_id', $posId)
-            //         ->pluck('product_id');
-            //     foreach ($data['items'] as $item) {
-            //         if (is_numeric($item['id']) && !$existingProductIds->contains($item['id'])) {
-            //             $hasRecipe = ProductReceipt::where('product_id', $item['id'])->exists();
-            //             if ($hasRecipe) {
-            //                 $production = Production::create([
-            //                     'production_number' => Production::getOrderNumber(),
-            //                     'product_id'        => $item['id'],
-            //                     'production_date'   => now(),
-            //                     'status'            => $productionStatus,
-            //                     'created_by'        => $userId,
-            //                     'quantity'          => $item['qty'],
-            //                     'staff_id'          => $userId,
-            //                     'pos_id'            => $transaksiId,
-            //                     'branch_id'         => $data['branch_id'] ?? null,
-            //                 ]);
-
-            //                 $productReceipts = ProductReceipt::where('product_id', $item['id'])->get();
-            //                 foreach ($productReceipts as $receipt) {
-            //                     ProductionDetail::create([
-            //                         'production_id' => $production->id,
-            //                         'product_id'    => $receipt->product_receipt_id,
-            //                         'quantity'      => $receipt->quantity * $item['qty'],
-            //                     ]);
-            //                 }
-            //             }
-            //         }
-            //     }
-
-            // }
+            }
 
             if (! $isTempSave && preg_match('/ORD\d+/i', $data['invoice_number'])) {
                 $orderBook = OrderBook::where('invoice_number', $data['invoice_number'])->first();
@@ -823,7 +850,6 @@ class PosController extends Controller
             }
 
             DB::commit();
-            DB::disconnect();
 
             return response()->json([
                 'success'        => true,
@@ -833,7 +859,6 @@ class PosController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            DB::disconnect();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -919,15 +944,33 @@ class PosController extends Controller
 
     public function uploadReceipt(Request $request)
     {
+        if ($denied = $this->requireAccess('pos.upload-receipt')) {
+            return $denied;
+        }
+
+        $request->validate([
+            'image' => 'required|string',
+        ]);
+
         $image = $request->input('image');
-        if (! $image) {
-            return response()->json(['error' => 'No image'], 400);
+
+        // Validasi format base64 image
+        if (!preg_match('/^data:image\/(png|jpg|jpeg|gif);base64,/', $image)) {
+            return response()->json(['error' => 'Format gambar tidak didukung. Gunakan PNG, JPG, atau GIF.'], 400);
         }
 
         // Pisahkan data:image/png;base64,
         $image_parts  = explode(";base64,", $image);
+        if (count($image_parts) < 2 || empty($image_parts[1])) {
+            return response()->json(['error' => 'Data gambar tidak valid.'], 400);
+        }
+
         $image_base64 = base64_decode($image_parts[1]);
-        $fileName     = 'receipt_' . time() . '.png';
+        if ($image_base64 === false || strlen($image_base64) > 5 * 1024 * 1024) {
+            return response()->json(['error' => 'Gambar terlalu besar (maks 5MB) atau tidak valid.'], 400);
+        }
+
+        $fileName = 'receipt_' . time() . '_' . Str::random(8) . '.png';
 
         // Simpan di public/storage/receipts
         $filePath = public_path('storage/receipts/' . $fileName);
@@ -993,7 +1036,7 @@ class PosController extends Controller
         if (! isset($data['data'])) {
             abort(404);
         }
-        $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $id)->get();
+        $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $data['data']->id)->get();
         $data['setting']     = SettingNota::first();
         $data['detail']      = PosDetailModel::with('product')->where('pos_id', $data['data']->id)->get();
         $data['tier']        = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
@@ -1004,8 +1047,8 @@ class PosController extends Controller
     public function get_data(Request $request)
     {
         $userId = auth()->id();
-        $query  = PosModel::with('customer', 'paymentDetails', 'details', 'branch', 'user');
-        // ->whereIn('branch_id', UserBranch::getUserBranch());
+        $query  = PosModel::with('customer', 'paymentDetails', 'details', 'branch', 'user')
+            ->whereIn('branch_id', UserBranch::getUserBranch());
 
         $query->where(function ($q) use ($userId) {
             $q->where('status', '!=', 'temp')

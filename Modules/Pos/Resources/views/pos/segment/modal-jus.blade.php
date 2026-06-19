@@ -5,7 +5,7 @@
         <div class="modal-content" x-data>
             <div class="modal-header" style="background-color: #ff000d; color: #fff;">
                 <h5 class="modal-title" style="color: #fff">Tambah Jus</h5>
-                <button type="button" class="btn-close" @click="closeAddModal()"></button>
+                <button type="button" class="btn-close" @click="closeJusModal()"></button>
             </div>
             <div class="modal-body">
                 <!-- Select Produk -->

@@ -561,8 +561,7 @@
                         this.addProduct.price = data.price;
                         this.addProduct.hpp = data.hpp ?? 0;
                         subtotal = this.addProduct.qty * this.addProduct.price;
-                        this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
-                            .total);
+                        // skip formatRupiah undefined, let updateAddTotalFromQty handle it
                         this.updateAddTotalFromQty();
                     });
                 }, 0);
@@ -641,11 +640,19 @@
                     });
                     return;
                 }
-                if (!this.addProduct.price) {
+                if (this.addProduct.price === null || this.addProduct.price === '') {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Harga produk belum diisi',
                         text: 'Silakan isi harga produk terlebih dahulu.',
+                    });
+                    return;
+                }
+                if (this.addProduct.qty <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Jumlah produk harus lebih dari 0.',
                     });
                     return;
                 }
@@ -832,16 +839,37 @@
                 return Math.max(totalSetelahDiskon + totalOngkir, 0);
             },
             updateDiskonGlobal(e) {
+                let cursor = e.target.selectionStart;
+                let oldLength = e.target.value.length;
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.diskonGlobal = val;
+                this.$nextTick(() => {
+                    let newLength = e.target.value.length;
+                    cursor = cursor + (newLength - oldLength);
+                    e.target.setSelectionRange(cursor, cursor);
+                });
             },
             updateOngkirGlobal(e) {
+                let cursor = e.target.selectionStart;
+                let oldLength = e.target.value.length;
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.ongkirGlobal = val;
+                this.$nextTick(() => {
+                    let newLength = e.target.value.length;
+                    cursor = cursor + (newLength - oldLength);
+                    e.target.setSelectionRange(cursor, cursor);
+                });
             },
             updateDiskonOngkir(e) {
+                let cursor = e.target.selectionStart;
+                let oldLength = e.target.value.length;
                 const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.diskonOngkir = val;
+                this.$nextTick(() => {
+                    let newLength = e.target.value.length;
+                    cursor = cursor + (newLength - oldLength);
+                    e.target.setSelectionRange(cursor, cursor);
+                });
             },
             formatRupiah(number) {
                 number = this.sanitizeNumber(number) || 0;
@@ -1367,6 +1395,10 @@
                             // Tambahkan ke select2
                             $('#customer_id').append(option).trigger('change');
                             $('#ongkir_address').text(c.address);
+
+                            document.querySelector('[x-model="customerName"]').value = '';
+                            document.querySelector('[x-model="customerPhone"]').value = '';
+                            document.querySelector('[x-model="customerAddress"]').value = '';
 
                             // Swal.fire('Berhasil', 'Customer berhasil ditambahkan.', 'success');
                         } else {

@@ -5,7 +5,7 @@
         <div class="modal-content" x-data>
             <div class="modal-header" style="background-color: #ff000d; color: #fff;">
                 <h5 class="modal-title" style="color: #fff">Tambah Parcel</h5>
-                <button type="button" class="btn-close" @click="closeAddModal()"></button>
+                <button type="button" class="btn-close" @click="closeParcelModal()"></button>
             </div>
             <div class="modal-body">
                 <!-- Select Produk -->
@@ -90,7 +90,7 @@
         <div class="modal-content">
             <div class="modal-header" style="background-color: #ff000d; color: #fff;">
                 <h5 class="modal-title" style="color: #fff">Edit Parcel</h5>
-                <button type="button" class="btn-close" @click="closeAddModal()"></button>
+                <button type="button" class="btn-close" @click="closeParcelModal()"></button>
             </div>
             <div class="modal-body">
                 <!-- Select Produk -->
