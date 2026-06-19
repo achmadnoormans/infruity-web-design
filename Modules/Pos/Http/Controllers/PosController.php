@@ -211,6 +211,32 @@ class PosController extends Controller
 
         $data['alpinejs']       = true;
         $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user', 'productions', 'productions.productionDetails', 'productions.productionDetails.products')->findOrFail($id);
+
+        if ($data['data']->status === 'paid') {
+            abort(403, 'Transaksi yang sudah dibayar (paid) tidak dapat diedit.');
+        }
+
+        if ($data['data']->status === 'debt') {
+            $productIds = PosDetailModel::where('pos_id', $id)->pluck('product_id')->filter()->toArray();
+            $parcelProductIds = \Modules\Transaction\Entities\ProductionParcelDetail::where('pos_id', $id)->pluck('product_id')->filter()->toArray();
+            
+            $productionIds = \Modules\Transaction\Entities\Production::where('pos_id', $id)->pluck('id');
+            $productionProductIds = \Modules\Transaction\Entities\ProductionDetail::whereIn('production_id', $productionIds)->pluck('product_id')->filter()->toArray();
+
+            $allProductIds = array_unique(array_merge($productIds, $parcelProductIds, $productionProductIds));
+
+            if (!empty($allProductIds)) {
+                $hasOpname = \Modules\Transaction\Entities\StockOpname::where('branch_id', $data['data']->branch_id)
+                    ->whereIn('product_id', $allProductIds)
+                    ->whereDate('date', '>', $data['data']->date)
+                    ->exists();
+
+                if ($hasOpname) {
+                    abort(403, 'Transaksi piutang tidak dapat diedit karena sudah ada Stock Opname untuk produk terkait setelah tanggal transaksi ini.');
+                }
+            }
+        }
+
         $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product', 'product.productionParcelDetails.product.productBranches')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
