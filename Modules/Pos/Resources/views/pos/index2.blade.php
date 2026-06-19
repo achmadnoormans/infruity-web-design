@@ -217,6 +217,16 @@
             }
         }
 
+        @if(session('error'))
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tidak Bisa Diedit',
+                text: "{{ session('error') }}"
+            });
+        });
+        @endif
+
         var dataTable;
         $(document).ready(function() {
             const $branchFilter = $('[data-kt-ecommerce-product-filter="cabang"]');
