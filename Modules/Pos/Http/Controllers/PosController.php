@@ -494,6 +494,19 @@ class PosController extends Controller
             }
             
             $allProductIdsToLock = array_unique($allProductIdsToLock);
+
+            // Tambahkan parent_id ke lock untuk mencegah deadlock jika validasi stok mengenai parent product
+            $parentIdsToLock = [];
+            foreach ($allProductIdsToLock as $lockId) {
+                $product = Product::find($lockId);
+                if ($product) {
+                    $parentId = $product->getParentId();
+                    if ($parentId) {
+                        $parentIdsToLock[] = $parentId;
+                    }
+                }
+            }
+            $allProductIdsToLock = array_unique(array_merge($allProductIdsToLock, $parentIdsToLock));
             sort($allProductIdsToLock);
 
             DB::beginTransaction();
@@ -503,88 +516,75 @@ class PosController extends Controller
                 Product::where('id', $lockId)->lockForUpdate()->first();
             }
 
-            // Validasi stok buah
+            $requiredStocks = [];
+
+            $addRequiredStock = function($productId, $qty) use (&$requiredStocks) {
+                if (!$productId) return;
+                $product = Product::find($productId);
+                $stockProductId = $productId;
+                if ($product) {
+                    $parentId = $product->getParentId();
+                    $stockProductId = $parentId ?? $product->id;
+                }
+                if (!isset($requiredStocks[$stockProductId])) {
+                    $requiredStocks[$stockProductId] = 0;
+                }
+                $requiredStocks[$stockProductId] += (float)$qty;
+            };
+
+            // Kumpulkan kebutuhan stok buah
             if (isset($data['items'])) {
-                $groupedItems = [];
                 foreach ($data['items'] as $item) {
                     if (isset($item['id']) && is_numeric($item['id'])) {
-                        if (!isset($groupedItems[$item['id']])) {
-                            $groupedItems[$item['id']] = 0;
-                        }
-                        $groupedItems[$item['id']] += (float)($item['qty'] ?? 0);
-                    }
-                }
-                foreach ($groupedItems as $productId => $requiredQty) {
-                    $productStock = ProductStock::where('id', $productId)
-                        ->where('branch_id', $data['branch_id'])
-                        ->first();
-                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
-
-                    if ($currentStock < $requiredQty) {
-                        $product     = Product::find($productId);
-                        $productName = $product ? $product->name : 'Produk #' . $productId;
-                        throw new \Exception("Stok buah \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                        $addRequiredStock($item['id'], $item['qty'] ?? 0);
                     }
                 }
             }
 
-            // Validasi stok untuk parcel
+            // Kumpulkan kebutuhan stok untuk parcel
             if (isset($data['parcel'])) {
                 foreach ($data['parcel'] as $parcel) {
                     foreach ($parcel['data'] as $item) {
-                        $productStock = ProductStock::where('id', $item['product'])
-                            ->where('branch_id', $data['branch_id'])
-                            ->first();
-                        $currentStock = $productStock ? (float)$productStock->stock_available : 0;
-                        $requiredQty  = ((float)($item['qty'] ?? 0)) * ((float)($parcel['qty'] ?? 0));
-                        if ($currentStock < $requiredQty) {
-                            $product     = Product::find($item['product']);
-                            $productName = $product ? $product->name : 'Produk #' . $item['product'];
-                            throw new \Exception("Stok bahan parcel \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
-                        }
+                        $requiredQty = ((float)($item['qty'] ?? 0)) * ((float)($parcel['qty'] ?? 0));
+                        $addRequiredStock($item['product'], $requiredQty);
                     }
 
-                    // Validasi stok kemasan
+                    // Kumpulkan kebutuhan stok kemasan
                     $kemasanId = $parcel['kemasanId'] ?? null;
                     if (empty($kemasanId) && !empty($parcel['kemasan'])) {
                         $kemasanProduct = Product::where('name', $parcel['kemasan'])->first();
                         $kemasanId = $kemasanProduct?->id;
                     }
                     if (!empty($kemasanId)) {
-                        $kemasanStock = ProductStock::where('id', $kemasanId)
-                            ->where('branch_id', $data['branch_id'])
-                            ->first();
-                        $currentKemasanStock = $kemasanStock ? (float)$kemasanStock->stock_available : 0;
-                        $requiredKemasanQty  = (float)($parcel['qty'] ?? 0);
-                        if ($currentKemasanStock < $requiredKemasanQty) {
-                            $kemasan     = Product::find($kemasanId);
-                            $kemasanName = $kemasan ? $kemasan->name : 'Kemasan #' . $kemasanId;
-                            throw new \Exception("Stok kemasan \"{$kemasanName}\" tidak mencukupi. Stok tersedia: {$currentKemasanStock}, dibutuhkan: {$requiredKemasanQty}");
-                        }
+                        $addRequiredStock($kemasanId, $parcel['qty'] ?? 0);
                     }
                 }
             }
 
-            // Validasi stok bahan baku jus
+            // Kumpulkan kebutuhan stok bahan baku jus
             if (isset($data['jus'])) {
                 foreach ($data['jus'] as $jus) {
                     if (isset($jus['product_receipt_id']) && is_array($jus['product_receipt_id'])) {
                         foreach ($jus['product_receipt_id'] as $key => $receiptProductId) {
                             $receiptQty  = (float)($jus['product_receipt_qty'][$key] ?? 0);
                             $requiredQty = $receiptQty * (float)$jus['qty'];
-
-                            $productStock = ProductStock::where('id', $receiptProductId)
-                                ->where('branch_id', $data['branch_id'])
-                                ->first();
-                            $currentStock = $productStock ? (float)$productStock->stock_available : 0;
-
-                            if ($currentStock < $requiredQty) {
-                                $product     = Product::find($receiptProductId);
-                                $productName = $product ? $product->name : 'Bahan #' . $receiptProductId;
-                                throw new \Exception("Stok bahan baku jus \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
-                            }
+                            $addRequiredStock($receiptProductId, $requiredQty);
                         }
                     }
+                }
+            }
+
+            // Validasi stok akumulatif dari semua sumber
+            foreach ($requiredStocks as $stockProductId => $requiredQty) {
+                $productStock = ProductStock::where('id', $stockProductId)
+                    ->where('branch_id', $data['branch_id'])
+                    ->first();
+                $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+
+                if ($currentStock < $requiredQty) {
+                    $product     = Product::find($stockProductId);
+                    $productName = $product ? $product->name : 'Produk #' . $stockProductId;
+                    throw new \Exception("Stok \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
                 }
             }
             $invoiceNumber = $data['invoice_number'] ?? null;
