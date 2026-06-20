@@ -323,7 +323,7 @@ set formattedEditSell(val) {
             },
 
             saveEditToCart() {
-                const idx = this.cart.findIndex(i => i.id === this.editItem.id);
+                const idx = this.cart.findIndex(i => (i.cart_id || i.id) === (this.editItem.cart_id || this.editItem.id));
                 if (idx !== -1) {
                     const disc = this.calculateEditDiscountAmount();
                     this.cart[idx].price = this.editProduct?.price || 0;
@@ -339,7 +339,7 @@ set formattedEditSell(val) {
             deleteFromCart() {
                 if (!this.editItem) return;
 
-                const index = this.cart.findIndex(item => item.id === this.editItem.id);
+                const index = this.cart.findIndex(item => (item.cart_id || item.id) === (this.editItem.cart_id || this.editItem.id));
                 if (index !== -1) {
                     this.cart.splice(index, 1);
                     this.closeEditModal();
@@ -513,20 +513,11 @@ set formattedEditSell(val) {
                 //     return;
                 // }
 
-                const isExist = this.cart.some(item => item.id === this.addProduct.id);
-                if (isExist) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Produk sudah ditambahkan',
-                        text: 'Produk ini sudah ada di keranjang.',
-                    });
-                    return;
-                }
-
                 const discount = Number(this.addProduct.discount || 0);
                 const total_input = this.addProduct.total;
 
                 this.cart.push({
+                    cart_id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
                     id: this.addProduct.id,
                     name: this.addProduct.name,
                     price: this.addProduct.price,
@@ -591,7 +582,7 @@ set formattedEditSell(val) {
             updateCartItemQty(itemId, newQty) {
                 if (newQty < 0.01) return; // Minimal qty 0.01
 
-                const item = this.cart.find(i => i.id === itemId);
+                const item = this.cart.find(i => (i.cart_id || i.id) === itemId);
                 if (item) {
                     const oldQty = item.qty;
                     item.qty = parseFloat(newQty);
@@ -608,7 +599,7 @@ set formattedEditSell(val) {
 
             // Update discount item di cart
             updateCartItemDiscount(itemId, newDiscount) {
-                const item = this.cart.find(i => i.id === itemId);
+                const item = this.cart.find(i => (i.cart_id || i.id) === itemId);
                 if (item) {
                     item.discount = parseFloat(newDiscount) || 0;
                 }
@@ -616,7 +607,7 @@ set formattedEditSell(val) {
 
             // Increment quantity
             incrementQty(itemId) {
-                const item = this.cart.find(i => i.id === itemId);
+                const item = this.cart.find(i => (i.cart_id || i.id) === itemId);
                 if (item) {
                     this.updateCartItemQty(itemId, item.qty + 1);
                 }
@@ -624,7 +615,7 @@ set formattedEditSell(val) {
 
             // Decrement quantity
             decrementQty(itemId) {
-                const item = this.cart.find(i => i.id === itemId);
+                const item = this.cart.find(i => (i.cart_id || i.id) === itemId);
                 if (item && item.qty > 0.01) {
                     this.updateCartItemQty(itemId, Math.max(0.01, item.qty - 1));
                 }
