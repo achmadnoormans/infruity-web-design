@@ -1137,6 +1137,7 @@
             const nilaiSelisih = Math.floor(selisih * hpp);
             const id = row?.id || 0;
             const discussionsCount = Number(row?.discussions_count || 0);
+            const historyCount = Number(row?.history_count || 0);
 
             const isMinus = selisih < 0;
             const hppText =
@@ -1260,13 +1261,14 @@
                                     <path d="M3 3v5h5"/>
                                     <path d="M12 7v5l4 2"/>
                                 </svg>
+                                ${historyCount > 0 ? `<span class="position-absolute badge rounded-pill bg-danger text-white" style="top: 2px; right: 2px; font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">${historyCount}</span>` : ''}
                             </button>
                             <!-- Chat/Discussion -->
                             <button class="so-btn-icon-clean is-blue" data-discussion-btn-id="${id}" title="Diskusi / Catatan" onclick="showDiscussion(${id})">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                 </svg>
-                                ${discussionsCount > 0 ? `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">${discussionsCount}</span>` : ''}
+                                ${discussionsCount > 0 ? `<span class="position-absolute badge rounded-pill bg-danger text-white" style="top: 2px; right: 2px; font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">${discussionsCount}</span>` : ''}
                             </button>
                         </div>
 
@@ -1445,7 +1447,7 @@
                                 $badge.text(newCount);
                             } else {
                                 $btn.append(
-                                    `<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">1</span>`
+                                    `<span class="position-absolute badge rounded-pill bg-danger text-white" style="top: 2px; right: 2px; font-size: 8px; padding: 0.25em 0.5em; z-index: 1;">1</span>`
                                     );
                             }
                         }

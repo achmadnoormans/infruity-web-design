@@ -284,7 +284,8 @@ class StockOpnameController extends Controller
                 'users.nm_user as creator_name',
                 'branch.name as branch_name',
                 'product_stock.avg_hpp as avg_hpp_calc',
-                DB::raw('(SELECT COUNT(*) FROM stock_opname_discussions WHERE stock_opname_discussions.stock_opname_id = stock_opname.id) as discussions_count')
+                DB::raw('(SELECT COUNT(*) FROM stock_opname_discussions WHERE stock_opname_discussions.stock_opname_id = stock_opname.id) as discussions_count'),
+                DB::raw('(SELECT COUNT(*) FROM stock_opname_history WHERE stock_opname_history.stock_opname_id = stock_opname.id) as history_count')
             )
             ->whereIn('stock_opname.branch_id', $userBranches);
 
