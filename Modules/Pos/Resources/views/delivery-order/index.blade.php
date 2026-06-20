@@ -4,20 +4,22 @@
     {{-- @livewire('product-table') --}}
     <div class="delivery-order-page">
         <style>
-            .delivery-order-page .delivery-order-header-btn {
+            .delivery-order-page .delivery-order-filter-btn {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                gap: 0.5rem;
-                min-height: 40px;
+                gap: 0.45rem;
+                min-height: 44px;
                 border-radius: 12px;
-                font-weight: 600;
-                font-size: 0.95rem;
-                padding: 0.55rem 0.9rem;
+                white-space: nowrap;
             }
 
-            .delivery-order-page .delivery-order-header-btn i {
-                font-size: 1.15rem !important;
+            .delivery-order-page #active-branch-button-label {
+                display: inline-block;
+                max-width: 160px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: middle;
             }
 
             .delivery-order-page .delivery-order-modal-note {
@@ -43,19 +45,13 @@
             }
 
             @media (max-width: 767.98px) {
-                .delivery-order-page .delivery-order-toolbar-actions {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                .delivery-order-page .delivery-order-filter-toolbar {
+                    width: 100%;
+                    justify-content: flex-start !important;
                 }
 
-                .delivery-order-page .delivery-order-header-btn {
-                    min-height: 37px;
-                    gap: 0.35rem;
-                    padding: 0.45rem 0.7rem;
-                    font-size: 0.9rem;
-                }
-
-                .delivery-order-page .delivery-order-header-btn i {
-                    font-size: 1.15rem !important;
+                .delivery-order-page .delivery-order-filter-btn {
+                    width: 100%;
                 }
 
                 .delivery-order-page .delivery-order-filter-menu {
@@ -102,12 +98,12 @@
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar w-100 w-md-auto ms-md-auto">
                     <!--begin::Toolbar-->
-                    <div class="d-grid d-md-flex align-items-stretch gap-2 w-100 delivery-order-toolbar-actions"
+                    <div class="d-flex align-items-center justify-content-md-end delivery-order-filter-toolbar"
                         data-kt-user-table-toolbar="base">
                         <!--begin::Filter-->
-                        <button type="button" class="btn btn-light-primary px-3 delivery-order-header-btn"
+                        <button type="button" class="btn btn-light-primary px-4 delivery-order-filter-btn"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
-                            <i class="ki-duotone ki-filter fs-3">
+                            <i class="ki-duotone ki-filter fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>
@@ -181,11 +177,7 @@
                         </div>
                         <!--end::Menu 1-->
                         <!--end::Filter-->
-                        <button type="button" class="btn btn-primary px-3 delivery-order-header-btn"
-                            data-bs-toggle="modal" data-bs-target="#kt_modal_add_customer">
-                            <i class="bi bi-truck fs-4"></i>
-                            <span>Pilih Kurir</span>
-                        </button>
+
                     </div>
                     <!--end::Toolbar-->
                 </div>
