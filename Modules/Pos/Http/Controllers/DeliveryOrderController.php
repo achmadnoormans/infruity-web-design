@@ -351,22 +351,19 @@ class DeliveryOrderController extends Controller
                     }
                 }
 
-                $url = url('/cek-nota/draft/' . $item->uuid);
-                $customerName = $item->customer->name ?? 'Kak';
                 $customerWa = $item->customer->whatsapp ?? '';
-                $address = $item->ongkir_address ?? '-';
-                
-                $messageText = "Halo Kak {$customerName} ({$customerWa})! 👋\n\nPesanan Kakak saat ini sedang dalam perjalanan menuju alamat: {$address}.\n\nMohon ditunggu kedatangannya ya Kak. 😊\nUntuk mengecek detail info pesanannya, Kakak bisa langsung buka link berikut:\n{$url}\n\nTerima kasih!";
-                $message = urlencode($messageText);
-                $phone = $customerWa;
-                $waUrl = "https://wa.me/{$phone}?text={$message}";
 
-                $html .= '
+                if (!empty($customerWa)) {
+                    $phone = $customerWa;
+                    $waUrl = "https://wa.me/{$phone}";
+
+                    $html .= '
                             <li>
                                 <a class="dropdown-item text-success d-flex justify-content-center" href="' . $waUrl . '" target="_blank" title="Kirim WhatsApp">
                                     <i class="bi bi-whatsapp"></i>
                                 </a>
                             </li>';
+                }
 
                 $html .= '
                         </ul>
