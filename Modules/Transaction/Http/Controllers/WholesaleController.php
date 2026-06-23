@@ -1120,11 +1120,16 @@ class WholesaleController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>
+';
+                if (in_array($item->status, ['temp', 'draft'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+                $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>

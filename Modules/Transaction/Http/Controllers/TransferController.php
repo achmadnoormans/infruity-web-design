@@ -431,7 +431,7 @@ class TransferController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                if ($request->url == 'transfer-pengirim') {
+                if ($request->url == 'transfer-pengirim' && in_array($item->status, ['temp', 'draft'])) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route($request->url . '.edit', $item->id) . '">
