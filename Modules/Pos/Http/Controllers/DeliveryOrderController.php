@@ -350,6 +350,21 @@ class DeliveryOrderController extends Controller
                             </li>';
                     }
                 }
+
+                $customerWa = $item->customer->whatsapp ?? '';
+
+                if (!empty($customerWa)) {
+                    $phone = $customerWa;
+                    $waUrl = "https://wa.me/{$phone}";
+
+                    $html .= '
+                            <li>
+                                <a class="dropdown-item text-success d-flex justify-content-center" href="' . $waUrl . '" target="_blank" title="Kirim WhatsApp">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                            </li>';
+                }
+
                 $html .= '
                         </ul>
                     </div>

@@ -196,6 +196,8 @@ class OrderBookController extends Controller
                 'created_by' => $userId,
                 'updated_at' => $updateAt,
             ]);
+            $orderBook->created_at = now();
+            $orderBook->save();
             // $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
             // $dataItem = $this->sendToAi($products, $data['note']);
             // // dd($dataItem);
@@ -523,12 +525,15 @@ class OrderBookController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '
+';
+                if (in_array($item->status, ['temp', 'draft'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('order-book.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
+                }
                 $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('order-book.order', $item->id) . '" tooltip="Proses Pesanan" title="Proses Pesanan">

@@ -95,9 +95,18 @@ class WholesaleController extends Controller
             $data['detail']         = $draft->products;
             $data['invoice_number'] = $draft->order_number;
         } else {
-            $data['data']           = null;
-            $data['detail']         = null;
-            $data['invoice_number'] = Wholesale::getOrderNumber();
+            $invoiceNumber = Wholesale::getOrderNumber();
+
+            $draft = new Wholesale();
+            $draft->order_number = $invoiceNumber;
+            $draft->order_date   = date('Y-m-d');
+            $draft->status       = 'temp';
+            $draft->created_by   = Auth::user()->id_user;
+            $draft->save();
+
+            $data['data']           = $draft;
+            $data['detail']         = [];
+            $data['invoice_number'] = $invoiceNumber;
         }
 
         return view('transaction::wholesale.create2', $data);
@@ -910,6 +919,8 @@ class WholesaleController extends Controller
                     ['order_number' => $data['invoice_number']],
                     $wholesaleData
                 );
+                $wholesale->created_at = now();
+                $wholesale->save();
             } else {
                 // Cek jika ada draft existing untuk diupdate
                 $draft = Wholesale::where('created_by', $userId)
@@ -919,10 +930,13 @@ class WholesaleController extends Controller
                 if ($draft) {
                     $wholesale = $draft;
                     $wholesale->update($wholesaleData);
+                    $wholesale->created_at = now();
+                    $wholesale->save();
                 } else {
                     $wholesale = Wholesale::create($wholesaleData);
                     // Generate order number
                     $wholesale->order_number = Wholesale::getOrderNumber();
+                    $wholesale->created_at = now();
                     $wholesale->save();
                 }
             }
@@ -932,10 +946,8 @@ class WholesaleController extends Controller
             // =========================
             // DETAIL ITEM
             // =========================
-            // Hapus item lama dan ganti dengan yang baru (khusus untuk temp/draft)
-            if (in_array($data['status'] ?? 'draft', ['temp', 'draft'])) {
-                WholesaleProduct::where('wholesale_id', $transaksiId)->delete();
-            }
+            // Hapus semua item lama dan ganti dengan yang baru
+            WholesaleProduct::where('wholesale_id', $transaksiId)->delete();
 
             $existingProductIds = [];
 
@@ -952,19 +964,15 @@ class WholesaleController extends Controller
                 $qty = $item['qty'] ?? 1;
                 $totalInput = $item['total_input'] ?? ($price * $qty);
 
-                // INSERT / UPDATE DETAIL
-                WholesaleProduct::updateOrCreate(
-                    [
-                        'wholesale_id' => $transaksiId,
-                        'product_id'   => $item['id'],
-                    ],
-                    [
-                        'price'       => $price,
-                        'quantity'    => $qty,
-                        'total_price' => $totalInput,
-                        'created_by'  => $userId,
-                    ]
-                );
+                // INSERT DETAIL
+                WholesaleProduct::create([
+                    'wholesale_id' => $transaksiId,
+                    'product_id'   => $item['id'],
+                    'price'       => $price,
+                    'quantity'    => $qty,
+                    'total_price' => $totalInput,
+                    'created_by'  => $userId,
+                ]);
 
                 // =========================
                 // UPDATE HARGA JUAL CABANG
@@ -1020,13 +1028,6 @@ class WholesaleController extends Controller
                     }
                 }
             }
-
-            // =========================
-            // HAPUS ITEM YANG DIHILANGKAN
-            // =========================
-            WholesaleProduct::where('wholesale_id', $transaksiId)
-                ->whereNotIn('product_id', $existingProductIds)
-                ->delete();
 
             DB::commit();
             DB::disconnect();
@@ -1119,11 +1120,16 @@ class WholesaleController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>
+';
+                if (in_array($item->status, ['temp', 'draft'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                            </li>
+                            </li>';
+                }
+                $html .= '
                             <li>
                                 <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
                                     <i class="bi bi-trash"></i>

@@ -201,8 +201,9 @@ class SortirController extends Controller
             // Jika invoice baru (null), generate nomor
             if (empty($pos->invoice_number)) {
                 $pos->invoice_number = Sortir::getOrderNumber();
-                $pos->save();
             }
+            $pos->created_at = now();
+            $pos->save();
 
             $transaksiId = $pos->id;
 
@@ -459,12 +460,15 @@ class SortirController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                $html .= '
+';
+                if (in_array($item->status, ['temp', 'draft'])) {
+                    $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('sortir.edit', $item->id) . '">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </li>';
+                }
                 if (! in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
                     $html .= '
                             <li>
