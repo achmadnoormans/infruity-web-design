@@ -646,6 +646,7 @@ class PosController extends Controller
                 'branch_id'         => $data['branch_id'] ?? null,
                 'branch_process_id' => $data['branch_process_id'] ?? null,
             ]);
+            $pos->created_at = now();
             $pos->save();
             $this->deleteDuplicatePosDrafts($userId, $invoiceNumber, $pos->id);
 

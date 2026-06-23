@@ -197,6 +197,7 @@ class TransferController extends Controller
                 'status'                => $data['status'] ?? 'draft',
                 'created_by'            => $userId,
             ]);
+            $pos->created_at = now();
             $pos->save();
 
             // Simpan item transaksi

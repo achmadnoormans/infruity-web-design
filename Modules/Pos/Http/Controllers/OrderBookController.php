@@ -196,6 +196,8 @@ class OrderBookController extends Controller
                 'created_by' => $userId,
                 'updated_at' => $updateAt,
             ]);
+            $orderBook->created_at = now();
+            $orderBook->save();
             // $products = Product::where('price', '>', 0)->select('id', 'name', 'product_unit')->get();
             // $dataItem = $this->sendToAi($products, $data['note']);
             // // dd($dataItem);

@@ -201,8 +201,9 @@ class SortirController extends Controller
             // Jika invoice baru (null), generate nomor
             if (empty($pos->invoice_number)) {
                 $pos->invoice_number = Sortir::getOrderNumber();
-                $pos->save();
             }
+            $pos->created_at = now();
+            $pos->save();
 
             $transaksiId = $pos->id;
 

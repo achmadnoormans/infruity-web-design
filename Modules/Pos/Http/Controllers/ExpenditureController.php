@@ -186,6 +186,7 @@ class ExpenditureController extends Controller
                 'type' => $data['type'],
                 'created_by' => $userId,
             ]);
+            $pos->created_at = now();
             $pos->save();
 
             // Simpan item transaksi

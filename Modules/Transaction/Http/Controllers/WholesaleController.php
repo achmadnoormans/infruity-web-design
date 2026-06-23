@@ -919,6 +919,8 @@ class WholesaleController extends Controller
                     ['order_number' => $data['invoice_number']],
                     $wholesaleData
                 );
+                $wholesale->created_at = now();
+                $wholesale->save();
             } else {
                 // Cek jika ada draft existing untuk diupdate
                 $draft = Wholesale::where('created_by', $userId)
@@ -928,10 +930,13 @@ class WholesaleController extends Controller
                 if ($draft) {
                     $wholesale = $draft;
                     $wholesale->update($wholesaleData);
+                    $wholesale->created_at = now();
+                    $wholesale->save();
                 } else {
                     $wholesale = Wholesale::create($wholesaleData);
                     // Generate order number
                     $wholesale->order_number = Wholesale::getOrderNumber();
+                    $wholesale->created_at = now();
                     $wholesale->save();
                 }
             }
