@@ -432,7 +432,8 @@ class TransferController extends Controller
                                 </a>
                             </li>';
                 $isRecent = false;
-                if ($item->updated_at && $item->updated_at->diffInMinutes(now()) <= 30) {
+                $timeRef = isset($item->updated_at) ? $item->updated_at : (isset($item->created_at) ? $item->created_at : null);
+                if ($timeRef && \Carbon\Carbon::parse($timeRef)->diffInMinutes(now()) <= 30) {
                     $isRecent = true;
                 }
 
