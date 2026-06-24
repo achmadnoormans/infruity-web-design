@@ -525,7 +525,12 @@ class OrderBookController extends Controller
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                         <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
-                if (in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                if ($item->updated_at && $item->updated_at->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('order-book.edit', $item->id) . '">

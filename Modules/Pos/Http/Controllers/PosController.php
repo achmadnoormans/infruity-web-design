@@ -212,11 +212,16 @@ class PosController extends Controller
         $data['alpinejs']       = true;
         $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user', 'productions', 'productions.productionDetails', 'productions.productionDetails.products')->findOrFail($id);
 
-        if ($data['data']->status === 'paid') {
+        $isRecent = false;
+        if ($data['data']->updated_at && $data['data']->updated_at->diffInMinutes(now()) <= 30) {
+            $isRecent = true;
+        }
+
+        if ($data['data']->status === 'paid' && !$isRecent) {
             return redirect()->route('pos.index')->with('error', 'Transaksi yang sudah dibayar (paid) tidak dapat diedit.');
         }
 
-        if ($data['data']->status === 'debt') {
+        if ($data['data']->status === 'debt' && !$isRecent) {
             return redirect()->route('pos.index')->with('error', 'Tidak bisa diedit, buatlah transaksi baru.');
         }
 
@@ -1214,7 +1219,12 @@ class PosController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                if (in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                if ($item->updated_at && $item->updated_at->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">

@@ -431,7 +431,12 @@ class TransferController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                if ($request->url == 'transfer-pengirim' && in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                if ($item->updated_at && $item->updated_at->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if ($request->url == 'transfer-pengirim' && (in_array($item->status, ['temp', 'draft']) || $isRecent)) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route($request->url . '.edit', $item->id) . '">

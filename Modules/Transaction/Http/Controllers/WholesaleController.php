@@ -1121,7 +1121,12 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
 ';
-                if (in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                if ($item->updated_at && $item->updated_at->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
