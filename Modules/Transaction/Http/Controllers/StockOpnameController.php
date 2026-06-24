@@ -76,6 +76,9 @@ class StockOpnameController extends Controller
             'date' => 'required|date',
             'real_stock' => 'required|numeric',
             'note' => 'nullable|string',
+            'details' => 'nullable|array',
+            'details.*.name' => 'required|string',
+            'details.*.qty' => 'required|numeric',
         ]);
 
         $existing = StockOpname::where('product_id', $validated['product_id'])
@@ -112,6 +115,8 @@ class StockOpnameController extends Controller
             $stock->stock = $stockAvailable;
             $stock->real_stock = $validated['real_stock'];
             $stock->difference =  (Double)$validated['real_stock'] - (Double)$stockAvailable;
+            $stock->details = isset($validated['details']) ? json_encode($validated['details']) : null;
+            $stock->status = 'pending';
             $stock->created_by = Auth::user()->id_user;
             $stock->save();
 
@@ -122,6 +127,7 @@ class StockOpnameController extends Controller
                 'note' => $noteText,
                 'real_stock' => $stock->real_stock,
                 'difference' => $stock->difference,
+                'details' => $stock->details,
                 'created_by' => Auth::user()->id_user,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -195,6 +201,9 @@ class StockOpnameController extends Controller
             'date' => 'required|date',
             'real_stock' => 'required|numeric',
             'note' => 'nullable|string',
+            'details' => 'nullable|array',
+            'details.*.name' => 'required|string',
+            'details.*.qty' => 'required|numeric',
         ]);
 
         try {
@@ -206,6 +215,7 @@ class StockOpnameController extends Controller
             $stock->branch_id = $validated['branch_id'];
             $stock->real_stock = $validated['real_stock'];
             $stock->difference = (Double)$validated['real_stock'] - (Double)$stock->stock;
+            $stock->details = isset($validated['details']) ? json_encode($validated['details']) : null;
             $stock->updated_by = Auth::user()->id_user;
             $stock->save();
 
@@ -216,6 +226,7 @@ class StockOpnameController extends Controller
                 'note' => $noteText,
                 'real_stock' => $stock->real_stock,
                 'difference' => $stock->difference,
+                'details' => $stock->details,
                 'created_by' => Auth::user()->id_user,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -284,6 +295,7 @@ class StockOpnameController extends Controller
                 'users.nm_user as creator_name',
                 'branch.name as branch_name',
                 'product_stock.avg_hpp as avg_hpp_calc',
+                'product_stock.stock_available as live_stock',
                 DB::raw('(SELECT COUNT(*) FROM stock_opname_discussions WHERE stock_opname_discussions.stock_opname_id = stock_opname.id) as discussions_count'),
                 DB::raw('(SELECT COUNT(*) FROM stock_opname_history WHERE stock_opname_history.stock_opname_id = stock_opname.id) as history_count')
             )
@@ -304,75 +316,6 @@ class StockOpnameController extends Controller
         $data = $query->orderBy('stock_opname.created_at', 'desc')->get();
         return DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('name', function ($item) {
-                return '<div class="d-flex align-items-center">
-                            <div class="ms-5">
-                                <a href="' . url('wholesale') . '/' . $item->id . '/show' . '" class="text-gray-800 text-hover-primary fs-5 fw-bold">#' . $item->code . '</a>
-                                <br>
-                                <span class="text-muted fw-bold d-block fs-7">' . $item->product->name . '</span>
-                                <span class="text-muted fw-bold d-block fs-7">' . $item->stock . '->' . $item->real_stock . '</span>
-                                <span class="text-success fw-bold d-block fs-7"> Tgl : ' . dateindo($item->date) . '</span>
-                            </div>
-                        </div>';
-            })
-            ->addColumn('quantity', function ($item) {
-                $class = 'badge badge-light-success';
-                if ($item->difference < 0) {
-                    $class = 'badge badge-light-danger';
-                }
-                return '<span class="' . $class . '" data-id="' . $item->id . '" data-value="' . $item->difference . '">' . toNumber($item->difference) . ' ' . $item->product->unit->abbreviation . '</span>';
-            })
-            ->addColumn('difference_value', function ($item) {
-                $hpp = $item->avg_hpp_calc ?? $item->avg_price ?? 0;
-                $value = floor((float) $item->difference * (float) $hpp);
-                $class = $value < 0 ? 'text-danger' : 'text-success';
-
-                return '<span class="' . $class . '">Rp ' . toNumber($value) . '</span>';
-            })
-            ->addColumn('percentage', function ($item) {
-                $stock = (float) $item->stock;
-                $difference = (float) $item->difference;
-
-                if ($stock == 0.0) {
-                    return '<span class="text-muted">-</span>';
-                }
-
-                $percentage = ($difference / $stock) * 100;
-                $class = $percentage < 0 ? 'text-danger' : 'text-success';
-
-                return '<span class="' . $class . '">' . toNumber($percentage) . '%</span>';
-            })
-            ->addColumn('action', function ($row) {
-                $editUrl = route('products.edit', $row->id);
-                $deleteUrl = route('products.destroy', $row->id);
-                $name = e($row->name);
-
-                return '
-                <div class="dropstart">
-                    <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi ' . $name . '">
-                        <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">
-                        <li>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="viewProduct(' . $row->id . ')">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="editProduct(' . $row->id . ')">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $row->id . ')">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>';
-
-            })
-            ->rawColumns(['name', 'quantity', 'difference_value', 'percentage', 'action'])
             ->make(true);
     }
 
@@ -386,6 +329,11 @@ class StockOpnameController extends Controller
             ->where('stock_opname_id', $id)
             ->orderBy('created_at', 'desc')
             ->get();
+
+        $history->transform(function ($item) {
+            $item->details = $item->details ? json_decode($item->details) : null;
+            return $item;
+        });
             
         if ($history->isEmpty()) {
             $creator = DB::table('users')->where('id_user', $stockOpname->created_by)->first();
@@ -394,6 +342,7 @@ class StockOpnameController extends Controller
                 'note' => 'Input Stock Fisik Awal',
                 'real_stock' => $stockOpname->real_stock,
                 'difference' => $stockOpname->difference,
+                'details' => $stockOpname->details ? json_decode($stockOpname->details) : null,
                 'created_by' => $stockOpname->created_by,
                 'creator_name' => $creator ? $creator->nm_user : 'System',
                 'created_at' => $stockOpname->created_at->toDateTimeString(),
@@ -496,6 +445,7 @@ class StockOpnameController extends Controller
                 'note' => $validated['reason'],
                 'real_stock' => $stock->real_stock,
                 'difference' => $stock->difference,
+                'details' => $stock->details,
                 'created_by' => Auth::user()->id_user,
                 'created_at' => now(),
                 'updated_at' => now()
@@ -513,5 +463,90 @@ class StockOpnameController extends Controller
             'message' => 'Penyesuaian stok berhasil disimpan.',
             'data' => $stock
         ]);
+    }
+
+    public function finalize($id)
+    {
+        if ($denied = $this->requireAccess('stock-opname.update')) {
+            return $denied;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $stockOpname = StockOpname::findOrFail($id);
+
+            if ($stockOpname->status === 'selesai') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stock Opname sudah difinalisasi.'
+                ], 422);
+            }
+
+            $productStock = DB::table('product_stock')
+                ->where('id', $stockOpname->product_id)
+                ->where('branch_id', $stockOpname->branch_id)
+                ->first();
+
+            if (!$productStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Stok produk tidak ditemukan.'
+                ], 404);
+            }
+
+            $currentStock = $productStock->stock_available;
+            $avg_price = $productStock->avg_hpp;
+            
+            $difference = (Double)$stockOpname->real_stock - (Double)$currentStock;
+
+            $stockOpname->stock = $currentStock;
+            $stockOpname->difference = $difference;
+            $stockOpname->status = 'selesai';
+            $stockOpname->updated_by = Auth::user()->id_user;
+            $stockOpname->save();
+
+            // Apply difference to transaction_stock
+            if ($difference != 0) {
+                DB::table('transaction_stock')->insert([
+                    'branch_id' => $stockOpname->branch_id,
+                    'product_id' => $stockOpname->product_id,
+                    'quantity' => $difference,
+                    'avg_price' => $avg_price ?? 0,
+                    'date' => now(),
+                    'reff' => $stockOpname->code,
+                    'url' => route('stock-opname.index'),
+                    'created_by' => Auth::user()->id_user,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            DB::table('stock_opname_history')->insert([
+                'stock_opname_id' => $stockOpname->id,
+                'action' => 'FINALIZE',
+                'note' => 'Finalisasi Stock Opname',
+                'real_stock' => $stockOpname->real_stock,
+                'difference' => $stockOpname->difference,
+                'details' => $stockOpname->details,
+                'created_by' => Auth::user()->id_user,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock Opname berhasil difinalisasi.',
+                'data' => $stockOpname
+            ]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal melakukan finalisasi: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

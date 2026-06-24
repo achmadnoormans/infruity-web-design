@@ -498,6 +498,12 @@
                 position: relative;
             }
 
+        .last-border-none:last-child {
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
             .history-action-badge {
                 font-size: 10px;
                 font-weight: 700;
@@ -814,6 +820,15 @@
                                 </div>
                             </div>
 
+                            <div class="fv-row mb-6">
+                                <label class="form-label text-gray-800 fw-bold fs-7 mb-2">Detail Quantity</label>
+                                <div id="detail-qty-container" class="d-flex flex-column gap-3">
+                                </div>
+                                <button type="button" class="btn btn-sm btn-light-primary mt-3" onclick="addDetailRow()">
+                                    <i class="bi bi-plus"></i> Tambah Detail
+                                </button>
+                            </div>
+
                             <div class="fv-row mb-2">
                                 <label class="form-label text-gray-800 fw-bold fs-7 mb-2">Catatan Audit</label>
                                 <textarea class="form-control" style="border: 1px solid #e5e7eb; border-radius: 0.475rem;" name="note"
@@ -1128,11 +1143,12 @@
             const code = row?.code ? `#${row.code}` : '-';
             const cleanCode = row?.code ? row.code : '-';
             const branchName = row?.branch_name || 'Semua Cabang';
+            const isPending = row?.status === 'pending';
             const dateLabel = formatLongDateTime(row?.created_at || row?.date);
             const creatorName = row?.creator_name || '';
-            const stockSystem = Number(row?.stock || 0);
+            const stockSystem = isPending ? Number(row?.live_stock || 0) : Number(row?.stock || 0);
             const stockFisik = Number(row?.real_stock || 0);
-            const selisih = Number(row?.difference || 0);
+            const selisih = stockFisik - stockSystem;
             const hpp = Number(row?.avg_hpp_calc || row?.avg_price || 0);
             const nilaiSelisih = Math.floor(selisih * hpp);
             const id = row?.id || 0;
@@ -1196,11 +1212,18 @@
                 ` :
                 '';
 
+            const statusHtml = isPending ?
+                `<button class="btn btn-sm btn-primary py-1 px-3 fs-8 fw-bold" onclick="finalizeStockOpname(${id})" title="Finalisasi Stock">Finalisasi</button>` :
+                `<span class="badge badge-light-success fs-8 fw-bold">Finalized</span>`;
+
             return `
                 <div class="so-card d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-4">
                     <!-- Left: Info -->
                     <div class="d-flex flex-column flex-grow-1" style="min-width: 280px;">
-                        <h4 class="so-card-title mb-1">${escapeHtml(productName)}</h4>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h4 class="so-card-title mb-0">${escapeHtml(productName)}</h4>
+                            ${statusHtml}
+                        </div>
                         <div class="d-flex align-items-center gap-2 mb-2 flex-wrap text-muted fs-7">
                             <span class="so-card-code">${escapeHtml(cleanCode)}</span>
                             <span class="text-muted">•</span>
@@ -1730,6 +1753,22 @@
                         '<input type="hidden" name="_method" value="PUT">'
                     );
 
+                    // Populate details if any
+                    $('#detail-qty-container').empty();
+                    detailRowCount = 0;
+                    if (response.details) {
+                        try {
+                            const details = JSON.parse(response.details);
+                            if (Array.isArray(details)) {
+                                details.forEach(function(detail) {
+                                    addDetailRow(detail.name, detail.qty);
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing details JSON', e);
+                        }
+                    }
+
                     // --- ENABLE semua input/select/textarea di form untuk edit ---
                     form.find('input, select, textarea, button[type="submit"]').prop('disabled', false);
 
@@ -1788,8 +1827,24 @@
                     form.attr('action', '#');
                     form.find('input[name="_method"]').remove();
 
+                    // Populate details if any
+                    $('#detail-qty-container').empty();
+                    detailRowCount = 0;
+                    if (response.details) {
+                        try {
+                            const details = JSON.parse(response.details);
+                            if (Array.isArray(details)) {
+                                details.forEach(function(detail) {
+                                    addDetailRow(detail.name, detail.qty);
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Error parsing details JSON', e);
+                        }
+                    }
+
                     // --- DISABLE semua input/select/textarea di form supaya read-only ---
-                    form.find('input, select, textarea, button[type="submit"]').prop('disabled', true);
+                    form.find('input, select, textarea, button').prop('disabled', true);
 
                     // Ubah judul modal untuk view
                     $('#kt_modal_add_customer_header h2').text('Lihat Transaksi');
@@ -1875,6 +1930,19 @@
                             const userId = item.created_by || 1;
                             const avatarNum = (userId % 30) + 1;
                             const avatarUrl = `/assets/media/avatars/300-${avatarNum}.jpg`;
+                            
+                            let detailsHtml = '';
+                            if (item.details && Array.isArray(item.details) && item.details.length > 0) {
+                                detailsHtml = '<div class="history-details-box mt-3 mb-3 p-3 bg-light rounded">';
+                                detailsHtml += '<div class="fw-bold fs-8 text-muted mb-2">Detail Stock Fisik:</div>';
+                                item.details.forEach(det => {
+                                    detailsHtml += `<div class="d-flex justify-content-between align-items-center fs-8 text-gray-700 border-bottom border-gray-300 pb-1 mb-1 last-border-none">
+                                        <span>${escapeHtml(det.name)}</span>
+                                        <span class="fw-bold">${formatNum(det.qty)} ${unit}</span>
+                                    </div>`;
+                                });
+                                detailsHtml += '</div>';
+                            }
 
                             const timelineItemHtml = `
                                 <div class="timeline-item">
@@ -1892,9 +1960,11 @@
                                                 </span>
                                             </div>
                                             
-                                            <div class="history-note-text mb-3">
+                                            <div class="history-note-text ${detailsHtml ? '' : 'mb-3'}">
                                                 "${escapeHtml(item.note || '')}"
                                             </div>
+                                            
+                                            ${detailsHtml}
                                             
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <div class="d-flex align-items-center gap-2">
@@ -2114,6 +2184,8 @@
                 $('#kt_modal_add_customer_submit .indicator-label').html(
                     'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
                 $('textarea[name="note"]').val('');
+                $('#detail-qty-container').empty();
+                detailRowCount = 0;
             }
 
             if (!$realStock.val()) {
@@ -2213,6 +2285,87 @@
 
             updateStockSummary();
         });
+
+        let detailRowCount = 0;
+
+        function addDetailRow(name = '', qty = '') {
+            const container = $('#detail-qty-container');
+            const rowHtml = `
+                <div class="d-flex align-items-center gap-3 detail-row" id="detail-row-${detailRowCount}">
+                    <input type="text" class="form-control" name="details[${detailRowCount}][name]" value="${name}" placeholder="Misal: Keranjang A" required>
+                    <div class="input-group" style="width: 150px;">
+                        <input type="number" step="0.01" class="form-control detail-qty" name="details[${detailRowCount}][qty]" value="${qty}" placeholder="Qty" required oninput="calculateRealStock()">
+                        <span class="input-group-text">Kg</span>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-light-danger" onclick="removeDetailRow(${detailRowCount})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `;
+            container.append(rowHtml);
+            detailRowCount++;
+            calculateRealStock();
+        }
+
+        function removeDetailRow(id) {
+            $(`#detail-row-${id}`).remove();
+            calculateRealStock();
+        }
+
+        function calculateRealStock() {
+            let total = 0;
+            $('.detail-qty').each(function() {
+                const val = parseFloat($(this).val());
+                if (!isNaN(val)) {
+                    total += val;
+                }
+            });
+            $('input[name="real_stock"]').val(total);
+            updateStockSummary();
+        }
+
+        function finalizeStockOpname(id) {
+            Swal.fire({
+                title: 'Konfirmasi Finalisasi',
+                text: 'Stock saat ini akan dikunci dan selisih akan disimpan. Tindakan ini tidak dapat dibatalkan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Finalisasi!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/stock-opname/${id}/finalize`,
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message || 'Data berhasil difinalisasi.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            reloadDataTable();
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: xhr.responseJSON?.message || 'Terjadi kesalahan saat memproses data.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endsection
 @endsection

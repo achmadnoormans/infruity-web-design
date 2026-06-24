@@ -88,6 +88,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::get('stock-opname/{id}/history', [StockOpnameController::class, 'get_history'])->name('stock-opname.history');
     Route::get('stock-opname/{id}/discussion', [StockOpnameController::class, 'get_discussion'])->name('stock-opname.discussion');
     Route::post('stock-opname/{id}/discussion', [StockOpnameController::class, 'post_discussion'])->name('stock-opname.discussion.post');
+    Route::post('stock-opname/{id}/finalize', [StockOpnameController::class, 'finalize'])->name('stock-opname.finalize');
     Route::post('stock-opname/{id}/adjust', [StockOpnameController::class, 'adjust'])->name('stock-opname.adjust');
     Route::get('stock-opname-export', [StockOpnameController::class, 'export'])->name('stock-opname.export');
 
