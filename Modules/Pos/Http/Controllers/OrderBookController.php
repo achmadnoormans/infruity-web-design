@@ -95,7 +95,7 @@ class OrderBookController extends Controller
         }
 
         $data['alpinejs'] = true;
-        $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'pos')->find($id);
+        $data['data'] = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'pos')->findOrFail($id);
 
         if ($data['data']->status == 'done' && $data['data']->pos) {
             return redirect()->back()->with('error', 'Transaksi yang sudah selesai dan memiliki POS tidak dapat diedit.');
@@ -260,7 +260,7 @@ class OrderBookController extends Controller
             return $denied;
         }
 
-        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch', 'pos')->find($id);
+        $orderBook = OrderBook::with('customer', 'details', 'details.product', 'details.product.unit', 'branch', 'pos')->findOrFail($id);
         
         if ($orderBook->status == 'done' && $orderBook->pos) {
             return redirect()->back()->with('error', 'Transaksi yang sudah selesai dan memiliki POS tidak dapat diproses lagi.');
