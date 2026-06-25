@@ -84,11 +84,12 @@ class StockOpnameController extends Controller
         $existing = StockOpname::where('product_id', $validated['product_id'])
             ->where('branch_id', $validated['branch_id'])
             ->whereDate('date', $validated['date'])
+            ->where('status', 'pending')
             ->first();
 
         if ($existing) {
             return response()->json([
-                'message' => 'Produk ini sudah di-stock opname pada tanggal yang dipilih di cabang ini.',
+                'message' => 'Produk ini sudah di-stock opname pada tanggal yang dipilih di cabang ini. Harap selesaikan stock opname sebelumnya sebelum membuat yang baru.',
             ], 422);
         }
 
@@ -549,21 +550,7 @@ class StockOpnameController extends Controller
             $stockOpname->updated_by = Auth::user()->id_user;
             $stockOpname->save();
 
-            // Apply difference to transaction_stock
-            if ($difference != 0) {
-                DB::table('transaction_stock')->insert([
-                    'branch_id' => $stockOpname->branch_id,
-                    'product_id' => $stockOpname->product_id,
-                    'quantity' => $difference,
-                    'avg_price' => $avg_price ?? 0,
-                    'date' => now(),
-                    'reff' => $stockOpname->code,
-                    'url' => route('stock-opname.index'),
-                    'created_by' => Auth::user()->id_user,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
+            // (removed invalid insert into transaction_stock view)
 
             DB::table('stock_opname_history')->insert([
                 'stock_opname_id' => $stockOpname->id,

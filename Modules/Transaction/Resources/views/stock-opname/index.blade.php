@@ -853,8 +853,8 @@
                         <button type="button" class="btn btn-light btn-sm fw-bold px-6"
                             style="color: #4b5563; background-color: transparent;" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" id="kt_modal_add_customer_submit"
-                            class="btn btn-sm text-white fw-bold px-6"
-                            style="background-color: #8fb09d; border-radius: 8px;">
+                            class="btn btn-primary btn-sm text-white fw-bold px-6"
+                            style="border-radius: 8px;">
                             <span class="indicator-label">Simpan Final</span>
                             <span class="indicator-progress">Mohon tunggu...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
@@ -1221,7 +1221,7 @@
                 '';
 
             const statusHtml = isPending ?
-                `<button class="btn btn-sm btn-primary py-1 px-3 fs-8 fw-bold" onclick="finalizeStockOpname(${id})" title="Finalisasi Stock">Finalisasi</button>` :
+                `<span class="badge badge-light-warning fs-8 fw-bold">Pending</span>` :
                 `<span class="badge badge-light-success fs-8 fw-bold">Finalized</span>`;
 
             return `
@@ -1326,6 +1326,16 @@
                         </div>
 
                         <div class="so-divider"></div>
+
+                        <!-- Finalize (if pending) -->
+                        ${isPending ? `
+                        <button class="so-btn-icon-clean text-success" onclick="finalizeStockOpname(${id})" title="Finalisasi Transaksi">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9 12l2 2 4-4"></path>
+                            </svg>
+                        </button>
+                        ` : ''}
 
                         <!-- Delete -->
                         <button class="so-btn-delete-clean" onclick="deleteProduct(${id})" title="Hapus Transaksi">
@@ -1593,16 +1603,38 @@
                         if (result.isConfirmed) {
                             const modal = bootstrap.Modal.getInstance(document.getElementById(
                                 'kt_modal_add_customer'));
-                            var form = $('#kt_modal_add_customer_form');
-                            form.find('input, select, textarea, button[type="submit"]').prop(
-                                'disabled',
-                                false);
                             modal.hide();
-                            document.getElementById('kt_modal_add_customer_form').reset();
                         }
                     });
                 });
             }
+
+            $('#kt_modal_add_customer').on('hidden.bs.modal', function() {
+                var form = $('#kt_modal_add_customer_form');
+                form.trigger('reset');
+                form.find('input[name="_method"]').remove();
+                $('select[name="product_id"]').val(null).trigger('change');
+                
+                var filterBranch = $('[data-kt-ecommerce-product-filter="cabang"]').val();
+                var defaultBranch = (filterBranch && filterBranch !== 'all') ? filterBranch : $('select[name="branch_id"] option:first').val();
+                $('select[name="branch_id"]').val(defaultBranch).trigger('change');
+                
+                form.attr('action', '{{ url(Request::segment(1)) }}');
+                $('#kt_modal_add_customer_header h2').text('Catat Stock Opname');
+                $('#kt_modal_add_customer_submit .indicator-label').html(
+                    'Buat Transaksi <i class="ki-outline ki-arrow-right text-white fs-4 ms-1"></i>');
+                $('#detail-qty-container').empty();
+                if (typeof detailRowCount !== 'undefined') {
+                    detailRowCount = 0;
+                }
+                form.find('input, select, textarea, button[type="submit"], button').prop('disabled', false);
+                $('input[name="quantity"]').val(0);
+                $('input[name="real_stock"]').val(0);
+                $('textarea[name="note"]').val('');
+                if (typeof updateStockSummary === 'function') {
+                    updateStockSummary(0);
+                }
+            });
 
             $('#kt_modal_add_customer_form').on('submit', function(e) {
                 e.preventDefault();
