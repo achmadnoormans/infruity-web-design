@@ -644,9 +644,16 @@ class PosController extends Controller
             }
 
             if ($pos) {
-                if (!in_array($pos->status, ['paid', 'debt'])) {
-                    $this->clearExistingPosRelations($pos->id);
+                $isRecent = false;
+                if ($pos->updated_at && $pos->updated_at->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
                 }
+
+                if (in_array($pos->status, ['paid', 'debt']) && !$isRecent) {
+                    throw new \Exception('Transaksi yang sudah dibayar atau piutang dan melebihi 30 menit tidak dapat diubah.');
+                }
+
+                $this->clearExistingPosRelations($pos->id);
                 $posId          = $pos->id ?? null;
                 $originalStatus = $pos->status;
 
