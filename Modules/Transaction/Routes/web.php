@@ -91,6 +91,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth']], function () {
     Route::post('stock-opname/{id}/finalize', [StockOpnameController::class, 'finalize'])->name('stock-opname.finalize');
     Route::post('stock-opname/{id}/adjust', [StockOpnameController::class, 'adjust'])->name('stock-opname.adjust');
     Route::get('stock-opname-export', [StockOpnameController::class, 'export'])->name('stock-opname.export');
+    Route::get('stock-opname-preview', [StockOpnameController::class, 'preview'])->name('stock-opname.preview');
 
     Route::resource('stock-out-type', StockOutTypeController::class)->names('stock-out-type')->except('show');
 

@@ -17,6 +17,7 @@
     </tr>
     @foreach($data as $index => $row)
         @php
+            $isPending = $row->status === 'pending';
             $selisih = (float)$row->difference;
             $bg = '';
             if ($selisih < 0) {
@@ -24,11 +25,18 @@
             } elseif ($selisih > 0) {
                 $bg = 'background-color: #D9EAD3;';
             }
+            $rowBg = $isPending ? 'background-color: #FFF5F8;' : '';
+            $stockText = $isPending ? 'Sistem' : str_replace('.', ',', (float)$row->stock);
         @endphp
-        <tr>
+        <tr style="{{ $rowBg }}">
             <td style="text-align: center; border: 1px solid #d9d9d9;">{{ $index + 1 }}</td>
-            <td style="border: 1px solid #d9d9d9;">{{ $row->product->name ?? '-' }}</td>
-            <td style="text-align: center; border: 1px solid #d9d9d9;">{{ str_replace('.', ',', (float)$row->stock) }}</td>
+            <td style="border: 1px solid #d9d9d9;">
+                {{ $row->product->name ?? '-' }}
+                @if($isPending)
+                    <span style="color: #f1416c;">(Belum Selesai)</span>
+                @endif
+            </td>
+            <td style="text-align: center; border: 1px solid #d9d9d9; {{ $isPending ? 'color: #f1416c; font-style: italic;' : '' }}">{{ $stockText }}</td>
             <td style="text-align: center; border: 1px solid #d9d9d9;">{{ str_replace('.', ',', (float)$row->real_stock) }}</td>
             <td style="text-align: center; border: 1px solid #d9d9d9; {{ $bg }}">{{ str_replace('.', ',', $selisih) }}</td>
         </tr>

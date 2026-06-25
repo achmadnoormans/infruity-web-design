@@ -663,7 +663,15 @@
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                             </i>
-                            <span>Export Excel</span>
+                            <span class="d-none d-sm-inline">Export Excel</span>
+                        </button>
+                        <button type="button" class="btn btn-light-info px-4 pos-index-filter-btn" onclick="previewStock()">
+                            <i class="ki-duotone ki-eye fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                            <span class="d-none d-sm-inline">Preview Stock</span>
                         </button>
                         <button type="button" class="btn btn-light-primary px-4 pos-index-filter-btn"
                             data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
@@ -1354,6 +1362,21 @@
                 }
                 
                 let url = "{{ route('stock-opname.export') }}?cabang_filter=" + cabang + "&start_date=" + startDate + "&end_date=" + endDate;
+                window.open(url, '_blank');
+            };
+
+            window.previewStock = function() {
+                let cabang = $('[data-kt-ecommerce-product-filter="cabang"]').val() || '';
+                let range = $('#kt_ecommerce_sales_flatpickr').val() || '';
+                let startDate = '';
+                let endDate = '';
+                if (range) {
+                    let dates = range.split(' to ');
+                    startDate = dates[0];
+                    endDate = dates[1] ?? dates[0];
+                }
+                
+                let url = "{{ route('stock-opname.preview') }}?cabang_filter=" + cabang + "&start_date=" + startDate + "&end_date=" + endDate;
                 window.open(url, '_blank');
             };
 

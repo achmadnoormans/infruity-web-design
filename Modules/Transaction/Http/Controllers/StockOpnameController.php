@@ -280,6 +280,49 @@ class StockOpnameController extends Controller
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StockOpnameExport($request), 'stock-opname-'.date('YmdHis').'.xlsx');
     }
 
+    public function preview(Request $request)
+    {
+        $userBranches = UserBranch::getUserBranch();
+        $query = StockOpname::with('product.unit')
+            ->whereIn('stock_opname.branch_id', $userBranches);
+
+        $branchStr = 'SEMUA CABANG';
+        if ($request->has('cabang_filter') && $request->cabang_filter !== 'all') {
+            $query->where('stock_opname.branch_id', $request->cabang_filter);
+            $branch = Branch::find($request->cabang_filter);
+            if ($branch) {
+                $branchStr = $branch->name;
+            }
+        }
+
+        $dateStr = '';
+        if ($request->has('start_date') && $request->start_date != '') {
+            $query->whereDate('stock_opname.date', '>=', $request->start_date);
+            $start = \Carbon\Carbon::parse($request->start_date);
+            $dateStr .= $start->translatedFormat('d F Y');
+        }
+
+        if ($request->has('end_date') && $request->end_date != '') {
+            $query->whereDate('stock_opname.date', '<=', $request->end_date);
+            $end = \Carbon\Carbon::parse($request->end_date);
+            if ($request->start_date != $request->end_date) {
+                $dateStr .= ' - ' . $end->translatedFormat('d F Y');
+            }
+        }
+
+        if ($dateStr == '') {
+            $dateStr = 'SEMUA TANGGAL';
+        }
+
+        $data = $query->orderBy('stock_opname.created_at', 'desc')->get();
+
+        return view('transaction::stock-opname.exports.preview', [
+            'data' => $data,
+            'branchStr' => $branchStr,
+            'dateStr' => $dateStr
+        ]);
+    }
+
     public function get_data(Request $request)
     {
         $userBranches = UserBranch::getUserBranch();
