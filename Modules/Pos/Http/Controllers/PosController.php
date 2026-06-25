@@ -212,11 +212,16 @@ class PosController extends Controller
         $data['alpinejs']       = true;
         $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user', 'productions', 'productions.productionDetails', 'productions.productionDetails.products')->findOrFail($id);
 
-        if ($data['data']->status === 'paid') {
+        $isRecent = false;
+        if ($data['data']->updated_at && $data['data']->updated_at->diffInMinutes(now()) <= 30) {
+            $isRecent = true;
+        }
+
+        if ($data['data']->status === 'paid' && !$isRecent) {
             return redirect()->route('pos.index')->with('error', 'Transaksi yang sudah dibayar (paid) tidak dapat diedit.');
         }
 
-        if ($data['data']->status === 'debt') {
+        if ($data['data']->status === 'debt' && !$isRecent) {
             return redirect()->route('pos.index')->with('error', 'Tidak bisa diedit, buatlah transaksi baru.');
         }
 
@@ -494,6 +499,9 @@ class PosController extends Controller
             }
             if (!empty($data['jus'])) {
                 foreach ($data['jus'] as $jus) {
+                    if (!empty($jus['productId'])) {
+                        $allProductIdsToLock[] = $jus['productId'];
+                    }
                     if (!empty($jus['product_receipt_id'])) {
                         foreach ($jus['product_receipt_id'] as $receiptProductId) {
                             $allProductIdsToLock[] = $receiptProductId;
@@ -571,12 +579,41 @@ class PosController extends Controller
             }
 
             // Kumpulkan kebutuhan stok bahan baku jus
+            $remainingStockJusValidation = [];
             if (isset($data['jus'])) {
                 foreach ($data['jus'] as $jus) {
-                    if (isset($jus['product_receipt_id']) && is_array($jus['product_receipt_id'])) {
+                    $productId = $jus['productId'] ?? null;
+                    if (!$productId) continue;
+
+                    if (!isset($remainingStockJusValidation[$productId])) {
+                        $productStock = ProductStock::where('id', $productId)->where('branch_id', $data['branch_id'])->first();
+                        $remainingStockJusValidation[$productId] = $productStock ? (float)$productStock->stock_available : 0;
+                    }
+
+                    $currentStock = $remainingStockJusValidation[$productId];
+                    $jusQty = (float)($jus['qty'] ?? 0);
+
+                    if ($currentStock <= 0) {
+                        $productionQty = $jusQty;
+                        $consumeStockQty = 0;
+                    } elseif ($currentStock < $jusQty) {
+                        $productionQty = $jusQty - $currentStock;
+                        $consumeStockQty = $currentStock;
+                    } else {
+                        $productionQty = 0;
+                        $consumeStockQty = $jusQty;
+                    }
+
+                    $remainingStockJusValidation[$productId] -= $consumeStockQty;
+
+                    if ($consumeStockQty > 0) {
+                        $addRequiredStock($productId, $consumeStockQty);
+                    }
+
+                    if ($productionQty > 0 && isset($jus['product_receipt_id']) && is_array($jus['product_receipt_id'])) {
                         foreach ($jus['product_receipt_id'] as $key => $receiptProductId) {
                             $receiptQty  = (float)($jus['product_receipt_qty'][$key] ?? 0);
-                            $requiredQty = $receiptQty * (float)$jus['qty'];
+                            $requiredQty = $receiptQty * $productionQty;
                             $addRequiredStock($receiptProductId, $requiredQty);
                         }
                     }
@@ -788,18 +825,31 @@ class PosController extends Controller
                     }
                 }
 
+                $remainingStockJus = [];
                 foreach ($data['jus'] as $index => $value) {
-                    $productStock = ProductStock::where('id', $value['productId'])->where('branch_id', $data['branch_id'])->first();
-                    $currentStock = $productStock?->stock_available ?? 0;
+                    $productId = $value['productId'];
+                    if (!isset($remainingStockJus[$productId])) {
+                        $productStock = ProductStock::where('id', $productId)->where('branch_id', $data['branch_id'])->first();
+                        $remainingStockJus[$productId] = $productStock ? (float)$productStock->stock_available : 0;
+                    }
+
+                    $currentStock = $remainingStockJus[$productId];
+                    $qtyToProcess = (float)$value['qty'];
 
                     // Tentukan qty produksi berdasarkan ketersediaan stok
                     if ($currentStock <= 0) {
-                        $productionQty = $value['qty'];
-                    } elseif ($currentStock < $value['qty']) {
-                        $productionQty = $value['qty'] - $currentStock;
+                        $productionQty = $qtyToProcess;
+                        $consumeStockQty = 0;
+                    } elseif ($currentStock < $qtyToProcess) {
+                        $productionQty = $qtyToProcess - $currentStock;
+                        $consumeStockQty = $currentStock;
                     } else {
                         $productionQty = 0;
+                        $consumeStockQty = $qtyToProcess;
                     }
+
+                    // Update remaining stock
+                    $remainingStockJus[$productId] -= $consumeStockQty;
 
                     if ($productionQty > 0) {
                         $production = new Production([
@@ -1169,7 +1219,13 @@ class PosController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                if (in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                $timeRef = isset($item->updated_at) ? $item->updated_at : (isset($item->created_at) ? $item->created_at : null);
+                if ($timeRef && \Carbon\Carbon::parse($timeRef)->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">

@@ -431,7 +431,13 @@ class TransferController extends Controller
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </li>';
-                if ($request->url == 'transfer-pengirim' && in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                $timeRef = isset($item->updated_at) ? $item->updated_at : (isset($item->created_at) ? $item->created_at : null);
+                if ($timeRef && \Carbon\Carbon::parse($timeRef)->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if ($request->url == 'transfer-pengirim' && (in_array($item->status, ['temp', 'draft']) || $isRecent)) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route($request->url . '.edit', $item->id) . '">

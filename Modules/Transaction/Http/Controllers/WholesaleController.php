@@ -1121,7 +1121,13 @@ class WholesaleController extends Controller
                                 </a>
                             </li>
 ';
-                if (in_array($item->status, ['temp', 'draft'])) {
+                $isRecent = false;
+                $timeRef = isset($item->updated_at) ? $item->updated_at : (isset($item->created_at) ? $item->created_at : null);
+                if ($timeRef && \Carbon\Carbon::parse($timeRef)->diffInMinutes(now()) <= 30) {
+                    $isRecent = true;
+                }
+
+                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('wholesale.edit', $item->id) . '">
