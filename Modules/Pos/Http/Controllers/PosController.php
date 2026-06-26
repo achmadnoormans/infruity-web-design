@@ -381,11 +381,10 @@ class PosController extends Controller
             $pos->status = $status;
             $pos->save();
 
-            if ($status === 'paid') {
+            if (in_array($status, ['paid', 'debt'])) {
                 Production::where('pos_id', $pos->id)
                     ->where('status', 'draft')
-                    ->delete();
-                    // ->update(['status' => 'complete']);
+                    ->update(['status' => 'complete']);
             }
 
             DB::commit();
@@ -823,15 +822,6 @@ class PosController extends Controller
             }
 
             if (!empty($data['jus'])) {
-                // dd($data['jus']);
-                if (isset($posId)) {
-                    $lastProduction = Production::where('pos_id', $posId)->first();
-                    if ($lastProduction) {
-                        ProductionDetail::where('production_id', $lastProduction->id)->delete();
-                        $lastProduction->delete();
-                    }
-                }
-
                 $remainingStockJus = [];
                 foreach ($data['jus'] as $index => $value) {
                     $productId = $value['productId'];
@@ -947,6 +937,12 @@ class PosController extends Controller
 
         ProductionParcelDetail::where('pos_id', $posId)->delete();
         PosDetailModel::where('pos_id', $posId)->forceDelete();
+
+        $productionIds = Production::where('pos_id', $posId)->pluck('id');
+        if ($productionIds->isNotEmpty()) {
+            ProductionDetail::whereIn('production_id', $productionIds)->delete();
+            Production::whereIn('id', $productionIds)->delete();
+        }
     }
 
     private function deleteDuplicatePosDrafts(int $userId, ?string $invoiceNumber, int $keepPosId): void
