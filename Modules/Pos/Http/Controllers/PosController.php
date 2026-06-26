@@ -703,7 +703,7 @@ class PosController extends Controller
             $totalPrice  = $this->sumTotalPrice($data['items']);
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
-                    $itemTotal   = $item['total_input'] ?? ($item['price'] * $item['qty']);
+                    $itemTotal   = isset($item['total_input']) ? $item['total_input'] : (($item['price'] * $item['qty']) - ($item['discount'] ?? 0));
                     $prosentase  = $totalPrice > 0 ? round(($itemTotal / $totalPrice) * 100, 2) : 0;
                     $posDiscount = $pos->discount * $prosentase / 100;
                     $product     = Product::find($item['id']);
@@ -883,7 +883,7 @@ class PosController extends Controller
                         'price'      => $value['price'],
                         'quantity'   => $value['qty'],
                         'discount'   => $value['discount'],
-                        'subtotal'   => $value['price'] * $value['qty'],
+                        'subtotal'   => isset($value['total_input']) ? $value['total_input'] : (($value['price'] * $value['qty']) - ($value['discount'] ?? 0)),
                         'hpp'        => $value['hpp'],
                         'exp'        => $value['price'] - $value['hpp'],
                         'exp_value'  => ($value['price'] - $value['hpp']) * $settingExp->value_exp,
