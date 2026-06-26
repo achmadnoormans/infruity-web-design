@@ -75,10 +75,10 @@
                             @endif
                         </td>
                         <td class="text-center" style="{{ $isPending ? 'color: #f1416c; font-weight: bold; font-style: italic;' : '' }}">
-                            {{ $isPending ? 'Sistem' : str_replace('.', ',', (float)$row->stock) }}
+                            {{ $isPending ? 'Sistem' : str_replace('.', ',', (float)$row->stock) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '') }}
                         </td>
-                        <td class="text-center">{{ str_replace('.', ',', (float)$row->real_stock) }}</td>
-                        <td class="text-center {{ $bgClass }}">{{ str_replace('.', ',', $selisih) }}</td>
+                        <td class="text-center">{{ str_replace('.', ',', (float)$row->real_stock) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '') }}</td>
+                        <td class="text-center {{ $bgClass }}">{{ str_replace('.', ',', $selisih) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '') }}</td>
                     </tr>
                 @endforeach
                 @if(count($data) === 0)

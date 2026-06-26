@@ -26,7 +26,7 @@
                 $bg = 'background-color: #D9EAD3;';
             }
             $rowBg = $isPending ? 'background-color: #FFF5F8;' : '';
-            $stockText = $isPending ? 'Sistem' : str_replace('.', ',', (float)$row->stock);
+            $stockText = $isPending ? 'Sistem' : str_replace('.', ',', (float)$row->stock) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '');
         @endphp
         <tr style="{{ $rowBg }}">
             <td style="text-align: center; border: 1px solid #d9d9d9;">{{ $index + 1 }}</td>
@@ -37,8 +37,8 @@
                 @endif
             </td>
             <td style="text-align: center; border: 1px solid #d9d9d9; {{ $isPending ? 'color: #f1416c; font-style: italic;' : '' }}">{{ $stockText }}</td>
-            <td style="text-align: center; border: 1px solid #d9d9d9;">{{ str_replace('.', ',', (float)$row->real_stock) }}</td>
-            <td style="text-align: center; border: 1px solid #d9d9d9; {{ $bg }}">{{ str_replace('.', ',', $selisih) }}</td>
+            <td style="text-align: center; border: 1px solid #d9d9d9;">{{ str_replace('.', ',', (float)$row->real_stock) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '') }}</td>
+            <td style="text-align: center; border: 1px solid #d9d9d9; {{ $bg }}">{{ str_replace('.', ',', $selisih) . ' ' . ($row->product->unit->abbreviation ?? $row->product->unit->name ?? '') }}</td>
         </tr>
     @endforeach
 </table>
