@@ -217,7 +217,7 @@ class PosController extends Controller
             $isRecent = true;
         }
 
-        if ($data['data']->status === 'paid' && !$isRecent) {
+        if ($data['data']->status === 'paid') {
             return redirect()->route('pos.index')->with('error', 'Transaksi yang sudah dibayar (paid) tidak dapat diedit.');
         }
 
@@ -648,8 +648,12 @@ class PosController extends Controller
                     $isRecent = true;
                 }
 
-                if (in_array($pos->status, ['paid', 'debt']) && !$isRecent) {
-                    throw new \Exception('Transaksi yang sudah dibayar atau piutang dan melebihi 30 menit tidak dapat diubah.');
+                if ($pos->status === 'paid') {
+                    throw new \Exception('Transaksi yang sudah dibayar tidak dapat diubah.');
+                }
+                
+                if ($pos->status === 'debt' && !$isRecent) {
+                    throw new \Exception('Transaksi piutang yang melebihi 30 menit tidak dapat diubah.');
                 }
 
                 $this->clearExistingPosRelations($pos->id);
@@ -1228,7 +1232,7 @@ class PosController extends Controller
                     $isRecent = true;
                 }
 
-                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
+                if (in_array($item->status, ['temp', 'draft']) || ($isRecent && $item->status !== 'paid')) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
