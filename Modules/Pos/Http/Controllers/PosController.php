@@ -217,7 +217,7 @@ class PosController extends Controller
             $isRecent = true;
         }
 
-        if ($data['data']->status === 'paid' && !$isRecent) {
+        if ($data['data']->status === 'paid') {
             return redirect()->route('pos.index')->with('error', 'Transaksi yang sudah dibayar (paid) tidak dapat diedit.');
         }
 
@@ -381,11 +381,10 @@ class PosController extends Controller
             $pos->status = $status;
             $pos->save();
 
-            if ($status === 'paid') {
+            if (in_array($status, ['paid', 'debt'])) {
                 Production::where('pos_id', $pos->id)
                     ->where('status', 'draft')
-                    ->delete();
-                    // ->update(['status' => 'complete']);
+                    ->update(['status' => 'complete']);
             }
 
             DB::commit();
@@ -649,8 +648,12 @@ class PosController extends Controller
                     $isRecent = true;
                 }
 
-                if (in_array($pos->status, ['paid', 'debt']) && !$isRecent) {
-                    throw new \Exception('Transaksi yang sudah dibayar atau piutang dan melebihi 30 menit tidak dapat diubah.');
+                if ($pos->status === 'paid') {
+                    throw new \Exception('Transaksi yang sudah dibayar tidak dapat diubah.');
+                }
+                
+                if ($pos->status === 'debt' && !$isRecent) {
+                    throw new \Exception('Transaksi piutang yang melebihi 30 menit tidak dapat diubah.');
                 }
 
                 $this->clearExistingPosRelations($pos->id);
@@ -700,7 +703,7 @@ class PosController extends Controller
             $totalPrice  = $this->sumTotalPrice($data['items']);
             foreach ($data['items'] as $item) {
                 if (is_numeric($item['id'])) {
-                    $itemTotal   = $item['total_input'] ?? ($item['price'] * $item['qty']);
+                    $itemTotal   = isset($item['total_input']) ? $item['total_input'] : (($item['price'] * $item['qty']) - ($item['discount'] ?? 0));
                     $prosentase  = $totalPrice > 0 ? round(($itemTotal / $totalPrice) * 100, 2) : 0;
                     $posDiscount = $pos->discount * $prosentase / 100;
                     $product     = Product::find($item['id']);
@@ -823,15 +826,6 @@ class PosController extends Controller
             }
 
             if (!empty($data['jus'])) {
-                // dd($data['jus']);
-                if (isset($posId)) {
-                    $lastProduction = Production::where('pos_id', $posId)->first();
-                    if ($lastProduction) {
-                        ProductionDetail::where('production_id', $lastProduction->id)->delete();
-                        $lastProduction->delete();
-                    }
-                }
-
                 $remainingStockJus = [];
                 foreach ($data['jus'] as $index => $value) {
                     $productId = $value['productId'];
@@ -889,7 +883,7 @@ class PosController extends Controller
                         'price'      => $value['price'],
                         'quantity'   => $value['qty'],
                         'discount'   => $value['discount'],
-                        'subtotal'   => $value['price'] * $value['qty'],
+                        'subtotal'   => isset($value['total_input']) ? $value['total_input'] : (($value['price'] * $value['qty']) - ($value['discount'] ?? 0)),
                         'hpp'        => $value['hpp'],
                         'exp'        => $value['price'] - $value['hpp'],
                         'exp_value'  => ($value['price'] - $value['hpp']) * $settingExp->value_exp,
@@ -947,6 +941,12 @@ class PosController extends Controller
 
         ProductionParcelDetail::where('pos_id', $posId)->delete();
         PosDetailModel::where('pos_id', $posId)->forceDelete();
+
+        $productionIds = Production::where('pos_id', $posId)->pluck('id');
+        if ($productionIds->isNotEmpty()) {
+            ProductionDetail::whereIn('production_id', $productionIds)->delete();
+            Production::whereIn('id', $productionIds)->delete();
+        }
     }
 
     private function deleteDuplicatePosDrafts(int $userId, ?string $invoiceNumber, int $keepPosId): void
@@ -1136,7 +1136,7 @@ class PosController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->orderBy('id', 'DESC');
+        $data = $query->orderBy('date', 'DESC')->orderBy('created_at', 'DESC');
         // dd($data);
         return DataTables::of($data)
             ->filter(function ($q) use ($request) {
@@ -1232,7 +1232,7 @@ class PosController extends Controller
                     $isRecent = true;
                 }
 
-                if (in_array($item->status, ['temp', 'draft']) || $isRecent) {
+                if (in_array($item->status, ['temp', 'draft']) || ($isRecent && $item->status !== 'paid')) {
                     $html .= '
                             <li>
                                 <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
