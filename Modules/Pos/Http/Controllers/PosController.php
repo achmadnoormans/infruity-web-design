@@ -1132,7 +1132,7 @@ class PosController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('date', [$request->start_date, $request->end_date]);
         }
-        $data = $query->orderBy('id', 'DESC');
+        $data = $query->orderBy('date', 'DESC')->orderBy('created_at', 'DESC');
         // dd($data);
         return DataTables::of($data)
             ->filter(function ($q) use ($request) {
