@@ -651,12 +651,12 @@
                         <div class="item">
                             <div class="item-details">
                                 <div class="item-header">
-                                    <span class="item-name">{{ $item->product->name }}</span>
+                                    <span class="item-name">{{ $item->product?->name ?? 'Produk Dihapus' }}</span>
                                 </div>
                                 <div class="item-price" style=" display: flex;justify-content: space-between;">
                                     <span>
                                         {{ tonumberround($item->price) }} x
-                                        {{ $item->quantity . ' (' . $item->product->unit->abbreviation . ')' }}
+                                        {{ $item->quantity . ' (' . ($item->product?->unit?->abbreviation ?? '-') . ')' }}
                                     </span>
                                     @php
                                         $subTotal =

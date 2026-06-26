@@ -632,7 +632,7 @@
                             <tr>
                                 <td>
                                     <div class="item-name-main">
-                                        {{ $item->type == 'parcel' ? $item->product->description : $item->product->name }}
+                                        {{ $item->type == 'parcel' ? ($item->product?->description ?? 'Produk Dihapus') : ($item->product?->name ?? 'Produk Dihapus') }}
                                     </div>
                                     @if ($item->discount && $item->discount > 0)
                                         <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">
@@ -673,9 +673,9 @@
                                                 <div class="parcel-list-title">Bahan</div>
                                                 @foreach ($filteredParcels as $parcel)
                                                     <div class="parcel-item">
-                                                        {{ $parcel->product->name ?? '-' }}
+                                                        {{ $parcel->product?->name ?? '-' }}
                                                         ({{ $parcel->quantity }}
-                                                        {{ $parcel->product->unit->abbreviation ?? 'pcs' }})
+                                                        {{ $parcel->product?->unit?->abbreviation ?? 'pcs' }})
                                                     </div>
                                                 @endforeach
                                             </div>
