@@ -68,34 +68,45 @@
             </div>
             <div class="modal-body">
                 <div x-show="editItem">
+                    <!-- Select Produk (Readonly untuk edit) -->
                     <div class="mb-3">
-                        <label class="form-label">Nama Product</label>
+                        <label class="form-label">Nama Produk</label>
                         <input type="text" class="form-control" x-model="editProductName" readonly>
                     </div>
-                    <!-- Input Qty -->
-                    <div class="row mb-3">
-                        <div class="col-4">
+
+                    <!-- Satuan -->
+                    <div class="row">
+                        <div class="col-3 mb-3">
                             <label class="form-label">Satuan</label>
-                            <input type="text" class="form-control" step="0.01" min="0"
-                                x-model="editProductUnit" readonly>
+                            <input type="text" class="form-control" x-model="editProductUnit" readonly>
                         </div>
-                        <div class="col-8">
-                            <label class="form-label">Quantity</label>
-                            <input type="number" class="form-control" step="0.01" min="0" x-model="editQty"
-                                @input="updateTotalFromEditQty">
+
+                        <!-- Harga -->
+                        <div class="col-9 mb-3">
+                            <label class="form-label">Harga</label>
+                            <input type="text" class="form-control" :value="formatRupiah(editPrice)" readonly>
                         </div>
                     </div>
-                    <!-- Input Mode Harga -->
+
+                    <!-- Quantity -->
                     <div class="mb-3">
-                        <label class="form-label">Harga Jual (Rp)</label>
-                        <input type="text" class="form-control" x-model="editTotalFormatted"
-                            @input="updateEditTotalFormatted" inputmode="numeric">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" step="0.01" min="0" x-model="editQty"
+                            @input="updateTotalFromEditQty">
                     </div>
+
                     <!-- Diskon -->
                     <div class="mb-3">
                         <label class="form-label">Diskon (Rp jika > 100, % jika ≤ 100)</label>
-                        <input type="number" class="form-control" x-model="editDiscount" min="0"
-                            @input="updateEditDiscount">
+                        <input type="text" class="form-control" inputmode="numeric" :value="formatRupiah(editDiscountNominal || 0)"
+                            @input="updateEditDiscountValue">
+                    </div>
+
+                    <!-- Jumlah Harga -->
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah Harga</label>
+                        <input type="text" class="form-control" inputmode="numeric" x-model="editTotalFormatted"
+                            @input="updateQtyFromEditTotalFormatted">
                     </div>
                 </div>
             </div>

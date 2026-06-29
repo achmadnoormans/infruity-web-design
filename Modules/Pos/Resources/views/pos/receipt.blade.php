@@ -626,7 +626,7 @@
                         @php $subtotal = 0; @endphp
                         @foreach ($detail as $item)
                             @php
-                                $itemTotal = $item->price * $item->quantity;
+                                $itemTotal = $item->subtotal + $item->discount;
                                 $subtotal += $itemTotal;
                             @endphp
                             <tr>

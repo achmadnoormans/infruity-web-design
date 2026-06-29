@@ -14,6 +14,7 @@
             editTotal: 0,
             editDiscount: 0,
             editDiscountPercent: 0,
+            editDiscountNominal: 0,
             editDiscountMode: 'nominal', // atau 'percent'
             editTotalFormatted: '',
             editProductName: '',
@@ -242,7 +243,12 @@
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
 
                 this.editDiscount = item.discount || 0;
-
+                this.editDiscountPercent = item.discountPercent || 0;
+                if (this.editDiscountPercent > 0) {
+                    this.editDiscountNominal = this.editDiscountPercent;
+                } else {
+                    this.editDiscountNominal = this.editQty > 0 ? (this.editDiscount / this.editQty) : 0;
+                }
 
                 this.editModal = true;
 
@@ -257,6 +263,23 @@
                 this.editTotal = Number(raw || 0);
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
                 this.updateQtyFromEditTotal(); // Sesuaikan qty berdasarkan harga
+            },
+
+            updateQtyFromEditTotalFormatted(e) {
+                let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+                const inputTotal = parseFloat(raw || 0);
+                const price = parseFloat(this.editPrice || 1);
+                
+                let input = parseFloat(this.editDiscountNominal || 0);
+                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
+                let priceAfterDiscount = price - discountPerUnit;
+                
+                const qty = inputTotal / priceAfterDiscount;
+                
+                this.editQty = parseFloat(qty.toFixed(2));
+                this.editTotal = inputTotal;
+                this.editDiscount = qty * discountPerUnit;
+                this.editTotalFormatted = this.formatRupiah(inputTotal);
             },
 
             updateQtyFromEditTotal() {
@@ -303,6 +326,24 @@
                 this.updateTotalFromEditQty();
             },
 
+            updateEditDiscountValue(e) {
+                let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+                let input = parseFloat(raw || 0);
+                this.editDiscountNominal = input;
+
+                const qty = parseFloat(this.editQty || 0);
+                const price = parseFloat(this.editPrice || 0);
+                
+                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
+                let totalAfterDiscount = qty * (price - discountPerUnit);
+                
+                this.editDiscount = qty * discountPerUnit;
+                this.editDiscountPercent = (input <= 100) ? input : 0;
+                
+                this.editTotal = totalAfterDiscount;
+                this.editTotalFormatted = this.formatRupiah(totalAfterDiscount);
+            },
+
             updateEditDiscount() {
                 let qty = parseFloat(this.editQty || 0);
                 let price = parseFloat(this.editPrice || 0);
@@ -316,6 +357,15 @@
             },
 
             saveEditToCart() {
+                if (this.editQty <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Jumlah produk harus lebih dari 0.',
+                    });
+                    return;
+                }
+
                 const idx = this.cart.findIndex(i => i.key === this.editItem.key);
                 if (idx !== -1) {
                     const disc = this.calculateEditDiscountAmount();
