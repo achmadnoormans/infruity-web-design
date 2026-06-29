@@ -1318,6 +1318,10 @@ class ProductController extends Controller
             $query->where('transaction_stock.branch_id', $request->branch);
         }
 
+        if ($request->filled('reference') && $request->reference != 'all') {
+            $query->whereRaw("transaction_stock.url COLLATE utf8mb4_unicode_ci = ?", [$request->reference]);
+        }
+
         $query->where(function($q) use ($productId) {
             $q->where('transaction_stock.product_id', $productId)
               ->orWhere('transaction_stock.stock_parent_id', $productId);

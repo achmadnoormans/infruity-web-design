@@ -81,6 +81,7 @@ WITH base AS (
 		u5.nm_user
 	FROM stock_opname
 	LEFT JOIN users u5 ON u5.id_user = stock_opname.created_by
+	WHERE stock_opname.status = 'selesai'
 
 	UNION ALL
 

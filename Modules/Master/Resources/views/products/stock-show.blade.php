@@ -28,6 +28,19 @@
                         </select>
                     </div>
                     <div class="w-100 w-md-auto">
+                        <select class="form-select form-select-solid" data-control="select2"
+                            data-hide-search="true" data-placeholder="Reference"
+                            data-kt-ecommerce-product-filter="reference">
+                            <option value="all">Semua Reference</option>
+                            <option value="stock-opname">Stock Opname</option>
+                            <option value="sortir">Sortir</option>
+                            <option value="pos">POS</option>
+                            <option value="production">Produksi</option>
+                            <option value="wholesale">Pengadaan</option>
+                            <option value="transfer">Transfer</option>
+                        </select>
+                    </div>
+                    <div class="w-100 w-md-auto">
                         <div class="input-group">
                             <input class="form-control form-control-solid" placeholder="Pilih tanggal"
                                 id="kt_ecommerce_sales_flatpickr" />
@@ -80,6 +93,7 @@
                         d.stock_filter = $('[data-kt-ecommerce-product-filter="stock"]').val();
                         d.product_id = {{ $data->id }};
                         d.branch = $('[data-kt-ecommerce-product-filter="branch"]').val();
+                        d.reference = $('[data-kt-ecommerce-product-filter="reference"]').val();
                         var range = $('#kt_ecommerce_sales_flatpickr').val();
                         if (range) {
                             var dates = range.split(' to ');
@@ -144,6 +158,10 @@
             });
 
             $('[data-kt-ecommerce-product-filter="branch"]').on('change', function() {
+                dataTable.draw();
+            });
+
+            $('[data-kt-ecommerce-product-filter="reference"]').on('change', function() {
                 dataTable.draw();
             });
 

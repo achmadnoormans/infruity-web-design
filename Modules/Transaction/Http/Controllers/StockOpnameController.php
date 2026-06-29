@@ -552,17 +552,7 @@ class StockOpnameController extends Controller
 
             // (removed invalid insert into transaction_stock view)
 
-            DB::table('stock_opname_history')->insert([
-                'stock_opname_id' => $stockOpname->id,
-                'action' => 'FINALIZE',
-                'note' => 'Finalisasi Stock Opname',
-                'real_stock' => $stockOpname->real_stock,
-                'difference' => $stockOpname->difference,
-                'details' => $stockOpname->details,
-                'created_by' => Auth::user()->id_user,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+
 
             DB::commit();
 
