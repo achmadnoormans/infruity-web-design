@@ -335,50 +335,76 @@
                 const budgetValue = this.parseNumber(budget);
                 const feeValue = this.parseNumber(fee);
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
-                const normalizedParcels = this.parcels.map(item => ({
-                    ...item,
-                    unit: this.getUnitLabel(item.unit),
-                    displayName: item.displayName || this.formatParcelProductName(item)
-                }));
 
-                const parcelId = 'parcel' + kemasanId + this.formatShortNumber(budget) + '_' + Date.now();
-                const parcel = {
-                    id: parcelId,
-                    name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
-                    price: budgetValue,
-                    fee: feeValue,
-                    hpp: 0,
-                    qty: qty,
-                    unit: 'Parcel',
-                    discount: 0,
-                    discountPercent: 0,
-                    total_input: 0,
-                    kemasanId: kemasanId,
-                    kemasanName: kemasan,
-                    kemasanPrice: kemasanPriceValue,
-                    typeProduct: 'parcel',
+                const saveProcess = () => {
+                    const normalizedParcels = this.parcels.map(item => ({
+                        ...item,
+                        unit: this.getUnitLabel(item.unit),
+                        displayName: item.displayName || this.formatParcelProductName(item)
+                    }));
+
+                    const parcelId = 'parcel' + kemasanId + this.formatShortNumber(budget) + '_' + Date.now();
+                    const parcel = {
+                        id: parcelId,
+                        name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
+                        price: budgetValue,
+                        fee: feeValue,
+                        hpp: 0,
+                        qty: qty,
+                        unit: 'Parcel',
+                        discount: 0,
+                        discountPercent: 0,
+                        total_input: 0,
+                        kemasanId: kemasanId,
+                        kemasanName: kemasan,
+                        kemasanPrice: kemasanPriceValue,
+                        typeProduct: 'parcel',
+                    };
+                    const posParcel = {
+                        id: parcelId,
+                        budget: budgetValue,
+                        qty: qty,
+                        kemasan: kemasan,
+                        kemasanId: kemasanId,
+                        kemasanPrice: kemasanPriceValue,
+                        hpp: this.totalAll,
+                        fee: feeValue,
+                        data: normalizedParcels,
+                        type: 'parcel',
+                    }
+
+                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    posAppInstance.cart.push(parcel);
+                    posAppInstance.parcel.push(posParcel);
+                    document.getElementById('parcel_budget').value = '';
+                    document.getElementById('parcel_qty').value = 1;
+                    document.getElementById('parcel_jasa').value = '';
+                    $('#select_kemasan').val(null).trigger('change');
+                    this.parcels = [];
+                    
+                    const modalEl = document.getElementById('parcelModal');
+                    if(modalEl) {
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if(modal) modal.hide();
+                    }
                 };
-                const posParcel = {
-                    id: parcelId,
-                    budget: budgetValue,
-                    qty: qty,
-                    kemasan: kemasan,
-                    kemasanId: kemasanId,
-                    kemasanPrice: kemasanPriceValue,
-                    hpp: this.totalAll,
-                    fee: feeValue,
-                    data: normalizedParcels,
-                    type: 'parcel',
-                }
 
-                let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
-                posAppInstance.cart.push(parcel);
-                posAppInstance.parcel.push(posParcel);
-                document.getElementById('parcel_budget').value = '';
-                document.getElementById('parcel_qty').value = 1;
-                document.getElementById('parcel_jasa').value = '';
-                $('#select_kemasan').val(null).trigger('change');
-                this.parcels = [];
+                if (this.totalAll > budgetValue) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: 'Total keseluruhan parcel (' + this.formatRupiah(this.totalAll) + ') lebih besar dari budget (' + this.formatRupiah(budgetValue) + '). Tetap lanjutkan?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Lanjutkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            saveProcess();
+                        }
+                    });
+                } else {
+                    saveProcess();
+                }
 
                 // console.log("Cart sekarang:", posAppInstance.cart, posAppInstance.parcel);
                 // console.log('Parcel:', this.parcels, 'Product', parcel);
@@ -413,62 +439,87 @@
                 const feeValue = this.parseNumber(fee);
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
-                const normalizedParcels = this.parcels.map(item => ({
-                    ...item,
-                    unit: this.getUnitLabel(item.unit),
-                    displayName: item.displayName || this.formatParcelProductName(item)
-                }));
+                const saveEditProcess = () => {
+                    const normalizedParcels = this.parcels.map(item => ({
+                        ...item,
+                        unit: this.getUnitLabel(item.unit),
+                        displayName: item.displayName || this.formatParcelProductName(item)
+                    }));
 
-                const parcel = {
-                    id: parcelId,
-                    name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
-                    price: budgetValue,
-                    fee: feeValue,
-                    hpp: 0,
-                    qty: qty,
-                    unit: 'Parcel',
-                    discount: 0,
-                    discountPercent: 0,
-                    total_input: 0,
-                    typeProduct: 'parcel',
-                    kemasanId: kemasanId,
-                    kemasanName: kemasan,
-                    kemasanPrice: kemasanPriceValue,
+                    const parcel = {
+                        id: parcelId,
+                        name: 'Parcel ' + kemasan + '-' + this.formatShortNumber(budget),
+                        price: budgetValue,
+                        fee: feeValue,
+                        hpp: 0,
+                        qty: qty,
+                        unit: 'Parcel',
+                        discount: 0,
+                        discountPercent: 0,
+                        total_input: 0,
+                        typeProduct: 'parcel',
+                        kemasanId: kemasanId,
+                        kemasanName: kemasan,
+                        kemasanPrice: kemasanPriceValue,
+                    };
+
+                    const posParcel = {
+                        id: parcelId,
+                        budget: budgetValue,
+                        qty: qty,
+                        kemasan: kemasan,
+                        kemasanId: kemasanId,
+                        kemasanName: kemasan,
+                        kemasanPrice: kemasanPriceValue,
+                        hpp: this.totalAll,
+                        fee: feeValue,
+                        data: normalizedParcels, // isi produk dalam parcel
+                        type: 'parcel',
+                    };
+
+                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+
+                    // cari index berdasarkan parcelId
+                    let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);
+                    let idxParcel = posAppInstance.parcel.findIndex(p => p.id === parcelId);
+
+                    if (idxCart !== -1) {
+                        posAppInstance.cart.splice(idxCart, 1, parcel);
+                    }
+                    if (idxParcel !== -1) {
+                        posAppInstance.parcel.splice(idxParcel, 1, posParcel);
+                    }
+
+                    // kalau mau reset form setelah edit
+                    document.getElementById('parcel_budget').value = '';
+                    document.getElementById('parcel_qty').value = 1;
+                    document.getElementById('parcel_jasa').value = '';
+                    $('#select_kemasan').val(null).trigger('change');
+                    this.parcels = [];
+                    
+                    const modalEl = document.getElementById('parcelEditModal');
+                    if(modalEl) {
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if(modal) modal.hide();
+                    }
                 };
 
-                const posParcel = {
-                    id: parcelId,
-                    budget: budgetValue,
-                    qty: qty,
-                    kemasan: kemasan,
-                    kemasanId: kemasanId,
-                    kemasanName: kemasan,
-                    kemasanPrice: kemasanPriceValue,
-                    hpp: this.totalAll,
-                    fee: feeValue,
-                    data: normalizedParcels, // isi produk dalam parcel
-                    type: 'parcel',
-                };
-
-                let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
-
-                // cari index berdasarkan parcelId
-                let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);
-                let idxParcel = posAppInstance.parcel.findIndex(p => p.id === parcelId);
-
-                if (idxCart !== -1) {
-                    posAppInstance.cart.splice(idxCart, 1, parcel);
+                if (this.totalAll > budgetValue) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: 'Total keseluruhan parcel (' + this.formatRupiah(this.totalAll) + ') lebih besar dari budget (' + this.formatRupiah(budgetValue) + '). Tetap lanjutkan?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Lanjutkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            saveEditProcess();
+                        }
+                    });
+                } else {
+                    saveEditProcess();
                 }
-                if (idxParcel !== -1) {
-                    posAppInstance.parcel.splice(idxParcel, 1, posParcel);
-                }
-
-                // kalau mau reset form setelah edit
-                document.getElementById('parcel_budget').value = '';
-                document.getElementById('parcel_qty').value = 1;
-                document.getElementById('parcel_jasa').value = '';
-                $('#select_kemasan').val(null).trigger('change');
-                this.parcels = [];
             },
 
             deleteParcel(parcelId) {

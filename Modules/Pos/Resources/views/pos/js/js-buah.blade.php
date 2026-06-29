@@ -1873,7 +1873,7 @@
                             kemasanId: item.parcel.id,
                             kemasanPrice: item.parcel.price,
                             hpp: parseFloat(item.hpp || 0),
-                            fee: parseInt(item.fee, 10) || 0,
+                            fee: parseInt(item.product.fee, 10) || 0,
                             data: percelDatas,
                             type: 'parcel',
                         };
