@@ -239,7 +239,7 @@
                 this.editTitle = item.name;
                 this.editPrice = item.price;
                 this.editQty = item.qty;
-                this.editTotal = item.total_input || (item.qty * item.price);
+                this.editTotal = (item.total_input !== undefined && item.total_input !== null) ? item.total_input : (item.qty * item.price);
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
 
                 this.editDiscount = item.discount || 0;
@@ -457,7 +457,7 @@
                 this.editTitle = item.name;
                 this.editPrice = item.price;
                 this.editQty = item.qty;
-                this.editTotal = item.total_input || (item.qty * item.price);
+                this.editTotal = (item.total_input !== undefined && item.total_input !== null) ? item.total_input : (item.qty * item.price);
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
                 
                 this.editDiscount = item.discount || 0;
@@ -558,6 +558,14 @@
             saveEditJusToCart() {
                 const idx = this.cart.findIndex(i => i.key === this.editItem.key);
                 if (idx !== -1) {
+                    if (this.editQty <= 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Kuantitas tidak valid',
+                            text: 'Jumlah produk harus lebih dari 0.',
+                        });
+                        return;
+                    }
                     const disc = this.calculateEditDiscountAmount();
                     this.cart[idx].qty = this.editQty;
                     this.cart[idx].total_input = this.editTotal;
@@ -2277,6 +2285,14 @@
                         icon: 'warning',
                         title: 'Produk belum dipilih',
                         text: 'Silakan pilih produk terlebih dahulu.',
+                    });
+                    return;
+                }
+                if (this.addProduct.qty <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Jumlah produk harus lebih dari 0.',
                     });
                     return;
                 }
