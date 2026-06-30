@@ -358,6 +358,7 @@
                     let maxDiscount = qty < 1 ? (qty * price) : price;
                     if (input > maxDiscount) {
                         input = maxDiscount;
+                        e.target.value = this.formatRupiah(input);
                     }
                 }
                 this.editDiscountNominal = input;
@@ -739,6 +740,7 @@
                     let maxDiscount = qty < 1 ? (qty * price) : price;
                     if (input > maxDiscount) {
                         input = maxDiscount;
+                        e.target.value = this.formatRupiah(input);
                     }
                 }
                 this.addProduct.discountNominal = input;
