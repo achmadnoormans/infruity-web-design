@@ -1226,14 +1226,14 @@ class PosController extends Controller
                 $html  = '';
                 $html .= '
                     <div class="dropstart">
-                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Aksi">
+                        <button class="btn btn-sm btn-light-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="window" aria-expanded="false" title="Aksi">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
-                        <ul class="dropdown-menu p-1" style="min-width: 40px; z-index: 1050;">';
+                        <ul class="dropdown-menu p-2 text-center" style="min-width: 40px; z-index: 1050;">';
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.show', $item->id) . '">
-                                    <i class="bi bi-eye"></i>
+                                <a class="dropdown-item px-2 py-2" href="' . route('pos.show', $item->id) . '" title="Lihat">
+                                    <i class="bi bi-eye fs-5 text-info"></i>
                                 </a>
                             </li>';
                 $isRecent = false;
@@ -1245,30 +1245,30 @@ class PosController extends Controller
                 if (in_array($item->status, ['temp', 'draft']) || ($isRecent && $item->status !== 'paid')) {
                     $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.edit', $item->id) . '">
-                                    <i class="bi bi-pencil"></i>
+                                <a class="dropdown-item px-2 py-2" href="' . route('pos.edit', $item->id) . '" title="Edit">
+                                    <i class="bi bi-pencil fs-5 text-primary"></i>
                                 </a>
                             </li>';
                 }
                 if (! in_array($item->status, ['paid'])) {
                     $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.payment', $item->id) . '">
-                                    <i class="bi bi-cash-stack"></i>
+                                <a class="dropdown-item px-2 py-2" href="' . route('pos.payment', $item->id) . '" title="Bayar">
+                                    <i class="bi bi-cash-stack fs-5 text-success"></i>
                                 </a>
                             </li>';
                 }
                 $html .= '
                             <li>
-                                <a class="dropdown-item" href="' . route('pos.printPayment', $item->id) . '">
-                                    <i class="fa fa-receipt"></i>
+                                <a class="dropdown-item px-2 py-2" href="' . route('pos.printPayment', $item->id) . '" title="Cetak">
+                                    <i class="fa fa-receipt fs-5 text-warning"></i>
                                 </a>
                             </li>';
                 if (! in_array($item->status, ['paid', 'debt']) || Session('role')['id_role'] == 1) {
                     $html .= '
                             <li>
-                                <a class="dropdown-item text-primary d-flex justify-content-center" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')">
-                                    <i class="bi bi-trash"></i>
+                                <a class="dropdown-item px-2 py-2" href="javascript:void(0)" onclick="deleteProduct(' . $item->id . ')" title="Hapus">
+                                    <i class="bi bi-trash fs-5 text-danger"></i>
                                 </a>
                             </li>';
                 }
