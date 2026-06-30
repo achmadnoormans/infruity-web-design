@@ -202,12 +202,6 @@
                                     <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i> Jus
                                 </button>
                             </li>
-                            <li>
-                                <button class="dropdown-item" @click="openGiftModal()" {{-- x-show="isShowGiftButton" --}}>
-                                    <i class="ki-duotone ki-purchase text-success me-2 fs-5"></i>
-                                    <span class="text-success">Hadiah</span>
-                                </button>
-                            </li>
                         </ul>
                     </div>
                 </div>
