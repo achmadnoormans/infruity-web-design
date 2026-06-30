@@ -1697,11 +1697,37 @@
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
+                                    stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
                             })
+                        },
+                        templateResult: data => {
+                            if (data.loading) return data.text;
+                            const stock = data.stock_available ?? 0;
+                            const disabled = stock <= 0;
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            if (disabled) {
+                                $el.css('cursor', 'not-allowed');
+                            }
+                            return $el;
+                        },
+                        templateSelection: data => {
+                            const stock = data.stock_available ?? 0;
+                            if (stock <= 0 && data.id) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                            return data.text;
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Stok tidak mencukupi',
+                                text: 'Kemasan ' + data.text + ' tidak memiliki stok yang cukup.',
+                            });
+                            $('#select_kemasan').val(null).trigger('change');
+                            return;
+                        }
                         $('#kemasan_price').val(data.price.toLocaleString());
                         this.updateAddTotalFromQty();
                     });
@@ -1821,17 +1847,22 @@
                                     hpp: item.hpp,
                                     stock_available: item.get_stock?.stock_available ?? 0,
                                 }))
-                            }),
-                            templateResult: data => {
-                                if (data.loading) return data.text;
-                                const stock = data.stock_available ?? 0;
-                                const disabled = stock <= 0;
-                                const $el = $(`<span class="${disabled ? 'text-muted' : ''}"><strong>${data.text}</strong> <span class="badge bg-${stock > 0 ? 'success' : 'danger'}">Sisa: ${stock}</span></span>`);
-                                if (disabled) {
-                                    $el.css('cursor', 'not-allowed');
-                                }
-                                return $el;
-                            }
+                            })
+                    },
+                    templateResult: data => {
+                        if (data.loading) return data.text;
+                        const stock = data.stock_available ?? 0;
+                        const disabled = stock <= 0;
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}"><strong>${data.text}</strong> <span class="badge bg-${stock > 0 ? 'success' : 'danger'}">Sisa: ${stock}</span></span>`);
+                        if (disabled) {
+                            $el.css('cursor', 'not-allowed');
+                        }
+                        return $el;
+                    },
+                    templateSelection: data => {
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0 && data.id) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                        return data.text;
                     }
                 }).on('select2:select', (e) => {
                     const data = e.params.data;
@@ -1845,14 +1876,6 @@
                         $('#select_edit_kemasan').val(null).trigger('change');
                         return;
                     }
-                    this.addProduct.id = data.id;
-                    this.addProduct.name = data.text;
-                    this.addProduct.unit = data.unit.abbreviation;
-                    this.addProduct.price = data.price;
-                    this.addProduct.hpp = data.hpp ?? 0;
-                    subtotal = this.addProduct.qty * this.addProduct.price;
-                    this.addProduct.formattedAddTotalInput = this.formatRupiah(this.addProduct
-                        .total);
                     $('#kemasan_edit_price').val(data.price.toLocaleString());
                     this.updateAddTotalFromQty();
                 });

@@ -332,6 +332,14 @@
 
                 const budget = document.getElementById('parcel_budget').value;
                 const qty = document.getElementById('parcel_qty').value;
+                if (parseFloat(qty) <= 0 || !qty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Jumlah parcel harus lebih dari 0.',
+                    });
+                    return;
+                }
                 const fee = document.getElementById('parcel_jasa').value;
                 let kemasan = $('#select_kemasan option:selected').text();
                 let kemasanId = $('#select_kemasan option:selected').val();
@@ -450,6 +458,14 @@
 
                 const budget = document.getElementById('parcel_edit_budget').value;
                 const qty = document.getElementById('parcel_edit_qty').value;
+                if (parseFloat(qty) <= 0 || !qty) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Jumlah parcel harus lebih dari 0.',
+                    });
+                    return;
+                }
                 const fee = document.getElementById('parcel_edit_jasa').value;
                 const kemasan = $('#select_edit_kemasan option:selected').text();
                 const kemasanId = $('#select_edit_kemasan option:selected').val();
