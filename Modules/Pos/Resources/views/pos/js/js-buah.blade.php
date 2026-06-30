@@ -277,8 +277,8 @@
                     qty = inputTotal / (price * (1 - input / 100));
                     totalDiscount = qty * price * (input / 100);
                 } else {
-                    qty = (inputTotal + input) / price;
-                    totalDiscount = input;
+                    qty = inputTotal / (price - input);
+                    totalDiscount = qty * input;
                 }
                 
                 this.editQty = parseFloat(qty.toFixed(2));
@@ -301,7 +301,7 @@
                 let price = parseFloat(this.editPrice || 0);
                 let input = parseFloat(this.editDiscountNominal || 0);
                 
-                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : (qty * input);
                 this.editDiscount = totalDiscount;
                 
                 this.editTotal = parseFloat((qty * price - totalDiscount).toFixed(2));
@@ -316,7 +316,7 @@
                     let subtotal = qty * originalPrice;
                     return parseFloat(((subtotal || 0) * val / 100).toFixed(2)); // persen
                 } else {
-                    return val; // nominal
+                    return val * qty; // nominal
                 }
             },
             // Update otomatis qty berdasarkan total
@@ -337,7 +337,7 @@
                 const qty = parseFloat(this.editQty || 0);
                 const price = parseFloat(this.editPrice || 0);
                 
-                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : (qty * input);
                 let totalAfterDiscount = (qty * price) - totalDiscount;
                 
                 this.editDiscount = totalDiscount;
@@ -352,7 +352,7 @@
                 let price = parseFloat(this.editPrice || 0);
                 let input = parseFloat(this.editDiscountNominal || 0);
 
-                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : (qty * input);
                 this.editDiscountPercent = (input <= 100 && input > 0) ? input : 0;
                 this.editDiscount = totalDiscount;
                 
@@ -647,7 +647,7 @@
                 const price = parseFloat(this.addProduct.price) || 0;
                 const input = parseFloat(this.addProduct.discountNominal || 0);
                 
-                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : (qty * input);
                 let totalAfterDiscount = (qty * price) - totalDiscount;
                 
                 this.addProduct.discount = totalDiscount;
@@ -667,8 +667,8 @@
                     qty = inputTotal / (price * (1 - input / 100));
                     totalDiscount = qty * price * (input / 100);
                 } else {
-                    qty = (inputTotal + input) / price;
-                    totalDiscount = input;
+                    qty = inputTotal / (price - input);
+                    totalDiscount = qty * input;
                 }
                 
                 this.addProduct.qty = parseFloat(qty.toFixed(2));
@@ -685,7 +685,7 @@
                 const qty = parseFloat(this.addProduct.qty || 0);
                 const price = parseFloat(this.addProduct.price || 0);
                 
-                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : (qty * input);
                 let totalAfterDiscount = (qty * price) - totalDiscount;
                 
                 this.addProduct.discount = totalDiscount;
