@@ -321,6 +321,15 @@
                 });
             },
             saveParcelToCart() {
+                if (this.parcels.some(item => parseFloat(item.qty) <= 0)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Quantity product (bahan) harus lebih dari 0.',
+                    });
+                    return;
+                }
+
                 const budget = document.getElementById('parcel_budget').value;
                 const qty = document.getElementById('parcel_qty').value;
                 const fee = document.getElementById('parcel_jasa').value;
@@ -429,6 +438,16 @@
 
             editParcelToCart(parcelId) {
                 console.log(parcelId);
+                
+                if (this.parcels.some(item => parseFloat(item.qty) <= 0)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Quantity product (bahan) harus lebih dari 0.',
+                    });
+                    return;
+                }
+
                 const budget = document.getElementById('parcel_edit_budget').value;
                 const qty = document.getElementById('parcel_edit_qty').value;
                 const fee = document.getElementById('parcel_edit_jasa').value;

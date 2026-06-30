@@ -247,7 +247,7 @@
                 if (this.editDiscountPercent > 0) {
                     this.editDiscountNominal = this.editDiscountPercent;
                 } else {
-                    this.editDiscountNominal = this.editQty > 0 ? (this.editDiscount / this.editQty) : 0;
+                    this.editDiscountNominal = this.editDiscount;
                 }
 
                 this.editModal = true;
@@ -271,49 +271,52 @@
                 const price = parseFloat(this.editPrice || 1);
                 
                 let input = parseFloat(this.editDiscountNominal || 0);
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let priceAfterDiscount = price - discountPerUnit;
-                
-                const qty = inputTotal / priceAfterDiscount;
+                let qty;
+                let totalDiscount;
+                if (input <= 100 && input > 0) {
+                    qty = inputTotal / (price * (1 - input / 100));
+                    totalDiscount = qty * price * (input / 100);
+                } else {
+                    qty = (inputTotal + input) / price;
+                    totalDiscount = input;
+                }
                 
                 this.editQty = parseFloat(qty.toFixed(2));
                 this.editTotal = inputTotal;
-                this.editDiscount = qty * discountPerUnit;
+                this.editDiscount = totalDiscount;
                 this.editTotalFormatted = this.formatRupiah(inputTotal);
             },
 
             updateQtyFromEditTotal() {
                 let price = parseFloat(this.editPrice || 1);
-                let input = parseFloat(this.editDiscount || 0);
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let priceAfterDiscount = price - discountPerUnit;
+                let qty = (parseFloat(this.editTotal || 0) + parseFloat(this.editDiscount || 0)) / price;
 
-                if (priceAfterDiscount > 0) {
-                    this.editQty = parseFloat((this.editTotal / priceAfterDiscount).toFixed(2));
+                if (qty > 0) {
+                    this.editQty = parseFloat(qty.toFixed(2));
                 }
             },
 
             updateTotalFromEditQty() {
                 let qty = parseFloat(this.editQty || 0);
                 let price = parseFloat(this.editPrice || 0);
-                let input = parseFloat(this.editDiscount || 0);
+                let input = parseFloat(this.editDiscountNominal || 0);
                 
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let priceAfterDiscount = price - discountPerUnit;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                this.editDiscount = totalDiscount;
                 
-                this.editTotal = parseFloat((qty * priceAfterDiscount).toFixed(2));
+                this.editTotal = parseFloat((qty * price - totalDiscount).toFixed(2));
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
             },
             calculateEditDiscountAmount() {
-                const val = parseFloat(this.editDiscount || 0);
+                const val = parseFloat(this.editDiscountNominal || 0);
                 let qty = parseFloat(this.editQty || 0);
                 // console.log('Discount:', val);
-                if (val <= 100) {
+                if (val <= 100 && val > 0) {
                     let originalPrice = parseFloat(this.editPrice || 0);
                     let subtotal = qty * originalPrice;
                     return parseFloat(((subtotal || 0) * val / 100).toFixed(2)); // persen
                 } else {
-                    return val * qty; // nominal dikali qty
+                    return val; // nominal
                 }
             },
             // Update otomatis qty berdasarkan total
@@ -334,11 +337,11 @@
                 const qty = parseFloat(this.editQty || 0);
                 const price = parseFloat(this.editPrice || 0);
                 
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let totalAfterDiscount = qty * (price - discountPerUnit);
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalAfterDiscount = (qty * price) - totalDiscount;
                 
-                this.editDiscount = qty * discountPerUnit;
-                this.editDiscountPercent = (input <= 100) ? input : 0;
+                this.editDiscount = totalDiscount;
+                this.editDiscountPercent = (input <= 100 && input > 0) ? input : 0;
                 
                 this.editTotal = totalAfterDiscount;
                 this.editTotalFormatted = this.formatRupiah(totalAfterDiscount);
@@ -347,12 +350,13 @@
             updateEditDiscount() {
                 let qty = parseFloat(this.editQty || 0);
                 let price = parseFloat(this.editPrice || 0);
-                let input = parseFloat(this.editDiscount || 0);
+                let input = parseFloat(this.editDiscountNominal || 0);
 
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                this.editDiscountPercent = (input <= 100) ? input : 0;
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                this.editDiscountPercent = (input <= 100 && input > 0) ? input : 0;
+                this.editDiscount = totalDiscount;
                 
-                this.editTotal = parseFloat((qty * (price - discountPerUnit)).toFixed(2));
+                this.editTotal = parseFloat(((qty * price) - totalDiscount).toFixed(2));
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
             },
 
@@ -421,7 +425,15 @@
                 this.editQty = item.qty;
                 this.editTotal = item.total_input || (item.qty * item.price);
                 this.editTotalFormatted = this.formatRupiah(this.editTotal);
+                
                 this.editDiscount = item.discount || 0;
+                this.editDiscountPercent = item.discountPercent || 0;
+                if (this.editDiscountPercent > 0) {
+                    this.editDiscountNominal = this.editDiscountPercent;
+                } else {
+                    this.editDiscountNominal = this.editDiscount;
+                }
+                
                 this.editJusModal = true;
 
                 const container = $('#receiptEditContainer');
@@ -522,6 +534,15 @@
                         .map(function() { return $(this).val(); }).get();
                     let receiptProductsQty = $("input[name='receipt_edit_qty[]']")
                         .map(function() { return $(this).val(); }).get();
+
+                    if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Kuantitas tidak valid',
+                            text: 'Quantity product (bahan) harus lebih dari 0.',
+                        });
+                        return;
+                    }
                     let receiptProductsText = $("select[name='receipt_edit_product_id[]'] option:selected")
                         .map(function() { return $(this).text(); }).get();
 
@@ -626,10 +647,10 @@
                 const price = parseFloat(this.addProduct.price) || 0;
                 const input = parseFloat(this.addProduct.discountNominal || 0);
                 
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let totalAfterDiscount = qty * (price - discountPerUnit);
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalAfterDiscount = (qty * price) - totalDiscount;
                 
-                this.addProduct.discount = qty * discountPerUnit;
+                this.addProduct.discount = totalDiscount;
                 this.addProduct.total = totalAfterDiscount;
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(totalAfterDiscount);
             },
@@ -639,14 +660,20 @@
                 const price = parseFloat(this.addProduct.price || 1);
                 
                 let input = parseFloat(this.addProduct.discountNominal || 0);
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let priceAfterDiscount = price - discountPerUnit;
                 
-                const qty = inputTotal / priceAfterDiscount;
+                let qty;
+                let totalDiscount;
+                if (input <= 100 && input > 0) {
+                    qty = inputTotal / (price * (1 - input / 100));
+                    totalDiscount = qty * price * (input / 100);
+                } else {
+                    qty = (inputTotal + input) / price;
+                    totalDiscount = input;
+                }
                 
                 this.addProduct.qty = parseFloat(qty.toFixed(2));
                 this.addProduct.total = inputTotal;
-                this.addProduct.discount = qty * discountPerUnit;
+                this.addProduct.discount = totalDiscount;
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(inputTotal);
             },
 
@@ -658,11 +685,11 @@
                 const qty = parseFloat(this.addProduct.qty || 0);
                 const price = parseFloat(this.addProduct.price || 0);
                 
-                let discountPerUnit = (input <= 100) ? (price * (input / 100)) : input;
-                let totalAfterDiscount = qty * (price - discountPerUnit);
+                let totalDiscount = (input <= 100 && input > 0) ? (qty * price * (input / 100)) : input;
+                let totalAfterDiscount = (qty * price) - totalDiscount;
                 
-                this.addProduct.discount = qty * discountPerUnit;
-                this.addProduct.discountPercent = (input <= 100) ? input : 0;
+                this.addProduct.discount = totalDiscount;
+                this.addProduct.discountPercent = (input <= 100 && input > 0) ? input : 0;
                 
                 this.addProduct.total = totalAfterDiscount;
                 this.addProduct.formattedAddTotalInput = this.formatRupiah(totalAfterDiscount);
@@ -2207,6 +2234,15 @@
                         return $(this).val();
                     })
                     .get();
+
+                if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Kuantitas tidak valid',
+                        text: 'Quantity product (bahan) harus lebih dari 0.',
+                    });
+                    return;
+                }
                 let receiptProductsText = $("select[name='receipt_product_id[]'] option:selected")
                     .map(function() {
                         return $(this).text();
