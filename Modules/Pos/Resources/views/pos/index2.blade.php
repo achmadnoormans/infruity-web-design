@@ -47,11 +47,9 @@
                 }
             }
 
-            /* Override datatable responsive wrapper to prevent dropdown clipping */
-            .pos-index-page .table-responsive,
-            .pos-index-page .dataTables_scrollBody,
-            .pos-index-page .dataTables_wrapper {
-                overflow: visible !important;
+            /* Prevent dropdown clipping when data is 1, without breaking horizontal scroll */
+            .pos-index-page .table-responsive {
+                min-height: 250px;
             }
         </style>
         <div class="card card-flush">
@@ -247,6 +245,10 @@
             dataTable = $('#pos-table').DataTable({
                 processing: true,
                 serverSide: true,
+                fixedColumns: {
+                    leftColumns: 0,
+                    rightColumns: 1
+                },
                 columnDefs: [{
                     orderable: false,
                     targets: -1 // Disable sorting for action column
@@ -283,13 +285,13 @@
                     },
                 ]
             });
-            // Fix dropdown hidden in responsive table
-            $('body').on('show.bs.dropdown', '.table-responsive', function () {
-                $(this).css("overflow", "visible");
-            }).on('hide.bs.dropdown', '.table-responsive', function () {
-                $(this).css("overflow", "auto");
-            });
 
+            // Fix dropdown z-index in fixed columns
+            $('body').on('show.bs.dropdown', '.dropstart', function (e) {
+                $(e.target).closest('td').css('z-index', '1050');
+            }).on('hide.bs.dropdown', '.dropstart', function (e) {
+                $(e.target).closest('td').css('z-index', '');
+            });
             // Search manual lewat input
             $('#search').on('keyup', function() {
                 dataTable.search(this.value).draw();
