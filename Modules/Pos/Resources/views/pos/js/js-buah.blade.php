@@ -986,7 +986,16 @@
             updateDiskonGlobal(e) {
                 let cursor = e.target.selectionStart;
                 let oldLength = e.target.value.length;
-                const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                let val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                
+                let isPercent = (val <= 100 && val > 0);
+                if (!isPercent) {
+                    if (val > this.subtotal) {
+                        val = this.subtotal;
+                        e.target.value = this.formatRupiah(val);
+                    }
+                }
+                
                 this.diskonGlobal = val;
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
@@ -997,8 +1006,15 @@
             updateOngkirGlobal(e) {
                 let cursor = e.target.selectionStart;
                 let oldLength = e.target.value.length;
-                const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                let val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
                 this.ongkirGlobal = val;
+                
+                // If ongkir changes, check if diskonOngkir > ongkirGlobal
+                let isPercent = (this.diskonOngkir <= 100 && this.diskonOngkir > 0);
+                if (!isPercent && this.diskonOngkir > this.ongkirGlobal) {
+                    this.diskonOngkir = this.ongkirGlobal;
+                }
+                
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
                     cursor = cursor + (newLength - oldLength);
@@ -1008,7 +1024,16 @@
             updateDiskonOngkir(e) {
                 let cursor = e.target.selectionStart;
                 let oldLength = e.target.value.length;
-                const val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                let val = parseFloat(e.target.value.replace(/[^\d]/g, '')) || 0;
+                
+                let isPercent = (val <= 100 && val > 0);
+                if (!isPercent) {
+                    if (val > this.ongkirGlobal) {
+                        val = this.ongkirGlobal;
+                        e.target.value = this.formatRupiah(val);
+                    }
+                }
+                
                 this.diskonOngkir = val;
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
