@@ -267,7 +267,7 @@
 
             updateQtyFromEditTotalFormatted(e) {
                 let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
-                const inputTotal = parseFloat(raw || 0);
+                let inputTotal = parseFloat(raw || 0);
                 const price = parseFloat(this.editPrice || 1);
                 
                 let input = parseFloat(this.editDiscountNominal || 0);
@@ -275,8 +275,16 @@
                 let qty;
                 let totalDiscount;
                 if (isPercent) {
-                    qty = inputTotal / (price * (1 - input / 100));
-                    totalDiscount = qty * price * (input / 100);
+                    let discountedPrice = price * (1 - input / 100);
+                    if (discountedPrice === 0) {
+                        qty = parseFloat(this.editQty || 1);
+                        totalDiscount = qty * price;
+                        inputTotal = 0;
+                        e.target.value = this.formatRupiah(0);
+                    } else {
+                        qty = inputTotal / discountedPrice;
+                        totalDiscount = qty * price * (input / 100);
+                    }
                 } else {
                     let qty_A = (inputTotal + input) / price;
                     let qty_B = (price - input > 0) ? (inputTotal / (price - input)) : (inputTotal === 0 ? 1 : -1);
@@ -358,9 +366,10 @@
                     let maxDiscount = qty < 1 ? (qty * price) : price;
                     if (input > maxDiscount) {
                         input = maxDiscount;
-                        e.target.value = this.formatRupiah(input);
                     }
                 }
+                
+                e.target.value = this.formatRupiah(input);
                 this.editDiscountNominal = input;
                 
                 let totalDiscount = isPercent ? (qty * price * (input / 100)) : (qty < 1 ? input : (qty * input));
@@ -706,7 +715,7 @@
             },
             updateQtyFromAddTotal(e) {
                 let raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
-                const inputTotal = parseFloat(raw || 0);
+                let inputTotal = parseFloat(raw || 0);
                 const price = parseFloat(this.addProduct.price || 1);
                 
                 let input = parseFloat(this.addProduct.discountNominal || 0);
@@ -715,8 +724,16 @@
                 let qty;
                 let totalDiscount;
                 if (isPercent) {
-                    qty = inputTotal / (price * (1 - input / 100));
-                    totalDiscount = qty * price * (input / 100);
+                    let discountedPrice = price * (1 - input / 100);
+                    if (discountedPrice === 0) {
+                        qty = parseFloat(this.addProduct.qty || 1);
+                        totalDiscount = qty * price;
+                        inputTotal = 0;
+                        e.target.value = this.formatRupiah(0);
+                    } else {
+                        qty = inputTotal / discountedPrice;
+                        totalDiscount = qty * price * (input / 100);
+                    }
                 } else {
                     let qty_A = (inputTotal + input) / price;
                     let qty_B = (price - input > 0) ? (inputTotal / (price - input)) : (inputTotal === 0 ? 1 : -1);
@@ -748,9 +765,10 @@
                     let maxDiscount = qty < 1 ? (qty * price) : price;
                     if (input > maxDiscount) {
                         input = maxDiscount;
-                        e.target.value = this.formatRupiah(input);
                     }
                 }
+                
+                e.target.value = this.formatRupiah(input);
                 this.addProduct.discountNominal = input;
                 
                 let totalDiscount = isPercent ? (qty * price * (input / 100)) : (qty < 1 ? input : (qty * input));
@@ -992,10 +1010,10 @@
                 if (!isPercent) {
                     if (val > this.subtotal) {
                         val = this.subtotal;
-                        e.target.value = this.formatRupiah(val);
                     }
                 }
                 
+                e.target.value = this.formatRupiah(val);
                 this.diskonGlobal = val;
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
@@ -1015,6 +1033,7 @@
                     this.diskonOngkir = this.ongkirGlobal;
                 }
                 
+                e.target.value = this.formatRupiah(val);
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
                     cursor = cursor + (newLength - oldLength);
@@ -1030,10 +1049,10 @@
                 if (!isPercent) {
                     if (val > this.ongkirGlobal) {
                         val = this.ongkirGlobal;
-                        e.target.value = this.formatRupiah(val);
                     }
                 }
                 
+                e.target.value = this.formatRupiah(val);
                 this.diskonOngkir = val;
                 this.$nextTick(() => {
                     let newLength = e.target.value.length;
