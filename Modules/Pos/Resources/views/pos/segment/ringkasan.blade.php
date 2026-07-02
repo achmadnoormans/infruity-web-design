@@ -19,7 +19,7 @@
                 <div class="mb-3">
                     <label class="form-label mb-1">Diskon (Rp jika > 100, % jika ≤ 100)</label>
                     <input type="text" class="form-control text-end" :value="formatRupiah(diskonGlobal)"
-                        @input="updateDiskonGlobal">
+                        @input="updateDiskonGlobal" @focus="$event.target.select()">
                 </div>
 
                 <!-- Note -->
@@ -85,12 +85,12 @@
                             <div class="mb-3 col">
                                 <label class="form-label mb-1">Biaya Pengiriman</label>
                                 <input type="text" class="form-control text-end" inputmode="numeric"
-                                    :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal">
+                                    :value="formatRupiah(ongkirGlobal)" @input="updateOngkirGlobal" @focus="$event.target.select()">
                             </div>
                             <div class="mb-3 col">
                                 <label class="form-label mb-1">Diskon Ongkir</label>
                                 <input type="text" class="form-control text-end" inputmode="numeric"
-                                    :value="formatRupiah(diskonOngkir)" @input="updateDiskonOngkir">
+                                    :value="formatRupiah(diskonOngkir)" @input="updateDiskonOngkir" @focus="$event.target.select()">
                             </div>
                         </div>
                     </div>
