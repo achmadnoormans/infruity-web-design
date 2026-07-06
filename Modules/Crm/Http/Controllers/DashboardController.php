@@ -8,6 +8,8 @@ use Illuminate\Routing\Controller;
 use Modules\Master\Entities\Customer;
 use Modules\Crm\Entities\Tier;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Modules\Transaction\Entities\StockOpname;
 
 class DashboardController extends Controller
 {
@@ -21,6 +23,29 @@ class DashboardController extends Controller
     {
         if ($denied = $this->requireAccess('crm-dashboard.index')) {
             return $denied;
+        }
+
+        // Auto update stock-opname status (kemarin dan seterusnya)
+        $pendingStockOpnames = StockOpname::where('date', '<', date('Y-m-d'))
+            ->where('status', '!=', 'selesai')
+            ->get();
+
+        foreach ($pendingStockOpnames as $stockOpname) {
+            $productStock = DB::table('product_stock')
+                ->where('id', $stockOpname->product_id)
+                ->where('branch_id', $stockOpname->branch_id)
+                ->first();
+
+            if ($productStock) {
+                $currentStock = $productStock->stock_available;
+                $difference = (Double)$stockOpname->real_stock - (Double)$currentStock;
+
+                $stockOpname->stock = $currentStock;
+                $stockOpname->difference = $difference;
+                $stockOpname->status = 'selesai';
+                $stockOpname->updated_by = Auth::check() ? Auth::user()->id_user : null;
+                $stockOpname->save();
+            }
         }
 
         $data['totalCustomer'] = Customer::count();
