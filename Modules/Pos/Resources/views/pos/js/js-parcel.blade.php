@@ -205,16 +205,25 @@
                                 limit: 10
                             };
                         },
-                        processResults: function(data) {
+                        processResults: (data) => {
                             return {
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
+                                results: data.map(item => {
+                                    let qtyInCart = 0;
+                                    const mainApp = window.mainCartInstance;
+                                    if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                        const currentParcelQty = $('#parcel_qty').val() || 1;
+                                        qtyInCart = mainApp.calculateUsedStock(item.id, this.parcels, currentParcelQty);
+                                    }
+                                    let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                    return {
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                        stock_available: stock_available,
+                                    };
+                                })
                             };
                         },
                         cache: true
@@ -278,16 +287,25 @@
                                 limit: 10
                             };
                         },
-                        processResults: function(data) {
+                        processResults: (data) => {
                             return {
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
+                                results: data.map(item => {
+                                    let qtyInCart = 0;
+                                    const mainApp = window.mainCartInstance;
+                                    if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                        const currentParcelQty = $('#parcel_edit_qty').val() || 1;
+                                        qtyInCart = mainApp.calculateUsedStock(item.id, this.parcels, currentParcelQty);
+                                    }
+                                    let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                    return {
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                        stock_available: stock_available,
+                                    };
+                                })
                             };
                         },
                         cache: true

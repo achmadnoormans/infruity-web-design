@@ -63,6 +63,7 @@
 
             init() {
                 const self = this; // simpan konteks Alpine
+                window.mainCartInstance = this;
                 this.currentInvoiceNumber = document.querySelector('input[name="invoice_number"]')?.value || '';
 
                 $('#customer_id').on('select2:select', function(e) {
@@ -121,6 +122,54 @@
             setDiscountGlobal(value) {
                 this.diskonGlobal = value;
                 // console.log('Discount Global set to:', this.diskonGlobal);
+            },
+
+            calculateUsedStock(productId, currentParcelItems = null, currentParcelQty = 1) {
+                let used = 0;
+                const mainApp = window.mainCartInstance || this;
+                
+                if (mainApp.cart) {
+                    used += mainApp.cart.filter(c => c.id == productId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus').reduce((sum, c) => sum + Number(c.qty), 0);
+                }
+                
+                if (mainApp.parcel) {
+                    mainApp.parcel.forEach(p => {
+                        if (p.data && Array.isArray(p.data)) {
+                            used += p.data.filter(ing => (ing.id == productId || ing.product == productId)).reduce((sum, ing) => sum + (Number(ing.qty) * Number(p.qty)), 0);
+                        }
+                    });
+                }
+                
+                if (mainApp.jus) {
+                    mainApp.jus.forEach(j => {
+                        if (j.data && Array.isArray(j.data.products)) {
+                            j.data.products.forEach((pId, idx) => {
+                                if (pId == productId) {
+                                    const qty = j.data.productsQty[idx] ? Number(j.data.productsQty[idx]) : 0;
+                                    used += qty * Number(j.qty);
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                if (currentParcelItems && Array.isArray(currentParcelItems)) {
+                    used += currentParcelItems.filter(p => (p.id == productId || p.product == productId)).reduce((sum, p) => sum + (Number(p.qty) * Number(currentParcelQty)), 0);
+                }
+
+                const jusSelects = $("select[name='receipt_product_id[]']");
+                const jusQtys = $("input[name='receipt_qty[]']");
+                if (jusSelects.length > 0) {
+                    const addProductQty = mainApp.addProduct?.qty ? Number(mainApp.addProduct.qty) : 1;
+                    jusSelects.each(function(index) {
+                        if ($(this).val() == productId) {
+                            const qty = $(jusQtys[index]).val();
+                            used += Number(qty || 0) * addProductQty;
+                        }
+                    });
+                }
+
+                return used;
             },
 
             formatRupiah(value) {
@@ -639,16 +688,25 @@
                                     limit: 10 // contoh parameter tambahan
                                 };
                             },
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
-                            })
+                            processResults: data => {
+                                return {
+                                    results: data.map(item => {
+                                        let qtyInCart = 0;
+                                        if (this.cart) {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            stock_available: stock_available,
+                                        };
+                                    })
+                                };
+                            }
                         },
                         templateResult: data => {
                             if (data.loading) return data.text;
@@ -1734,16 +1792,25 @@
                                     limit: 10 // contoh parameter tambahan
                                 };
                             },
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
-                            })
+                            processResults: data => {
+                                return {
+                                    results: data.map(item => {
+                                        let qtyInCart = 0;
+                                        if (this.cart) {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            stock_available: stock_available,
+                                        };
+                                    })
+                                };
+                            }
                         },
                         templateResult: data => {
                             if (data.loading) return data.text;
@@ -1882,16 +1949,25 @@
                                 limit: 10 // contoh parameter tambahan
                             };
                         },
-                        processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
-                            })
+                        processResults: data => {
+                                return {
+                                    results: data.map(item => {
+                                        let qtyInCart = 0;
+                                        if (this.cart) {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            stock_available: stock_available,
+                                        };
+                                    })
+                                };
+                            }
                     },
                     templateResult: data => {
                         if (data.loading) return data.text;
@@ -2241,19 +2317,56 @@
                                     limit: 10 // contoh parameter tambahan
                                 };
                             },
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    receipt: item.product_receipt,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                }))
-                            })
+                            processResults: data => {
+                                return {
+                                    results: data.map(item => {
+                                        const mainApp = window.mainCartInstance;
+                                        let qtyInCart = 0;
+                                        if (mainApp && mainApp.cart) {
+                                            qtyInCart = mainApp.calculateUsedStock(item.id);
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            receipt: item.product_receipt,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            stock_available: stock_available,
+                                        };
+                                    })
+                                };
+                            }
+                        },
+                        templateResult: data => {
+                            if (data.loading) return data.text;
+                            const stock = data.stock_available ?? 0;
+                            const disabled = stock <= 0;
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            if (disabled) {
+                                $el.css('cursor', 'not-allowed');
+                            }
+                            return $el;
+                        },
+                        templateSelection: data => {
+                            const stock = data.stock_available ?? 0;
+                            if (stock <= 0 && data.id) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                            return data.text;
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Stok tidak mencukupi',
+                                text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                            });
+                            $(e.target).val(null).trigger('change');
+                            return;
+                        }
+                        
                         this.addProduct.id = data.id;
                         this.addProduct.name = data.text;
                         this.addProduct.unit = data.unit.abbreviation;
@@ -2327,14 +2440,52 @@
                                     limit: 10
                                 };
                             },
-                            processResults: data => ({
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price
-                                }))
-                            })
+                            processResults: data => {
+                                return {
+                                    results: data.map(item => {
+                                        const mainApp = window.mainCartInstance;
+                                        let qtyInCart = 0;
+                                        if (mainApp && mainApp.cart) {
+                                            qtyInCart = mainApp.calculateUsedStock(item.id);
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            stock_available: stock_available,
+                                        };
+                                    })
+                                };
+                            }
+                        },
+                        templateResult: data => {
+                            if (data.loading) return data.text;
+                            const stock = data.stock_available ?? 0;
+                            const disabled = stock <= 0;
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            if (disabled) {
+                                $el.css('cursor', 'not-allowed');
+                            }
+                            return $el;
+                        },
+                        templateSelection: data => {
+                            const stock = data.stock_available ?? 0;
+                            if (stock <= 0 && data.id) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                            return data.text;
+                        }
+                    }).on('select2:select', (e) => {
+                        const data = e.params.data;
+                        const stock = data.stock_available ?? 0;
+                        if (stock <= 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Stok tidak mencukupi',
+                                text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                            });
+                            $(e.target).val(null).trigger('change');
+                            return;
                         }
                     });
 
