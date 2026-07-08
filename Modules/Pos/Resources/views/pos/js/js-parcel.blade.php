@@ -98,7 +98,18 @@
 
                 // Pastikan harga asli tersimpan (misalnya item.priceAwal = harga satuan)
                 const hargaAwal = Number(item.priceAwal || 0);
-                const qty = Number(item.qty || 1);
+                let qty = Number(item.qty || 1);
+                const stockAvailable = Number(item.stock_available || 0);
+                
+                if (qty > stockAvailable && stockAvailable > 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stok tidak mencukupi',
+                        text: 'Sisa stok tersedia hanya ' + stockAvailable + '.',
+                    });
+                    item.qty = stockAvailable;
+                    qty = stockAvailable;
+                }
 
                 // Hitung ulang total price berdasarkan qty
                 const total = hargaAwal * qty;
@@ -222,6 +233,7 @@
                                         price: item.price,
                                         hpp: item.hpp,
                                         stock_available: stock_available,
+                                        original_stock: item.get_stock?.stock_available ?? 0,
                                     };
                                 })
                             };
@@ -249,6 +261,8 @@
                         unit: data.unit
                     });
                     this.parcels[index].priceAwal = data.price;
+                    this.parcels[index].stock_available = data.stock_available ?? 0;
+                    this.parcels[index].original_stock = data.original_stock ?? 0;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
                     this.parcels[index].priceFormatted = this.formatRupiah(data.price);
@@ -304,6 +318,7 @@
                                         price: item.price,
                                         hpp: item.hpp,
                                         stock_available: stock_available,
+                                        original_stock: item.get_stock?.stock_available ?? 0,
                                     };
                                 })
                             };
@@ -331,6 +346,8 @@
                         unit: data.unit
                     });
                     this.parcels[index].priceAwal = data.price;
+                    this.parcels[index].stock_available = data.stock_available ?? 0;
+                    this.parcels[index].original_stock = data.original_stock ?? 0;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
                     this.parcels[index].priceFormatted = this.formatRupiah(data.price);

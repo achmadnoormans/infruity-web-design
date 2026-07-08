@@ -461,6 +461,18 @@
                     });
                     return;
                 }
+                
+                const usedByOthers = this.calculateUsedStock(this.editItem.id) - (this.editItem.qty || 0);
+                const availableForEdit = (this.editItem.original_stock ?? 0) - usedByOthers;
+
+                if (this.editItem.original_stock !== undefined && parseFloat(this.editQty) > availableForEdit && this.editItem.typeProduct === 'product') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stok tidak mencukupi',
+                        text: 'Sisa stok tersedia hanya ' + availableForEdit + '.',
+                    });
+                    return;
+                }
 
                 const idx = this.cart.findIndex(i => i.key === this.editItem.key);
                 if (idx !== -1) {
@@ -643,6 +655,43 @@
                         });
                         return;
                     }
+                    
+                    let stockErrors = [];
+                    $("select[name='receipt_edit_product_id[]']").each((index, el) => {
+                        let select2Data = $(el).select2('data');
+                        if (select2Data && select2Data.length > 0 && select2Data[0].id) {
+                            let originalStock = select2Data[0].original_stock;
+                            if (originalStock !== undefined) {
+                                let productId = select2Data[0].id;
+                                let productName = select2Data[0].text;
+                                
+                                let oldUsage = 0;
+                                if (this.editItem.data && this.editItem.data.products) {
+                                    this.editItem.data.products.forEach((pId, idx) => {
+                                        if (pId == productId) {
+                                            oldUsage += (this.editItem.data.productsQty[idx] ? Number(this.editItem.data.productsQty[idx]) : 0) * (this.editItem.qty || 1);
+                                        }
+                                    });
+                                }
+                                
+                                let newUsage = parseFloat(receiptProductsQty[index] || 0) * parseFloat(this.editQty || 1);
+                                let totalUsed = this.calculateUsedStock(productId) - oldUsage + newUsage;
+                                
+                                if (totalUsed > originalStock) {
+                                    stockErrors.push(`- ${productName} (Sisa stok: ${originalStock})`);
+                                }
+                            }
+                        }
+                    });
+
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok bahan tidak mencukupi',
+                            text: 'Beberapa bahan tidak cukup stoknya:\n' + stockErrors.join('\n'),
+                        });
+                        return;
+                    }
                     let receiptProductsText = $("select[name='receipt_edit_product_id[]'] option:selected")
                         .map(function() { return $(this).text(); }).get();
 
@@ -703,6 +752,7 @@
                                             price: item.price,
                                             hpp: item.hpp,
                                             stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
                                         };
                                     })
                                 };
@@ -740,6 +790,8 @@
                         this.addProduct.unit = data.unit.abbreviation;
                         this.addProduct.price = data.price;
                         this.addProduct.hpp = data.hpp ?? 0;
+                        this.addProduct.stock_available = data.stock_available ?? 0;
+                        this.addProduct.original_stock = data.original_stock ?? 0;
                         subtotal = this.addProduct.qty * this.addProduct.price;
                         // skip formatRupiah undefined, let updateAddTotalFromQty handle it
                         this.updateAddTotalFromQty();
@@ -877,6 +929,15 @@
                     });
                     return;
                 }
+                
+                if (parseFloat(this.addProduct.qty) > parseFloat(this.addProduct.stock_available)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stok tidak mencukupi',
+                        text: 'Stok tersedia hanya ' + this.addProduct.stock_available + ', sedangkan kuantitas yang diminta adalah ' + this.addProduct.qty + '.',
+                    });
+                    return;
+                }
 
                 // const isExist = this.cart.some(item => item.id === this.addProduct.id);
                 // if (isExist) {
@@ -904,6 +965,7 @@
                     discountPercent: this.addProduct.discountPercent,
                     total_input: total_input,
                     typeProduct: 'product',
+                    original_stock: this.addProduct.original_stock,
                 });
 
                 // console.log('cart', this.cart);
@@ -1807,6 +1869,7 @@
                                             price: item.price,
                                             hpp: item.hpp,
                                             stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
                                         };
                                     })
                                 };
@@ -1964,6 +2027,7 @@
                                             price: item.price,
                                             hpp: item.hpp,
                                             stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
                                         };
                                     })
                                 };
@@ -2334,6 +2398,7 @@
                                             price: item.price,
                                             hpp: item.hpp,
                                             stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
                                         };
                                     })
                                 };
@@ -2455,6 +2520,7 @@
                                             unit: item.unit,
                                             price: item.price,
                                             stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
                                         };
                                     })
                                 };
@@ -2534,6 +2600,30 @@
                         icon: 'warning',
                         title: 'Kuantitas tidak valid',
                         text: 'Quantity product (bahan) harus lebih dari 0.',
+                    });
+                    return;
+                }
+                
+                let stockErrors = [];
+                $("select[name='receipt_product_id[]']").each((index, el) => {
+                    let select2Data = $(el).select2('data');
+                    if (select2Data && select2Data.length > 0 && select2Data[0].id) {
+                        let originalStock = select2Data[0].original_stock ?? 0;
+                        let productId = select2Data[0].id;
+                        let productName = select2Data[0].text;
+                        
+                        let totalUsed = this.calculateUsedStock(productId);
+                        if (totalUsed > originalStock) {
+                            stockErrors.push(`- ${productName} (Sisa stok: ${originalStock})`);
+                        }
+                    }
+                });
+
+                if (stockErrors.length > 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stok bahan tidak mencukupi',
+                        text: 'Beberapa bahan tidak cukup stoknya:\n' + stockErrors.join('\n'),
                     });
                     return;
                 }
