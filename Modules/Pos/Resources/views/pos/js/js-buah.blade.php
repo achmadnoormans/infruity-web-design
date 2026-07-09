@@ -613,12 +613,29 @@
                                     window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
                                 });
                                 return {
-                                    results: data.map(i => ({
-                                        id: i.id,
-                                        text: i.name,
-                                        unit: i.unit,
-                                        price: i.price
-                                    }))
+                                    results: data.map(item => {
+                                        let qtyInCart = 0;
+                                        if (typeof this.calculateUsedStock === 'function') {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            receipt: item.product_receipt,
+                                            stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
+                                        };
+                                    })
                                 };
                             }
                         }
@@ -767,8 +784,13 @@
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
-                                        if (this.cart) {
+                                        if (typeof this.calculateUsedStock === 'function') {
                                             qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
                                         }
                                         let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
                                         return {
@@ -777,8 +799,10 @@
                                             unit: item.unit,
                                             price: item.price,
                                             hpp: item.hpp,
+                                            receipt: item.product_receipt,
                                             stock_available: stock_available,
                                             original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
                                         };
                                     })
                                 };
@@ -818,6 +842,7 @@
                         this.addProduct.hpp = data.hpp ?? 0;
                         this.addProduct.stock_available = data.stock_available ?? 0;
                         this.addProduct.original_stock = data.original_stock ?? 0;
+                        this.addProduct.parent_id = data.parent_id ?? data.id;
                         subtotal = this.addProduct.qty * this.addProduct.price;
                         // skip formatRupiah undefined, let updateAddTotalFromQty handle it
                         this.updateAddTotalFromQty();
@@ -956,11 +981,12 @@
                     return;
                 }
                 
-                if (parseFloat(this.addProduct.qty) > parseFloat(this.addProduct.stock_available)) {
+                let currentStock = parseFloat(this.addProduct.stock_available) || 0;
+                if (parseFloat(this.addProduct.qty) > currentStock) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'Stok tidak mencukupi',
-                        text: 'Stok tersedia hanya ' + this.addProduct.stock_available + ', sedangkan kuantitas yang diminta adalah ' + this.addProduct.qty + '.',
+                        text: 'Stok tersedia hanya ' + currentStock + ', sedangkan kuantitas yang diminta adalah ' + this.addProduct.qty + '.',
                     });
                     return;
                 }
@@ -992,6 +1018,7 @@
                     total_input: total_input,
                     typeProduct: 'product',
                     original_stock: this.addProduct.original_stock,
+                    parent_id: this.addProduct.parent_id,
                 });
 
                 // console.log('cart', this.cart);
@@ -1043,7 +1070,21 @@
                 const item = this.cart.find(i => i.id === itemId);
                 if (item) {
                     const oldQty = item.qty;
-                    item.qty = parseFloat(newQty);
+                    let targetQty = parseFloat(newQty);
+
+                    let usedOther = this.calculateUsedStock(item.id) - oldQty;
+                    let maxAllowed = (parseFloat(item.original_stock) || 0) - usedOther;
+                    
+                    if (targetQty > maxAllowed) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok tidak mencukupi',
+                            text: 'Sisa stok tersedia hanya ' + maxAllowed + '.',
+                        });
+                        targetQty = maxAllowed;
+                        if (targetQty < 0.01) return; // Prevent setting to 0
+                    }
+                    item.qty = targetQty;
 
                     // Recalculate total_input proportionally
                     if (item.total_input && oldQty > 0) {
@@ -1773,13 +1814,29 @@
                                     window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
                                 });
                                 return {
-                                    results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                }))
+                                    results: data.map(item => {
+                                        let qtyInCart = 0;
+                                        if (typeof this.calculateUsedStock === 'function') {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
+                                        }
+                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                        return {
+                                            id: item.id,
+                                            text: item.name,
+                                            unit: item.unit,
+                                            price: item.price,
+                                            hpp: item.hpp,
+                                            receipt: item.product_receipt,
+                                            stock_available: stock_available,
+                                            original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
+                                        };
+                                    })
                                 };
                             }
                         }
@@ -1894,8 +1951,13 @@
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
-                                        if (this.cart) {
+                                        if (typeof this.calculateUsedStock === 'function') {
                                             qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
                                         }
                                         let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
                                         return {
@@ -1904,8 +1966,10 @@
                                             unit: item.unit,
                                             price: item.price,
                                             hpp: item.hpp,
+                                            receipt: item.product_receipt,
                                             stock_available: stock_available,
                                             original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
                                         };
                                     })
                                 };
@@ -2048,16 +2112,21 @@
                                 limit: 10 // contoh parameter tambahan
                             };
                         },
-                        processResults: data => {
-                            window.productStockMap = window.productStockMap || {};
-                            data.forEach(item => {
-                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
-                            });
+                            processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
-                                        if (this.cart) {
+                                        if (typeof this.calculateUsedStock === 'function') {
                                             qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
                                         }
                                         let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
                                         return {
@@ -2066,8 +2135,10 @@
                                             unit: item.unit,
                                             price: item.price,
                                             hpp: item.hpp,
+                                            receipt: item.product_receipt,
                                             stock_available: stock_available,
                                             original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
                                         };
                                     })
                                 };
@@ -2428,21 +2499,26 @@
                                 });
                                 return {
                                     results: data.map(item => {
-                                        const mainApp = window.mainCartInstance;
                                         let qtyInCart = 0;
-                                        if (mainApp && mainApp.cart) {
-                                            qtyInCart = mainApp.calculateUsedStock(item.id);
+                                        if (typeof this.calculateUsedStock === 'function') {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
                                         }
                                         let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
                                         return {
                                             id: item.id,
                                             text: item.name,
                                             unit: item.unit,
-                                            receipt: item.product_receipt,
                                             price: item.price,
                                             hpp: item.hpp,
+                                            receipt: item.product_receipt,
                                             stock_available: stock_available,
                                             original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
                                         };
                                     })
                                 };
@@ -2451,16 +2527,13 @@
                         templateResult: data => {
                             if (data.loading) return data.text;
                             const stock = data.stock_available ?? 0;
-                            const disabled = stock <= 0;
-                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
-                            if (disabled) {
-                                $el.css('cursor', 'not-allowed');
-                            }
+                            const isZero = stock <= 0;
+                            const $el = $(`<span class="${isZero ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'warning'} ms-2">Stok: ${stock}</span></span>`);
                             return $el;
                         },
                         templateSelection: data => {
                             const stock = data.stock_available ?? 0;
-                            if (stock <= 0 && data.id) return $(`<span class="text-muted">${data.text} (Stok habis)</span>`);
+                            if (stock <= 0 && data.id) return $(`<span>${data.text} (Stok ${stock}, produksi otomatis)</span>`);
                             return data.text;
                         }
                     }).on('select2:select', (e) => {
@@ -2468,12 +2541,10 @@
                         const stock = data.stock_available ?? 0;
                         if (stock <= 0) {
                             Swal.fire({
-                                icon: 'warning',
-                                title: 'Stok tidak mencukupi',
-                                text: 'Produk ' + data.text + ' tidak memiliki stok yang cukup.',
+                                icon: 'info',
+                                title: 'Informasi Stok',
+                                text: 'Stock saat ini ' + stock + ', maka akan otomatis dilakukan produksi.',
                             });
-                            $(e.target).val(null).trigger('change');
-                            return;
                         }
                         
                         this.addProduct.id = data.id;
@@ -2556,10 +2627,14 @@
                                 });
                                 return {
                                     results: data.map(item => {
-                                        const mainApp = window.mainCartInstance;
                                         let qtyInCart = 0;
-                                        if (mainApp && mainApp.cart) {
-                                            qtyInCart = mainApp.calculateUsedStock(item.id);
+                                        if (typeof this.calculateUsedStock === 'function') {
+                                            qtyInCart = this.calculateUsedStock(item.id);
+                                        } else {
+                                            const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
+                                            if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                                qtyInCart = mainApp.calculateUsedStock(item.id);
+                                            }
                                         }
                                         let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
                                         return {
@@ -2567,8 +2642,11 @@
                                             text: item.name,
                                             unit: item.unit,
                                             price: item.price,
+                                            hpp: item.hpp,
+                                            receipt: item.product_receipt,
                                             stock_available: stock_available,
                                             original_stock: item.get_stock?.stock_available ?? 0,
+                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
                                         };
                                     })
                                 };
