@@ -532,6 +532,17 @@
                 const modalEl = document.getElementById('editModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
+                
+                this.editItem = null;
+                this.editPrice = 0;
+                this.editQty = 1;
+                this.editTotal = 0;
+                this.editDiscount = 0;
+                this.editDiscountPercent = 0;
+                this.editDiscountNominal = 0;
+                this.editTotalFormatted = '';
+                this.editProductName = '';
+                this.editProductUnit = '';
             },
 
             openEditJusModal(item) {
@@ -662,6 +673,20 @@
                 const modalEl = document.getElementById('editJusModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 if (modal) modal.hide();
+                
+                this.editItem = null;
+                this.editPrice = 0;
+                this.editQty = 1;
+                this.editTotal = 0;
+                this.editDiscount = 0;
+                this.editDiscountPercent = 0;
+                this.editDiscountNominal = 0;
+                this.editTotalFormatted = '';
+                this.editProductName = '';
+                this.editProductUnit = '';
+                
+                const container = $('#receiptEditContainer');
+                container.empty();
             },
 
             saveEditJusToCart() {
@@ -853,6 +878,20 @@
                 this.showAddModal = false;
                 const modal = bootstrap.Modal.getInstance(document.getElementById('addModal'));
                 if (modal) modal.hide();
+                
+                this.addProduct = {
+                    id: null,
+                    name: '',
+                    unit: '',
+                    price: 0,
+                    hpp: 0,
+                    discount: 0,
+                    discountNominal: 0,
+                    discountPercent: 0,
+                    qty: 1,
+                    formattedAddTotalInput: this.formatRupiah(0)
+                };
+                $('#select_product').val(null).trigger('change');
             },
             updateAddTotalFromQty() {
                 const qty = parseFloat(this.addProduct.qty) || 0;
@@ -2011,12 +2050,44 @@
                 this.showParcelModal = false;
                 const modal = bootstrap.Modal.getInstance(document.getElementById('parcelModal'));
                 if (modal) modal.hide();
+                
+                let parcelFormNodes = document.querySelectorAll('[x-data="parcelForm()"]');
+                parcelFormNodes.forEach(node => {
+                    if (node.id === 'parcelModal' && node.__x) {
+                        let instance = node.__x.$data;
+                        instance.parcels = [];
+                        instance.totalAll = 0;
+                        instance.qtyParcel = 1;
+                        instance.budgetParcel = '';
+                    }
+                });
+                
+                document.getElementById('parcel_budget').value = '';
+                document.getElementById('parcel_qty').value = 1;
+                document.getElementById('parcel_jasa').value = '';
+                $('#select_kemasan').val(null).trigger('change');
             },
 
             closeParcelEditModal() {
                 this.showParcelEditModal = false;
                 const modal = bootstrap.Modal.getInstance(document.getElementById('parcelEditModal'));
                 if (modal) modal.hide();
+                
+                let parcelFormNodes = document.querySelectorAll('[x-data="parcelForm()"]');
+                parcelFormNodes.forEach(node => {
+                    if (node.id === 'parcelEditModal' && node.__x) {
+                        let instance = node.__x.$data;
+                        instance.parcels = [];
+                        instance.totalAll = 0;
+                        instance.qtyParcel = 1;
+                        instance.budgetParcel = '';
+                    }
+                });
+                
+                document.getElementById('parcel_edit_budget').value = '';
+                document.getElementById('parcel_edit_qty').value = 1;
+                document.getElementById('parcel_edit_jasa').value = '';
+                $('#select_edit_kemasan').val(null).trigger('change');
             },
 
             saveParcelToCart(index) {
@@ -2800,9 +2871,25 @@
                 this.resetAddForm();
             },
             closeJusModal() {
-                this.showAddModal = false;
+                this.showJusModal = false;
                 const modal = bootstrap.Modal.getInstance(document.getElementById('jusModal'));
                 if (modal) modal.hide();
+                
+                this.addProduct = {
+                    id: null,
+                    name: '',
+                    unit: '',
+                    price: 0,
+                    hpp: 0,
+                    discount: 0,
+                    discountNominal: 0,
+                    discountPercent: 0,
+                    qty: 1,
+                    formattedAddTotalInput: this.formatRupiah(0)
+                };
+                $('#select_jus').val(null).trigger('change');
+                const container = $('#receiptContainer');
+                container.empty();
             },
         }
     }
