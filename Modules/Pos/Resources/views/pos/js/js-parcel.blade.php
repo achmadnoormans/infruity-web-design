@@ -217,6 +217,10 @@
                             };
                         },
                         processResults: (data) => {
+                            window.productStockMap = window.productStockMap || {};
+                            data.forEach(item => {
+                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                            });
                             return {
                                 results: data.map(item => {
                                     let qtyInCart = 0;
@@ -302,6 +306,10 @@
                             };
                         },
                         processResults: (data) => {
+                            window.productStockMap = window.productStockMap || {};
+                            data.forEach(item => {
+                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                            });
                             return {
                                 results: data.map(item => {
                                     let qtyInCart = 0;

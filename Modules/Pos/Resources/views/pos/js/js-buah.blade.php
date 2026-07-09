@@ -128,14 +128,24 @@
                 let used = 0;
                 const mainApp = window.mainCartInstance || this;
                 
+                let targetStockId = window.productStockMap?.[productId] || productId;
+
                 if (mainApp.cart) {
-                    used += mainApp.cart.filter(c => c.id == productId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus').reduce((sum, c) => sum + Number(c.qty), 0);
+                    mainApp.cart.forEach(c => {
+                        let currentStockId = window.productStockMap?.[c.id] || c.id;
+                        if (currentStockId == targetStockId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus') {
+                            used += Number(c.qty);
+                        }
+                    });
                 }
                 
                 if (mainApp.parcel) {
                     mainApp.parcel.forEach(p => {
                         if (p.data && Array.isArray(p.data)) {
-                            used += p.data.filter(ing => (ing.id == productId || ing.product == productId)).reduce((sum, ing) => sum + (Number(ing.qty) * Number(p.qty)), 0);
+                            used += p.data.filter(ing => {
+                                let currentStockId = window.productStockMap?.[ing.id || ing.product] || (ing.id || ing.product);
+                                return currentStockId == targetStockId;
+                            }).reduce((sum, ing) => sum + (Number(ing.qty) * Number(p.qty)), 0);
                         }
                     });
                 }
@@ -144,7 +154,8 @@
                     mainApp.jus.forEach(j => {
                         if (j.data && Array.isArray(j.data.products)) {
                             j.data.products.forEach((pId, idx) => {
-                                if (pId == productId) {
+                                let currentStockId = window.productStockMap?.[pId] || pId;
+                                if (currentStockId == targetStockId) {
                                     const qty = j.data.productsQty[idx] ? Number(j.data.productsQty[idx]) : 0;
                                     used += qty * Number(j.qty);
                                 }
@@ -154,7 +165,10 @@
                 }
                 
                 if (currentParcelItems && Array.isArray(currentParcelItems)) {
-                    used += currentParcelItems.filter(p => (p.id == productId || p.product == productId)).reduce((sum, p) => sum + (Number(p.qty) * Number(currentParcelQty)), 0);
+                    used += currentParcelItems.filter(p => {
+                        let currentStockId = window.productStockMap?.[p.id || p.product] || (p.id || p.product);
+                        return currentStockId == targetStockId;
+                    }).reduce((sum, p) => sum + (Number(p.qty) * Number(currentParcelQty)), 0);
                 }
 
                 const jusSelects = $("select[name='receipt_product_id[]']");
@@ -162,7 +176,9 @@
                 if (jusSelects.length > 0) {
                     const addProductQty = mainApp.addProduct?.qty ? Number(mainApp.addProduct.qty) : 1;
                     jusSelects.each(function(index) {
-                        if ($(this).val() == productId) {
+                        let pId = $(this).val();
+                        let currentStockId = window.productStockMap?.[pId] || pId;
+                        if (currentStockId == targetStockId) {
                             const qty = $(jusQtys[index]).val();
                             used += Number(qty || 0) * addProductQty;
                         }
@@ -591,14 +607,20 @@
                                     limit: 10
                                 };
                             },
-                            processResults: data => ({
-                                results: data.map(i => ({
-                                    id: i.id,
-                                    text: i.name,
-                                    unit: i.unit,
-                                    price: i.price
-                                }))
-                            })
+                            processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
+                                return {
+                                    results: data.map(i => ({
+                                        id: i.id,
+                                        text: i.name,
+                                        unit: i.unit,
+                                        price: i.price
+                                    }))
+                                };
+                            }
                         }
                     });
 
@@ -738,6 +760,10 @@
                                 };
                             },
                             processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
@@ -1741,15 +1767,21 @@
                             url: '/ajax/listProduct', // ganti sesuai route
                             dataType: 'json',
                             delay: 250,
-                            processResults: data => ({
-                                results: data.map(item => ({
+                            processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
+                                return {
+                                    results: data.map(item => ({
                                     id: item.id,
                                     text: item.name,
                                     unit: item.unit,
                                     price: item.price,
                                     hpp: item.hpp,
                                 }))
-                            })
+                                };
+                            }
                         }
                     }).on('select2:select', (e) => {
                         const data = e.params.data;
@@ -1855,6 +1887,10 @@
                                 };
                             },
                             processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
@@ -2013,6 +2049,10 @@
                             };
                         },
                         processResults: data => {
+                            window.productStockMap = window.productStockMap || {};
+                            data.forEach(item => {
+                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                            });
                                 return {
                                     results: data.map(item => {
                                         let qtyInCart = 0;
@@ -2382,6 +2422,10 @@
                                 };
                             },
                             processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
                                 return {
                                     results: data.map(item => {
                                         const mainApp = window.mainCartInstance;
@@ -2506,6 +2550,10 @@
                                 };
                             },
                             processResults: data => {
+                                window.productStockMap = window.productStockMap || {};
+                                data.forEach(item => {
+                                    window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                                });
                                 return {
                                     results: data.map(item => {
                                         const mainApp = window.mainCartInstance;
