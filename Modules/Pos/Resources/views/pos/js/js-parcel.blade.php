@@ -397,6 +397,41 @@
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
                 const saveProcess = () => {
+                    // --- Validasi stok bahan parcel ---
+                    const posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    const parcelQty = parseFloat(qty) || 1;
+                    const stockErrors = [];
+
+                    this.parcels.forEach(item => {
+                        const productId = item.product;
+                        if (!productId) return;
+
+                        const originalStock = parseFloat(item.original_stock) || 0;
+                        const qtyPerParcel  = parseFloat(item.qty) || 0;
+                        const totalQtyNeed  = qtyPerParcel * parcelQty;
+
+                        let totalUsed = 0;
+                        if (posAppInstance && typeof posAppInstance.calculateUsedStock === 'function') {
+                            totalUsed = posAppInstance.calculateUsedStock(productId);
+                        }
+
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            const productName = item.displayName || item.name || `Produk #${productId}`;
+                            const sisa = (originalStock - totalUsed).toFixed(2);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${sisa})`);
+                        }
+                    });
+
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok Bahan Tidak Mencukupi',
+                            html: 'Beberapa bahan parcel tidak mencukupi:<br>' + stockErrors.join('<br>'),
+                        });
+                        return;
+                    }
+                    // --- End validasi stok ---
+
                     const normalizedParcels = this.parcels.map(item => ({
                         ...item,
                         unit: this.getUnitLabel(item.unit),
@@ -433,7 +468,6 @@
                         type: 'parcel',
                     }
 
-                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
                     posAppInstance.cart.push(parcel);
                     posAppInstance.parcel.push(posParcel);
                     document.getElementById('parcel_budget').value = '';
@@ -518,6 +552,58 @@
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
                 const saveEditProcess = () => {
+                    // --- Validasi stok bahan parcel (edit-aware) ---
+                    const posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    const parcelQty = parseFloat(qty) || 1;
+                    const stockErrors = [];
+
+                    // Ambil data parcel lama untuk dikecualikan dari hitungan stok
+                    const oldParcel = posAppInstance.parcel.find(p => p.id === parcelId);
+                    const oldParcelQty = parseFloat(oldParcel?.qty) || 0;
+
+                    this.parcels.forEach(item => {
+                        const productId = item.product;
+                        if (!productId) return;
+
+                        const originalStock = parseFloat(item.original_stock) || 0;
+                        const qtyPerParcel  = parseFloat(item.qty) || 0;
+                        const totalQtyNeed  = qtyPerParcel * parcelQty;
+
+                        let totalUsed = 0;
+                        if (posAppInstance && typeof posAppInstance.calculateUsedStock === 'function') {
+                            totalUsed = posAppInstance.calculateUsedStock(productId);
+                        }
+
+                        // Kurangi kontribusi parcel lama dari perhitungan (karena sedang diedit)
+                        if (oldParcel && oldParcel.data && Array.isArray(oldParcel.data)) {
+                            const oldIngredient = oldParcel.data.find(ing => {
+                                const ingId = ing.id || ing.product;
+                                const ingStockId = window.productStockMap?.[ingId] || ingId;
+                                const targetId = window.productStockMap?.[productId] || productId;
+                                return ingStockId == targetId;
+                            });
+                            if (oldIngredient) {
+                                totalUsed -= (parseFloat(oldIngredient.qty) || 0) * oldParcelQty;
+                            }
+                        }
+
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            const productName = item.displayName || item.name || `Produk #${productId}`;
+                            const sisa = (originalStock - totalUsed).toFixed(2);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${sisa})`);
+                        }
+                    });
+
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok Bahan Tidak Mencukupi',
+                            html: 'Beberapa bahan parcel tidak mencukupi:<br>' + stockErrors.join('<br>'),
+                        });
+                        return;
+                    }
+                    // --- End validasi stok ---
+
                     const normalizedParcels = this.parcels.map(item => ({
                         ...item,
                         unit: this.getUnitLabel(item.unit),
@@ -554,8 +640,6 @@
                         data: normalizedParcels, // isi produk dalam parcel
                         type: 'parcel',
                     };
-
-                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
 
                     // cari index berdasarkan parcelId
                     let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);
