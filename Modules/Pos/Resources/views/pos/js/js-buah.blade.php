@@ -2856,135 +2856,139 @@
 
                     // set value awal dari item receipt
                     if (selectedId) {
+                        const originalStockVal = $(this).data('original-stock') ?? 0;
                         let option = new Option(selectedText, selectedId, true, true);
+                        $(option).attr('data-original-stock', originalStockVal);
                         $(this).append(option).trigger('change');
                     }
                 });
             },
 
             saveJusToCart() {
-                if (!this.addProduct.id) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Produk belum dipilih',
-                        text: 'Silakan pilih produk terlebih dahulu.',
-                    });
-                    return;
-                }
-                if (this.addProduct.qty <= 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Kuantitas tidak valid',
-                        text: 'Jumlah produk harus lebih dari 0.',
-                    });
-                    return;
-                }
-                let uniqueId = 'jus' + this.addProduct.id + '_' + Date.now();
+                try {
+                    if (!this.addProduct.id) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Produk belum dipilih',
+                            text: 'Silakan pilih jus terlebih dahulu.',
+                        });
+                        return;
+                    }
+                    if (this.addProduct.price === null || this.addProduct.price === '') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Harga produk belum diisi',
+                            text: 'Silakan isi harga jus terlebih dahulu.',
+                        });
+                        return;
+                    }
+                    if (this.addProduct.qty <= 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Kuantitas tidak valid',
+                            text: 'Jumlah produk harus lebih dari 0.',
+                        });
+                        return;
+                    }
 
-                const discount = Number(this.addProduct.discount || 0);
-                const total_input = this.addProduct.total;
-                let receiptProducts = $("select[name='receipt_product_id[]']")
-                    .map(function() {
-                        return $(this).val();
-                    })
-                    .get();
-                let receiptProductsQty = $("input[name='receipt_qty[]']")
-                    .map(function() {
-                        let itemQty = parseFloat($(this).val()) || 0;
-                        return itemQty.toString();
-                    }.bind(this))
-                    .get();
-
-                if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Kuantitas tidak valid',
-                        text: 'Quantity product (bahan) harus lebih dari 0.',
-                    });
-                    return;
-                }
-                
-                let stockErrors = [];
-                $("select[name='receipt_product_id[]']").each((index, el) => {
-                    let select2Data = $(el).select2('data');
-                    if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                        let originalStock = select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0;
-                        let productId = select2Data[0].id;
-                        let productName = select2Data[0].text;
-                        
-                        let qtyNeed = parseFloat($("input[name='receipt_qty[]']").eq(index).val()) || 0;
-                        let totalQtyNeed = qtyNeed * (parseFloat(this.addProduct.qty) || 1);
-                        let totalUsed = this.calculateUsedStock(productId);
-                        if ((totalUsed + totalQtyNeed) > originalStock) {
-                            stockErrors.push(`- ${productName} (Sisa stok: ${originalStock - totalUsed})`);
+                    // save
+                    let uniqueId = 'jus' + this.addProduct.id + '_' + Date.now();
+                    
+                    let receiptProducts = $("select[name='receipt_product_id[]']").map(function() { return $(this).val(); }).get();
+                    let receiptProductsQty = $("input[name='receipt_qty[]']").map(function() { return $(this).val(); }).get();
+                    let receiptProductsOriginalStock = $("select[name='receipt_product_id[]']").map(function() { 
+                        let select2Data = $(this).select2('data');
+                        if(select2Data && select2Data.length > 0 && select2Data[0].original_stock !== undefined) {
+                            return select2Data[0].original_stock;
                         }
-                    }
-                });
+                        return $(this).find('option:selected').data('original-stock') ?? $(this).data('original-stock') ?? 0; 
+                    }).get();
+                    let receiptProductsText = $("select[name='receipt_product_id[]'] option:selected")
+                        .map(function() {
+                            return $(this).text() || '';
+                        })
+                        .get();
 
-                if (stockErrors.length > 0) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Stok bahan tidak mencukupi',
-                        text: 'Beberapa bahan tidak cukup stoknya:\n' + stockErrors.join('\n'),
+                    let discount = parseFloat(this.addProduct.discount) || 0;
+                    let rawTotal = this.addProduct.formattedAddTotalInput || '';
+                    let total_input = parseFloat(rawTotal.toString().replace(/[^\d]/g, '')) || 0;
+                    
+                    // Cek stok bahan — baca langsung dari DOM, bukan select2 data
+                    let stockErrors = [];
+                    $("select[name='receipt_product_id[]']").each((index, el) => {
+                        const productId = $(el).val();
+                        if (!productId) return; // skip jika belum dipilih
+
+                        const selectedOption = $(el).find('option:selected');
+                        const productName = selectedOption.text().trim() || `Bahan #${index + 1}`;
+                        // original_stock dari attribute HTML yang di-set saat loadReceipt
+                        const originalStock = parseFloat($(el).attr('data-original-stock')) || 0;
+
+                        const qtyNeed = parseFloat($("input[name='receipt_qty[]']").eq(index).val()) || 0;
+                        const totalQtyNeed = qtyNeed * (parseFloat(this.addProduct.qty) || 1);
+                        const totalUsed = this.calculateUsedStock(productId);
+
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${(originalStock - totalUsed).toFixed(2)})`);
+                        }
                     });
-                    return;
-                }
-                let receiptProductsText = $("select[name='receipt_product_id[]'] option:selected")
-                    .map(function() {
-                        return $(this).text();
-                    })
-                    .get();
 
-                let receiptProductsOriginalStock = [];
-                $("select[name='receipt_product_id[]']").each((index, el) => {
-                    let select2Data = $(el).select2('data');
-                    if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                        receiptProductsOriginalStock.push(select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0);
-                    } else {
-                        receiptProductsOriginalStock.push($(el).find('option:selected').data('original-stock') ?? 0);
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok Bahan Tidak Mencukupi',
+                            html: 'Beberapa bahan untuk jus ini tidak mencukupi:<br>' + stockErrors.join('<br>'),
+                        });
+                        return;
                     }
-                });
 
-                this.cart.push({
-                    key: Date.now() + Math.floor(Math.random() * 1000),
-                    id: uniqueId,
-                    name: this.addProduct.name,
-                    price: this.addProduct.price,
-                    hpp: this.addProduct.hpp,
-                    qty: this.addProduct.qty,
-                    unit: this.addProduct.unit,
-                    discount: discount,
-                    discountPercent: this.addProduct.discountPercent,
-                    total_input: total_input,
-                    data: {
-                        products: receiptProducts,
-                        productsQty: receiptProductsQty,
-                        productsText: receiptProductsText,
-                        productsOriginalStock: receiptProductsOriginalStock
-                    },
-                    typeProduct: 'jus',
-                });
+                    this.cart.push({
+                        id: uniqueId,
+                        name: this.addProduct.name || '',
+                        price: this.addProduct.price || 0,
+                        hpp: this.addProduct.hpp || 0,
+                        qty: this.addProduct.qty || 1,
+                        unit: this.addProduct.unit || '',
+                        discount: discount,
+                        discountPercent: this.addProduct.discountPercent || 0,
+                        total_input: total_input,
+                        data: {
+                            products: receiptProducts,
+                            productsQty: receiptProductsQty,
+                            productsText: receiptProductsText,
+                            productsOriginalStock: receiptProductsOriginalStock
+                        },
+                        typeProduct: 'jus',
+                    });
 
-                this.jus.push({
-                    id: uniqueId,
-                    productId: this.addProduct.id,
-                    price: this.addProduct.price,
-                    hpp: this.addProduct.hpp,
-                    qty: this.addProduct.qty,
-                    unit: this.addProduct.unit,
-                    discount: discount,
-                    discountPercent: this.addProduct.discountPercent,
-                    total_input: total_input,
-                    product_receipt_id: receiptProducts,
-                    product_receipt_qty: receiptProductsQty,
-                    type: 'jus',
-                });
+                    this.jus.push({
+                        id: uniqueId,
+                        productId: this.addProduct.id,
+                        price: this.addProduct.price || 0,
+                        hpp: this.addProduct.hpp || 0,
+                        qty: this.addProduct.qty || 1,
+                        unit: this.addProduct.unit || '',
+                        discount: discount,
+                        discountPercent: this.addProduct.discountPercent || 0,
+                        total_input: total_input,
+                        product_receipt_id: receiptProducts,
+                        product_receipt_qty: receiptProductsQty,
+                        type: 'jus',
+                    });
 
-                console.log('cart', this.cart);
-                const container = $('#receiptContainer');
-                container.empty(); // bersihkan biar ga dobel
-                $('#select_jus').val(null).trigger('change');
-                this.resetAddForm();
+                    console.log('cart', this.cart);
+                    const container = $('#receiptContainer');
+                    container.empty(); // bersihkan biar ga dobel
+                    $('#select_jus').val(null).trigger('change');
+                    this.resetAddForm();
+                } catch (e) {
+                    console.error("SAVE JUS ERROR:", e);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: e.message || 'Silakan cek console untuk detailnya.'
+                    });
+                }
             },
             closeJusModal() {
                 this.showJusModal = false;
