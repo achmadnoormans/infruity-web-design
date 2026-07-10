@@ -1,4 +1,48 @@
 <script>
+    (function() {
+        const originalStringify = JSON.stringify;
+        JSON.stringify = function(value, replacer, space) {
+            try {
+                return originalStringify(value, replacer, space);
+            } catch (e) {
+                if (e.message && e.message.includes('circular')) {
+                    const customReplacer = function(key, val) {
+                        if (val && typeof val === 'object') {
+                            if (val.nodeType === 1 || val.jquery || (val.constructor && val.constructor.name === 'HTMLSelectElement')) {
+                                return undefined;
+                            }
+                        }
+                        return typeof replacer === 'function' ? replacer(key, val) : val;
+                    };
+                    return originalStringify(value, customReplacer, space);
+                }
+                throw e;
+            }
+        };
+    })();
+
+    function getCircularReplacer() {
+        const seen = new WeakSet();
+        return (key, value) => {
+            if (value && (
+                value instanceof HTMLElement || 
+                value.nodeType === 1 || 
+                (window.jQuery && value instanceof window.jQuery) || 
+                value.jquery || 
+                (value.constructor && value.constructor.name && value.constructor.name.includes('HTML'))
+            )) {
+                return undefined;
+            }
+            if (typeof value === "object" && value !== null) {
+                if (seen.has(value)) {
+                    return undefined;
+                }
+                seen.add(value);
+            }
+            return value;
+        };
+    }
+    
     function posApp() {
         return {
             products: [],
@@ -64,6 +108,29 @@
             init() {
                 const self = this; // simpan konteks Alpine
                 window.mainCartInstance = this;
+                
+                $('#addModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.resetAddForm();
+                });
+                $('#editModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.resetAddForm();
+                });
+                $('#jusModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.closeJusModal();
+                });
+                $('#editJusModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.closeEditJusModal();
+                });
+                $('#parcelModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.closeParcelModal();
+                });
+                $('#parcelEditModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.closeParcelEditModal();
+                });
+                $('#giftModal').on('hidden.bs.modal', function () {
+                    if (window.mainCartInstance) window.mainCartInstance.closeGiftModal();
+                });
+                
                 this.currentInvoiceNumber = document.querySelector('input[name="invoice_number"]')?.value || '';
 
                 $('#customer_id').on('select2:select', function(e) {
@@ -98,6 +165,27 @@
                 this.$watch('diskonGlobal', () => this.autoSaveDraft());
                 this.$watch('ongkirGlobal', () => this.autoSaveDraft());
                 this.$watch('diskonOngkir', () => this.autoSaveDraft());
+                this.$watch('customer_id', () => this.autoSaveDraft());
+
+                // Reset modals when hidden (e.g., clicked outside)
+                $('#jusModal').on('hidden.bs.modal', () => {
+                    this.closeJusModal();
+                });
+                $('#jusEditModal').on('hidden.bs.modal', () => {
+                    this.closeEditJusModal();
+                });
+                $('#productModal').on('hidden.bs.modal', () => {
+                    this.closeAddModal();
+                });
+                $('#productEditModal').on('hidden.bs.modal', () => {
+                    this.closeEditModal();
+                });
+                $('#parcelModal').on('hidden.bs.modal', () => {
+                    if (typeof this.closeParcelModal === 'function') this.closeParcelModal();
+                });
+                $('#parcelEditModal').on('hidden.bs.modal', () => {
+                    if (typeof this.closeEditParcelModal === 'function') this.closeEditParcelModal();
+                });
 
                 // Add listeners for Select2 changes
                 ['#branch_id', '#branch_process_id', '#customer_id', '#courier_id', '#address_id'].forEach(selector => {
@@ -136,6 +224,18 @@
                         if (currentStockId == targetStockId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus') {
                             used += Number(c.qty);
                         }
+
+                        if (c.data && c.data.products && c.data.products.length > 0) {
+                            c.data.products.forEach((pId, idx) => {
+                                if (pId) {
+                                    let ingStockId = window.productStockMap?.[pId] || pId;
+                                    if (ingStockId == targetStockId) {
+                                        const qty = c.data.productsQty[idx] ? Number(c.data.productsQty[idx]) : 0;
+                                        used += (qty || 0) * (Number(c.qty) || 0);
+                                    }
+                                }
+                            });
+                        }
                     });
                 }
                 
@@ -150,20 +250,6 @@
                     });
                 }
                 
-                if (mainApp.jus) {
-                    mainApp.jus.forEach(j => {
-                        if (j.data && Array.isArray(j.data.products)) {
-                            j.data.products.forEach((pId, idx) => {
-                                let currentStockId = window.productStockMap?.[pId] || pId;
-                                if (currentStockId == targetStockId) {
-                                    const qty = j.data.productsQty[idx] ? Number(j.data.productsQty[idx]) : 0;
-                                    used += qty * Number(j.qty);
-                                }
-                            });
-                        }
-                    });
-                }
-                
                 if (currentParcelItems && Array.isArray(currentParcelItems)) {
                     used += currentParcelItems.filter(p => {
                         let currentStockId = window.productStockMap?.[p.id || p.product] || (p.id || p.product);
@@ -174,13 +260,12 @@
                 const jusSelects = $("select[name='receipt_product_id[]']");
                 const jusQtys = $("input[name='receipt_qty[]']");
                 if (jusSelects.length > 0) {
-                    const addProductQty = mainApp.addProduct?.qty ? Number(mainApp.addProduct.qty) : 1;
                     jusSelects.each(function(index) {
                         let pId = $(this).val();
                         let currentStockId = window.productStockMap?.[pId] || pId;
                         if (currentStockId == targetStockId) {
                             const qty = $(jusQtys[index]).val();
-                            used += Number(qty || 0) * addProductQty;
+                            used += Number(qty || 0);
                         }
                     });
                 }
@@ -573,11 +658,12 @@
                 if (item.data && item.data.products && item.data.products.length > 0) {
                     item.data.products.forEach((prodId, idx) => {
                         let qty = item.data.productsQty[idx] || 1;
+                        let originalStock = item.data.productsOriginalStock ? (item.data.productsOriginalStock[idx] || 0) : 0;
                         let row = `
                         <div class="row receipt-row mb-2">
                             <div class="col-9 mb-3">
                                 <label class="form-label">Nama Produk</label>
-                                <select name="receipt_edit_product_id[]" class="form-select receipt-edit-select" data-selected-id="${prodId}">
+                                <select name="receipt_edit_product_id[]" class="form-select receipt-edit-select" data-selected-id="${prodId}" data-original-stock="${originalStock}">
                                 </select>
                             </div>
                             <div class="col-3 mb-3">
@@ -709,7 +795,10 @@
                     let receiptProducts = $("select[name='receipt_edit_product_id[]']")
                         .map(function() { return $(this).val(); }).get();
                     let receiptProductsQty = $("input[name='receipt_edit_qty[]']")
-                        .map(function() { return $(this).val(); }).get();
+                        .map(function() {
+                            return $(this).val();
+                        }.bind(this))
+                        .get();
 
                     if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
                         Swal.fire({
@@ -724,26 +813,27 @@
                     $("select[name='receipt_edit_product_id[]']").each((index, el) => {
                         let select2Data = $(el).select2('data');
                         if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                            let originalStock = select2Data[0].original_stock;
-                            if (originalStock !== undefined) {
-                                let productId = select2Data[0].id;
-                                let productName = select2Data[0].text;
-                                
-                                let oldUsage = 0;
-                                if (this.editItem.data && this.editItem.data.products) {
-                                    this.editItem.data.products.forEach((pId, idx) => {
-                                        if (pId == productId) {
-                                            oldUsage += (this.editItem.data.productsQty[idx] ? Number(this.editItem.data.productsQty[idx]) : 0) * (this.editItem.qty || 1);
-                                        }
-                                    });
+                            let originalStock = select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0;
+                            let productId = select2Data[0].id;
+                            let productName = select2Data[0].text;
+                            
+                            let qtyNeed = parseFloat($("input[name='receipt_edit_qty[]']").eq(index).val()) || 0;
+                            let totalQtyNeed = qtyNeed * (parseFloat(this.editQty) || 1);
+                            let totalUsed = this.calculateUsedStock(productId);
+                            
+                            // Subtract the qty already used by THIS item, since we are editing it!
+                            let oldUsed = 0;
+                            if (this.editItem && this.editItem.data && this.editItem.data.products) {
+                                let pIdx = this.editItem.data.products.indexOf(productId.toString());
+                                if (pIdx !== -1) {
+                                    let oldQtyPerUnit = parseFloat(this.editItem.data.productsQty[pIdx]) || 0;
+                                    oldUsed = oldQtyPerUnit * (parseFloat(this.editItem.qty) || 0);
                                 }
-                                
-                                let newUsage = parseFloat(receiptProductsQty[index] || 0) * parseFloat(this.editQty || 1);
-                                let totalUsed = this.calculateUsedStock(productId) - oldUsage + newUsage;
-                                
-                                if (totalUsed > originalStock) {
-                                    stockErrors.push(`- ${productName} (Sisa stok: ${originalStock})`);
-                                }
+                            }
+                            totalUsed -= oldUsed;
+
+                            if ((totalUsed + totalQtyNeed) > originalStock) {
+                                stockErrors.push(`- ${productName} (Sisa stok: ${originalStock - totalUsed})`);
                             }
                         }
                     });
@@ -759,10 +849,21 @@
                     let receiptProductsText = $("select[name='receipt_edit_product_id[]'] option:selected")
                         .map(function() { return $(this).text(); }).get();
 
+                    let receiptProductsOriginalStock = [];
+                    $("select[name='receipt_edit_product_id[]']").each((index, el) => {
+                        let select2Data = $(el).select2('data');
+                        if (select2Data && select2Data.length > 0 && select2Data[0].id) {
+                            receiptProductsOriginalStock.push(select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0);
+                        } else {
+                            receiptProductsOriginalStock.push($(el).find('option:selected').data('original-stock') ?? 0);
+                        }
+                    });
+
                     this.cart[idx].data = {
                         products: receiptProducts,
                         productsQty: receiptProductsQty,
-                        productsText: receiptProductsText
+                        productsText: receiptProductsText,
+                        productsOriginalStock: receiptProductsOriginalStock
                     };
 
                     let jusIdx = this.jus.findIndex(i => i.id === this.editItem.id);
@@ -1364,7 +1465,7 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify(data),
+                        body: JSON.stringify(data, getCircularReplacer()),
                     })
                     .then(async (res) => {
                         const text = await res.text();
@@ -1464,23 +1565,20 @@
                         ongkir_time: ongkirTime,
                         total: this.totalHargaKeseluruhan,
                         status: this.isEditing && this.originalStatus !== 'temp' ? this.originalStatus : 'temp',
-                    note: note,
-                    courier_id: courierId,
-                    courier_type: document.querySelector('input[name="courier_type"]')?.value || null,
-                    ongkir_address: ongkirAddress,
+                        note: note,
+                        courier_id: courierId,
+                        courier_type: document.querySelector('input[name="courier_type"]')?.value || null,
+                        ongkir_address: ongkirAddress,
                         branch_id: branchId,
                         branch_process_id: branchProcessId,
                     };
-
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    fetch('/pos/save-transaction', {
+                        fetch('/pos/save-transaction', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify(data),
+                            body: JSON.stringify(data, getCircularReplacer()),
                         })
                         .then(async res => {
                             const json = await res.json().catch(() => ({}));
@@ -1583,7 +1681,7 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify(data),
+                        body: JSON.stringify(data, getCircularReplacer()),
                     })
                     .then(async (res) => {
                         const text = await res.text();
@@ -1700,7 +1798,7 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify(data),
+                        body: JSON.stringify(data, getCircularReplacer()),
                     })
                     .then(async (res) => {
                         const text = await res.text();
@@ -2641,11 +2739,15 @@
 
                 if (data && data.length > 0) {
                     data.forEach(item => {
+                        let originalStock = item.ingredients.get_stock ? item.ingredients.get_stock.stock_available : 0;
+                        window.productStockMap = window.productStockMap || {};
+                        window.productStockMap[item.ingredients.id] = item.ingredients.parent_product ? item.ingredients.parent_product.parent_id : item.ingredients.id;
+                        
                         let row = `
                         <div class="row receipt-row mb-2">
                             <div class="col-9 mb-3">
                                 <label class="form-label">Nama Produk</label>
-                                <select name="receipt_product_id[]" class="form-select receipt-select" data-selected-id="${item.ingredients.id}" data-selected-text="${item.ingredients.name}">
+                                <select name="receipt_product_id[]" class="form-select receipt-select" data-selected-id="${item.ingredients.id}" data-selected-text="${item.ingredients.name}" data-original-stock="${originalStock}">
                                 </select>
                             </div>
 
@@ -2788,8 +2890,9 @@
                     .get();
                 let receiptProductsQty = $("input[name='receipt_qty[]']")
                     .map(function() {
-                        return $(this).val();
-                    })
+                        let itemQty = parseFloat($(this).val()) || 0;
+                        return itemQty.toString();
+                    }.bind(this))
                     .get();
 
                 if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
@@ -2805,13 +2908,15 @@
                 $("select[name='receipt_product_id[]']").each((index, el) => {
                     let select2Data = $(el).select2('data');
                     if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                        let originalStock = select2Data[0].original_stock ?? 0;
+                        let originalStock = select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0;
                         let productId = select2Data[0].id;
                         let productName = select2Data[0].text;
                         
+                        let qtyNeed = parseFloat($("input[name='receipt_qty[]']").eq(index).val()) || 0;
+                        let totalQtyNeed = qtyNeed * (parseFloat(this.addProduct.qty) || 1);
                         let totalUsed = this.calculateUsedStock(productId);
-                        if (totalUsed > originalStock) {
-                            stockErrors.push(`- ${productName} (Sisa stok: ${originalStock})`);
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            stockErrors.push(`- ${productName} (Sisa stok: ${originalStock - totalUsed})`);
                         }
                     }
                 });
@@ -2830,6 +2935,16 @@
                     })
                     .get();
 
+                let receiptProductsOriginalStock = [];
+                $("select[name='receipt_product_id[]']").each((index, el) => {
+                    let select2Data = $(el).select2('data');
+                    if (select2Data && select2Data.length > 0 && select2Data[0].id) {
+                        receiptProductsOriginalStock.push(select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0);
+                    } else {
+                        receiptProductsOriginalStock.push($(el).find('option:selected').data('original-stock') ?? 0);
+                    }
+                });
+
                 this.cart.push({
                     key: Date.now() + Math.floor(Math.random() * 1000),
                     id: uniqueId,
@@ -2844,7 +2959,8 @@
                     data: {
                         products: receiptProducts,
                         productsQty: receiptProductsQty,
-                        productsText: receiptProductsText
+                        productsText: receiptProductsText,
+                        productsOriginalStock: receiptProductsOriginalStock
                     },
                     typeProduct: 'jus',
                 });

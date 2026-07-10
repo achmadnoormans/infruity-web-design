@@ -761,8 +761,12 @@ class ProductController extends Controller
             $with['get_stock'] = function ($q) use ($request) {
                 $q->where('branch_id', $request->branch);
             };
+            $with['productReceipt.ingredients.get_stock'] = function ($q) use ($request) {
+                $q->where('branch_id', $request->branch);
+            };
         } else {
             $with[] = 'get_stock';
+            $with[] = 'productReceipt.ingredients.get_stock';
         }
 
         $query  = Product::with($with)
