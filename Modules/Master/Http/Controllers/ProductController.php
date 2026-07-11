@@ -755,14 +755,18 @@ class ProductController extends Controller
     public function listProduct(Request $request)
     {
         $search = $request->input('term', '');
-        $with   = ['category', 'unit', 'productReceipt', 'productReceipt.ingredients'];
+        $with   = ['category', 'unit', 'productReceipt', 'productReceipt.ingredients', 'parentProduct'];
 
         if ($request->has('branch') && ! empty($request->branch)) {
             $with['get_stock'] = function ($q) use ($request) {
                 $q->where('branch_id', $request->branch);
             };
+            $with['productReceipt.ingredients.get_stock'] = function ($q) use ($request) {
+                $q->where('branch_id', $request->branch);
+            };
         } else {
             $with[] = 'get_stock';
+            $with[] = 'productReceipt.ingredients.get_stock';
         }
 
         $query  = Product::with($with)

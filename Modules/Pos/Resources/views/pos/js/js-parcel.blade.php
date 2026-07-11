@@ -98,7 +98,18 @@
 
                 // Pastikan harga asli tersimpan (misalnya item.priceAwal = harga satuan)
                 const hargaAwal = Number(item.priceAwal || 0);
-                const qty = Number(item.qty || 1);
+                let qty = Number(item.qty || 1);
+                const stockAvailable = Number(item.stock_available || 0);
+                
+                if (qty > stockAvailable && stockAvailable > 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stok tidak mencukupi',
+                        text: 'Sisa stok tersedia hanya ' + stockAvailable + '.',
+                    });
+                    item.qty = stockAvailable;
+                    qty = stockAvailable;
+                }
 
                 // Hitung ulang total price berdasarkan qty
                 const total = hargaAwal * qty;
@@ -205,16 +216,30 @@
                                 limit: 10
                             };
                         },
-                        processResults: function(data) {
+                        processResults: (data) => {
+                            window.productStockMap = window.productStockMap || {};
+                            data.forEach(item => {
+                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                            });
                             return {
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
+                                results: data.map(item => {
+                                    let qtyInCart = 0;
+                                    const mainApp = window.mainCartInstance;
+                                    if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                        const currentParcelQty = $('#parcel_qty').val() || 1;
+                                        qtyInCart = mainApp.calculateUsedStock(item.id, this.parcels, currentParcelQty);
+                                    }
+                                    let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                    return {
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                        stock_available: stock_available,
+                                        original_stock: item.get_stock?.stock_available ?? 0,
+                                    };
+                                })
                             };
                         },
                         cache: true
@@ -240,6 +265,8 @@
                         unit: data.unit
                     });
                     this.parcels[index].priceAwal = data.price;
+                    this.parcels[index].stock_available = data.stock_available ?? 0;
+                    this.parcels[index].original_stock = data.original_stock ?? 0;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
                     this.parcels[index].priceFormatted = this.formatRupiah(data.price);
@@ -278,16 +305,30 @@
                                 limit: 10
                             };
                         },
-                        processResults: function(data) {
+                        processResults: (data) => {
+                            window.productStockMap = window.productStockMap || {};
+                            data.forEach(item => {
+                                window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
+                            });
                             return {
-                                results: data.map(item => ({
-                                    id: item.id,
-                                    text: item.name,
-                                    unit: item.unit,
-                                    price: item.price,
-                                    hpp: item.hpp,
-                                    stock_available: item.get_stock?.stock_available ?? 0,
-                                }))
+                                results: data.map(item => {
+                                    let qtyInCart = 0;
+                                    const mainApp = window.mainCartInstance;
+                                    if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
+                                        const currentParcelQty = $('#parcel_edit_qty').val() || 1;
+                                        qtyInCart = mainApp.calculateUsedStock(item.id, this.parcels, currentParcelQty);
+                                    }
+                                    let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                    return {
+                                        id: item.id,
+                                        text: item.name,
+                                        unit: item.unit,
+                                        price: item.price,
+                                        hpp: item.hpp,
+                                        stock_available: stock_available,
+                                        original_stock: item.get_stock?.stock_available ?? 0,
+                                    };
+                                })
                             };
                         },
                         cache: true
@@ -313,6 +354,8 @@
                         unit: data.unit
                     });
                     this.parcels[index].priceAwal = data.price;
+                    this.parcels[index].stock_available = data.stock_available ?? 0;
+                    this.parcels[index].original_stock = data.original_stock ?? 0;
                     this.parcels[index].hpp = data.hpp;
                     this.parcels[index].price = data.price;
                     this.parcels[index].priceFormatted = this.formatRupiah(data.price);
@@ -354,6 +397,41 @@
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
                 const saveProcess = () => {
+                    // --- Validasi stok bahan parcel ---
+                    const posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    const parcelQty = parseFloat(qty) || 1;
+                    const stockErrors = [];
+
+                    this.parcels.forEach(item => {
+                        const productId = item.product;
+                        if (!productId) return;
+
+                        const originalStock = parseFloat(item.original_stock) || 0;
+                        const qtyPerParcel  = parseFloat(item.qty) || 0;
+                        const totalQtyNeed  = qtyPerParcel * parcelQty;
+
+                        let totalUsed = 0;
+                        if (posAppInstance && typeof posAppInstance.calculateUsedStock === 'function') {
+                            totalUsed = posAppInstance.calculateUsedStock(productId);
+                        }
+
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            const productName = item.displayName || item.name || `Produk #${productId}`;
+                            const sisa = (originalStock - totalUsed).toFixed(2);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${sisa})`);
+                        }
+                    });
+
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok Bahan Tidak Mencukupi',
+                            html: 'Beberapa bahan parcel tidak mencukupi:<br>' + stockErrors.join('<br>'),
+                        });
+                        return;
+                    }
+                    // --- End validasi stok ---
+
                     const normalizedParcels = this.parcels.map(item => ({
                         ...item,
                         unit: this.getUnitLabel(item.unit),
@@ -390,7 +468,6 @@
                         type: 'parcel',
                     }
 
-                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
                     posAppInstance.cart.push(parcel);
                     posAppInstance.parcel.push(posParcel);
                     document.getElementById('parcel_budget').value = '';
@@ -475,6 +552,58 @@
                 const kemasanPriceValue = this.parseNumber(kemasanPrice);
 
                 const saveEditProcess = () => {
+                    // --- Validasi stok bahan parcel (edit-aware) ---
+                    const posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
+                    const parcelQty = parseFloat(qty) || 1;
+                    const stockErrors = [];
+
+                    // Ambil data parcel lama untuk dikecualikan dari hitungan stok
+                    const oldParcel = posAppInstance.parcel.find(p => p.id === parcelId);
+                    const oldParcelQty = parseFloat(oldParcel?.qty) || 0;
+
+                    this.parcels.forEach(item => {
+                        const productId = item.product;
+                        if (!productId) return;
+
+                        const originalStock = parseFloat(item.original_stock) || 0;
+                        const qtyPerParcel  = parseFloat(item.qty) || 0;
+                        const totalQtyNeed  = qtyPerParcel * parcelQty;
+
+                        let totalUsed = 0;
+                        if (posAppInstance && typeof posAppInstance.calculateUsedStock === 'function') {
+                            totalUsed = posAppInstance.calculateUsedStock(productId);
+                        }
+
+                        // Kurangi kontribusi parcel lama dari perhitungan (karena sedang diedit)
+                        if (oldParcel && oldParcel.data && Array.isArray(oldParcel.data)) {
+                            const oldIngredient = oldParcel.data.find(ing => {
+                                const ingId = ing.id || ing.product;
+                                const ingStockId = window.productStockMap?.[ingId] || ingId;
+                                const targetId = window.productStockMap?.[productId] || productId;
+                                return ingStockId == targetId;
+                            });
+                            if (oldIngredient) {
+                                totalUsed -= (parseFloat(oldIngredient.qty) || 0) * oldParcelQty;
+                            }
+                        }
+
+                        if ((totalUsed + totalQtyNeed) > originalStock) {
+                            const productName = item.displayName || item.name || `Produk #${productId}`;
+                            const sisa = (originalStock - totalUsed).toFixed(2);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${sisa})`);
+                        }
+                    });
+
+                    if (stockErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stok Bahan Tidak Mencukupi',
+                            html: 'Beberapa bahan parcel tidak mencukupi:<br>' + stockErrors.join('<br>'),
+                        });
+                        return;
+                    }
+                    // --- End validasi stok ---
+
                     const normalizedParcels = this.parcels.map(item => ({
                         ...item,
                         unit: this.getUnitLabel(item.unit),
@@ -511,8 +640,6 @@
                         data: normalizedParcels, // isi produk dalam parcel
                         type: 'parcel',
                     };
-
-                    let posAppInstance = Alpine.$data(document.querySelector('[x-data="posApp()"]'));
 
                     // cari index berdasarkan parcelId
                     let idxCart = posAppInstance.cart.findIndex(p => p.id === parcelId);

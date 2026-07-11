@@ -56,10 +56,12 @@
                 },
 
                 filteredProducts() {
-                    if (this.searchTerm === "") return this.products;
-                    return this.products.filter(p =>
-                        p.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-                    );
+                    const term = (this.searchTerm || "").toLowerCase();
+                    if (term === "") return this.products;
+                    return this.products.filter(p => {
+                        const name = p.name || "";
+                        return name.toLowerCase().includes(term);
+                    });
                 },
 
                 openModal(product) {

@@ -983,6 +983,11 @@ class PosController extends Controller
 
         $data['alpinejs'] = true;
         $data['data']     = PosModel::with('customer')->findOrFail($id);
+
+        if ($data['data']->status === 'paid') {
+            return redirect()->route('pos.index')->with('error', 'Transaksi yang sudah dibayar (paid) tidak dapat diakses untuk pembayaran lagi.');
+        }
+
         $data['detail']   = PosDetailModel::with('product')->where('pos_id', $id)->get();
         $data['tier']     = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
         $data['deposito'] = CustomerDeposito::where('customer_id', $data['data']->customer_id)->where('quantity', '>', 0)->first();
