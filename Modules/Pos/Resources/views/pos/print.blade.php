@@ -585,7 +585,7 @@
                         };
                     @endphp
                     <div class="customer-details">
-                        <h2 class="customer-name">{{ $data->customer->name ?? 'Pelanggan Umum' }}</h2>
+                        <h2 class="customer-name">{{ $data->customer?->name ?? 'Pelanggan Umum' }}</h2>
                         @isset($tier->tier_name)
                             <p class="level-text">Level {{ $tier->tier_name ?? 'Bronze' }}
                                 ({{ tonumberround(floatval($currentExp)) ?? 0 }} /

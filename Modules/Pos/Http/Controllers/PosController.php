@@ -344,6 +344,89 @@ class PosController extends Controller
             $payment->save();
 
             $posForVoucher = PosModel::findOrFail($data['transaction_id']);
+
+            // Pengecekan stok seperti pada saveTransaction (hanya untuk transaksi yang belum terpotong stoknya)
+            if (in_array($posForVoucher->status, ['draft', 'temp', 'pending'])) {
+                $posDetails = PosDetailModel::where('pos_id', $data['transaction_id'])->get();
+                $parcelDetails = ProductionParcelDetail::where('pos_id', $data['transaction_id'])->get();
+                $productions = Production::with('productionDetails')->where('pos_id', $data['transaction_id'])->get();
+
+                $allProductIdsToLock = [];
+                $requiredStocks = [];
+
+                $addRequiredStock = function($productId, $qty) use (&$requiredStocks, &$allProductIdsToLock) {
+                    if (!$productId) return;
+                    
+                    if (!in_array($productId, $allProductIdsToLock)) {
+                        $allProductIdsToLock[] = $productId;
+                    }
+
+                    $product = Product::find($productId);
+                    $stockProductId = $productId;
+                    if ($product) {
+                        $parentId = $product->getParentId();
+                        $stockProductId = $parentId ?? $product->id;
+                        if ($parentId && !in_array($parentId, $allProductIdsToLock)) {
+                            $allProductIdsToLock[] = $parentId;
+                        }
+                    }
+                    
+                    if (!isset($requiredStocks[$stockProductId])) {
+                        $requiredStocks[$stockProductId] = 0;
+                    }
+                    $requiredStocks[$stockProductId] += (float)$qty;
+                };
+
+                foreach ($posDetails as $detail) {
+                    if ($detail->type === 'product') {
+                        $addRequiredStock($detail->product_id, $detail->quantity);
+                    } elseif ($detail->type === 'parcel') {
+                        if ($detail->parcel_id) {
+                            $addRequiredStock($detail->parcel_id, $detail->quantity);
+                        }
+                    } elseif ($detail->type === 'jus') {
+                        $production = $productions->where('product_id', $detail->product_id)->first();
+                        $productionQty = $production ? $production->quantity : 0;
+                        $consumeStockQty = $detail->quantity - $productionQty;
+                        if ($consumeStockQty > 0) {
+                            $addRequiredStock($detail->product_id, $consumeStockQty);
+                        }
+                    }
+                }
+
+                foreach ($parcelDetails as $pDetail) {
+                    $addRequiredStock($pDetail->product_id, $pDetail->quantity);
+                }
+
+                foreach ($productions as $production) {
+                    foreach ($production->productionDetails as $pDetail) {
+                        $addRequiredStock($pDetail->product_id, $pDetail->quantity);
+                    }
+                }
+
+                $allProductIdsToLock = array_unique($allProductIdsToLock);
+                sort($allProductIdsToLock);
+
+                // Kunci master produk secara berurutan agar antrean checkout terjaga dan bebas Deadlock
+                foreach ($allProductIdsToLock as $lockId) {
+                    Product::where('id', $lockId)->lockForUpdate()->first();
+                }
+
+                // Validasi stok akumulatif dari semua sumber
+                foreach ($requiredStocks as $stockProductId => $requiredQty) {
+                    $productStock = ProductStock::where('id', $stockProductId)
+                        ->where('branch_id', $posForVoucher->branch_id)
+                        ->first();
+                    $currentStock = $productStock ? (float)$productStock->stock_available : 0;
+
+                    if ($currentStock < $requiredQty) {
+                        $product     = Product::find($stockProductId);
+                        $productName = $product ? $product->name : 'Produk #' . $stockProductId;
+                        throw new \Exception("Stok \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
+                    }
+                }
+            }
+
             if (empty($posForVoucher->deposito_id) && empty($posForVoucher->voucher)) {
                 $deposito = Deposito::where('customer_id', $data['customer_id'])->first();
                 $voucher  = $deposito?->voucher ?? 0;
@@ -480,6 +563,7 @@ class PosController extends Controller
             $userId     = Auth::id();
             $isTempSave = ($data['status'] ?? null) === 'temp';
 
+            /*
             // Kumpulkan semua ID Produk untuk mengurutkan lockForUpdate (Mencegah Deadlock)
             $allProductIdsToLock = [];
             if (!empty($data['items'])) {
@@ -642,6 +726,7 @@ class PosController extends Controller
                     throw new \Exception("Stok \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
                 }
             }
+            */
             $invoiceNumber = $data['invoice_number'] ?? null;
             $pos           = null;
             $posId         = null;

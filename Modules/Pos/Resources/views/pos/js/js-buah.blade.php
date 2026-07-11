@@ -1781,7 +1781,7 @@
                     ongkir_date: ongkirDate,
                     ongkir_time: ongkirTime,
                     total: this.totalHargaKeseluruhan,
-                    status: 'debt',
+                    status: 'draft',
                     note: note,
                     courier_id: courierId,
                     ongkir_address: ongkirAddress,

@@ -586,7 +586,7 @@
 
                 @if ($data->customer)
                     <div class="customer-card">
-                        <div class="customer-name">{{ $data->customer->name ?? 'Pelanggan' }}</div>
+                        <div class="customer-name">{{ $data->customer?->name ?? 'Pelanggan' }}</div>
                         <div class="customer-detail">
                             @if ($data->customer->phone)
                                 <span>&#9742;</span> {{ $data->customer->phone }}

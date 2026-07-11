@@ -251,7 +251,8 @@
                                 window.location.href = '/pos/payment-notification/' + res.payment
                                     .id; // redirect jika perlu
                             } else {
-                                Swal.fire("Gagal", res.message, "error");
+                                let errorMsg = res.error ? res.error : res.message;
+                                Swal.fire("Gagal", errorMsg, "error");
                             }
                         })
                         .catch(err => {

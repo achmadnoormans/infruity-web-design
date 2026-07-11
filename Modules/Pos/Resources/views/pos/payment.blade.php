@@ -7,7 +7,7 @@
             <div class="d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="mb-3">Pembayaran</span>
-                    <span class="fw-bolder mb-3">{{ $data->customer->name ?? 'Pelanggan Umum' }}</span>
+                    <span class="fw-bolder mb-3">{{ $data->customer?->name ?? 'Pelanggan Umum' }}</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center" style="margin-top: -5px;">
                     <span class="mb-3">Total Penjualan</span>
