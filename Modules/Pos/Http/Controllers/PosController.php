@@ -563,7 +563,7 @@ class PosController extends Controller
             $userId     = Auth::id();
             $isTempSave = ($data['status'] ?? null) === 'temp';
 
-            /*
+            
             // Kumpulkan semua ID Produk untuk mengurutkan lockForUpdate (Mencegah Deadlock)
             $allProductIdsToLock = [];
             if (!empty($data['items'])) {
@@ -726,7 +726,7 @@ class PosController extends Controller
                     throw new \Exception("Stok \"{$productName}\" tidak mencukupi. Stok tersedia: {$currentStock}, dibutuhkan: {$requiredQty}");
                 }
             }
-            */
+            
             $invoiceNumber = $data['invoice_number'] ?? null;
             $pos           = null;
             $posId         = null;
