@@ -700,7 +700,7 @@
                             delay: 250,
                             data: function(params) {
                                 return {
-                                    term: params.term,
+                                    term: params.term || '',
                                     limit: 10
                                 };
                             },
@@ -710,29 +710,27 @@
                                     window.productStockMap[item.id] = item.parent_product ? item.parent_product.parent_id : item.id;
                                 });
                                 return {
-                                    results: data.map(item => {
-                                        let qtyInCart = 0;
-                                        if (typeof this.calculateUsedStock === 'function') {
-                                            qtyInCart = this.calculateUsedStock(item.id);
-                                        } else {
+                                    results: data
+                                        .filter(item => item.name != null)
+                                        .map(item => {
+                                            let qtyInCart = 0;
                                             const mainApp = window.mainCartInstance || (document.querySelector('[x-data="posApp()"]') ? document.querySelector('[x-data="posApp()"]').__x.$data : null);
                                             if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
                                                 qtyInCart = mainApp.calculateUsedStock(item.id);
                                             }
-                                        }
-                                        let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
-                                        return {
-                                            id: item.id,
-                                            text: item.name,
-                                            unit: item.unit,
-                                            price: item.price,
-                                            hpp: item.hpp,
-                                            receipt: item.product_receipt,
-                                            stock_available: stock_available,
-                                            original_stock: item.get_stock?.stock_available ?? 0,
-                                            parent_id: item.parent_product ? item.parent_product.parent_id : item.id
-                                        };
-                                    })
+                                            let stock_available = (item.get_stock?.stock_available ?? 0) - qtyInCart;
+                                            return {
+                                                id: item.id,
+                                                text: item.name || '',
+                                                unit: item.unit,
+                                                price: item.price,
+                                                hpp: item.hpp,
+                                                receipt: item.product_receipt,
+                                                stock_available: stock_available,
+                                                original_stock: item.get_stock?.stock_available ?? 0,
+                                                parent_id: item.parent_product ? item.parent_product.parent_id : item.id
+                                            };
+                                        })
                                 };
                             }
                         }
@@ -792,12 +790,12 @@
                     this.cart[idx].discount = disc;
                     this.cart[idx].discountPercent = this.editDiscountPercent;
 
-                    let receiptProducts = $("select[name='receipt_edit_product_id[]']")
-                        .map(function() { return $(this).val(); }).get();
-                    let receiptProductsQty = $("input[name='receipt_edit_qty[]']")
-                        .map(function() {
-                            return $(this).val();
-                        }.bind(this))
+                    // Gunakan this.value (native DOM) bukan $(this).val() untuk
+                    // menghindari Select2's $.fn.val override yang memanggil toLowerCase()
+                    let receiptProducts = $('select[name="receipt_edit_product_id[]"]')
+                        .map(function() { return this.value; }).get();
+                    let receiptProductsQty = $('input[name="receipt_edit_qty[]"]')
+                        .map(function() { return this.value; })
                         .get();
 
                     if (receiptProductsQty.some(qty => parseFloat(qty) <= 0)) {
@@ -810,21 +808,26 @@
                     }
                     
                     let stockErrors = [];
-                    $("select[name='receipt_edit_product_id[]']").each((index, el) => {
+                    $('select[name="receipt_edit_product_id[]"]').each((index, el) => {
                         let select2Data = $(el).select2('data');
                         if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                            let originalStock = select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0;
+                            let originalStock = select2Data[0].original_stock;
+                            if (originalStock === undefined || originalStock === null) {
+                                originalStock = parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0;
+                            }
                             let productId = select2Data[0].id;
                             let productName = select2Data[0].text;
                             
-                            let qtyNeed = parseFloat($("input[name='receipt_edit_qty[]']").eq(index).val()) || 0;
+                            // Gunakan native .value pada input qty
+                            let qtyNeed = parseFloat($('input[name="receipt_edit_qty[]"]').eq(index)[0].value) || 0;
                             let totalQtyNeed = qtyNeed * (parseFloat(this.editQty) || 1);
                             let totalUsed = this.calculateUsedStock(productId);
                             
-                            // Subtract the qty already used by THIS item, since we are editing it!
+                            // Kurangi qty yang sudah dipakai item ini (karena sedang diedit)
                             let oldUsed = 0;
                             if (this.editItem && this.editItem.data && this.editItem.data.products) {
-                                let pIdx = this.editItem.data.products.indexOf(productId.toString());
+                                // gunakan == (loose) agar int 5 cocok dengan string "5"
+                                let pIdx = this.editItem.data.products.findIndex(p => p == productId);
                                 if (pIdx !== -1) {
                                     let oldQtyPerUnit = parseFloat(this.editItem.data.productsQty[pIdx]) || 0;
                                     oldUsed = oldQtyPerUnit * (parseFloat(this.editItem.qty) || 0);
@@ -846,16 +849,22 @@
                         });
                         return;
                     }
-                    let receiptProductsText = $("select[name='receipt_edit_product_id[]'] option:selected")
-                        .map(function() { return $(this).text(); }).get();
+
+                    // Gunakan native .text pada option untuk menghindari Select2 override
+                    let receiptProductsText = $('select[name="receipt_edit_product_id[]"] option:selected')
+                        .map(function() { return this.text; }).get();
 
                     let receiptProductsOriginalStock = [];
-                    $("select[name='receipt_edit_product_id[]']").each((index, el) => {
+                    $('select[name="receipt_edit_product_id[]"]').each((index, el) => {
                         let select2Data = $(el).select2('data');
                         if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                            receiptProductsOriginalStock.push(select2Data[0].original_stock ?? $(el).find('option:selected').data('original-stock') ?? 0);
+                            let originalStock = select2Data[0].original_stock;
+                            if (originalStock === undefined || originalStock === null) {
+                                originalStock = parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0;
+                            }
+                            receiptProductsOriginalStock.push(originalStock);
                         } else {
-                            receiptProductsOriginalStock.push($(el).find('option:selected').data('original-stock') ?? 0);
+                            receiptProductsOriginalStock.push(parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0);
                         }
                     });
 
@@ -2468,8 +2477,10 @@
                         let receiptProducts = [];
                         let receiptProductsQty = [];
                         let receiptProductsText = [];
-                        
+                        let receiptProductsOriginalStock = [];
+
                         if (prod) {
+                            // Ambil bahan dari production detail jika ada record produksi
                             let details = prod.production_details || prod.productionDetails;
                             if (details) {
                                 details.forEach(d => {
@@ -2477,8 +2488,22 @@
                                     let qtyPerUnit = d.quantity / (item.quantity > 0 ? item.quantity : 1);
                                     receiptProductsQty.push(qtyPerUnit);
                                     receiptProductsText.push(d.products ? d.products.name : ('Bahan ' + d.product_id));
+                                    receiptProductsOriginalStock.push(d.products && d.products.get_stock ? (parseFloat(d.products.get_stock.stock_available) || 0) : 0);
                                 });
                             }
+                        }
+
+                        // Fallback: jika tidak ada production (stok cukup, tidak perlu produksi),
+                        // gunakan resep dari product_receipt yang sudah di-eager-load di controller.
+                        if (receiptProducts.length === 0 && item.product && item.product.product_receipt && item.product.product_receipt.length > 0) {
+                            item.product.product_receipt.forEach(r => {
+                                if (r.ingredients) {
+                                    receiptProducts.push(r.ingredients.id);
+                                    receiptProductsQty.push(parseFloat(r.quantity) || 1);
+                                    receiptProductsText.push(r.ingredients.name || ('Bahan ' + r.ingredients.id));
+                                    receiptProductsOriginalStock.push(r.ingredients.get_stock ? (parseFloat(r.ingredients.get_stock.stock_available) || 0) : 0);
+                                }
+                            });
                         }
 
                         const cartIdx = this.cart.findIndex(c => c.key === key);
@@ -2486,7 +2511,8 @@
                             this.cart[cartIdx].data = {
                                 products: receiptProducts,
                                 productsQty: receiptProductsQty,
-                                productsText: receiptProductsText
+                                productsText: receiptProductsText,
+                                productsOriginalStock: receiptProductsOriginalStock
                             };
                         }
 

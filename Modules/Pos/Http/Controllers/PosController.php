@@ -210,7 +210,7 @@ class PosController extends Controller
         }
 
         $data['alpinejs']       = true;
-        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user', 'productions', 'productions.productionDetails', 'productions.productionDetails.products')->findOrFail($id);
+        $data['data']           = PosModel::with('customer', 'customer.customerTier', 'courier', 'branch', 'branch_proses', 'user', 'productions', 'productions.productionDetails', 'productions.productionDetails.products', 'productions.productionDetails.products.get_stock')->findOrFail($id);
 
         $isRecent = false;
         if ($data['data']->updated_at && $data['data']->updated_at->diffInMinutes(now()) <= 30) {
@@ -225,7 +225,7 @@ class PosController extends Controller
             return redirect()->route('pos.index')->with('error', 'Tidak bisa diedit, buatlah transaksi baru.');
         }
 
-        $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product', 'product.productionParcelDetails.product.productBranches')->where('pos_id', $id)->get();
+        $data['detail']         = PosDetailModel::with('product', 'parcel', 'product.unit', 'product.productionParcelDetails', 'product.productionParcelDetails.product', 'product.productionParcelDetails.product.productBranches', 'product.productReceipt', 'product.productReceipt.ingredients', 'product.productReceipt.ingredients.get_stock')->where('pos_id', $id)->get();
         $data['invoice_number'] = $data['data']->invoice_number;
         return view('pos::pos.create2', $data);
     }
