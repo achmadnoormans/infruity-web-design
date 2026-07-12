@@ -1099,10 +1099,6 @@ class PosController extends Controller
 
     public function cekNota($id)
     {
-        if ($denied = $this->requireAccess('pos.cek-nota')) {
-            return $denied;
-        }
-
         $data['payment'] = Payment::where('uuid', $id)->first();
         if (isset($data['payment'])) {
             $data['data']    = PosModel::with('customer', 'user')->find($data['payment']->pos_id);
@@ -1121,10 +1117,6 @@ class PosController extends Controller
 
     public function cekNotaDraft($id)
     {
-        if ($denied = $this->requireAccess('pos.cek-nota.draft')) {
-            return $denied;
-        }
-
         $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
         if (! isset($data['data'])) {
             return view('pos::pos.deleted-nota');
