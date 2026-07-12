@@ -664,7 +664,7 @@
                                         {{ $item->quantity . ' (' . ($item->product?->unit?->abbreviation ?? '-') . ')' }}
                                     </span>
                                     @php
-                                        $subTotal = $item->price * $item->quantity;
+                                        $subTotal = $item->subtotal;
                                     @endphp
                                     <span class="item-total">Rp
                                         {{ tonumberround($subTotal) }}</span>
@@ -680,9 +680,6 @@
                                                 per Item
                                             </span>
                                             <span>- {{ tonumberround($item->discount) }}</span>
-                                            @php
-                                                $total -= $item->discount;
-                                            @endphp
                                         @endif
                                     @endisset
                                 </div>
