@@ -630,7 +630,7 @@
                             <span
                                 class="value">{{ Str::limit(ucwords(strtolower($data->user->nm_user ?? 'Admin')), 15, '...') }}</span>
                         @endif
-                        <span class="value">{{ ucwords(strtolower($payment->paymentMethod->name ?? '-')) }}</span>
+                        <span class="value">{{ isset($payment) ? ucwords(strtolower($payment->paymentMethod->name ?? '-')) : '-' }}</span>
                     </div>
                 </div>
             </div>
