@@ -836,7 +836,7 @@
                             totalUsed -= oldUsed;
 
                             if ((totalUsed + totalQtyNeed) > originalStock) {
-                                stockErrors.push(`- ${productName} (Sisa stok: ${originalStock - totalUsed})`);
+                                stockErrors.push(`- ${productName} (Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100})`);
                             }
                         }
                     });
@@ -947,7 +947,7 @@
                             if (data.loading) return data.text;
                             const stock = data.stock_available ?? 0;
                             const disabled = stock <= 0;
-                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${Math.round(stock * 100) / 100}</span></span>`);
                             if (disabled) {
                                 $el.css('cursor', 'not-allowed');
                             }
@@ -2125,7 +2125,7 @@
                             if (data.loading) return data.text;
                             const stock = data.stock_available ?? 0;
                             const disabled = stock <= 0;
-                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${Math.round(stock * 100) / 100}</span></span>`);
                             if (disabled) {
                                 $el.css('cursor', 'not-allowed');
                             }
@@ -2723,7 +2723,7 @@
                             if (data.loading) return data.text;
                             const stock = data.stock_available ?? 0;
                             const isZero = stock <= 0;
-                            const $el = $(`<span class="${isZero ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'warning'} ms-2">Stok: ${stock}</span></span>`);
+                            const $el = $(`<span class="${isZero ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'warning'} ms-2">Stok: ${Math.round(stock * 100) / 100}</span></span>`);
                             return $el;
                         },
                         templateSelection: data => {
@@ -2855,7 +2855,7 @@
                             if (data.loading) return data.text;
                             const stock = data.stock_available ?? 0;
                             const disabled = stock <= 0;
-                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                            const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${Math.round(stock * 100) / 100}</span></span>`);
                             if (disabled) {
                                 $el.css('cursor', 'not-allowed');
                             }
@@ -2955,7 +2955,7 @@
                         const totalUsed = this.calculateUsedStock(productId);
 
                         if ((totalUsed + totalQtyNeed) > originalStock) {
-                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${(originalStock - totalUsed).toFixed(2)})`);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100})`);
                         }
                     });
 
