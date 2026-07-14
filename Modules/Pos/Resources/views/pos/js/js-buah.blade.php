@@ -881,8 +881,8 @@
                         this.jus[jusIdx].total_input = this.editTotal;
                         this.jus[jusIdx].discount = disc;
                         this.jus[jusIdx].discountPercent = this.editDiscountPercent;
-                        this.jus[jusIdx].product_receipt_id = receiptProducts;
-                        this.jus[jusIdx].product_receipt_qty = receiptProductsQty;
+                        this.jus[jusIdx].product_receipt_id = [...receiptProducts];
+                        this.jus[jusIdx].product_receipt_qty = [...receiptProductsQty];
                     }
                 }
                 this.closeEditJusModal();
@@ -2526,8 +2526,8 @@
                             discount: obj.discount,
                             discountPercent: obj.discountPercent,
                             total_input: obj.total_input,
-                            product_receipt_id: receiptProducts,
-                            product_receipt_qty: receiptProductsQty,
+                            product_receipt_id: [...receiptProducts],
+                            product_receipt_qty: [...receiptProductsQty],
                             type: 'jus'
                         });
                     }
@@ -2997,8 +2997,8 @@
                         discount: discount,
                         discountPercent: this.addProduct.discountPercent || 0,
                         total_input: total_input,
-                        product_receipt_id: receiptProducts,
-                        product_receipt_qty: receiptProductsQty,
+                        product_receipt_id: [...receiptProducts],
+                        product_receipt_qty: [...receiptProductsQty],
                         type: 'jus',
                     });
 
