@@ -20,6 +20,7 @@ class PosDetailModel extends Model
         'quantity',
         'debt_quantity',
         'discount',
+        'diskon_global',
         'subtotal',
         'price_after_discount',
         'hpp',
