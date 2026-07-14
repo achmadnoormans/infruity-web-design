@@ -1168,8 +1168,16 @@ class PosController extends Controller
             return $denied;
         }
 
-        $data['payment'] = Payment::findOrFail($id);
-        $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+        $data['payment'] = Payment::find($id);
+        if (!$data['payment']) {
+            return view('pos::pos.deleted-nota');
+        }
+        
+        $data['data']    = PosModel::with('customer', 'user')->find($data['payment']->pos_id);
+        if (!$data['data']) {
+            return view('pos::pos.deleted-nota');
+        }
+
         $data['setting'] = SettingNota::first();
         $data['detail']  = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
         $data['tier']    = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
@@ -1179,32 +1187,27 @@ class PosController extends Controller
 
     public function cekNota($id)
     {
-        if ($denied = $this->requireAccess('pos.cek-nota')) {
-            return $denied;
-        }
-
         $data['payment'] = Payment::where('uuid', $id)->first();
         if (isset($data['payment'])) {
-            $data['data']    = PosModel::with('customer', 'user')->findOrFail($data['payment']->pos_id);
+            $data['data']    = PosModel::with('customer', 'user')->find($data['payment']->pos_id);
+            if (!$data['data']) {
+                return view('pos::pos.deleted-nota');
+            }
             $data['setting'] = SettingNota::first();
             $data['detail']  = PosDetailModel::with('product')->where('pos_id', $data['payment']->pos_id)->get();
             $data['tier']    = CustomerTier::where('customer_id', $data['data']->customer_id)->first();
             // dd($data);
             return view('pos::pos.print2', $data);
         } else {
-            abort(404);
+            return view('pos::pos.deleted-nota');
         }
     }
 
     public function cekNotaDraft($id)
     {
-        if ($denied = $this->requireAccess('pos.cek-nota.draft')) {
-            return $denied;
-        }
-
         $data['data'] = PosModel::with('customer', 'user')->where('uuid', $id)->first();
         if (! isset($data['data'])) {
-            abort(404);
+            return view('pos::pos.deleted-nota');
         }
         $data['listPayment'] = Payment::with('paymentMethod', 'pos')->where('pos_id', $data['data']->id)->get();
         $data['setting']     = SettingNota::first();
