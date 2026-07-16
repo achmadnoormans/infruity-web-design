@@ -15,6 +15,7 @@ CREATE PROCEDURE get_customer_report ( IN start_date DATE, IN end_date DATE ) BE
 			JOIN pos_transaction B ON A.pos_id = B.id
 		WHERE B.`date` BETWEEN start_date AND end_date
 		AND B.deleted_at IS NULL
+		AND B.status IN ('paid', 'debt')
 		GROUP BY
 			B.customer_id
 		)
@@ -57,6 +58,8 @@ BEGIN
         JOIN pos_transaction AS B ON A.pos_id = B.id
         WHERE B.`date` BETWEEN start_date AND end_date
         AND A.deleted_at IS NULL
+		AND B.deleted_at IS NULL
+		AND B.status IN ('paid', 'debt')
         GROUP BY B.branch_id
     ),
     hpp AS (
@@ -68,6 +71,7 @@ BEGIN
         JOIN pos_payment AS C ON A.id = C.pos_id
         WHERE A.`date` BETWEEN start_date AND end_date
         AND A.deleted_at IS NULL
+		AND A.status IN ('paid', 'debt')
         GROUP BY A.branch_id
     )
     SELECT
@@ -108,6 +112,7 @@ BEGIN
 		LEFT JOIN product_units AS E ON C.product_unit = E.id
 		WHERE pos.date BETWEEN start_date AND end_date
         AND pos.deleted_at IS NULL
+		AND pos.status IN ('paid', 'debt')
 	GROUP BY
 		pos.branch_id,
 		D.NAME,
@@ -150,5 +155,6 @@ BEGIN
 		LEFT JOIN reg_villages AS kelurahan ON kelurahan.id = C.village
 	WHERE
 		A.date BETWEEN start_date AND end_date
-        AND A.deleted_at IS NULL;
+        AND A.deleted_at IS NULL
+		AND A.status IN ('paid', 'debt');
 END;

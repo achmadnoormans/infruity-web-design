@@ -30,6 +30,7 @@ FROM
 	LEFT JOIN customer AS C ON A.customer_id = C.id
 	LEFT JOIN branch AS E ON A.branch_id = E.id
     WHERE A.deleted_at IS NULL
+	AND A.status IN ('paid', 'debt')
 	ORDER BY A.created_at DESC;
 
 DROP VIEW IF EXISTS vw_product_buang;
