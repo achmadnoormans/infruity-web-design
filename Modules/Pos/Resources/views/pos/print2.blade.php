@@ -675,8 +675,12 @@
                                 <div class="discount">
                                     @isset($item->discount)
                                         @if ($item->discount > 0)
+                                            @php
+                                                $originalSubTotal = $item->price * $item->quantity;
+                                                $discountPercentPerItem = $originalSubTotal > 0 ? round(($item->discount / $originalSubTotal) * 100) : 0;
+                                            @endphp
                                             <span>Diskon
-                                                ({{ floor(($item->discount / $subTotal) * 100) }}%)
+                                                ({{ $discountPercentPerItem }}%)
                                                 per Item
                                             </span>
                                             <span>- {{ tonumberround($item->discount) }}</span>
@@ -708,7 +712,10 @@
                 $discount = $data->discount;
                 $ongkir_discount = $data->ongkir_discount;
                 $subtotal = $total;
-                if ($discount <= 100) {
+                $isDiscountPercentage = false;
+                if ($discount <= 100 && $discount > 0) {
+                    $isDiscountPercentage = true;
+                    $discountPercent = $discount;
                     $discount = ($discount / 100) * $subtotal;
                 }
                 if ($ongkir_discount <= 100) {
@@ -722,7 +729,7 @@
                 </div>
                 @if ($discount > 0)
                     <div class="total-line discount-line">
-                        <span class="total-label">Diskon</span>
+                        <span class="total-label">Diskon{{ $isDiscountPercentage ? ' (' . rtrim(rtrim(number_format($discountPercent, 2, ',', '.'), '0'), ',') . '%)' : '' }}</span>
                         <span class="total-value">-{{ tonumberround($discount) }}</span>
                     </div>
                     @php
