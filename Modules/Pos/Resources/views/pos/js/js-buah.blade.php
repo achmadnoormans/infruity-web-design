@@ -221,8 +221,8 @@
                 if (mainApp.cart) {
                     mainApp.cart.forEach(c => {
                         let currentStockId = window.productStockMap?.[c.id] || c.id;
-                        if (currentStockId == targetStockId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus') {
-                            used += Number(c.qty);
+                        if (currentStockId == targetStockId && c.typeProduct !== 'parcel' && c.typeProduct !== 'jus' && c.type !== 'jus' && c.status !== 'receipt') {
+                            used += Number(c.qty || 0);
                         }
 
                         if (c.data && c.data.products && c.data.products.length > 0) {
@@ -230,8 +230,22 @@
                                 if (pId) {
                                     let ingStockId = window.productStockMap?.[pId] || pId;
                                     if (ingStockId == targetStockId) {
-                                        const qty = c.data.productsQty[idx] ? Number(c.data.productsQty[idx]) : 0;
-                                        used += (qty || 0) * (Number(c.qty) || 0);
+                                        let rawQty = c.data.productsQty && c.data.productsQty[idx] ? String(c.data.productsQty[idx]).replace(',', '.') : "0";
+                                        const qty = Number(rawQty) || 0;
+                                        used += qty * (Number(c.qty) || 1);
+                                    }
+                                }
+                            });
+                        } else if (c.product_receipt && c.product_receipt.length > 0 && (c.typeProduct === 'jus' || c.type === 'jus' || c.status === 'receipt')) {
+                            // If they added Jus directly from the product list
+                            c.product_receipt.forEach((receipt) => {
+                                let ingId = receipt.ingredients ? receipt.ingredients.id : (receipt.product_receipt_id || receipt.product_id);
+                                if (ingId) {
+                                    let ingStockId = window.productStockMap?.[ingId] || ingId;
+                                    if (ingStockId == targetStockId) {
+                                        let rawQty = receipt.quantity ? String(receipt.quantity).replace(',', '.') : "0";
+                                        const qty = Number(rawQty) || 0;
+                                        used += qty * (Number(c.qty) || 1);
                                     }
                                 }
                             });
@@ -257,18 +271,7 @@
                     }).reduce((sum, p) => sum + (Number(p.qty) * Number(currentParcelQty)), 0);
                 }
 
-                const jusSelects = $("select[name='receipt_product_id[]']");
-                const jusQtys = $("input[name='receipt_qty[]']");
-                if (jusSelects.length > 0) {
-                    jusSelects.each(function(index) {
-                        let pId = $(this).val();
-                        let currentStockId = window.productStockMap?.[pId] || pId;
-                        if (currentStockId == targetStockId) {
-                            const qty = $(jusQtys[index]).val();
-                            used += Number(qty || 0);
-                        }
-                    });
-                }
+
 
                 return used;
             },
@@ -701,6 +704,7 @@
                             data: function(params) {
                                 return {
                                     term: params.term || '',
+                                    branch: $('#branch_id').val(),
                                     limit: 10
                                 };
                             },
@@ -737,11 +741,13 @@
                     });
 
                     if (selectedId) {
+                        const originalStockVal = parseFloat($(this).attr('data-original-stock')) || 0;
                         let selectedText = "Bahan " + selectedId;
                         if (item.data && item.data.productsText && item.data.productsText[idx]) {
                             selectedText = item.data.productsText[idx];
                         }
                         let option = new Option(selectedText, selectedId, true, true);
+                        $(option).attr('data-original-stock', originalStockVal);
                         $(this).append(option).trigger('change');
                     }
                 });
@@ -810,11 +816,13 @@
                     let stockErrors = [];
                     $('select[name="receipt_edit_product_id[]"]').each((index, el) => {
                         let select2Data = $(el).select2('data');
+                        if (select2Data && select2Data.length > 0 && select2Data[0].original_stock !== undefined && select2Data[0].original_stock !== null) {
+                            var originalStock = parseFloat(select2Data[0].original_stock) || 0;
+                        } else {
+                            var originalStock = parseFloat($(el).find('option:selected').attr('data-original-stock')) || parseFloat($(el).attr('data-original-stock')) || 0;
+                        }
+                        
                         if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                            let originalStock = select2Data[0].original_stock;
-                            if (originalStock === undefined || originalStock === null) {
-                                originalStock = parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0;
-                            }
                             let productId = select2Data[0].id;
                             let productName = select2Data[0].text;
                             
@@ -836,7 +844,7 @@
                             totalUsed -= oldUsed;
 
                             if ((totalUsed + totalQtyNeed) > originalStock) {
-                                stockErrors.push(`- ${productName} (Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100})`);
+                                stockErrors.push(`- ${productName} (Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100} [DEBUG: OS=${originalStock}, TU=${totalUsed}, QN=${qtyNeed}])`);
                             }
                         }
                     });
@@ -857,14 +865,10 @@
                     let receiptProductsOriginalStock = [];
                     $('select[name="receipt_edit_product_id[]"]').each((index, el) => {
                         let select2Data = $(el).select2('data');
-                        if (select2Data && select2Data.length > 0 && select2Data[0].id) {
-                            let originalStock = select2Data[0].original_stock;
-                            if (originalStock === undefined || originalStock === null) {
-                                originalStock = parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0;
-                            }
-                            receiptProductsOriginalStock.push(originalStock);
+                        if (select2Data && select2Data.length > 0 && select2Data[0].original_stock !== undefined && select2Data[0].original_stock !== null) {
+                            receiptProductsOriginalStock.push(parseFloat(select2Data[0].original_stock) || 0);
                         } else {
-                            receiptProductsOriginalStock.push(parseFloat($(el).data('original-stock')) || parseFloat($(el).find('option:selected').data('original-stock')) || 0);
+                            receiptProductsOriginalStock.push(parseFloat($(el).find('option:selected').attr('data-original-stock')) || parseFloat($(el).attr('data-original-stock')) || 0);
                         }
                     });
 
@@ -2326,7 +2330,7 @@
                         if (data.loading) return data.text;
                         const stock = data.stock_available ?? 0;
                         const disabled = stock <= 0;
-                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}"><strong>${data.text}</strong> <span class="badge bg-${stock > 0 ? 'success' : 'danger'}">Sisa: ${stock}</span></span>`);
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}"><strong>${data.text}</strong> <span class="badge bg-${stock > 0 ? 'success' : 'danger'}">Sisa: ${Math.round(stock * 100) / 100}</span></span>`);
                         if (disabled) {
                             $el.css('cursor', 'not-allowed');
                         }
@@ -2816,6 +2820,7 @@
                             data: function(params) {
                                 return {
                                     term: params.term,
+                                    branch: $('#branch_id').val(),
                                     limit: 10
                                 };
                             },
@@ -2882,7 +2887,7 @@
 
                     // set value awal dari item receipt
                     if (selectedId) {
-                        const originalStockVal = $(this).data('original-stock') ?? 0;
+                        const originalStockVal = parseFloat($(this).attr('data-original-stock')) || 0;
                         let option = new Option(selectedText, selectedId, true, true);
                         $(option).attr('data-original-stock', originalStockVal);
                         $(this).append(option).trigger('change');
@@ -2927,7 +2932,7 @@
                         if(select2Data && select2Data.length > 0 && select2Data[0].original_stock !== undefined) {
                             return select2Data[0].original_stock;
                         }
-                        return $(this).find('option:selected').data('original-stock') ?? $(this).data('original-stock') ?? 0; 
+                        return $(this).find('option:selected').attr('data-original-stock') ?? $(this).attr('data-original-stock') ?? 0; 
                     }).get();
                     let receiptProductsText = $("select[name='receipt_product_id[]'] option:selected")
                         .map(function() {
@@ -2947,15 +2952,21 @@
 
                         const selectedOption = $(el).find('option:selected');
                         const productName = selectedOption.text().trim() || `Bahan #${index + 1}`;
-                        // original_stock dari attribute HTML yang di-set saat loadReceipt
-                        const originalStock = parseFloat($(el).attr('data-original-stock')) || 0;
+                        
+                        let select2Data = $(el).select2('data');
+                        let originalStock = 0;
+                        if (select2Data && select2Data.length > 0 && select2Data[0].original_stock !== undefined) {
+                            originalStock = parseFloat(select2Data[0].original_stock) || 0;
+                        } else {
+                            originalStock = parseFloat(selectedOption.attr('data-original-stock')) || parseFloat($(el).attr('data-original-stock')) || 0;
+                        }
 
                         const qtyNeed = parseFloat($("input[name='receipt_qty[]']").eq(index).val()) || 0;
                         const totalQtyNeed = qtyNeed * (parseFloat(this.addProduct.qty) || 1);
                         const totalUsed = this.calculateUsedStock(productId);
 
                         if ((totalUsed + totalQtyNeed) > originalStock) {
-                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100})`);
+                            stockErrors.push(`- ${productName} (Dibutuhkan: ${totalQtyNeed}, Sisa stok: ${Math.round((originalStock - totalUsed) * 100) / 100} [DEBUG: OS=${originalStock}, TU=${totalUsed}, QN=${qtyNeed}])`);
                         }
                     });
 

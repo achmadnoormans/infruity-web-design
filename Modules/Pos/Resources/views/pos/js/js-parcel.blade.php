@@ -192,7 +192,8 @@
                         if (data.loading) return data.text;
                         const stock = data.stock_available ?? 0;
                         const disabled = stock <= 0;
-                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                        const roundedStock = Math.round(stock * 100) / 100;
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${roundedStock}</span></span>`);
                         if (disabled) {
                             $el.css('cursor', 'not-allowed');
                         }
@@ -224,6 +225,7 @@
                             return {
                                 results: data.map(item => {
                                     let qtyInCart = 0;
+                                    let debugStr = "";
                                     const mainApp = window.mainCartInstance;
                                     if (mainApp && typeof mainApp.calculateUsedStock === 'function') {
                                         const currentParcelQty = $('#parcel_qty').val() || 1;
@@ -281,7 +283,8 @@
                         if (data.loading) return data.text;
                         const stock = data.stock_available ?? 0;
                         const disabled = stock <= 0;
-                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${stock}</span></span>`);
+                        const roundedStock = Math.round(stock * 100) / 100;
+                        const $el = $(`<span class="${disabled ? 'text-muted' : ''}">${data.text} <span class="badge badge-light-${stock > 0 ? 'success' : 'danger'} ms-2">Stok: ${roundedStock}</span></span>`);
                         if (disabled) {
                             $el.css('cursor', 'not-allowed');
                         }
