@@ -635,8 +635,12 @@
                                         {{ $item->type == 'parcel' ? ($item->product?->description ?? 'Produk Dihapus') : ($item->product?->name ?? 'Produk Dihapus') }}
                                     </div>
                                     @if ($item->discount && $item->discount > 0)
+                                        @php
+                                            $originalSubTotal = $item->price * $item->quantity;
+                                            $discountPercentPerItem = $originalSubTotal > 0 ? round(($item->discount / $originalSubTotal) * 100) : 0;
+                                        @endphp
                                         <div style="font-size: 11px; color: #ef4444; margin-top: 4px;">
-                                            Diskon (-Rp{{ number_format($item->discount, 0, ',', '.') }})
+                                            Diskon ({{ $discountPercentPerItem }}%) (-Rp{{ number_format($item->discount, 0, ',', '.') }})
                                         </div>
                                     @endif
                                 </td>
@@ -690,7 +694,10 @@
                 @php
                     $discount = $data->discount;
                     $ongkir_discount = $data->ongkir_discount;
+                    $isDiscountPercentage = false;
                     if ($discount <= 100 && $discount > 0) {
+                        $isDiscountPercentage = true;
+                        $discountPercent = $discount;
                         $discount = ($discount / 100) * $subtotal;
                     }
                     if ($ongkir_discount <= 100 && $ongkir_discount > 0) {
@@ -705,7 +712,7 @@
                     </div>
                     @if ($discount > 0)
                         <div class="summary-row">
-                            <span class="label">Diskon</span>
+                            <span class="label">Diskon{{ $isDiscountPercentage ? ' (' . rtrim(rtrim(number_format($discountPercent, 2, ',', '.'), '0'), ',') . '%)' : '' }}</span>
                             <span class="value" style="color:#ef4444;">-Rp{{ number_format($discount, 0, ',', '.') }}</span>
                         </div>
                         @php $subtotal -= $discount; @endphp
