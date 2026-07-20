@@ -800,7 +800,7 @@ class PosController extends Controller
                 if (is_numeric($item['id'])) {
                     $itemTotal   = isset($item['total_input']) ? $item['total_input'] : (($item['price'] * $item['qty']) - ($item['discount'] ?? 0));
                     $prosentase  = $totalPrice > 0 ? round(($itemTotal / $totalPrice) * 100, 2) : 0;
-                    $posDiscount = $pos->discount * $prosentase / 100;
+                    $posDiscount = ($itemTotal * $pos->discount) / 100;
                     $product     = Product::find($item['id']);
 
                     // Ambil parent/child dari product yang dipilih

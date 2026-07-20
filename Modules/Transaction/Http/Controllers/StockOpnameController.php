@@ -330,6 +330,7 @@ class StockOpnameController extends Controller
         $query = StockOpname::with('product.unit')
             ->leftJoin('users', 'stock_opname.created_by', '=', 'users.id_user')
             ->leftJoin('branch', 'stock_opname.branch_id', '=', 'branch.id')
+            ->leftJoin('products', 'stock_opname.product_id', '=', 'products.id')
             ->leftJoin('product_stock', function ($j) {
                 $j->on('product_stock.id', '=', 'stock_opname.product_id')
                   ->on('product_stock.branch_id', '=', 'stock_opname.branch_id');
@@ -338,6 +339,7 @@ class StockOpnameController extends Controller
                 'stock_opname.*',
                 'users.nm_user as creator_name',
                 'branch.name as branch_name',
+                'products.name as product_name',
                 'product_stock.avg_hpp as avg_hpp_calc',
                 'product_stock.stock_available as live_stock',
                 DB::raw('(SELECT COUNT(*) FROM stock_opname_discussions WHERE stock_opname_discussions.stock_opname_id = stock_opname.id) as discussions_count'),
@@ -357,8 +359,20 @@ class StockOpnameController extends Controller
             $query->whereDate('stock_opname.date', '<=', $request->end_date);
         }
 
-        $data = $query->orderBy('stock_opname.created_at', 'desc')->get();
-        return DataTables::of($data)
+        $query->orderBy('stock_opname.created_at', 'desc');
+
+        return DataTables::of($query)
+            ->filter(function ($q) use ($request) {
+                if ($request->has('search') && !empty($request->search['value'])) {
+                    $search = $request->search['value'];
+                    $q->where(function ($sub) use ($search) {
+                        $sub->where('stock_opname.code', 'like', "%{$search}%")
+                            ->orWhere('products.name', 'like', "%{$search}%")
+                            ->orWhere('users.nm_user', 'like', "%{$search}%")
+                            ->orWhere('branch.name', 'like', "%{$search}%");
+                    });
+                }
+            })
             ->addIndexColumn()
             ->make(true);
     }
