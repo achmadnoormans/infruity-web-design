@@ -885,7 +885,10 @@
             const url = "{{ url('/cek-nota') . '/' . (isset($payment->uuid) ? $payment->uuid : 'draft/' . $data->uuid) }}";
             const message = encodeURIComponent(
                 `Halo, berikut bukti transaksi Anda:\n${url}`);
-            const phone = '{{ $data->customer->whatsapp ?? '' }}'; // Ganti dengan nomor tujuan
+            let phone = '{{ $data->customer->whatsapp ?? '' }}'; // Ganti dengan nomor tujuan
+            if (phone.startsWith('0')) {
+                phone = '62' + phone.substring(1);
+            }
             const waUrl = `https://wa.me/${phone}?text=${message}`;
             window.open(waUrl, '_blank');
         }
