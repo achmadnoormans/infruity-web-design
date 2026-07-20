@@ -273,7 +273,7 @@
                         .then(res => res.json())
                         .then(data => {
                             console.log('Pembayaran sebelumnya:', data);
-                            this.previousPayments = data;
+                            this.previousPayments = data.filter(payment => parseFloat(payment.total) > 0);
                         })
                         .catch(error => {
                             console.error('Gagal mengambil pembayaran sebelumnya:', error);
