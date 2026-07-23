@@ -1103,7 +1103,7 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+            <main class="flex-1 overflow-y-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-6 flex flex-col bg-white sm:bg-transparent">
 
                 <!-- DASHBOARD VIEW -->
                 <div x-show="activePage === 'dashboard'" x-cloak
@@ -1111,15 +1111,15 @@
 
                     <!-- Slide Legacy: Detail Dashboard (Original Layout - Hidden) -->
                     <div x-show="false" x-transition.opacity.duration.300ms
-                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 lg:min-h-0">
+                        class="flex-1 flex flex-col lg:flex-row gap-0 sm:gap-4 xl:gap-5 lg:min-h-0">
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
                         <div class="flex-1 flex flex-col lg:min-h-0">
                             <!-- Dashboard Cards Grid -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pendapatan -->
-                                <div class="rounded-[14px] p-4 text-white flex flex-col justify-between shadow-sm border border-transparent min-h-[190px]"
+                                <div class="rounded-none sm:rounded-[14px] p-5 sm:p-4 text-white flex flex-col justify-between shadow-none sm:shadow-sm border-b border-white/10 sm:border-transparent min-h-[190px]"
                                     style="background-color: #0b595b;">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -1177,7 +1177,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-[190px]">
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between min-h-[190px]">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -1253,7 +1253,7 @@
 
                                 <!-- Card 3: Kerugian Sortir -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-[190px] md:col-span-2 lg:col-span-2"
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between min-h-[190px] md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -2229,15 +2229,15 @@
 
                     <!-- Slide 1: Dashboard Utama -->
                     <div x-show="dashboardSlide === 1" x-transition.opacity.duration.300ms
-                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 lg:min-h-0">
+                        class="flex-1 flex flex-col lg:flex-row gap-0 sm:gap-4 xl:gap-5 lg:min-h-0">
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
                         <div class="flex-1 flex flex-col lg:min-h-0">
                             <!-- Dashboard Cards Grid -->
-                            <div class="grid flex-1 lg:min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+                            <div class="grid flex-1 lg:min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pendapatan -->
-                                <div class="rounded-[14px] p-4 text-white flex flex-col justify-between shadow-sm border border-transparent lg:min-h-0"
+                                <div class="rounded-none sm:rounded-[14px] p-5 sm:p-4 text-white flex flex-col justify-between shadow-none sm:shadow-sm border-b border-white/10 sm:border-transparent lg:min-h-0"
                                     style="background-color: #0b595b;">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -2309,7 +2309,7 @@
 
                                 <!-- Card: Total Pendapatan -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -2387,7 +2387,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pendapatan Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -2706,7 +2706,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Pengeluaran<br>
@@ -2784,7 +2784,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pengeluaran Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -3104,7 +3104,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -3182,7 +3182,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Kerugian Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
