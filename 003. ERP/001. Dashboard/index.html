@@ -3468,33 +3468,35 @@
             <!-- Glassmorphism Pill -->
             <div class="pointer-events-auto bg-white/40 backdrop-blur-xl rounded-[28px] border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.4)] p-2 flex items-center justify-between">
                 <!-- Tab: Pendapatan -->
-                <button @click="activeTab = 'pendapatan'" 
+                <button @click="activeTab = 'pendapatan'; sidebarOpen = false" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'pendapatan' ? 'bg-[#D1F36E]' : ''">
+                        :class="(activeTab === 'pendapatan' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'pendapatan' ? 'ph-fill ph-wallet text-[#0F5C45] scale-110' : 'ph ph-wallet text-black/80 scale-100'"></i>
+                       :class="(activeTab === 'pendapatan' && !sidebarOpen) ? 'ph-fill ph-wallet text-[#0F5C45] scale-110' : 'ph ph-wallet text-black/80 scale-100'"></i>
                 </button>
                 
                 <!-- Tab: Pengeluaran -->
-                <button @click="activeTab = 'pengeluaran'" 
+                <button @click="activeTab = 'pengeluaran'; sidebarOpen = false" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'pengeluaran' ? 'bg-[#D1F36E]' : ''">
+                        :class="(activeTab === 'pengeluaran' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'pengeluaran' ? 'ph-fill ph-shopping-cart text-[#0F5C45] scale-110' : 'ph ph-shopping-cart text-black/80 scale-100'"></i>
+                       :class="(activeTab === 'pengeluaran' && !sidebarOpen) ? 'ph-fill ph-shopping-cart text-[#0F5C45] scale-110' : 'ph ph-shopping-cart text-black/80 scale-100'"></i>
                 </button>
                 
                 <!-- Tab: Kerugian -->
-                <button @click="activeTab = 'kerugian'" 
+                <button @click="activeTab = 'kerugian'; sidebarOpen = false" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'kerugian' ? 'bg-[#D1F36E]' : ''">
+                        :class="(activeTab === 'kerugian' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-[#0F5C45] scale-110' : 'ph ph-warning-circle text-black/80 scale-100'"></i>
+                       :class="(activeTab === 'kerugian' && !sidebarOpen) ? 'ph-fill ph-warning-circle text-[#0F5C45] scale-110' : 'ph ph-warning-circle text-black/80 scale-100'"></i>
                 </button>
 
                 <!-- Tab: Menu -->
                 <button @click="window.self !== window.top ? window.parent.postMessage('toggleSidebar', '*') : sidebarOpen = !sidebarOpen" 
-                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group">
-                    <i class="text-[26px] transition-all ph ph-list text-black/80 scale-100"></i>
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="sidebarOpen ? 'bg-[#D1F36E]' : ''">
+                    <i class="text-[26px] transition-all" 
+                       :class="sidebarOpen ? 'ph-bold ph-list text-[#0F5C45] scale-110' : 'ph ph-list text-black/80 scale-100'"></i>
                 </button>
 
             </div>
