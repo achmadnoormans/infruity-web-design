@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Style Floating Nav | Infruity</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Custom subtle shadow for the glass effect */
+        .glass-shadow {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Beautiful animated gradient background to show off the glass effect */
+        .bg-animated {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab, #f6d365, #fda085);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-animated min-h-screen text-gray-800 antialiased font-sans flex flex-col items-center justify-center">
+
+    <!-- Mobile Frame Container (Constrained width to simulate mobile) -->
+    <main class="relative w-full max-w-md h-[100dvh] md:h-[850px] md:max-h-[90vh] bg-transparent overflow-hidden md:rounded-[40px] md:shadow-2xl md:border-[8px] md:border-gray-900 mx-auto flex flex-col">
+        
+        <!-- Fake Content to show scrolling effect behind the transparent floating bar -->
+        <div class="flex-1 overflow-y-auto p-6 pb-32">
+            <div class="bg-white/90 backdrop-blur-md rounded-2xl p-6 shadow-xl mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Dashboard Navigasi</h1>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Desain navigasi bawah bergaya pill melayang (seperti referensi gambar). Background memiliki gradien animasi agar efek <b>Glassmorphism</b> (kaca transparan) pada navbar terlihat jelas.
+                </p>
+            </div>
+            
+            <div class="space-y-4 opacity-70">
+                <div class="h-32 bg-white/60 backdrop-blur-sm rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="w-1/3 h-4 bg-black/10 rounded"></div>
+                    <div class="w-1/2 h-8 bg-black/10 rounded"></div>
+                </div>
+                <div class="h-48 bg-white/60 backdrop-blur-sm rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="w-1/3 h-4 bg-black/10 rounded"></div>
+                    <div class="w-full h-24 bg-black/5 rounded"></div>
+                </div>
+                <div class="h-32 bg-white/60 backdrop-blur-sm rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="w-1/3 h-4 bg-black/10 rounded"></div>
+                    <div class="w-1/2 h-8 bg-black/10 rounded"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- INSTAGRAM-STYLE FLOATING NAV               -->
+        <!-- ========================================== -->
+        <div class="absolute bottom-5 left-0 right-0 px-5 pointer-events-none z-50">
+            <!-- Glassmorphism Pill -->
+            <div class="pointer-events-auto bg-white/40 backdrop-blur-xl rounded-[28px] border border-white/60 glass-shadow p-2 flex items-center justify-between"
+                 x-data="{ activeTab: 'pendapatan' }">
+                
+                <!-- Tab: Home (Dashboard) -->
+                <button @click="activeTab = 'home'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'home' ? 'bg-black/10' : 'hover:bg-black/5'">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'home' ? 'ph-fill ph-house text-black scale-110' : 'ph ph-house text-black/80 scale-100 group-hover:scale-110'"></i>
+                </button>
+                
+                <!-- Tab: Pendapatan -->
+                <button @click="activeTab = 'pendapatan'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'pendapatan' ? 'bg-black/10' : 'hover:bg-black/5'">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'pendapatan' ? 'ph-fill ph-wallet text-black scale-110' : 'ph ph-wallet text-black/80 scale-100 group-hover:scale-110'"></i>
+                </button>
+                
+                <!-- Tab: Pengeluaran -->
+                <button @click="activeTab = 'pengeluaran'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'pengeluaran' ? 'bg-black/10' : 'hover:bg-black/5'">
+                    
+                    <!-- Notification Dot -->
+                    <span x-show="activeTab !== 'pengeluaran'" class="absolute top-2.5 right-[50%] -mr-3.5 w-2.5 h-2.5 bg-red-500 border-2 border-white/50 rounded-full z-10"></span>
+
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'pengeluaran' ? 'ph-fill ph-shopping-cart text-black scale-110' : 'ph ph-shopping-cart text-black/80 scale-100 group-hover:scale-110'"></i>
+                </button>
+                
+                <!-- Tab: Kerugian -->
+                <button @click="activeTab = 'kerugian'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'kerugian' ? 'bg-black/10' : 'hover:bg-black/5'">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-black scale-110' : 'ph ph-warning-circle text-black/80 scale-100 group-hover:scale-110'"></i>
+                </button>
+                
+                <!-- Tab: Profile -->
+                <button @click="activeTab = 'profile'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'profile' ? 'bg-black/10' : 'hover:bg-black/5'">
+                    
+                    <!-- Notification Dot -->
+                    <span x-show="activeTab !== 'profile'" class="absolute top-2.5 right-[50%] -mr-3.5 w-2.5 h-2.5 bg-red-500 border-2 border-white/50 rounded-full z-10"></span>
+
+                    <!-- Profile Image Avatar -->
+                    <div class="w-7 h-7 rounded-full overflow-hidden border-[1.5px] transition-all"
+                         :class="activeTab === 'profile' ? 'border-black scale-110' : 'border-black/30 group-hover:border-black/50'">
+                        <img src="https://i.pravatar.cc/100?img=33" alt="Profile" class="w-full h-full object-cover">
+                    </div>
+                </button>
+
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
