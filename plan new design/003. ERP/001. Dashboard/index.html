@@ -3490,6 +3490,13 @@
                     <i class="text-[26px] transition-all" 
                        :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-[#0F5C45] scale-110' : 'ph ph-warning-circle text-black/80 scale-100'"></i>
                 </button>
+
+                <!-- Tab: Menu -->
+                <button @click="window.self !== window.top ? window.parent.postMessage('toggleSidebar', '*') : sidebarOpen = !sidebarOpen" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group">
+                    <i class="text-[26px] transition-all ph ph-list text-black/80 scale-100"></i>
+                </button>
+
             </div>
         </div>
 
