@@ -820,7 +820,7 @@
 
             <!-- -------- Floating Header -------- -->
             <header
-                class="bg-white sm:rounded-full shadow-none sm:shadow-sm border-b sm:border border-gray-100 mx-0 sm:mx-6 lg:mx-8 mt-0 sm:mt-6 lg:mt-5 px-4 sm:px-5 lg:px-6 py-3 lg:py-4 flex items-center justify-between gap-4 z-30 sticky top-0 sm:top-6 lg:top-5">
+                class="bg-white sm:rounded-full shadow-none sm:shadow-sm border-b sm:border border-gray-100 mx-0 sm:mx-6 lg:mx-8 mt-0 sm:mt-6 lg:mt-5 px-4 sm:px-5 lg:px-6 py-3 lg:py-4 hidden sm:flex items-center justify-between gap-4 z-30 sticky top-0 sm:top-6 lg:top-5">
 
                 <!-- Left: Hamburger + Title/Breadcrumb -->
                 <div class="flex items-center gap-4 pl-2">
@@ -1103,7 +1103,7 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto px-0 sm:px-6 lg:px-8 py-0 sm:py-6 flex flex-col bg-white sm:bg-transparent">
+            <main class="flex-1 overflow-y-auto px-0 sm:px-6 lg:px-8 pt-0 pb-28 sm:py-6 flex flex-col bg-white sm:bg-transparent">
 
                 <!-- DASHBOARD VIEW -->
                 <div x-show="activePage === 'dashboard'" x-cloak
@@ -3460,6 +3460,39 @@
                 </div>
 
             </main>
+
+        <!-- ========================================== -->
+        <!-- INSTAGRAM-STYLE FLOATING NAV (MOBILE ONLY) -->
+        <!-- ========================================== -->
+        <div class="absolute bottom-5 left-0 right-0 px-5 pointer-events-none z-50 sm:hidden" x-data="{ activeTab: 'pendapatan' }">
+            <!-- Glassmorphism Pill -->
+            <div class="pointer-events-auto bg-white/40 backdrop-blur-xl rounded-[28px] border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.4)] p-2 flex items-center justify-between">
+                <!-- Tab: Pendapatan -->
+                <button @click="activeTab = 'pendapatan'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'pendapatan' ? 'bg-[#D1F36E]' : ''">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'pendapatan' ? 'ph-fill ph-wallet text-[#0F5C45] scale-110' : 'ph ph-wallet text-black/80 scale-100'"></i>
+                </button>
+                
+                <!-- Tab: Pengeluaran -->
+                <button @click="activeTab = 'pengeluaran'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'pengeluaran' ? 'bg-[#D1F36E]' : ''">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'pengeluaran' ? 'ph-fill ph-shopping-cart text-[#0F5C45] scale-110' : 'ph ph-shopping-cart text-black/80 scale-100'"></i>
+                </button>
+                
+                <!-- Tab: Kerugian -->
+                <button @click="activeTab = 'kerugian'" 
+                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
+                        :class="activeTab === 'kerugian' ? 'bg-[#D1F36E]' : ''">
+                    <i class="text-[26px] transition-all" 
+                       :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-[#0F5C45] scale-110' : 'ph ph-warning-circle text-black/80 scale-100'"></i>
+                </button>
+            </div>
+        </div>
+
 
 
         </div>
