@@ -373,8 +373,7 @@
         body.in-iframe { background: transparent !important; }
         body.in-iframe aside { display: none !important; }
         body.in-iframe > div > div[x-show="sidebarOpen"] { display: none !important; }
-        body.in-iframe [data-hamburger] { display: none !important; }
-    </style>
+            </style>
 </head>
 
 <body class="font-sans bg-[#e5e9f3] text-gray-800 antialiased h-screen overflow-hidden">
@@ -825,7 +824,7 @@
 
                 <!-- Left: Hamburger + Title/Breadcrumb -->
                 <div class="flex items-center gap-4 pl-2">
-                    <button data-hamburger @click="sidebarOpen = !sidebarOpen"
+                    <button data-hamburger @click="window.self !== window.top ? window.parent.postMessage('toggleSidebar', '*') : sidebarOpen = !sidebarOpen"
                         class="lg:hidden p-2 -ml-2 rounded-full hover:bg-gray-100 text-gray-500 transition shrink-0">
                         <i class="ph ph-list text-2xl"></i>
                     </button>
@@ -851,7 +850,7 @@
 
                     <!-- Search Input (Removed) -->
                     <!-- Dashboard Week Filter (Icon Expander) -->
-                    <div x-show="activePage === 'dashboard'" x-cloak class="hidden md:flex items-center relative"
+                    <div x-show="activePage === 'dashboard'" x-cloak class="flex items-center relative"
                         x-data="{ 
                             weekDropdown: false, 
                             expanded: false, 
@@ -1034,7 +1033,7 @@
 
 
                     <!-- Notification Bell -->
-                    <div class="relative" x-data="{ notifOpen: false, hasUnread: true }">
+                    <div class="hidden" x-data="{ notifOpen: false, hasUnread: true }">
                         <button @click="notifOpen = !notifOpen; hasUnread = false"
                             class="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 text-gray-600 transition shrink-0">
                             <div class="relative flex items-center justify-center">
