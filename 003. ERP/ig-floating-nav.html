@@ -92,50 +92,50 @@
                 <!-- Tab: Home (Dashboard) -->
                 <button @click="activeTab = 'home'" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'home' ? 'bg-black/10' : 'hover:bg-black/5'">
+                        :class="activeTab === 'home' ? 'bg-primary/10' : 'hover:bg-black/5'">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'home' ? 'ph-fill ph-house text-black scale-110' : 'ph ph-house text-black/80 scale-100 group-hover:scale-110'"></i>
+                       :class="activeTab === 'home' ? 'ph-fill ph-house text-primary scale-110' : 'ph ph-house text-black/80 scale-100 group-hover:scale-110'"></i>
                 </button>
                 
                 <!-- Tab: Pendapatan -->
                 <button @click="activeTab = 'pendapatan'" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'pendapatan' ? 'bg-black/10' : 'hover:bg-black/5'">
+                        :class="activeTab === 'pendapatan' ? 'bg-primary/10' : 'hover:bg-black/5'">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'pendapatan' ? 'ph-fill ph-wallet text-black scale-110' : 'ph ph-wallet text-black/80 scale-100 group-hover:scale-110'"></i>
+                       :class="activeTab === 'pendapatan' ? 'ph-fill ph-wallet text-primary scale-110' : 'ph ph-wallet text-black/80 scale-100 group-hover:scale-110'"></i>
                 </button>
                 
                 <!-- Tab: Pengeluaran -->
                 <button @click="activeTab = 'pengeluaran'" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'pengeluaran' ? 'bg-black/10' : 'hover:bg-black/5'">
+                        :class="activeTab === 'pengeluaran' ? 'bg-accent/20' : 'hover:bg-black/5'">
                     
                     <!-- Notification Dot -->
                     <span x-show="activeTab !== 'pengeluaran'" class="absolute top-2.5 right-[50%] -mr-3.5 w-2.5 h-2.5 bg-red-500 border-2 border-white/50 rounded-full z-10"></span>
 
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'pengeluaran' ? 'ph-fill ph-shopping-cart text-black scale-110' : 'ph ph-shopping-cart text-black/80 scale-100 group-hover:scale-110'"></i>
+                       :class="activeTab === 'pengeluaran' ? 'ph-fill ph-shopping-cart text-[#d19c00] scale-110' : 'ph ph-shopping-cart text-black/80 scale-100 group-hover:scale-110'"></i>
                 </button>
                 
                 <!-- Tab: Kerugian -->
                 <button @click="activeTab = 'kerugian'" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'kerugian' ? 'bg-black/10' : 'hover:bg-black/5'">
+                        :class="activeTab === 'kerugian' ? 'bg-strawberry/10' : 'hover:bg-black/5'">
                     <i class="text-[26px] transition-all" 
-                       :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-black scale-110' : 'ph ph-warning-circle text-black/80 scale-100 group-hover:scale-110'"></i>
+                       :class="activeTab === 'kerugian' ? 'ph-fill ph-warning-circle text-strawberry scale-110' : 'ph ph-warning-circle text-black/80 scale-100 group-hover:scale-110'"></i>
                 </button>
                 
                 <!-- Tab: Profile -->
                 <button @click="activeTab = 'profile'" 
                         class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="activeTab === 'profile' ? 'bg-black/10' : 'hover:bg-black/5'">
+                        :class="activeTab === 'profile' ? 'bg-primary/10' : 'hover:bg-black/5'">
                     
                     <!-- Notification Dot -->
                     <span x-show="activeTab !== 'profile'" class="absolute top-2.5 right-[50%] -mr-3.5 w-2.5 h-2.5 bg-red-500 border-2 border-white/50 rounded-full z-10"></span>
 
                     <!-- Profile Image Avatar -->
                     <div class="w-7 h-7 rounded-full overflow-hidden border-[1.5px] transition-all"
-                         :class="activeTab === 'profile' ? 'border-black scale-110' : 'border-black/30 group-hover:border-black/50'">
+                         :class="activeTab === 'profile' ? 'border-primary scale-110' : 'border-black/30 group-hover:border-black/50'">
                         <img src="https://i.pravatar.cc/100?img=33" alt="Profile" class="w-full h-full object-cover">
                     </div>
                 </button>
