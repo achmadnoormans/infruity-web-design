@@ -1108,14 +1108,14 @@
 
                 <!-- DASHBOARD VIEW -->
                 <div x-show="activePage === 'dashboard'" x-cloak
-                    class="flex-1 flex flex-col animate-fade-in-up min-h-0">
+                    class="flex-1 flex flex-col animate-fade-in-up lg:min-h-0">
 
                     <!-- Slide Legacy: Detail Dashboard (Original Layout - Hidden) -->
                     <div x-show="false" x-transition.opacity.duration.300ms
-                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 min-h-0">
+                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 lg:min-h-0">
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
-                        <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex-1 flex flex-col lg:min-h-0">
                             <!-- Dashboard Cards Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
@@ -1358,7 +1358,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 lg:min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[45px] text-[9.5px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -1473,13 +1473,13 @@
                             </div>
 
                             <!-- Bottom Charts Grid -->
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-5 mt-4 xl:mt-5 min-h-0 flex-1">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-5 mt-4 xl:mt-5 lg:min-h-0 flex-1">
 
                                 <!-- Left Column -->
-                                <div class="flex flex-col gap-4 xl:gap-5 min-h-0">
+                                <div class="flex flex-col gap-4 xl:gap-5 lg:min-h-0">
 
                                     <!-- Line Chart Card: Tren Pendapatan Harian / Kumulatif  -->
-                                    <div class="flex-1 rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col min-h-0"
+                                    <div class="flex-1 rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col lg:min-h-0"
                                         x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -1596,7 +1596,7 @@
                                         </div>
 
                                         <!-- Chart Body -->
-                                        <div class="relative px-2 pb-1 flex-1 min-h-0">
+                                        <div class="relative px-2 pb-1 flex-1 lg:min-h-0">
 
                                             <!-- Y-Axis Labels -->
                                             <div class="absolute left-4 top-4 bottom-[40px] w-[72px] text-[11px] text-gray-400 font-normal whitespace-nowrap"
@@ -1728,7 +1728,7 @@
 
 
                                     <!-- Line Chart Card: Tren Pengeluaran Harian / Kumulatif  -->
-                                    <div class="flex-1 rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col min-h-0"
+                                    <div class="flex-1 rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col lg:min-h-0"
                                         x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -1845,7 +1845,7 @@
                                         </div>
 
                                         <!-- Chart Body -->
-                                        <div class="relative px-2 pb-1 flex-1 min-h-0">
+                                        <div class="relative px-2 pb-1 flex-1 lg:min-h-0">
 
                                             <!-- Y-Axis Labels -->
                                             <div class="absolute left-4 top-4 bottom-[40px] w-[72px] text-[11px] text-gray-400 font-normal whitespace-nowrap"
@@ -1973,12 +1973,12 @@
                                 </div> <!-- closes Left Column -->
 
                                 <!-- Right Column -->
-                                <div class="flex flex-col gap-4 xl:gap-5 min-h-0">
+                                <div class="flex flex-col gap-4 xl:gap-5 lg:min-h-0">
                                     <!-- Spacer for identical card dimensions with Tren Pengeluaran Harian / Kumulatif -->
-                                    <div class="flex-1 min-h-0 hidden lg:block pointer-events-none"></div>
+                                    <div class="flex-1 lg:min-h-0 hidden lg:block pointer-events-none"></div>
 
                                     <!-- Line Chart Card: Kerugian Sortir Overview -->
-                                    <div class="shrink-0 h-auto rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col min-h-0"
+                                    <div class="shrink-0 h-auto rounded-[20px] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] border border-gray-100/80 flex flex-col lg:min-h-0"
                                         x-data="{ 
                                      hoveredIndex: null,
                                      openSettings: false,
@@ -2230,15 +2230,15 @@
 
                     <!-- Slide 1: Dashboard Utama -->
                     <div x-show="dashboardSlide === 1" x-transition.opacity.duration.300ms
-                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 min-h-0">
+                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 lg:min-h-0">
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
-                        <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex-1 flex flex-col lg:min-h-0">
                             <!-- Dashboard Cards Grid -->
-                            <div class="grid flex-1 min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+                            <div class="grid flex-1 lg:min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pendapatan -->
-                                <div class="rounded-[14px] p-4 text-white flex flex-col justify-between shadow-sm border border-transparent min-h-0"
+                                <div class="rounded-[14px] p-4 text-white flex flex-col justify-between shadow-sm border border-transparent lg:min-h-0"
                                     style="background-color: #0b595b;">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -2310,7 +2310,7 @@
 
                                 <!-- Card: Total Pendapatan -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -2388,7 +2388,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pendapatan Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -2511,7 +2511,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 lg:min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -2632,10 +2632,10 @@
                             <!-- Bottom Charts Grid dihapus -->
                         
 <!-- Dashboard Cards Grid -->
-                            <div class="grid flex-1 min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+                            <div class="grid flex-1 lg:min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pengeluaran -->
-<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 min-h-0"
+<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 lg:min-h-0"
                                     >
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -2707,7 +2707,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Pengeluaran<br>
@@ -2785,7 +2785,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pengeluaran Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -2909,7 +2909,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 lg:min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -3030,10 +3030,10 @@
                             <!-- Bottom Charts Grid dihapus -->
                         
 <!-- Dashboard Cards Grid -->
-                            <div class="grid flex-1 min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
+                            <div class="grid flex-1 lg:min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Kerugian -->
-<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 min-h-0"
+<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 lg:min-h-0"
                                     >
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -3105,7 +3105,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -3183,7 +3183,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Kerugian Harian / Kumulatif -->
                                 <div
-                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -3307,7 +3307,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 lg:min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
