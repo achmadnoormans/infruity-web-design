@@ -58,6 +58,65 @@
             display: none !important;
         }
 
+        /* ======================== */
+        /* Mobile Dashboard UI      */
+        /* ======================== */
+        :root {
+            --brand-rgb: 211 236 90;
+            --brand-glow: 0 0 15px rgba(211, 236, 90, 0.4);
+        }
+        .active-tooltip-text {
+            color: #06261c;
+            transition: color 0.3s;
+        }
+        .mobile-bg-layer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
+        .mobile-bg-income {
+            background: linear-gradient(to bottom, #0F5C45 0%, #0F5C45 60%, #ebf2ef 90%, #ebf2ef 100%);
+            opacity: 1;
+        }
+        .mobile-bg-expense {
+            background: linear-gradient(to bottom, #5c2009 0%, #5c2009 60%, #fff7ed 90%, #fff7ed 100%);
+            opacity: 0;
+        }
+        .mobile-bg-profit {
+            background: linear-gradient(to bottom, #1e3a8a 0%, #1e3a8a 60%, #eff6ff 90%, #eff6ff 100%);
+            opacity: 0;
+        }
+        .mobile-bg-loss {
+            background: linear-gradient(to bottom, #7f1d1d 0%, #7f1d1d 60%, #fef2f2 90%, #fef2f2 100%);
+            opacity: 0;
+        }
+        .mobile-dashboard-wrap.expense-mode .mobile-bg-income,
+        .mobile-dashboard-wrap.profit-mode .mobile-bg-income,
+        .mobile-dashboard-wrap.loss-mode .mobile-bg-income { opacity: 0; }
+        .mobile-dashboard-wrap.expense-mode .mobile-bg-expense { opacity: 1; }
+        .mobile-dashboard-wrap.profit-mode .mobile-bg-profit { opacity: 1; }
+        .mobile-dashboard-wrap.loss-mode .mobile-bg-loss { opacity: 1; }
+        .mobile-dashboard-wrap.loss-mode .active-tooltip-text,
+        .mobile-dashboard-wrap.expense-mode .active-tooltip-text { color: #ffffff; }
+
+        /* Brand color changes per mode — same as reference */
+        .mobile-dashboard-wrap.expense-mode {
+            --brand-rgb: 249 115 22;
+            --brand-glow: 0 0 15px rgba(249, 115, 22, 0.4);
+        }
+        .mobile-dashboard-wrap.profit-mode {
+            --brand-rgb: 56 189 248;
+            --brand-glow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .mobile-dashboard-wrap.loss-mode {
+            --brand-rgb: 239 68 68;
+            --brand-glow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         /* Custom Thin Scrollbar for Sidebar */
         .sidebar-scroll::-webkit-scrollbar {
             width: 2px;
@@ -1103,7 +1162,8 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto px-0 sm:px-6 lg:px-8 pt-0 pb-28 sm:py-6 flex flex-col bg-white sm:bg-transparent">
+            <main class="flex-1 overflow-y-auto px-0 sm:px-6 lg:px-8 pt-0 sm:py-6 flex flex-col bg-white sm:bg-transparent"
+                  :class="activePage === 'dashboard' ? 'max-md:overflow-hidden max-md:pb-0' : 'pb-28'">
 
                 <!-- DASHBOARD VIEW -->
                 <div x-show="activePage === 'dashboard'" x-cloak
@@ -2227,9 +2287,304 @@
                         </div> <!-- closes AREA KIRI -->
                     </div> <!-- closes Slide 1 -->
 
-                    <!-- Slide 1: Dashboard Utama -->
+                    <!-- ============================================= -->
+                    <!-- MOBILE DASHBOARD (md:hidden — mobile only)     -->
+                    <!-- ============================================= -->
+                    <div id="mobile-dashboard-wrap"
+                         class="mobile-dashboard-wrap md:hidden flex flex-col relative text-white overflow-hidden"
+                         style="height: 100dvh; max-height: 100dvh; background-color: #ebf2ef;">
+
+
+                        <!-- Dynamic Background Layers -->
+                        <div class="mobile-bg-layer mobile-bg-income"></div>
+                        <div class="mobile-bg-layer mobile-bg-expense"></div>
+                        <div class="mobile-bg-layer mobile-bg-profit"></div>
+                        <div class="mobile-bg-layer mobile-bg-loss"></div>
+
+                        <!-- Top-Left Atmospheric Glow -->
+                        <div class="absolute -top-32 -left-40 w-[500px] h-[500px] bg-[rgb(var(--brand-rgb)/0.4)] rounded-full blur-[100px] pointer-events-none z-0 transition-colors duration-500"></div>
+                        <div class="absolute -top-16 -left-16 w-[250px] h-[250px] bg-white/25 rounded-full blur-[70px] pointer-events-none z-0 mix-blend-overlay"></div>
+
+                        <!-- Non-scrollable 1-page Content -->
+                        <div class="flex-1 overflow-hidden hide-scrollbar pb-32 px-5 flex flex-col relative z-10">
+
+                            <!-- BALANCE -->
+                            <div class="mt-8 px-1 relative z-10 flex flex-col items-center text-center">
+                                <!-- Branch Text & Period -->
+                                <div class="flex items-center justify-between w-full max-w-xs">
+                                    <button id="mob-btn-prev-period" class="text-white/60 hover:text-white transition-colors cursor-pointer p-1">
+                                        <i class="ph-bold ph-caret-left text-[16px]"></i>
+                                    </button>
+                                    <div id="mob-filter-trigger" class="flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
+                                        <p id="mob-dashboard-cabang-title" class="text-[14px] font-bold text-white tracking-wide leading-none">Semua Cabang</p>
+                                        <p id="mob-dashboard-periode-subtitle" class="text-[11px] font-medium text-white/60 tracking-wide">25 Jul - 31 Jul 2026</p>
+                                    </div>
+                                    <button id="mob-btn-next-period" class="text-white/60 hover:text-white transition-colors cursor-pointer p-1">
+                                        <i class="ph-bold ph-caret-right text-[16px]"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Balance Numbers -->
+                                <div class="mt-5 mb-5 flex flex-col items-center">
+                                    <p id="mob-main-title" class="text-[14px] text-white/80 font-medium mb-1">Total Pendapatan</p>
+                                    <h1 class="text-[34px] font-bold text-white tracking-tight leading-none mt-[4px] mb-[6px]">Rp 79.456.880</h1>
+                                    <!-- Diff Stats -->
+                                    <div class="flex items-center justify-center flex-wrap gap-1 text-[10px] mt-1">
+                                        <div class="flex items-center gap-1">
+                                            <i class="ph-fill ph-caret-down text-[#ff8a8a] text-[9px]"></i>
+                                            <span class="text-[#ff8a8a] font-bold tracking-wide">4,3%</span>
+                                        </div>
+                                        <span class="text-white/70">dari minggu lalu sebesar</span>
+                                        <span class="text-white/90 font-semibold tracking-wide">Rp 16.981.562</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BAR CHART -->
+                            <div class="mt-auto mb-0 px-1 relative z-10 pt-10">
+                                <div id="mob-bars-container" class="flex items-end justify-between h-[160px] relative px-3 w-full">
+                                    <!-- Bar: Min -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[35%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 3.125.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Min</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">21</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Sen -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[65%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 8.200.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Sen</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">22</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Sel -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[50%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 6.540.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Sel</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">23</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Rab (Active) -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[100%] shadow-[var(--brand-glow)] transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-[rgb(var(--brand-rgb))] active-tooltip-text text-[9px] tracking-tighter font-bold px-1.5 py-0.5 rounded shadow-lg whitespace-nowrap">Rp 16.981.562</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-bold text-white">Rab</span>
+                                            <span class="text-[9px] font-bold text-[rgb(var(--brand-rgb))] absolute top-full mt-0.5">24</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Kam -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[75%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 11.450.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Kam</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">25</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Jum -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[45%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 4.325.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Jum</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">26</span>
+                                        </div>
+                                    </div>
+                                    <!-- Bar: Sab -->
+                                    <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
+                                        <div class="w-8 bg-[rgb(var(--brand-rgb))] rounded-t-[6px] rounded-b-[2px] h-[25%] opacity-30 transition-all cursor-pointer relative">
+                                            <div class="absolute -top-7 left-1/2 -translate-x-1/2 bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap">Rp 1.150.000</div>
+                                        </div>
+                                        <div class="flex flex-col items-center relative">
+                                            <span class="text-[10px] font-medium text-white/40">Sab</span>
+                                            <span class="text-[9px] font-medium text-white/40 absolute top-full mt-0.5">27</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TOP PRODUCTS CARD -->
+                            <div class="mt-[38px] mb-[40px] bg-white rounded-[20px] p-3 px-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 id="mob-product-list-title" class="text-[13px] font-bold text-[#0a3d2e] tracking-tight">Produk Pendapatan Tertinggi</h4>
+                                    <button id="mob-product-list-toggle" class="w-7 h-7 shrink-0 rounded-full bg-[rgb(var(--brand-rgb)/0.3)] flex items-center justify-center text-[#06261c] cursor-pointer active:scale-90 transition-all duration-300">
+                                        <i class="ph ph-arrows-down-up text-[14px]"></i>
+                                    </button>
+                                </div>
+                                <div id="mob-top-products-list" class="flex flex-col gap-3">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=100&h=100&fit=crop" alt="Pisang" class="w-8 h-8 rounded-[8px] object-cover shadow-sm border border-gray-100">
+                                            <div class="flex flex-col">
+                                                <h5 class="text-[13px] font-medium text-[#334155] leading-tight">Pisang Cavendish</h5>
+                                                <p class="text-[12px] font-bold text-[#0F5C45] mt-0.5">Rp 8.200.000</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-[13px] font-bold text-[#10b981]">32%</div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=100&h=100&fit=crop" alt="Jeruk" class="w-8 h-8 rounded-[8px] object-cover shadow-sm border border-gray-100">
+                                            <div class="flex flex-col">
+                                                <h5 class="text-[13px] font-medium text-[#334155] leading-tight">Jeruk Pontianak</h5>
+                                                <p class="text-[12px] font-bold text-[#0F5C45] mt-0.5">Rp 5.100.000</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-[13px] font-bold text-[#10b981]">20%</div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=100&h=100&fit=crop" alt="Apel" class="w-8 h-8 rounded-[8px] object-cover shadow-sm border border-gray-100">
+                                            <div class="flex flex-col">
+                                                <h5 class="text-[13px] font-medium text-[#334155] leading-tight">Apel Fuji</h5>
+                                                <p class="text-[12px] font-bold text-[#0F5C45] mt-0.5">Rp 10.500.000</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-[13px] font-bold text-[#10b981]">41%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- end scrollable content -->
+
+                        <!-- BOTTOM NAVIGATION (Floating Pill) -->
+                        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/10 backdrop-blur-md border border-white/20 rounded-[32px] px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-20 w-[90%]">
+                            <div class="relative flex items-center justify-between w-full h-[48px]" id="mob-nav-container">
+                                <div id="mob-nav-active-pill" class="absolute top-0 left-0 h-[48px] w-[48px] bg-[#d3ec5a] rounded-full transition-all duration-300 ease-in-out z-0 shadow-sm"></div>
+                                <button class="mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#022c22] transition-all duration-300">
+                                    <i class="ph ph-cardholder text-[26px]"></i>
+                                </button>
+                                <button class="mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#0f5132]/40 hover:text-[#0f5132]/80 transition-all duration-300">
+                                    <i class="ph ph-shopping-bag text-[26px]"></i>
+                                </button>
+                                <button @click="window.self !== window.top ? window.parent.postMessage('toggleSidebar', '*') : sidebarOpen = !sidebarOpen"
+                                        class="mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#0f5132]/40 hover:text-[#0f5132]/80 transition-all duration-300">
+                                    <i class="ph ph-list text-[26px]"></i>
+                                </button>
+                                <button class="mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#0f5132]/40 hover:text-[#0f5132]/80 transition-all duration-300">
+                                    <i class="ph ph-plant text-[26px]"></i>
+                                </button>
+                                <button class="mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#0f5132]/40 hover:text-[#0f5132]/80 transition-all duration-300">
+                                    <i class="ph ph-fire text-[26px]"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Overlay -->
+                        <div id="mob-filter-modal" class="absolute inset-0 bg-black/50 z-50 flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-[2px]">
+                            <div id="mob-filter-sheet" class="bg-white rounded-t-[24px] w-full p-6 transform translate-y-full transition-transform duration-300 max-h-[85%] overflow-y-auto hide-scrollbar text-black shadow-2xl">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-[18px] font-bold text-[#0a3d2e] tracking-tight">Filter Data</h3>
+                                    <button id="mob-filter-close" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
+                                        <i class="ph-bold ph-x text-[16px]"></i>
+                                    </button>
+                                </div>
+                                <div class="flex flex-col gap-6">
+                                    <!-- Cabang -->
+                                    <div class="flex flex-col gap-3">
+                                        <h4 class="text-[13px] font-bold text-gray-700">Pilih Cabang</h4>
+                                        <div class="relative">
+                                            <select id="mob-cabang-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0F5C45]/20 focus:border-[#0F5C45] transition-colors cursor-pointer">
+                                                <option value="all">Semua Cabang</option>
+                                                <option value="jkt">Cabang Jakarta</option>
+                                                <option value="bdg">Cabang Bandung</option>
+                                                <option value="sby">Cabang Surabaya</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                    </div>
+                                    <!-- Periode -->
+                                    <div class="flex flex-col gap-3">
+                                        <h4 class="text-[13px] font-bold text-gray-700">Periode Berdasarkan</h4>
+                                        <div class="relative">
+                                            <select id="mob-periode-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0F5C45]/20 focus:border-[#0F5C45] transition-colors cursor-pointer">
+                                                <option value="hari">Hari dalam Minggu</option>
+                                                <option value="bulan">Bulan dalam Tahun</option>
+                                                <option value="tahun">Tahunan</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                    </div>
+                                    <!-- Output: Hari -->
+                                    <div id="mob-output-hari" class="flex flex-col gap-3">
+                                        <h4 class="text-[13px] font-bold text-gray-700">Pilih Tahun</h4>
+                                        <div class="relative mb-2">
+                                            <select id="mob-hari-tahun-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                                <option value="2026" selected>2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                        <h4 class="text-[13px] font-bold text-gray-700">Pilih Periode</h4>
+                                        <div class="relative">
+                                            <select id="mob-hari-periode-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                                <option value="w1">13 Jun - 19 Jun 2026</option>
+                                                <option value="w2">20 Jun - 26 Jun 2026</option>
+                                                <option value="w3">27 Jun - 03 Jul 2026</option>
+                                                <option value="w4">04 Jul - 10 Jul 2026</option>
+                                                <option value="w5">11 Jul - 17 Jul 2026</option>
+                                                <option value="w6">18 Jul - 24 Jul 2026</option>
+                                                <option value="w7" selected>25 Jul - 31 Jul 2026 (Minggu Ini)</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                    </div>
+                                    <!-- Output: Tahun -->
+                                    <div id="mob-output-tahun" class="flex flex-col gap-3 hidden">
+                                        <h4 class="text-[13px] font-bold text-gray-700">Pilih Periode</h4>
+                                        <div class="relative">
+                                            <select id="mob-tahun-periode-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                                <option value="y1">2022 - 2026</option>
+                                                <option value="y2">2017 - 2021</option>
+                                                <option value="y3">2012 - 2016</option>
+                                                <option value="y4">2007 - 2011</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                    </div>
+                                    <!-- Output: Bulan -->
+                                    <div id="mob-output-bulan" class="flex flex-col gap-3 hidden">
+                                        <h4 class="text-[13px] font-bold text-gray-700">Pilih Tahun</h4>
+                                        <div class="relative">
+                                            <select id="mob-bulan-tahun-select" class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 text-[14px] font-medium rounded-2xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                                <option value="2026" selected>2026</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                            </select>
+                                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500"><i class="ph-bold ph-caret-down text-[16px]"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="flex gap-3 mt-8">
+                                    <button type="button" id="mob-quick-minggu-ini" class="px-5 bg-[#0F5C45]/10 text-[#0F5C45] border border-[#0F5C45]/20 rounded-full py-3.5 text-[13px] font-bold active:scale-95 transition-transform whitespace-nowrap">Minggu Ini</button>
+                                    <button type="button" id="mob-filter-apply" class="flex-1 bg-[#0F5C45] text-white rounded-full py-3.5 text-[14px] font-bold shadow-[0_8px_20px_rgba(15,92,69,0.3)] active:scale-95 transition-transform">Terapkan Filter</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end mobile-dashboard-wrap -->
+
+                    <!-- Slide 1: Dashboard Utama (Desktop Only) -->
                     <div x-show="dashboardSlide === 1" x-transition.opacity.duration.300ms
-                        class="flex-1 flex flex-col lg:flex-row gap-0 sm:gap-4 xl:gap-5 lg:min-h-0">
+                        class="hidden md:flex flex-1 flex-col lg:flex-row gap-0 sm:gap-4 xl:gap-5 lg:min-h-0">
+
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
                         <div class="flex-1 flex flex-col lg:min-h-0">
@@ -3464,7 +3819,9 @@
         <!-- ========================================== -->
         <!-- INSTAGRAM-STYLE FLOATING NAV (MOBILE ONLY) -->
         <!-- ========================================== -->
-        <div class="absolute bottom-5 left-0 right-0 px-5 pointer-events-none z-50 sm:hidden">
+        <div class="absolute bottom-5 left-0 right-0 px-5 pointer-events-none z-50 sm:hidden"
+             :class="activePage === 'dashboard' ? 'hidden' : ''">
+
             <!-- Glassmorphism Pill -->
             <div class="pointer-events-auto bg-white/40 backdrop-blur-xl rounded-[28px] border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.4)] p-2 flex items-center justify-between">
                 <!-- Tab: Pendapatan -->
@@ -4073,6 +4430,215 @@ sidebarCollapsed: false,
                 }
             };
         }
+    </script>
+
+    <!-- Mobile Dashboard Interactive Script -->
+    <script>
+    (function () {
+        var wrap = document.getElementById('mobile-dashboard-wrap');
+        if (!wrap) return;
+
+        // Filter Modal Logic
+        var filterTrigger = document.getElementById('mob-filter-trigger');
+        var filterModal = document.getElementById('mob-filter-modal');
+        var filterSheet = document.getElementById('mob-filter-sheet');
+        var filterClose = document.getElementById('mob-filter-close');
+        var filterApply = document.getElementById('mob-filter-apply');
+
+        function openFilter() {
+            filterModal.classList.remove('opacity-0', 'pointer-events-none');
+            filterSheet.classList.remove('translate-y-full');
+            filterSheet.classList.add('translate-y-0');
+        }
+        function closeFilter() {
+            filterModal.classList.add('opacity-0', 'pointer-events-none');
+            filterSheet.classList.remove('translate-y-0');
+            filterSheet.classList.add('translate-y-full');
+        }
+
+        if (filterTrigger) filterTrigger.addEventListener('click', openFilter);
+        if (filterClose) filterClose.addEventListener('click', closeFilter);
+        if (filterModal) filterModal.addEventListener('click', function(e) { if (e.target === filterModal) closeFilter(); });
+
+        function updateChartBasedOnFilter() {
+            var barsContainer = document.getElementById('mob-bars-container');
+            if (!barsContainer) return;
+            var periodeSelect = document.getElementById('mob-periode-select');
+            var periode = periodeSelect ? periodeSelect.value : 'hari';
+            var labels = [], wClass = 'w-8';
+            if (periode === 'bulan') { labels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des']; wClass = 'w-4'; }
+            else if (periode === 'hari') { labels = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']; wClass = 'w-8'; }
+            else if (periode === 'tahun') { labels = ['2020','2021','2022','2023','2024']; wClass = 'w-10'; }
+            barsContainer.innerHTML = '';
+            labels.forEach(function(label, i) {
+                var h = Math.floor(Math.random() * 60 + 30);
+                var isActive = (i === labels.length - 1);
+                var opacity = isActive ? 'shadow-[var(--brand-glow)]' : 'opacity-30';
+                var textClass = isActive ? 'font-bold text-white' : 'font-medium text-white/40';
+                var rpStr = 'Rp ' + Math.floor(Math.random()*15+2) + '.' + Math.floor(Math.random()*900+100) + '.000';
+                var tooltipClass = isActive
+                    ? 'bg-[rgb(var(--brand-rgb))] active-tooltip-text text-[9px] tracking-tighter font-bold px-1.5 py-0.5 rounded shadow-lg whitespace-nowrap'
+                    : 'bg-white/20 text-white text-[8px] tracking-tighter font-bold px-1 py-0.5 rounded opacity-0 transition whitespace-nowrap';
+                barsContainer.innerHTML += '<div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group"><div class="' + wClass + ' bg-[rgb(var(--brand-rgb))] rounded-t-[4px] rounded-b-[2px] h-[' + h + '%] ' + opacity + ' transition-all cursor-pointer relative"><div class="absolute -top-7 left-1/2 -translate-x-1/2 ' + tooltipClass + '">' + rpStr + '</div></div><div class="flex flex-col items-center relative"><span class="text-[9px] ' + textClass + '">' + label + '</span></div></div>';
+            });
+            attachBarChartListeners();
+        }
+
+        function applyFilterSettings() {
+            var cabangTitle = document.getElementById('mob-dashboard-cabang-title');
+            var periodeSubtitle = document.getElementById('mob-dashboard-periode-subtitle');
+            var cabangSelect = document.getElementById('mob-cabang-select');
+            var periodeSelect = document.getElementById('mob-periode-select');
+            if (cabangTitle && cabangSelect) cabangTitle.textContent = cabangSelect.options[cabangSelect.selectedIndex].text;
+            if (periodeSubtitle && periodeSelect) {
+                var p = periodeSelect.value, txt = '';
+                if (p === 'hari') { var s = document.getElementById('mob-hari-periode-select'); txt = s ? s.options[s.selectedIndex].text.split(' (')[0] : ''; }
+                else if (p === 'bulan') { var s = document.getElementById('mob-bulan-tahun-select'); txt = s ? 'Bulan dalam Tahun ' + s.options[s.selectedIndex].text : ''; }
+                else if (p === 'tahun') { var s = document.getElementById('mob-tahun-periode-select'); txt = s ? s.options[s.selectedIndex].text : ''; }
+                periodeSubtitle.textContent = txt;
+            }
+            updateChartBasedOnFilter();
+            renderMobProducts();
+        }
+
+        if (filterApply) filterApply.addEventListener('click', function() { closeFilter(); applyFilterSettings(); });
+
+        var quickBtn = document.getElementById('mob-quick-minggu-ini');
+        if (quickBtn) quickBtn.addEventListener('click', function() {
+            var ps = document.getElementById('mob-periode-select');
+            if (!ps) return;
+            if (ps.value === 'hari') { var s = document.getElementById('mob-hari-periode-select'); if(s) s.value='w7'; }
+            else if (ps.value === 'bulan') { var s = document.getElementById('mob-bulan-tahun-select'); if(s) s.value='2026'; }
+            else if (ps.value === 'tahun') { var s = document.getElementById('mob-tahun-periode-select'); if(s) s.value='y1'; }
+            applyFilterSettings(); closeFilter();
+        });
+
+        // Periode select toggle
+        var periodeSelect = document.getElementById('mob-periode-select');
+        if (periodeSelect) {
+            periodeSelect.addEventListener('change', function(e) {
+                document.getElementById('mob-output-hari').classList.add('hidden');
+                document.getElementById('mob-output-bulan').classList.add('hidden');
+                document.getElementById('mob-output-tahun').classList.add('hidden');
+                var qb = document.getElementById('mob-quick-minggu-ini');
+                if (e.target.value === 'hari') { document.getElementById('mob-output-hari').classList.remove('hidden'); if(qb) qb.textContent='Minggu Ini'; }
+                else if (e.target.value === 'bulan') { document.getElementById('mob-output-bulan').classList.remove('hidden'); if(qb) qb.textContent='Tahun Ini'; }
+                else if (e.target.value === 'tahun') { document.getElementById('mob-output-tahun').classList.remove('hidden'); if(qb) qb.textContent='Periode Ini'; }
+            });
+        }
+
+        // Period navigation arrows
+        var btnPrev = document.getElementById('mob-btn-prev-period');
+        var btnNext = document.getElementById('mob-btn-next-period');
+        function navigatePeriod(dir) {
+            var ps = document.getElementById('mob-periode-select'); if (!ps) return;
+            var ts = null;
+            if (ps.value==='hari') ts = document.getElementById('mob-hari-periode-select');
+            else if (ps.value==='bulan') ts = document.getElementById('mob-bulan-tahun-select');
+            else if (ps.value==='tahun') ts = document.getElementById('mob-tahun-periode-select');
+            if (!ts) return;
+            var shift = (ps.value==='bulan'||ps.value==='tahun') ? -dir : dir;
+            var newIdx = ts.selectedIndex + shift;
+            if (newIdx >= ts.options.length) newIdx = 0;
+            else if (newIdx < 0) newIdx = ts.options.length - 1;
+            ts.selectedIndex = newIdx;
+            applyFilterSettings();
+        }
+        if (btnPrev) btnPrev.addEventListener('click', function() { navigatePeriod(-1); });
+        if (btnNext) btnNext.addEventListener('click', function() { navigatePeriod(1); });
+
+        // Bottom Nav Pill
+        var navBtns = document.querySelectorAll('.mob-nav-btn');
+        var activePill = document.getElementById('mob-nav-active-pill');
+        if (navBtns.length > 0 && activePill) {
+            activePill.style.width = navBtns[0].offsetWidth + 'px';
+            activePill.style.left = navBtns[0].offsetLeft + 'px';
+        }
+        navBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var icon = this.querySelector('i');
+                if (icon && icon.classList.contains('ph-list')) {
+                    if (window.self !== window.top) {
+                        window.parent.postMessage('toggleSidebar', '*');
+                    }
+                    return;
+                }
+                if (activePill) { activePill.style.width = this.offsetWidth + 'px'; activePill.style.left = this.offsetLeft + 'px'; }
+                navBtns.forEach(function(b) { b.className = 'mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#0f5132]/40 hover:text-[#0f5132]/80 transition-all duration-300'; });
+                this.className = 'mob-nav-btn relative z-10 flex items-center justify-center w-[48px] h-full text-[#022c22] transition-all duration-300';
+                if (icon) {
+                    wrap.classList.remove('expense-mode','profit-mode','loss-mode');
+                    var mainTitle = document.getElementById('mob-main-title');
+                    if (icon.classList.contains('ph-shopping-bag')) { wrap.classList.add('expense-mode'); if(mainTitle) mainTitle.innerText='Total Pengeluaran'; }
+                    else if (icon.classList.contains('ph-plant')) { wrap.classList.add('profit-mode'); if(mainTitle) mainTitle.innerText='Total Keuntungan'; }
+                    else if (icon.classList.contains('ph-fire')) { wrap.classList.add('loss-mode'); if(mainTitle) mainTitle.innerText='Total Kerugian'; }
+                    else { if(mainTitle) mainTitle.innerText='Total Pendapatan'; }
+                    renderMobProducts();
+                }
+            }.bind(btn));
+        });
+
+        // Products Data
+        var productsData = [
+            [{name:'Semangka Merah',price:'Rp 1.500.000',pct:'48%',img:'https://loremflickr.com/400/400/watermelon,fruit/all'},{name:'Melon Hijau',price:'Rp 1.000.000',pct:'32%',img:'https://loremflickr.com/400/400/melon,fruit/all'},{name:'Apel Fuji',price:'Rp 625.000',pct:'20%',img:'https://loremflickr.com/400/400/apple,fruit/all'}],
+            [{name:'Jeruk Pontianak',price:'Rp 4.100.000',pct:'50%',img:'https://loremflickr.com/400/400/orange,fruit/all'},{name:'Pisang Cavendish',price:'Rp 2.400.000',pct:'29%',img:'https://loremflickr.com/400/400/banana,fruit/all'},{name:'Anggur Hitam',price:'Rp 1.700.000',pct:'21%',img:'https://loremflickr.com/400/400/grapes,fruit/all'}],
+            [{name:'Apel Fuji',price:'Rp 3.200.000',pct:'49%',img:'https://loremflickr.com/400/400/apple,fruit/all'},{name:'Mangga Harum',price:'Rp 2.140.000',pct:'32%',img:'https://loremflickr.com/400/400/mango,fruit/all'},{name:'Jeruk Pontianak',price:'Rp 1.200.000',pct:'19%',img:'https://loremflickr.com/400/400/orange,fruit/all'}],
+            [{name:'Pisang Cavendish',price:'Rp 8.200.000',pct:'32%',img:'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=100&h=100&fit=crop'},{name:'Jeruk Pontianak',price:'Rp 5.100.000',pct:'20%',img:'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=100&h=100&fit=crop'},{name:'Apel Fuji',price:'Rp 10.500.000',pct:'41%',img:'https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=100&h=100&fit=crop'}],
+            [{name:'Alpukat Mentega',price:'Rp 5.725.000',pct:'50%',img:'https://loremflickr.com/400/400/avocado,fruit/all'},{name:'Pisang Cavendish',price:'Rp 3.500.000',pct:'30%',img:'https://loremflickr.com/400/400/banana,fruit/all'},{name:'Mangga Harum',price:'Rp 2.225.000',pct:'20%',img:'https://loremflickr.com/400/400/mango,fruit/all'}],
+            [{name:'Anggur Hitam',price:'Rp 2.100.000',pct:'48%',img:'https://loremflickr.com/400/400/grapes,fruit/all'},{name:'Semangka Merah',price:'Rp 1.400.000',pct:'32%',img:'https://loremflickr.com/400/400/watermelon,fruit/all'},{name:'Jeruk Pontianak',price:'Rp 825.000',pct:'20%',img:'https://loremflickr.com/400/400/orange,fruit/all'}],
+            [{name:'Melon Hijau',price:'Rp 600.000',pct:'52%',img:'https://loremflickr.com/400/400/melon,fruit/all'},{name:'Alpukat Mentega',price:'Rp 350.000',pct:'30%',img:'https://loremflickr.com/400/400/avocado,fruit/all'},{name:'Pisang Cavendish',price:'Rp 200.000',pct:'18%',img:'https://loremflickr.com/400/400/banana,fruit/all'}]
+        ];
+        var currentDayIndex = 3, isShowingTop = true;
+        function renderMobProducts() {
+            var list = document.getElementById('mob-top-products-list');
+            var title = document.getElementById('mob-product-list-title');
+            var toggleBtn = document.getElementById('mob-product-list-toggle');
+            if (!list) return;
+            var isExpense = wrap.classList.contains('expense-mode');
+            var isProfit = wrap.classList.contains('profit-mode');
+            var isLoss = wrap.classList.contains('loss-mode');
+            var mode = isExpense?'Pengeluaran':isProfit?'Keuntungan':isLoss?'Kerugian':'Pendapatan';
+            if (title) title.textContent = (isShowingTop?'Produk ':'Produk Terendah ').replace('Produk ','Produk ') + mode + (isShowingTop?' Tertinggi':'');
+            if (toggleBtn) toggleBtn.style.transform = isShowingTop ? 'rotate(0deg)' : 'rotate(180deg)';
+            var priceColor = (!isExpense && !isLoss && isShowingTop) ? 'text-[#0F5C45]' : 'text-[#ef4444]';
+            var pctColor = (!isExpense && !isLoss && isShowingTop) ? 'text-[#10b981]' : 'text-[#ef4444]';
+            var data = productsData[currentDayIndex] || productsData[3];
+            list.innerHTML = data.map(function(p) {
+                return '<div class="flex items-center justify-between"><div class="flex items-center gap-3"><img src="'+p.img+'" alt="'+p.name+'" class="w-8 h-8 rounded-[8px] object-cover shadow-sm border border-gray-100"><div class="flex flex-col"><h5 class="text-[13px] font-medium text-[#334155] leading-tight">'+p.name+'</h5><p class="text-[12px] font-bold '+priceColor+' mt-0.5">'+p.price+'</p></div></div><div class="text-[13px] font-bold '+pctColor+'">'+p.pct+'</div></div>';
+            }).join('');
+        }
+        var toggleBtn = document.getElementById('mob-product-list-toggle');
+        if (toggleBtn) toggleBtn.addEventListener('click', function() { isShowingTop = !isShowingTop; renderMobProducts(); });
+
+        // Bar chart click
+        function attachBarChartListeners() {
+            var barsContainer = document.getElementById('mob-bars-container');
+            if (!barsContainer) return;
+            barsContainer.addEventListener('click', function(e) {
+                var item = e.target.closest('.chart-item');
+                if (!item) return;
+                var allItems = barsContainer.querySelectorAll('.chart-item');
+                allItems.forEach(function(col) {
+                    var bar = col.children[0]; var tooltip = bar && bar.children[0];
+                    var textCont = col.children[1]; if (!textCont) return;
+                    var day = textCont.children[0]; var date = textCont.children[1];
+                    if (bar) { bar.classList.remove('shadow-[var(--brand-glow)]'); bar.classList.add('opacity-30'); }
+                    if (tooltip) { tooltip.classList.remove('bg-[rgb(var(--brand-rgb))]','active-tooltip-text','text-[9px]','px-1.5','shadow-lg'); tooltip.classList.add('bg-white/20','text-white','text-[8px]','px-1','opacity-0','transition'); }
+                    if (day) { day.classList.remove('font-bold','text-white'); day.classList.add('font-medium','text-white/40'); }
+                    if (date) { date.classList.remove('font-bold','text-[rgb(var(--brand-rgb))]'); date.classList.add('font-medium','text-white/40'); }
+                });
+                var bar = item.children[0]; var tooltip = bar && bar.children[0];
+                var textCont = item.children[1]; var day = textCont && textCont.children[0]; var date = textCont && textCont.children[1];
+                if (bar) { bar.classList.remove('opacity-30'); bar.classList.add('shadow-[var(--brand-glow)]'); }
+                if (tooltip) { tooltip.classList.remove('bg-white/20','text-white','text-[8px]','px-1','opacity-0','transition'); tooltip.classList.add('bg-[rgb(var(--brand-rgb))]','active-tooltip-text','text-[9px]','px-1.5','shadow-lg'); }
+                if (day) { day.classList.remove('font-medium','text-white/40'); day.classList.add('font-bold','text-white'); }
+                if (date) { date.classList.remove('font-medium','text-white/40'); date.classList.add('font-bold','text-[rgb(var(--brand-rgb))]'); }
+                currentDayIndex = Math.floor(Math.random() * 7);
+                renderMobProducts();
+            });
+        }
+        attachBarChartListeners();
+    })();
     </script>
 
 </body>

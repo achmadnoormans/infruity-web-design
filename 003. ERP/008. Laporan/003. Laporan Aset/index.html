@@ -643,7 +643,7 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto overscroll-none px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+            <main class="flex-1 overflow-y-auto overscroll-none px-0 sm:px-6 lg:px-8 py-0 sm:py-6 flex flex-col">
 
                 <!-- CONTENT: Target -->
                 <div class="animate-fade-in-up w-full flex-1 flex flex-col min-h-0">
@@ -651,7 +651,7 @@
 
         <!-- Main Content Card -->
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex-1 flex flex-col min-h-0">
+        <div class="bg-white rounded-none sm:rounded-2xl shadow-none sm:shadow-sm border-0 sm:border sm:border-gray-100 overflow-hidden flex-1 flex flex-col min-h-0">
             <!-- Filter & Search Bar -->
             <div class="p-4 border-b border-gray-100 flex flex-row gap-3 sm:gap-4 items-center bg-white relative z-10">
                 <div class="flex-1 relative w-full">
@@ -859,32 +859,12 @@
                     </div>
                 </div>
 
-                <!-- Mobile Action Toolbar (Expandable) -->
-                <div class="relative shrink-0 lg:hidden flex items-center bg-white rounded-full border shadow-sm transition-all duration-300 overflow-hidden" 
-                     x-data="{ actionExpanded: false }"
-                     :class="actionExpanded ? 'border-emerald-500' : 'border-gray-200 hover:border-emerald-400'">
-                    
-                    <!-- The Arrow Toggle -->
-                    <button @click="actionExpanded = !actionExpanded" @click.outside="actionExpanded = false"
-                        class="w-11 h-11 flex items-center justify-center text-gray-500 hover:text-emerald-600 transition-colors shrink-0 z-10 bg-transparent rounded-full"
-                        :class="actionExpanded ? 'text-emerald-600 bg-emerald-50' : ''">
-                        <i class="ph-bold text-[18px] transition-transform duration-300" :class="actionExpanded ? 'ph-caret-left' : 'ph-caret-right'"></i>
-                    </button>
-                    
-                    <div class="overflow-hidden transition-all duration-300 ease-out flex items-center"
-                         :class="actionExpanded ? 'max-w-[150px] opacity-100 pr-1' : 'max-w-0 opacity-0 pr-0'">
-                         
-                         <!-- Toggle Navbar -->
-                         <button @click="navbarHidden = !navbarHidden; actionExpanded = false" class="w-9 h-9 flex items-center justify-center text-gray-500 hover:text-emerald-600 rounded-full hover:bg-emerald-50 transition-colors shrink-0" title="Toggle Navbar">
-                             <i class="text-[18px]" :class="navbarHidden ? 'ph-bold ph-eye' : 'ph-bold ph-eye-slash'"></i>
-                         </button>
-                         
-                         <!-- Toggle Sidebar -->
-                         <button @click="sidebarOpen = true; actionExpanded = false" class="w-9 h-9 flex items-center justify-center text-gray-500 hover:text-emerald-600 rounded-full hover:bg-emerald-50 transition-colors shrink-0" title="Tampilkan Sidebar">
-                             <i class="ph-bold ph-list text-[18px]"></i>
-                         </button>
-                    </div>
-                </div>
+                <!-- Mobile Sidebar Toggle -->
+                <button @click="toggleMobileSidebar()" 
+                    class="relative shrink-0 lg:hidden w-11 h-11 flex items-center justify-center bg-white rounded-full border border-gray-200 hover:border-emerald-400 hover:text-emerald-600 shadow-sm text-gray-500 transition-all duration-300"
+                    title="Tampilkan Sidebar">
+                    <i class="ph-bold ph-list text-[18px]"></i>
+                </button>
 
             </div>
 
@@ -1305,6 +1285,14 @@
                 toggleMenu(menu) {
                     if (this.sidebarCollapsed) {
                         this.sidebarCollapsed = false;
+                    }
+                },
+                
+                toggleMobileSidebar() {
+                    if (window.self !== window.top) {
+                        window.parent.postMessage('toggleSidebar', '*');
+                    } else {
+                        this.sidebarOpen = !this.sidebarOpen;
                     }
                 },
 
