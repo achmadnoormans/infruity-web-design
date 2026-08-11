@@ -474,25 +474,35 @@
                     </a>
                     <div class="submenu-wrapper" x-show="!sidebarCollapsed">
                         <div class="py-1 space-y-0.5">
-                            <a href="#" @click.prevent="navigateTo('008. Laporan/003. Laporan Aset/index.html', 'laporan')"
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/003. Total Aset/index.html', 'laporan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '008. Laporan/003. Laporan Aset/index.html' ? 'active' : ''">
-                                <span>Laporan Aset</span>
+                                :class="activePage === '008. Laporan/003. Total Aset/index.html' ? 'active' : ''">
+                                <span>Total Aset</span>
                             </a>
-                            <a href="#" @click.prevent="navigateTo('008. Laporan/001. Laporan Penjualan/index.html', 'laporan')"
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/001. Pendapatan Penjualan/index.html', 'laporan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '008. Laporan/001. Laporan Penjualan/index.html' ? 'active' : ''">
-                                <span>Laporan Penjualan</span>
+                                :class="activePage === '008. Laporan/001. Pendapatan Penjualan/index.html' ? 'active' : ''">
+                                <span>Pendapatan Penjualan</span>
                             </a>
-                            <a href="#" @click.prevent="navigateTo('008. Laporan/002. Laporan Ongkos Kirim/index.html', 'laporan')"
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/005. Keuntungan Penjualan/index.html', 'laporan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '008. Laporan/002. Laporan Ongkos Kirim/index.html' ? 'active' : ''">
-                                <span>Laporan Ongkos Kirim</span>
+                                :class="activePage === '008. Laporan/005. Keuntungan Penjualan/index.html' ? 'active' : ''">
+                                <span>Keuntungan Penjualan</span>
                             </a>
-                            <a href="#" @click.prevent="navigateTo('008. Laporan/004. Laporan Barang Buang/index.html', 'laporan')"
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/006. Keuntungan Setelah Penyesuaian/index.html', 'laporan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '008. Laporan/004. Laporan Barang Buang/index.html' ? 'active' : ''">
-                                <span>Laporan Barang Buang</span>
+                                :class="activePage === '008. Laporan/006. Keuntungan Setelah Penyesuaian/index.html' ? 'active' : ''">
+                                <span class="whitespace-normal leading-tight">Keuntungan Setelah Penyesuaian</span>
+                            </a>
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/002. Ongkos Kirim/index.html', 'laporan')"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
+                                :class="activePage === '008. Laporan/002. Ongkos Kirim/index.html' ? 'active' : ''">
+                                <span>Ongkos Kirim</span>
+                            </a>
+                            <a href="#" @click.prevent="navigateTo('008. Laporan/004. Kerugian Barang Buang/index.html', 'laporan')"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
+                                :class="activePage === '008. Laporan/004. Kerugian Barang Buang/index.html' ? 'active' : ''">
+                                <span>Kerugian Barang Buang</span>
                             </a>
                         </div>
                     </div>

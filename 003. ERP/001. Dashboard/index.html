@@ -745,20 +745,35 @@
                     </a>
                     <div class="submenu-wrapper" x-show="!sidebarCollapsed">
                         <div class="py-1 space-y-0.5">
-                            <a href="../008. Laporan/001. Laporan Penjualan/index.html"
-                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
-                                <i class="ph ph-calendar-blank sidebar-icon text-lg w-5 text-center text-white/35"></i>
-                                <span>Laporan Penjualan</span>
-                            </a>
-                            <a href="../008. Laporan/002. Laporan Ongkos Kirim/index.html"
-                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
-                                <i class="ph ph-truck sidebar-icon text-lg w-5 text-center text-white/35"></i>
-                                <span>Laporan Ongkos Kirim</span>
-                            </a>
-                            <a href="../008. Laporan/003. Laporan Aset/index.html"
+
+                            <a href="../008. Laporan/003. Total Aset/index.html"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
                                 <i class="ph ph-briefcase sidebar-icon text-lg w-5 text-center text-white/35"></i>
-                                <span>Laporan Aset</span>
+                                <span>Total Aset</span>
+                            </a>                            <a href="../008. Laporan/001. Pendapatan Penjualan/index.html"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
+                                <i class="ph ph-calendar-blank sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span>Pendapatan Penjualan</span>
+                            </a>
+                            <a href="../008. Laporan/005. Keuntungan Penjualan/index.html"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
+                                <i class="ph ph-money sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span>Keuntungan Penjualan</span>
+                            </a>
+                            <a href="../008. Laporan/006. Keuntungan Setelah Penyesuaian/index.html"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
+                                <i class="ph ph-chart-line-up sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span class="whitespace-normal leading-tight">Keuntungan Setelah Penyesuaian</span>
+                            </a>
+                            <a href="../008. Laporan/002. Ongkos Kirim/index.html"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
+                                <i class="ph ph-truck sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span>Ongkos Kirim</span>
+                            </a>
+                            <a href="../008. Laporan/004. Kerugian Barang Buang/index.html"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
+                                <i class="ph ph-trash sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span>Kerugian Barang Buang</span>
                             </a>
                         </div>
                     </div>
@@ -1440,7 +1455,7 @@
                                             </div>
 
                                             <!-- Interactive Bar Chart Columns -->
-                                            <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                            <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                 <template x-for="(incomeVal, i) in currentIncomeArr">
                                                     <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                         style="width: 0;"
@@ -1519,7 +1534,7 @@
                                                 <div class="absolute flex items-center justify-center gap-1.5 whitespace-nowrap"
                                                     :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                     <template x-if="isToday(label)">
-                                                        <span class="text-[8px] font-bold text-red-600 uppercase tracking-wider bg-red-50 px-1 rounded-sm">Now</span>
+                                                        <span class="text-[8px] font-bold text-red-600 uppercase tracking-wider bg-red-50 px-1 rounded-sm inline-block translate-y-[1px]">Now</span>
                                                     </template>
                                                     <span x-show="!isToday(label)" x-text="label"></span>
                                                 </div>
@@ -1683,7 +1698,7 @@
                                                 </div>
 
                                                 <!-- Interactive Bar Chart Columns -->
-                                                <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                                <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                     <template x-for="(incomeVal, i) in currentIncomeArr">
                                                         <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                             style="width: 0;"
@@ -1767,7 +1782,7 @@
                                                         :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                         <template x-if="isToday(label)">
                                                             <div
-                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                                 <span class="relative flex h-1.5 w-1.5">
                                                                     <span
                                                                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -1932,7 +1947,7 @@
                                                 </div>
 
                                                 <!-- Interactive Bar Chart Columns -->
-                                                <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                                <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                     <template x-for="(expenseVal, i) in currentExpenseArr">
                                                         <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                             style="width: 0;"
@@ -2012,7 +2027,7 @@
                                                         :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                         <template x-if="isToday(label)">
                                                             <div
-                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                                 <span class="relative flex h-1.5 w-1.5">
                                                                     <span
                                                                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -2188,7 +2203,7 @@
                                                 </div>
 
                                                 <!-- Interactive Bar Chart Columns -->
-                                                <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                                <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                     <template x-for="(val, i) in currentArr">
                                                         <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                             style="width: 0;"
@@ -2265,7 +2280,7 @@
                                                         :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                         <template x-if="isToday(label)">
                                                             <div
-                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                                class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                                 <span class="relative flex h-1.5 w-1.5">
                                                                     <span
                                                                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
@@ -2581,18 +2596,17 @@
 
                     </div><!-- end mobile-dashboard-wrap -->
 
-                    <!-- Slide 1: Dashboard Utama (Desktop Only) -->
+                    <!-- Slide 1: Dashboard Utama -->
                     <div x-show="dashboardSlide === 1" x-transition.opacity.duration.300ms
-                        class="hidden md:flex flex-1 flex-col lg:flex-row gap-0 sm:gap-4 xl:gap-5 lg:min-h-0">
-
+                        class="flex-1 flex flex-col lg:flex-row gap-4 xl:gap-5 min-h-0">
 
                         <!-- AREA KIRI (KONTEN UTAMA) -->
-                        <div class="flex-1 flex flex-col lg:min-h-0">
+                        <div class="flex-1 flex flex-col min-h-0">
                             <!-- Dashboard Cards Grid -->
-                            <div class="flex-1 lg:min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-4 xl:gap-5" :class="activeTab === 'pendapatan' ? 'grid' : 'hidden sm:grid'">
+                            <div class="grid flex-1 min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pendapatan -->
-                                <div class="rounded-none sm:rounded-[14px] p-5 sm:p-4 text-white flex flex-col justify-between shadow-none sm:shadow-sm border-b border-white/10 sm:border-transparent lg:min-h-0"
+                                <div class="rounded-[14px] p-4 text-white flex flex-col justify-between shadow-sm border border-transparent min-h-0"
                                     style="background-color: #0b595b;">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -2664,7 +2678,7 @@
 
                                 <!-- Card: Total Pendapatan -->
                                 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -2742,7 +2756,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pendapatan Harian / Kumulatif -->
                                 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -2865,7 +2879,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-[220px] lg:min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -2888,7 +2902,7 @@
                                             </div>
 
                                             <!-- Interactive Bar Chart Columns -->
-                                            <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                            <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                 <template x-for="(incomeVal, i) in currentIncomeArr">
                                                     <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                         style="width: 0;"
@@ -2967,7 +2981,7 @@
                                                 <div class="absolute flex items-center justify-center gap-1.5 whitespace-nowrap"
                                                     :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                     <template x-if="isToday(label)">
-                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                             <span class="relative flex h-1.5 w-1.5">
                                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                                                                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
@@ -2986,10 +3000,10 @@
                             <!-- Bottom Charts Grid dihapus -->
                         
 <!-- Dashboard Cards Grid -->
-                            <div class="flex-1 lg:min-h-0 grid-cols-1 mt-0 sm:mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-4 xl:gap-5" :class="activeTab === 'pengeluaran' ? 'grid' : 'hidden sm:grid'">
+                            <div class="grid flex-1 min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Pengeluaran -->
-<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 lg:min-h-0"
+<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 min-h-0"
                                     >
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -3061,7 +3075,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Pengeluaran<br>
@@ -3139,7 +3153,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Pengeluaran Harian / Kumulatif -->
                                 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -3263,7 +3277,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-[220px] lg:min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -3286,7 +3300,7 @@
                                             </div>
 
                                             <!-- Interactive Bar Chart Columns -->
-                                            <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                            <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                 <template x-for="(incomeVal, i) in currentIncomeArr">
                                                     <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                         style="width: 0;"
@@ -3365,7 +3379,7 @@
                                                 <div class="absolute flex items-center justify-center gap-1.5 whitespace-nowrap"
                                                     :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                     <template x-if="isToday(label)">
-                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                             <span class="relative flex h-1.5 w-1.5">
                                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                                                                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
@@ -3384,10 +3398,10 @@
                             <!-- Bottom Charts Grid dihapus -->
                         
 <!-- Dashboard Cards Grid -->
-                            <div class="flex-1 lg:min-h-0 grid-cols-1 mt-0 sm:mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-4 xl:gap-5" :class="activeTab === 'kerugian' ? 'grid' : 'hidden sm:grid'">
+                            <div class="grid flex-1 min-h-0 grid-cols-1 mt-4 xl:mt-5 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-5">
 
                                 <!-- Card: Total Kerugian -->
-<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 lg:min-h-0"
+<div class="rounded-[14px] p-4 bg-white flex flex-col justify-between shadow-sm border border-gray-100 min-h-0"
                                     >
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
@@ -3459,7 +3473,7 @@
 
                                 <!-- Card: Total Pengeluaran -->
                                 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0">
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0">
                                     <div class="flex flex-col flex-1">
                                         <div class="flex justify-between items-start mb-2.5">
                                             <h3 class="text-[14px] font-medium tracking-wide text-gray-800">3 Produk dengan<br>
@@ -3537,7 +3551,7 @@
 
                                 <!-- Card 3 (Combined with Card 4): Tren Kerugian Harian / Kumulatif -->
                                 <div
-                                    class="rounded-none sm:rounded-[14px] p-5 sm:p-4 bg-white shadow-none sm:shadow-sm border-b sm:border border-gray-100 flex flex-col justify-between lg:min-h-0 md:col-span-2 lg:col-span-2"
+                                    class="rounded-[14px] p-4 bg-white shadow-sm border border-gray-100 flex flex-col justify-between min-h-0 md:col-span-2 lg:col-span-2"
                                     x-data="{ 
                                       hoveredIndex: null,
                                       openSettings: false,
@@ -3661,7 +3675,7 @@
                                     </div>
 
                                     <!-- Chart Body -->
-                                    <div class="relative px-1 pb-1 flex-1 min-h-[220px] lg:min-h-0">
+                                    <div class="relative px-1 pb-1 flex-1 min-h-0">
                                         <!-- Y-Axis Labels -->
                                         <div class="absolute left-0 top-4 bottom-[20px] w-[50px] text-[10px] text-gray-400 font-normal whitespace-nowrap"
                                             style="font-family:Inter,sans-serif">
@@ -3684,7 +3698,7 @@
                                             </div>
 
                                             <!-- Interactive Bar Chart Columns -->
-                                            <div class="absolute inset-0 flex justify-between items-end pb-[2px]">
+                                            <div class="absolute inset-0 flex justify-between items-end pb-0">
                                                 <template x-for="(incomeVal, i) in currentIncomeArr">
                                                     <div class="flex-grow flex justify-center items-end h-full relative cursor-pointer"
                                                         style="width: 0;"
@@ -3763,7 +3777,7 @@
                                                 <div class="absolute flex items-center justify-center gap-1.5 whitespace-nowrap"
                                                     :style="'left: ' + ((i + 0.5) / chart.xLabels.length * 100) + '%; transform: translateX(-50%);'">
                                                     <template x-if="isToday(label)">
-                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm">
+                                                        <div class="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded-full border border-red-100/50 shadow-sm translate-y-[1px]">
                                                             <span class="relative flex h-1.5 w-1.5">
                                                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                                                                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
@@ -3791,7 +3805,7 @@
 
                 <!-- Placeholder: Content akan diisi per tahap berikutnya -->
                 <div x-show="activePage !== 'dashboard'" x-cloak
-                    class="animate-fade-in-up flex flex-col items-center justify-center py-16 my-auto text-center w-full">
+                    class="animate-fade-in-up flex flex-col items-center justify-center h-full text-center">
                     <div class="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
                         <i class="ph-fill ph-chart-pie-slice text-primary text-5xl"></i>
                     </div>
@@ -3815,50 +3829,6 @@
                 </div>
 
             </main>
-
-        <!-- ========================================== -->
-        <!-- INSTAGRAM-STYLE FLOATING NAV (MOBILE ONLY) -->
-        <!-- ========================================== -->
-        <div class="absolute bottom-5 left-0 right-0 px-5 pointer-events-none z-50 sm:hidden"
-             :class="activePage === 'dashboard' ? 'hidden' : ''">
-
-            <!-- Glassmorphism Pill -->
-            <div class="pointer-events-auto bg-white/40 backdrop-blur-xl rounded-[28px] border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(255,255,255,0.4)] p-2 flex items-center justify-between">
-                <!-- Tab: Pendapatan -->
-                <button @click="activeTab = 'pendapatan'; sidebarOpen = false" 
-                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="(activeTab === 'pendapatan' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
-                    <i class="text-[26px] transition-all" 
-                       :class="(activeTab === 'pendapatan' && !sidebarOpen) ? 'ph-fill ph-wallet text-[#0F5C45] scale-110' : 'ph ph-wallet text-black/80 scale-100'"></i>
-                </button>
-                
-                <!-- Tab: Pengeluaran -->
-                <button @click="activeTab = 'pengeluaran'; sidebarOpen = false" 
-                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="(activeTab === 'pengeluaran' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
-                    <i class="text-[26px] transition-all" 
-                       :class="(activeTab === 'pengeluaran' && !sidebarOpen) ? 'ph-fill ph-shopping-cart text-[#0F5C45] scale-110' : 'ph ph-shopping-cart text-black/80 scale-100'"></i>
-                </button>
-                
-                <!-- Tab: Kerugian -->
-                <button @click="activeTab = 'kerugian'; sidebarOpen = false" 
-                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="(activeTab === 'kerugian' && !sidebarOpen) ? 'bg-[#D1F36E]' : ''">
-                    <i class="text-[26px] transition-all" 
-                       :class="(activeTab === 'kerugian' && !sidebarOpen) ? 'ph-fill ph-warning-circle text-[#0F5C45] scale-110' : 'ph ph-warning-circle text-black/80 scale-100'"></i>
-                </button>
-
-                <!-- Tab: Menu -->
-                <button @click="window.self !== window.top ? window.parent.postMessage('toggleSidebar', '*') : sidebarOpen = !sidebarOpen" 
-                        class="flex-1 h-12 flex items-center justify-center rounded-[20px] transition-all duration-300 relative group"
-                        :class="sidebarOpen ? 'bg-[#D1F36E]' : ''">
-                    <i class="text-[26px] transition-all" 
-                       :class="sidebarOpen ? 'ph-bold ph-list text-[#0F5C45] scale-110' : 'ph ph-list text-black/80 scale-100'"></i>
-                </button>
-
-            </div>
-        </div>
-
 
 
         </div>
@@ -4073,13 +4043,13 @@
                 },
                 isToday(label) {
                     const today = new Date();
-                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
                     const todayStr = today.getDate() + ' ' + months[today.getMonth()];
                     return label === todayStr;
                 },
                 getTodayIndex(weekDates) {
                     const today = new Date();
-                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
                     const todayStr = today.getDate() + ' ' + months[today.getMonth()];
                     const idx = weekDates.findIndex(d => d === todayStr);
                     return idx !== -1 ? idx : null;
