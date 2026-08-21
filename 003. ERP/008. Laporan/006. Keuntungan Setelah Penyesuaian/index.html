@@ -1132,48 +1132,107 @@
              </div>
 
                  <!-- Content: Ringkasan & Riwayat -->
-             <div class="flex-1 overflow-y-auto min-h-0 px-5 pb-6 pt-4 bg-gray-50/60" style="-webkit-overflow-scrolling: touch;">
-                 <div class="flex flex-col gap-5">
+             <div class="flex-1 overflow-y-auto min-h-0 px-5 pb-8 pt-4 bg-gray-50/60" style="-webkit-overflow-scrolling: touch;">
+                 <div class="flex flex-col gap-6">
 
-                     <!-- RIWAYAT TRANSAKSI PER HARI -->
-                     <div>
-                         <div class="flex flex-col gap-4">
-                             <template x-for="daily in drawerDailyBreakdown" :key="daily.date">
-                                <div class="relative bg-white rounded-xl border border-gray-200 shadow-sm p-4">
-                                     <div class="flex items-center justify-between pb-3 border-b-2 border-dashed border-gray-200">
-                                         <div class="flex flex-col">
-                                             <span class="text-xs text-gray-400 font-medium uppercase tracking-wider">Tanggal</span>
-                                             <span class="text-sm font-bold text-gray-900 mt-0.5" x-text="formatDisplayDate(daily.date)"></span>
-                                         </div>
-                                         <div class="text-right">
-                                             <span class="text-[15px] font-black" 
-                                                   :class="daily.hasilAkhir >= 0 ? 'text-emerald-700' : 'text-red-600'"
-                                                   x-text="'Rp ' + Math.abs(daily.hasilAkhir).toLocaleString('id-ID', { maximumFractionDigits: 0 })"></span>
-                                             <div class="text-[10px] text-gray-400 font-medium mt-0.5">Laba Disesuaikan</div>
-                                         </div>
-                                     </div>
-                                     
-                                     <div class="pt-3">
-                                          <!-- Keuntungan Penjualan -->
-                                          <div class="flex justify-between items-center text-xs text-gray-600 mb-2">
-                                              <span>Laba Kotor</span>
-                                              <span class="font-semibold text-gray-900" x-text="'Rp ' + daily.keuntungan.toLocaleString('id-ID', { maximumFractionDigits: 0 })"></span>
-                                          </div>
-
-                                          <!-- Stok Opname (+/-) -->
-                                          <div class="flex justify-between items-center text-xs text-gray-600">
-                                              <span>Koreksi Stok</span>
-                                              <span class="font-semibold" 
-                                                    :class="daily.opname >= 0 ? 'text-emerald-600' : 'text-red-500'"
-                                                    x-text="(daily.opname >= 0 ? '+' : '') + 'Rp ' + Math.abs(daily.opname).toLocaleString('id-ID', { maximumFractionDigits: 0 })"></span>
-                                          </div>
+                     <!-- SUMMARY DASHBOARD -->
+                     <div class="bg-gradient-to-br from-[#0b595b] to-[#147976] rounded-2xl p-5 shadow-lg relative overflow-hidden text-white">
+                         <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+                         <div class="relative z-10">
+                             <div class="text-xs font-medium text-white/80 uppercase tracking-wide mb-1">Total Laba Disesuaikan</div>
+                             <div class="text-2xl font-black mb-4 flex items-center gap-2 whitespace-nowrap">
+                                 <span x-text="(drawerHasilAkhir >= 0 ? 'Rp ' : '-Rp ') + Math.abs(drawerHasilAkhir).toLocaleString('id-ID')"></span>
+                             </div>
+                             
+                             <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/20">
+                                 <div>
+                                     <div class="text-[10px] text-white/70 uppercase">Laba Kotor</div>
+                                     <div class="font-semibold text-sm mt-0.5 whitespace-nowrap" x-text="'Rp ' + Math.abs(drawerTotalKeuntungan).toLocaleString('id-ID')"></div>
+                                 </div>
+                                 <div>
+                                     <div class="text-[10px] text-white/70 uppercase">Koreksi Stok</div>
+                                     <div class="font-semibold text-sm mt-0.5 whitespace-nowrap"
+                                          :class="drawerTotalOpname >= 0 ? 'text-blue-300' : 'text-red-300'">
+                                         <span x-text="(drawerTotalOpname >= 0 ? '+' : '') + 'Rp ' + Math.abs(drawerTotalOpname).toLocaleString('id-ID')"></span>
                                      </div>
                                  </div>
+                             </div>
+                         </div>
+                     </div>
+
+                     <!-- TIMELINE LEDGER -->
+                     <div class="relative pl-3">
+                         <!-- Timeline Line -->
+                         <div class="absolute top-2 bottom-0 left-[27px] w-0.5 bg-gray-200"></div>
+
+                         <div class="flex flex-col gap-6 relative z-10">
+                             <template x-for="daily in drawerDailyBreakdown" :key="daily.date">
+                                <div class="relative">
+                                    <!-- Date Marker & Label -->
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-white border-[3px] border-emerald-500 shadow-sm flex items-center justify-center shrink-0 z-10">
+                                            <i class="ph-fill ph-calendar-blank text-emerald-500 text-sm"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900 text-sm bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100" x-text="formatDisplayDate(daily.date)"></div>
+                                    </div>
+                                    
+                                    <!-- Cards Container -->
+                                    <div class="pl-11 flex flex-col gap-3">
+                                        
+                                        <!-- Card: Penjualan (Laba Kotor) -->
+                                        <div x-show="daily.keuntungan !== 0 || daily.pendapatan !== 0" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group hover:border-emerald-200 transition-colors">
+                                            <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between bg-emerald-50/30">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6 h-6 rounded-md bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                                        <i class="ph-bold ph-shopping-cart-simple text-xs"></i>
+                                                    </div>
+                                                    <span class="text-[13px] font-bold text-gray-800 whitespace-nowrap">Laba Kotor</span>
+                                                </div>
+                                                <span class="text-[14px] font-black text-emerald-700 whitespace-nowrap" x-text="'Rp ' + daily.keuntungan.toLocaleString('id-ID')"></span>
+                                            </div>
+                                            <div class="px-4 py-3 bg-white grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <div class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Pendapatan</div>
+                                                    <div class="text-xs font-semibold text-gray-700 whitespace-nowrap" x-text="'Rp ' + daily.pendapatan.toLocaleString('id-ID')"></div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">HPP</div>
+                                                    <div class="text-xs font-semibold text-gray-700 whitespace-nowrap" x-text="'Rp ' + daily.hpp.toLocaleString('id-ID')"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Card: Koreksi Stok -->
+                                        <div x-show="daily.opname !== 0" class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden group transition-colors"
+                                             :class="daily.opname > 0 ? 'hover:border-blue-200' : 'hover:border-red-200'">
+                                            <div class="px-4 py-3 border-b border-gray-50 flex items-center justify-between"
+                                                 :class="daily.opname > 0 ? 'bg-blue-50/30' : 'bg-red-50/30'">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-6 h-6 rounded-md flex items-center justify-center"
+                                                         :class="daily.opname > 0 ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'">
+                                                        <i class="ph-bold ph-package text-xs"></i>
+                                                    </div>
+                                                    <span class="text-[13px] font-bold text-gray-800 whitespace-nowrap">Koreksi Stok</span>
+                                                </div>
+                                                <span class="text-[14px] font-black whitespace-nowrap" 
+                                                      :class="daily.opname > 0 ? 'text-blue-600' : 'text-red-600'"
+                                                      x-text="(daily.opname > 0 ? '+' : '') + 'Rp ' + Math.abs(daily.opname).toLocaleString('id-ID')"></span>
+                                            </div>
+                                            <div class="px-4 py-2.5 bg-white flex items-center gap-2">
+                                                <i class="ph-fill ph-info text-gray-400 text-sm"></i>
+                                                <div class="text-xs text-gray-500" x-text="daily.opname > 0 ? 'Surplus (Keuntungan)' : 'Defisit (Kerugian)'"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                              </template>
                              
-                             <div x-show="drawerDailyBreakdown.length === 0" class="py-8 text-center bg-white rounded-xl border border-gray-100">
-                                 <i class="ph ph-calendar-blank text-3xl text-gray-300 mb-2"></i>
-                                 <p class="text-xs text-gray-500">Tidak ada breakdown harian</p>
+                             <div x-show="drawerDailyBreakdown.length === 0" class="py-8 pl-11 text-center">
+                                 <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col items-center justify-center">
+                                     <i class="ph ph-calendar-blank text-3xl text-gray-300 mb-2"></i>
+                                     <p class="text-xs text-gray-500">Tidak ada riwayat transaksi</p>
+                                 </div>
                              </div>
                          </div>
                      </div>

@@ -119,7 +119,7 @@
         .sidebar-collapsed .submenu-wrapper {
             grid-template-rows: 0fr !important;
             opacity: 0 !important;
-            display: none !important;
+            pointer-events: none;
         }
 
         /* Light Sidebar Overrides */
@@ -247,7 +247,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('002. Master/001. Produk/index.html', 'master')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -314,7 +314,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('003. Pembelian/001. Pengadaan/index.html', 'pembelian')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -336,7 +336,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('004. Inventaris/001. Stok Barang/index.html', 'inventaris')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -391,7 +391,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('005. Produksi/001. Produksi Barang/index.html', 'produksi')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -413,7 +413,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('006. Penjualan/001. Kasir - POS/index.html', 'penjualan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -445,7 +445,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('007. Keuangan/001. Pemasukan/index.html', 'keuangan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -472,7 +472,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('008. Laporan/003. Total Aset/index.html', 'laporan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
@@ -519,7 +519,7 @@
                         </div>
                         
                     </a>
-                    <div class="submenu-wrapper" x-show="!sidebarCollapsed">
+                    <div class="submenu-wrapper">
                         <div class="py-1 space-y-0.5">
                             <a href="#" @click.prevent="navigateTo('009. Pengaturan/001. Nota dan Cetak/index.html', 'pengaturan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"

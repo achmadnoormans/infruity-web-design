@@ -710,37 +710,638 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+            <main class="flex-1 overflow-y-auto overscroll-none px-0 lg:px-8 py-0 lg:py-6 flex flex-col">
 
-                <!-- CONTENT: Produk -->
-                <div class="animate-fade-in-up flex flex-col items-center justify-center py-16 my-auto text-center w-full">
-                    <div class="w-24 h-24 rounded-3xl bg-primary/10 flex items-center justify-center mb-6">
-                        <i class="ph-fill ph-chart-pie-slice text-primary text-5xl"></i>
-                    </div>
-                    <h2 class="text-2xl font-serif font-bold text-gray-800 mb-2">Produk</h2>
-                    <p class="text-gray-400 text-sm max-w-sm mb-6">
-                        Halaman ini sedang dalam tahap pengembangan. Navigasi sidebar sudah aktif — silakan klik menu
-                        untuk berpindah halaman.
-                    </p>
-                    <div class="flex items-center gap-3">
-                        <span
-                            class="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200 text-sm text-gray-500 shadow-card">
-                            <i class="ph ph-folder-open text-primary text-lg"></i>
-                            Modul: <strong>Master</strong>
-                        </span>
-                        <span
-                            class="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200 text-sm text-gray-500 shadow-card">
-                            <i class="ph ph-shield-check text-primary text-lg"></i>
-                            Status: <span class="text-green-600 font-semibold">Active</span>
-                        </span>
+                <div class="animate-fade-in-up w-full flex-1 flex flex-col min-h-0">
+
+                    <!-- Main Content Card -->
+                    <div class="bg-white rounded-none lg:rounded-2xl shadow-none lg:shadow-sm border-0 lg:border lg:border-gray-100 overflow-hidden flex-1 flex flex-col min-h-0">
+
+                        <!-- Toolbar: Search + Filter + Add -->
+                        <div class="p-4 border-b border-gray-100 flex flex-row gap-3 items-center bg-white relative z-10">
+                            <!-- Search -->
+                            <div class="flex-1 relative">
+                                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input x-model="searchQuery" type="text" placeholder="Cari produk atau varian..."
+                                    class="w-full bg-gray-50/50 border border-gray-100 rounded-full pl-10 pr-10 h-11 text-[13px] outline-none focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <!-- Clear button -->
+                                <button x-show="searchQuery" @click="searchQuery = ''" x-cloak
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors">
+                                    <i class="ph-bold ph-x text-[10px] text-gray-500"></i>
+                                </button>
+                            </div>
+
+                            <!-- Filter Button -->
+                            <div class="relative shrink-0" x-data="{ expanded: false }" x-effect="document.body.style.overflow = (filterOpen && window.innerWidth < 768) ? 'hidden' : ''">
+                                <!-- Filter Trigger -->
+                                <button @click="filterOpen = !filterOpen; expanded = true"
+                                    @mouseenter="expanded = true" 
+                                    @mouseleave="if(!filterOpen) expanded = false"
+                                    class="flex items-center bg-white rounded-full border h-11 p-1 shadow-sm transition-colors duration-300 shrink-0"
+                                    :class="filterOpen ? 'border-emerald-500' : 'border-gray-200 hover:border-emerald-400'">
+                                    <div class="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-300 z-10 shrink-0"
+                                        :class="expanded ? 'bg-emerald-50 text-emerald-600' : 'bg-white text-gray-600'">
+                                        <div class="relative flex items-center justify-center">
+                                            <i class="ph ph-funnel text-[20px]"></i>
+                                            <span x-cloak x-show="selectedCategory !== 'Semua'" class="absolute -top-[2px] -right-[2px] w-3 h-3 bg-orange-500 rounded-full border-[2px] border-white"></span>
+                                        </div>
+                                    </div>
+                                    <div class="overflow-hidden transition-all duration-500 ease-out hidden sm:flex items-center"
+                                         :class="expanded ? 'max-w-[280px] opacity-100 pr-4' : 'max-w-0 opacity-0 pr-0'">
+                                        <span class="text-[13px] font-medium text-gray-700 whitespace-nowrap pl-2" x-text="selectedCategory"></span>
+                                        <i class="ph-bold ph-caret-down text-[10px] ml-2 transition-transform duration-200 text-gray-400" :class="filterOpen ? 'rotate-180' : ''"></i>
+                                    </div>
+                                </button>
+                                
+                                <!-- Backdrop for Filter -->
+                                <div x-show="filterOpen" x-cloak
+                                     @click.stop.prevent="filterOpen = false; expanded = false"
+                                     class="fixed inset-0 z-40 bg-transparent cursor-default pointer-events-auto">
+                                </div>
+
+                                <!-- Filter Dropdown -->
+                                <div x-show="filterOpen" x-cloak @click.outside="filterOpen = false; expanded = false"
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute right-0 top-14 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 py-2">
+                                    <div class="px-4 py-2.5 border-b border-gray-50">
+                                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</p>
+                                    </div>
+                                    <template x-for="cat in allCategories" :key="cat">
+                                        <button @click="selectedCategory = cat; filterOpen = false; expanded = false"
+                                            class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition flex items-center justify-between"
+                                            :class="selectedCategory === cat ? 'text-emerald-700 font-semibold bg-emerald-50/50' : 'text-gray-600'">
+                                            <span x-text="cat"></span>
+                                            <i x-show="selectedCategory === cat" class="ph-bold ph-check text-emerald-600 text-sm"></i>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Add Button (Desktop) -->
+                            <button @click="openDrawer()"
+                                class="hidden sm:flex items-center gap-2 bg-[#0b595b] hover:bg-[#0a4e50] text-white rounded-full h-11 px-5 text-[13px] font-semibold transition-colors shadow-sm shrink-0">
+                                <i class="ph-bold ph-plus text-sm"></i>
+                                <span>Tambah Produk</span>
+                            </button>
+
+                            <!-- Mobile Sidebar Toggle -->
+                            <button @click="toggleMobileSidebar()" 
+                                class="relative shrink-0 lg:hidden w-11 h-11 flex items-center justify-center bg-white rounded-full border border-gray-200 hover:border-emerald-400 hover:text-emerald-600 shadow-sm text-gray-500 transition-all duration-300"
+                                title="Tampilkan Sidebar">
+                                <i class="ph-bold ph-list text-[18px]"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Count -->
+                        <div class="px-4 py-3 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                            <span class="text-xs text-gray-400 font-medium">
+                                Menampilkan <span class="text-gray-700 font-semibold" x-text="Math.min(visibleCount, filteredProducts.length)"></span>
+                                dari <span class="text-gray-700 font-semibold" x-text="filteredProducts.length"></span> produk
+                            </span>
+                        </div>
+
+                        <!-- Product List -->
+                        <div class="flex-1 overflow-y-auto min-h-0">
+
+                            <!-- Desktop List View -->
+                            <div class="hidden lg:block divide-y divide-gray-50" x-effect="searchQuery; selectedCategory; resetPagination()">
+                                <template x-for="(product, index) in visibleProducts" :key="product.id">
+                                    <!-- wrapper: single root for x-for -->
+                                    <div class="border-b border-gray-100 last:border-none">
+                                        <!-- Main product row -->
+                                        <div class="flex items-center gap-4 px-5 py-4 hover:bg-gray-50/50 transition-colors group"
+                                             :style="'animation-delay:' + (index * 40) + 'ms'" 
+                                             style="animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;">
+                                            
+                                            <!-- Photo -->
+                                            <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-100 flex items-center justify-center text-xl"
+                                                 :style="'background-color:' + product.color">
+                                                <span x-text="product.emoji"></span>
+                                            </div>
+
+                                            <!-- Name & Meta -->
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-semibold text-gray-800 truncate" x-text="product.name"></div>
+                                                <div class="flex items-center gap-1.5 mt-0.5">
+                                                    <span class="text-[11px] text-gray-400" x-text="product.category"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Price column -->
+                                            <div class="shrink-0 w-44 flex items-center justify-end">
+                                                <!-- Variant: range display -->
+                                                <span x-show="product.variants && product.variants.length > 0"
+                                                    class="text-sm font-semibold text-emerald-700 px-3 py-1.5 whitespace-nowrap"
+                                                    x-text="priceRangeDisplay(product)"></span>
+                                                <!-- Single price display -->
+                                                <button x-show="(!product.variants || product.variants.length === 0) && editingPriceId !== product.id"
+                                                    @click="startEditPrice(product)"
+                                                    class="text-sm font-semibold text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                                                    :title="'Klik untuk ubah harga'">
+                                                    <span x-text="'Rp ' + product.price.toLocaleString('id-ID')"></span>
+                                                    <span class="text-gray-400 font-normal" x-text="'/' + product.unit"></span>
+                                                </button>
+                                                <!-- Edit Mode (single price) -->
+                                                <div x-show="editingPriceId === product.id" x-cloak class="flex items-center gap-1.5">
+                                                    <div class="relative">
+                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">Rp</span>
+                                                        <input x-ref="priceInput" type="number" x-model.number="editingPriceValue"
+                                                            @keydown.enter="savePrice(product)"
+                                                            @keydown.escape="cancelEditPrice()"
+                                                            class="w-28 h-9 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-3 text-sm text-right font-semibold outline-none bg-white">
+                                                    </div>
+                                                    <button @click="savePrice(product)" class="w-8 h-8 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors">
+                                                        <i class="ph-bold ph-check text-xs"></i>
+                                                    </button>
+                                                    <button @click="cancelEditPrice()" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors">
+                                                        <i class="ph-bold ph-x text-xs"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Action Menu -->
+                                            <div class="relative shrink-0" x-data="{ actionOpen: false }">
+                                                <button @click="actionOpen = !actionOpen"
+                                                    class="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors opacity-0 group-hover:opacity-100">
+                                                    <i class="ph-bold ph-dots-three-vertical text-sm"></i>
+                                                </button>
+                                                <div x-show="actionOpen" x-cloak @click.outside="actionOpen = false"
+                                                    x-transition:enter="transition ease-out duration-150"
+                                                    x-transition:enter-start="opacity-0 scale-95"
+                                                    x-transition:enter-end="opacity-100 scale-100"
+                                                    x-transition:leave="transition ease-in duration-100"
+                                                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 scale-95"
+                                                    class="absolute right-0 top-11 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 py-1.5">
+                                                    <button @click="openDrawer(product); actionOpen = false"
+                                                        class="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition flex items-center gap-2.5">
+                                                        <i class="ph ph-pencil-simple text-base"></i> Edit
+                                                    </button>
+                                                    <button x-show="product.variants && product.variants.length > 0"
+                                                        @click="addVariantToProduct(product); actionOpen = false"
+                                                        class="w-full text-left px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5">
+                                                        <i class="ph ph-plus-circle text-base"></i> Tambah Varian
+                                                    </button>
+                                                    <button @click="confirmDelete(product); actionOpen = false"
+                                                        class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition flex items-center gap-2.5">
+                                                        <i class="ph ph-trash text-base"></i> Hapus
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Variant sub-rows: always visible (tree-line style) -->
+                                        <template x-if="product.variants && product.variants.length > 0">
+                                            <div class="bg-emerald-50/10 border-t border-emerald-50 px-5 py-1.5">
+                                                <!-- vertical trunk line: starts from center of emoji (px-5=20px + half w-12=24px = 44px → ml-6 after padding) -->
+                                                <div class="ml-6 border-l-2 border-emerald-100">
+                                                    <template x-for="(variant, vi) in product.variants" :key="variant.id">
+                                                        <div class="flex items-center group/v hover:bg-emerald-50/60 transition-colors rounded-r-lg pr-2 py-1">
+                                                            <!-- horizontal branch connector: w-8=32px so name aligns with parent name (border at 44px + 32px + 8px pl = 84px) -->
+                                                            <div class="w-8 shrink-0 flex items-center">
+                                                                <div class="w-full h-px bg-emerald-100"></div>
+                                                            </div>
+                                                            <!-- Name -->
+                                                            <div class="flex-1 min-w-0 text-sm text-gray-500 font-medium pl-2" x-text="variant.name"></div>
+                                                            <!-- Price: display or inline edit -->
+                                                            <div class="shrink-0 w-44 flex items-center justify-end">
+                                                                <button
+                                                                    x-show="!(editingVariantPrice.productId === product.id && editingVariantPrice.variantId === variant.id)"
+                                                                    @click="startEditVariantPrice(product, variant)"
+                                                                    class="text-sm font-semibold text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 px-3 py-1 rounded-lg transition-colors whitespace-nowrap"
+                                                                    title="Klik untuk ubah harga">
+                                                                    <span x-text="'Rp ' + variant.price.toLocaleString('id-ID')"></span><span class="text-gray-400 font-normal text-xs" x-text="'/' + product.unit"></span>
+                                                                </button>
+                                                                <div x-show="editingVariantPrice.productId === product.id && editingVariantPrice.variantId === variant.id"
+                                                                     x-cloak class="flex items-center gap-1.5">
+                                                                    <div class="relative">
+                                                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">Rp</span>
+                                                                        <input type="number" x-model.number="editingVariantPrice.value"
+                                                                            @keydown.enter="saveVariantPrice(product, variant)"
+                                                                            @keydown.escape="cancelVariantPrice()"
+                                                                            class="w-28 h-8 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-2 text-sm text-right font-semibold outline-none bg-white"
+                                                                            x-init="$el.focus()">
+                                                                    </div>
+                                                                    <button @click="saveVariantPrice(product, variant)" class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                                                                        <i class="ph-bold ph-check text-[10px]"></i>
+                                                                    </button>
+                                                                    <button @click="cancelVariantPrice()" class="w-7 h-7 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center">
+                                                                        <i class="ph-bold ph-x text-[10px]"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <!-- spacer: matches w-9 action menu -->
+                                                            <div class="w-9 shrink-0"></div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <!-- Empty State -->
+                                <div x-show="filteredProducts.length === 0" class="py-16 text-center">
+                                    <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                        <i class="ph ph-magnifying-glass text-2xl text-gray-400"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-500 font-medium">Produk tidak ditemukan</p>
+                                    <p class="text-xs text-gray-400 mt-1">Coba ubah kata kunci pencarian atau filter</p>
+                                </div>
+
+                                <!-- Load More (Desktop) -->
+                                <div x-show="hasMore" class="py-5 flex justify-center border-t border-gray-50">
+                                    <button @click="loadMore()"
+                                        class="flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-200 text-sm font-semibold text-gray-600 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">
+                                        <i class="ph ph-arrow-circle-down text-base"></i>
+                                        <span>Muat Lebih Banyak</span>
+                                        <span class="text-xs text-gray-400 font-normal" x-text="'(' + (filteredProducts.length - visibleCount) + ' tersisa)'"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Mobile List View (Laporan style: divide-y) -->
+                            <div class="lg:hidden divide-y divide-gray-100">
+                                <template x-for="(product, index) in visibleProducts" :key="'m-' + product.id">
+                                    <div class="group relative" :class="product.variants && product.variants.length > 0 ? 'bg-emerald-50/10' : ''">
+
+                                        <!-- Main row -->
+                                        <div class="px-5 py-3.5 flex items-center">
+                                            <!-- Emoji avatar -->
+                                            <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center text-lg mr-3 border border-gray-100"
+                                                 :style="'background-color:' + product.color">
+                                                <span x-text="product.emoji"></span>
+                                            </div>
+
+                                            <!-- Left: Name + meta -->
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-semibold text-gray-900 truncate" x-text="product.name"></div>
+                                                <div class="text-xs text-gray-400 mt-0.5">
+                                                    <span x-text="product.category"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right: Price (range for variant, single for normal) + action -->
+                                            <div class="shrink-0 flex items-center gap-1 ml-2">
+                                                <!-- Variant range (plain, no click) -->
+                                                <span x-show="product.variants && product.variants.length > 0"
+                                                    class="text-xs font-bold text-emerald-700 px-2 py-1 whitespace-nowrap"
+                                                    x-text="priceRangeDisplay(product)"></span>
+                                                <!-- Single price -->
+                                                <button x-show="(!product.variants || product.variants.length === 0) && editingPriceId !== product.id"
+                                                    @click="startEditPrice(product)"
+                                                    class="text-sm font-bold text-gray-800 hover:text-emerald-700 hover:bg-emerald-50 px-2 py-1 rounded-lg transition-colors whitespace-nowrap">
+                                                    <span x-text="'Rp ' + product.price.toLocaleString('id-ID')"></span><span class="text-gray-400 font-normal text-xs" x-text="'/' + product.unit"></span>
+                                                </button>
+
+                                                <!-- Action ⋮ -->
+                                                <div class="relative" x-data="{ mActionOpen: false }">
+                                                    <button @click="mActionOpen = !mActionOpen"
+                                                        class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition-colors">
+                                                        <i class="ph-bold ph-dots-three-vertical text-sm"></i>
+                                                    </button>
+                                                    <div x-show="mActionOpen" x-cloak @click.outside="mActionOpen = false"
+                                                        x-transition:enter="transition ease-out duration-150"
+                                                        x-transition:enter-start="opacity-0 scale-95"
+                                                        x-transition:enter-end="opacity-100 scale-100"
+                                                        x-transition:leave="transition ease-in duration-100"
+                                                        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 scale-95"
+                                                        class="absolute right-0 top-10 w-40 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 py-1.5">
+                                                        <button @click="openDrawer(product); mActionOpen = false"
+                                                            class="w-full text-left px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition flex items-center gap-2.5">
+                                                            <i class="ph ph-pencil-simple text-base"></i> Edit
+                                                        </button>
+                                                        <button x-show="product.variants && product.variants.length > 0"
+                                                            @click="addVariantToProduct(product); mActionOpen = false"
+                                                            class="w-full text-left px-4 py-2.5 text-sm text-emerald-600 hover:bg-emerald-50 transition flex items-center gap-2.5">
+                                                            <i class="ph ph-plus-circle text-base"></i> Tambah Varian
+                                                        </button>
+                                                        <button @click="confirmDelete(product); mActionOpen = false"
+                                                            class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition flex items-center gap-2.5">
+                                                            <i class="ph ph-trash text-base"></i> Hapus
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Mobile inline price edit (single price) -->
+                                            <div x-show="editingPriceId === product.id" x-cloak
+                                                 class="absolute left-0 right-0 bottom-0 translate-y-full bg-white border border-emerald-200 rounded-b-xl px-4 py-2.5 flex items-center gap-1.5 z-10 shadow-lg">
+                                                <div class="relative flex-1">
+                                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">Rp</span>
+                                                    <input type="number" x-model.number="editingPriceValue"
+                                                        @keydown.enter="savePrice(product)"
+                                                        @keydown.escape="cancelEditPrice()"
+                                                        class="w-full h-9 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-3 text-sm text-right font-semibold outline-none bg-white">
+                                                </div>
+                                                <button @click="savePrice(product)" class="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                                    <i class="ph-bold ph-check text-xs"></i>
+                                                </button>
+                                                <button @click="cancelEditPrice()" class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
+                                                    <i class="ph-bold ph-x text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mobile variant sub-rows: always visible (tree-line style) -->
+                                        <template x-if="product.variants && product.variants.length > 0">
+                                            <div class="border-t border-emerald-100/60 bg-emerald-50/20 px-4 py-1.5">
+                                                <!-- vertical trunk line: starts from center of emoji (px-4=16px + half w-9=18px = 34px → ml-[18px] after padding) -->
+                                                <div class="ml-[18px] border-l-2 border-emerald-100">
+                                                    <template x-for="(variant, vi) in product.variants" :key="variant.id">
+                                                        <div class="flex items-center py-1.5">
+                                                            <!-- horizontal branch connector: w-[26px] so name aligns with parent name (border at 34px + 26px + 8px pl = 68px) -->
+                                                            <div class="w-[26px] shrink-0">
+                                                                <div class="w-full h-px bg-emerald-100"></div>
+                                                            </div>
+                                                            <span class="flex-1 text-sm text-gray-500 font-medium truncate pl-2" x-text="variant.name"></span>
+                                                            <!-- Variant price -->
+                                                            <button
+                                                                x-show="!(editingVariantPrice.productId === product.id && editingVariantPrice.variantId === variant.id)"
+                                                                @click="startEditVariantPrice(product, variant)"
+                                                                class="text-sm font-semibold text-gray-700 hover:text-emerald-600 hover:bg-white px-2 py-1 rounded-lg transition-colors whitespace-nowrap">
+                                                                <span x-text="'Rp ' + variant.price.toLocaleString('id-ID')"></span><span class="text-gray-400 font-normal text-xs" x-text="'/' + product.unit"></span>
+                                                            </button>
+                                                            <div x-show="editingVariantPrice.productId === product.id && editingVariantPrice.variantId === variant.id"
+                                                                 x-cloak class="flex items-center gap-1">
+                                                                <div class="relative">
+                                                                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">Rp</span>
+                                                                    <input type="number" x-model.number="editingVariantPrice.value"
+                                                                        @keydown.enter="saveVariantPrice(product, variant)"
+                                                                        @keydown.escape="cancelVariantPrice()"
+                                                                        class="w-24 h-8 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-7 pr-1 text-xs text-right font-bold outline-none bg-white"
+                                                                        x-init="$el.focus()">
+                                                                </div>
+                                                                <button @click="saveVariantPrice(product, variant)" class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                                                                    <i class="ph-bold ph-check text-[10px]"></i>
+                                                                </button>
+                                                                <button @click="cancelVariantPrice()" class="w-7 h-7 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
+                                                                    <i class="ph-bold ph-x text-[10px]"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+
+                                <!-- Empty State (Mobile) -->
+                                <div x-show="filteredProducts.length === 0" class="py-12 text-center">
+                                    <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                                        <i class="ph ph-magnifying-glass text-xl text-gray-400"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-500 font-medium">Produk tidak ditemukan</p>
+                                    <p class="text-xs text-gray-400 mt-1">Coba ubah pencarian atau filter</p>
+                                </div>
+
+                                <!-- Load More (Mobile) -->
+                                <div x-show="hasMore" class="px-5 py-4">
+                                    <button @click="loadMore()"
+                                        class="w-full h-11 rounded-xl border-2 border-dashed border-gray-200 text-sm font-semibold text-gray-500 hover:border-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2">
+                                        <i class="ph ph-arrow-circle-down text-base"></i>
+                                        <span x-text="'Muat ' + Math.min(PAGE_SIZE, filteredProducts.length - visibleCount) + ' Produk Lagi'"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+
+                <!-- Mobile FAB (Floating Action Button) -->
+                <button @click="openDrawer()"
+                    class="sm:hidden fixed bottom-6 right-6 w-14 h-14 bg-[#0b595b] hover:bg-[#0a4e50] text-white rounded-full shadow-lg shadow-[#0b595b]/30 flex items-center justify-center transition-colors z-40">
+                    <i class="ph-bold ph-plus text-xl"></i>
+                </button>
 
             </main>
 
         </div>
 
+    <!-- ================================ -->
+    <!-- DRAWER: Tambah / Edit Produk     -->
+    <!-- ================================ -->
+    <div x-show="drawerOpen" class="fixed inset-0 z-[100] overflow-hidden flex flex-col justify-end lg:flex-row lg:justify-end" x-cloak>
+        <!-- Backdrop -->
+        <div x-show="drawerOpen"
+             x-transition:enter="transition-opacity ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="closeDrawer()" class="absolute inset-0 bg-black/70"></div>
+
+        <!-- Drawer Panel -->
+        <div x-show="drawerOpen"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="translate-y-full lg:translate-y-0 lg:translate-x-full"
+             x-transition:enter-end="translate-y-0 lg:translate-x-0"
+             x-transition:leave="transition ease-in duration-300 transform"
+             x-transition:leave-start="translate-y-0 lg:translate-x-0"
+             x-transition:leave-end="translate-y-full lg:translate-y-0 lg:translate-x-full"
+             class="w-full md:max-w-lg lg:max-w-sm mx-auto lg:mx-0 bg-white shadow-2xl flex flex-col h-[85vh] lg:h-full max-h-[100vh] overflow-hidden border-t lg:border-t-0 lg:border-l border-gray-100 rounded-t-3xl lg:rounded-none relative z-10">
+
+            <!-- Drag Handle (Mobile) -->
+            <div class="w-full flex justify-center pt-3 pb-1 lg:hidden shrink-0" @click="closeDrawer()" style="cursor: pointer;">
+                <div class="w-16 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <!-- Header -->
+            <div class="bg-white shrink-0 border-b border-gray-100 px-5 py-4 flex items-center justify-between">
+                <div class="flex flex-col">
+                    <h3 class="text-[15px] font-bold text-gray-900" x-text="editingProduct ? 'Edit Produk' : 'Tambah Produk'"></h3>
+                    <p class="text-[12px] text-gray-400 mt-0.5" x-text="editingProduct ? 'Perbarui data produk' : 'Isi data produk baru'"></p>
+                </div>
+                <button @click="closeDrawer()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 transition-colors shrink-0">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <!-- Form Content -->
+            <div class="flex-1 overflow-y-auto min-h-0 px-5 pb-6 pt-5 bg-gray-50/60" style="-webkit-overflow-scrolling: touch;">
+                <div class="flex flex-col gap-5">
+
+                    <!-- Photo Upload Placeholder -->
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center text-3xl bg-white"
+                             :style="form.emoji ? 'background-color:' + form.color : ''">
+                            <span x-show="form.emoji" x-text="form.emoji"></span>
+                            <i x-show="!form.emoji" class="ph ph-image text-gray-300"></i>
+                        </div>
+                        <span class="text-[11px] text-gray-400">Foto Produk (Opsional)</span>
+                    </div>
+
+                    <!-- Nama Produk -->
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Nama Produk <span class="text-red-400">*</span></label>
+                        <input x-model="form.name" type="text" placeholder="Masukkan nama produk"
+                            class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                    </div>
+
+                    <!-- Kategori -->
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Kategori <span class="text-red-400">*</span></label>
+                        <select x-model="form.category"
+                            class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all appearance-none"
+                            style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path fill=%22%239ca3af%22 d=%22M2.5 4.5l3.5 3.5 3.5-3.5%22/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;">
+                            <option value="">Pilih kategori</option>
+                            <option>Buah Segar</option>
+                            <option>Buah Potong</option>
+                            <option>Jus & Smoothie</option>
+                            <option>Olahan</option>
+                        </select>
+                    </div>
+
+                    <!-- Satuan -->
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Satuan <span class="text-red-400">*</span></label>
+                        <select x-model="form.unit"
+                            class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all appearance-none"
+                            style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path fill=%22%239ca3af%22 d=%22M2.5 4.5l3.5 3.5 3.5-3.5%22/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;">
+                            <option value="">Pilih satuan</option>
+                            <option>kg</option>
+                            <option>pcs</option>
+                            <option>pack</option>
+                            <option>cup</option>
+                            <option>liter</option>
+                        </select>
+                    </div>
+
+                    <!-- Toggle: Variant -->
+                    <div class="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3">
+                        <div>
+                            <p class="text-sm font-semibold text-gray-700">Produk Memiliki Varian</p>
+                            <p class="text-[11px] text-gray-400 mt-0.5">Misal: Grade Super, Grade A, Grade AB</p>
+                        </div>
+                        <button @click="form.hasVariants = !form.hasVariants; if(!form.hasVariants) form.variants = []"
+                            class="w-11 h-6 rounded-full transition-colors duration-200 flex items-center relative shrink-0"
+                            :class="form.hasVariants ? 'bg-emerald-500' : 'bg-gray-200'">
+                            <span class="w-5 h-5 bg-white rounded-full shadow absolute transition-transform duration-200"
+                                :class="form.hasVariants ? 'translate-x-5' : 'translate-x-0.5'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Harga Jual (only when no variants) -->
+                    <div x-show="!form.hasVariants">
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Harga Jual <span class="text-red-400">*</span></label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">Rp</span>
+                            <input x-model.number="form.price" type="number" placeholder="0"
+                                class="w-full h-11 bg-white border border-gray-200 rounded-xl pl-10 pr-4 text-sm text-right font-semibold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Variant List (only when hasVariants) -->
+                    <div x-show="form.hasVariants" class="flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-semibold text-gray-600">Daftar Varian <span class="text-red-400">*</span></label>
+                            <button @click="form.variants.push({ id: Date.now(), name: '', price: 0 })"
+                                class="flex items-center gap-1 text-xs text-emerald-700 font-semibold hover:underline">
+                                <i class="ph ph-plus-circle"></i> Tambah Varian
+                            </button>
+                        </div>
+                        <template x-if="form.variants.length === 0">
+                            <p class="text-xs text-gray-400 text-center py-3">Belum ada varian. Klik "Tambah Varian".</p>
+                        </template>
+                        <template x-for="(v, idx) in form.variants" :key="v.id">
+                            <div class="flex items-center gap-2">
+                                <input x-model="v.name" type="text" :placeholder="'Nama varian (misal Grade A)'"
+                                    class="flex-1 h-10 bg-white border border-gray-200 rounded-xl px-3 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                <div class="relative w-32 shrink-0">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">Rp</span>
+                                    <input x-model.number="v.price" type="number" placeholder="0"
+                                        class="w-full h-10 bg-white border border-gray-200 rounded-xl pl-8 pr-2 text-sm text-right font-semibold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                                </div>
+                                <button @click="form.variants.splice(idx, 1)"
+                                    class="w-8 h-8 rounded-lg text-red-400 hover:bg-red-50 flex items-center justify-center shrink-0 transition-colors">
+                                    <i class="ph ph-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- HPP -->
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">HPP (Harga Pokok)</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">Rp</span>
+                            <input x-model.number="form.hpp" type="number" placeholder="0"
+                                class="w-full h-11 bg-white border border-gray-200 rounded-xl pl-10 pr-4 text-sm text-right font-semibold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Deskripsi -->
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Deskripsi <span class="text-gray-300">(Opsional)</span></label>
+                        <textarea x-model="form.description" rows="3" placeholder="Deskripsi singkat produk..."
+                            class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="shrink-0 px-5 py-4 border-t border-gray-100 bg-white flex items-center gap-3">
+                <button @click="closeDrawer()" class="flex-1 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                    Batal
+                </button>
+                <button @click="saveProduct()" class="flex-1 h-11 rounded-xl bg-[#0b595b] hover:bg-[#0a4e50] text-white text-sm font-semibold transition-colors shadow-sm">
+                    <span x-text="editingProduct ? 'Simpan Perubahan' : 'Tambah Produk'"></span>
+                </button>
+            </div>
+        </div>
     </div>
+
+    <!-- ================================ -->
+    <!-- MODAL: Konfirmasi Hapus          -->
+    <!-- ================================ -->
+    <div x-show="deleteModalOpen" class="fixed inset-0 z-[110] flex items-center justify-center px-4" x-cloak>
+        <!-- Backdrop -->
+        <div x-show="deleteModalOpen"
+             x-transition:enter="transition-opacity ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="deleteModalOpen = false" class="absolute inset-0 bg-black/60"></div>
+
+        <!-- Modal Card -->
+        <div x-show="deleteModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-90 translate-y-4"
+             class="relative z-10 bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
+            <div class="px-6 pt-7 pb-5 text-center">
+                <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <i class="ph-fill ph-trash text-2xl text-red-500"></i>
+                </div>
+                <h4 class="text-base font-bold text-gray-900 mb-1.5">Hapus Produk?</h4>
+                <p class="text-sm text-gray-500">
+                    Produk <strong class="text-gray-700" x-text="deletingProduct?.name"></strong> akan dihapus permanen.
+                </p>
+            </div>
+            <div class="px-6 pb-6 flex items-center gap-3">
+                <button @click="deleteModalOpen = false" class="flex-1 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                    Batal
+                </button>
+                <button @click="deleteProduct()" class="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors shadow-sm">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /x-data -->
 
     <!-- ALPINE.JS APPLICATION LOGIC -->
     <script>
@@ -751,15 +1352,438 @@
                 theme: 'dark',
                 activeMenu: 'master',
 
+                // Search & Filter
+                searchQuery: '',
+                filterOpen: false,
+                selectedCategory: 'Semua',
+                allCategories: ['Semua', 'Buah Segar', 'Buah Potong', 'Jus & Smoothie', 'Olahan'],
+
+                // Inline Price Edit
+                editingPriceId: null,
+                editingPriceValue: 0,
+
+                // Drawer (Add/Edit)
+                drawerOpen: false,
+                editingProduct: null,
+                form: { name: '', category: '', unit: '', price: 0, hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] },
+
+                // Variant accordion
+                expandedVariantIds: [],
+                editingVariantPrice: { productId: null, variantId: null, value: 0 },
+
+                // Delete Modal
+                deleteModalOpen: false,
+                deletingProduct: null,
+
+                // Sample Product Data (250 items, generated)
+                products: (() => {
+                    const items = [
+                        // Buah Segar (70 items)
+                        { name: 'Buah Naga Merah', emoji: '🐉', color: '#fce4ec' },
+                        { name: 'Buah Naga Putih', emoji: '🐉', color: '#f3e5f5' },
+                        { name: 'Alpukat Mentega', emoji: '🥑', color: '#e8f5e9' },
+                        { name: 'Alpukat Miki', emoji: '🥑', color: '#e0f2f1' },
+                        { name: 'Mangga Harum Manis', emoji: '🥭', color: '#fff8e1' },
+                        { name: 'Mangga Gedong Gincu', emoji: '🥭', color: '#fff3e0' },
+                        { name: 'Mangga Manalagi', emoji: '🥭', color: '#fffde7' },
+                        { name: 'Mangga Indramayu', emoji: '🥭', color: '#fff8e1' },
+                        { name: 'Stroberi Lokal', emoji: '🍓', color: '#fce4ec' },
+                        { name: 'Stroberi Import', emoji: '🍓', color: '#fce4ec' },
+                        { name: 'Semangka Merah', emoji: '🍉', color: '#ffebee' },
+                        { name: 'Semangka Kuning', emoji: '🍉', color: '#fffde7' },
+                        { name: 'Melon Hijau', emoji: '🍈', color: '#e8f5e9' },
+                        { name: 'Melon Skyroket', emoji: '🍈', color: '#f1f8e9' },
+                        { name: 'Melon Golden', emoji: '🍈', color: '#fff8e1' },
+                        { name: 'Jeruk Sunkist', emoji: '🍊', color: '#fff3e0' },
+                        { name: 'Jeruk Mandarin', emoji: '🍊', color: '#fff3e0' },
+                        { name: 'Jeruk Pontianak', emoji: '🍊', color: '#fff8e1' },
+                        { name: 'Jeruk Nipis', emoji: '🍋', color: '#f1f8e9' },
+                        { name: 'Jeruk Lemon Import', emoji: '🍋', color: '#fffde7' },
+                        { name: 'Pisang Cavendish', emoji: '🍌', color: '#fff8e1' },
+                        { name: 'Pisang Raja', emoji: '🍌', color: '#fff3e0' },
+                        { name: 'Pisang Ambon', emoji: '🍌', color: '#f1f8e9' },
+                        { name: 'Pisang Sunpride', emoji: '🍌', color: '#fffde7' },
+                        { name: 'Apel Fuji', emoji: '🍎', color: '#ffebee' },
+                        { name: 'Apel Malang', emoji: '🍎', color: '#fce4ec' },
+                        { name: 'Apel Granny Smith', emoji: '🍏', color: '#e8f5e9' },
+                        { name: 'Apel Washington', emoji: '🍎', color: '#ffebee' },
+                        { name: 'Pir Xiang Lie', emoji: '🍐', color: '#f1f8e9' },
+                        { name: 'Pir Century', emoji: '🍐', color: '#fffde7' },
+                        { name: 'Anggur Merah', emoji: '🍇', color: '#f3e5f5' },
+                        { name: 'Anggur Hijau', emoji: '🍇', color: '#e8f5e9' },
+                        { name: 'Anggur Black Sapphire', emoji: '🍇', color: '#ede7f6' },
+                        { name: 'Kelapa Muda', emoji: '🥥', color: '#efebe9' },
+                        { name: 'Kelapa Tua', emoji: '🥥', color: '#efebe9' },
+                        { name: 'Pepaya California', emoji: '🍈', color: '#fff3e0' },
+                        { name: 'Pepaya Bangkok', emoji: '🍈', color: '#fff8e1' },
+                        { name: 'Nanas Madu', emoji: '🍍', color: '#fffde7' },
+                        { name: 'Nanas Subang', emoji: '🍍', color: '#fff8e1' },
+                        { name: 'Rambutan Rapiah', emoji: '🍒', color: '#ffebee' },
+                        { name: 'Rambutan Binjai', emoji: '🍒', color: '#fce4ec' },
+                        { name: 'Durian Montong', emoji: '🍈', color: '#fffde7' },
+                        { name: 'Durian Musang King', emoji: '🍈', color: '#fff8e1' },
+                        { name: 'Durian Bawor', emoji: '🍈', color: '#fff3e0' },
+                        { name: 'Salak Pondoh', emoji: '🥥', color: '#efebe9' },
+                        { name: 'Salak Bali', emoji: '🥥', color: '#efebe9' },
+                        { name: 'Manggis Super', emoji: '🍇', color: '#f3e5f5' },
+                        { name: 'Manggis Lokal', emoji: '🍇', color: '#ede7f6' },
+                        { name: 'Jambu Biji Merah', emoji: '🍏', color: '#ffebee' },
+                        { name: 'Jambu Kristal', emoji: '🍏', color: '#e8f5e9' },
+                        { name: 'Jambu Air', emoji: '🍏', color: '#fce4ec' },
+                        { name: 'Kiwi Green', emoji: '🥝', color: '#e8f5e9' },
+                        { name: 'Kiwi Gold', emoji: '🥝', color: '#fffde7' },
+                        { name: 'Persik Segar', emoji: '🍑', color: '#fce4ec' },
+                        { name: 'Ceri Import', emoji: '🍒', color: '#ffebee' },
+                        { name: 'Lengkeng Pingpong', emoji: '🍇', color: '#fff8e1' },
+                        { name: 'Lengkeng Diamond', emoji: '🍇', color: '#fffde7' },
+                        { name: 'Sawo Manila', emoji: '🥥', color: '#efebe9' },
+                        { name: 'Belimbing Manis', emoji: '🍏', color: '#fffde7' },
+                        { name: 'Markisa Kuning', emoji: '🍋', color: '#fffde7' },
+                        { name: 'Markisa Ungu', emoji: '🍇', color: '#f3e5f5' },
+                        { name: 'Sirsak Segar', emoji: '🍏', color: '#e8f5e9' },
+                        { name: 'Kedondong Segar', emoji: '🍏', color: '#f1f8e9' },
+                        { name: 'Duku Palembang', emoji: '🍇', color: '#fff8e1' },
+                        { name: 'Leci Segar', emoji: '🍒', color: '#fce4ec' },
+                        { name: 'Kesemek Segar', emoji: '🍊', color: '#fff3e0' },
+                        { name: 'Sukun Matang', emoji: '🍈', color: '#f1f8e9' },
+                        { name: 'Bit Merah Segar', emoji: '🍎', color: '#ffebee' },
+                        { name: 'Kurma Medjool', emoji: '🥥', color: '#efebe9' },
+                    ];
+
+                    const potongBase = [
+                        'Semangka Merah Potong', 'Semangka Kuning Potong', 'Melon Hijau Potong', 'Melon Golden Potong',
+                        'Pepaya Potong', 'Nanas Potong', 'Mangga Potong', 'Buah Naga Potong',
+                        'Mix Fruit Cup', 'Tropical Mix Cup', 'Berry Mix Cup', 'Salad Buah Kecil',
+                        'Salad Buah Besar', 'Salad Buah Family', 'Melon Ball Cup', 'Alpukat Potong Cup',
+                        'Semangka Cup Mini', 'Pepaya Cup Mini', 'Nanas Ring Potong', 'Mangga Slice',
+                        'Kiwi Slice Cup', 'Stroberi Cup', 'Anggur Mix Cup', 'Pir Potong Cup',
+                        'Apel Potong Cup', 'Jambu Potong Cup', 'Mix Fruit Platter S', 'Mix Fruit Platter M',
+                        'Mix Fruit Platter L', 'Mix Fruit Platter XL', 'Buah Naga Bowl', 'Tropical Bowl',
+                        'Green Fruit Bowl', 'Red Fruit Bowl', 'Yellow Fruit Bowl', 'Rainbow Fruit Bowl',
+                        'Fruit Box Mini', 'Fruit Box Regular', 'Fruit Box Premium', 'Fruit Box Deluxe',
+                        'Dessert Cup Mangga', 'Dessert Cup Stroberi', 'Dessert Cup Mix', 'Fruit Stick Sate',
+                        'Fruit Cone Mini', 'Fruit Cone Large', 'Melon Basket', 'Nanas Boat',
+                        'Semangka Basket', 'Fruit Jar 250ml', 'Fruit Jar 500ml', 'Fruit Jar 1L',
+                        'Fruit Wrap Tortilla', 'Fruit Parfait Cup', 'Smoothie Bowl Kit', 'Buah Potong Harian',
+                        'Buah Kantor Pack', 'Buah Meeting Pack', 'Fruit Catering S', 'Fruit Catering M',
+                    ];
+
+                    const jusBase = [
+                        'Jus Jeruk', 'Jus Alpukat', 'Jus Mangga', 'Jus Stroberi', 'Jus Semangka',
+                        'Jus Melon', 'Jus Jambu', 'Jus Sirsak', 'Jus Nanas', 'Jus Pepaya',
+                        'Jus Wortel Jeruk', 'Jus Tomat', 'Jus Apel', 'Jus Kiwi', 'Jus Anggur',
+                        'Smoothie Mangga', 'Smoothie Stroberi', 'Smoothie Mix Berry', 'Smoothie Pisang',
+                        'Smoothie Alpukat', 'Smoothie Tropical', 'Smoothie Green', 'Smoothie Dragon',
+                        'Smoothie Peach', 'Smoothie Kiwi Mint', 'Infused Water Lemon', 'Infused Water Berry',
+                        'Infused Water Timun Mint', 'Infused Water Jeruk', 'Infused Water Stroberi',
+                        'Es Buah Campur', 'Es Teler', 'Es Kelapa Muda', 'Es Alpukat Kocok',
+                        'Es Jeruk Peras', 'Es Mangga Thai', 'Sop Buah Kecil', 'Sop Buah Besar',
+                        'Milkshake Stroberi', 'Milkshake Mangga', 'Milkshake Alpukat', 'Milkshake Pisang',
+                        'Cold Press Jeruk', 'Cold Press Apel', 'Cold Press Detox', 'Cold Press Immunity',
+                        'Jus Bayam Apel', 'Jus Bit Wortel', 'Jus Celery Mix', 'Jus Spirulina',
+                        'Coconut Water Fresh', 'Lemonade Classic', 'Lemonade Stroberi', 'Lemonade Blue',
+                        'Lemonade Peach', 'Mojito Mint', 'Fruit Punch', 'Sangria Buah',
+                        'Acai Bowl Drink', 'Protein Smoothie',
+                    ];
+
+                    const olahanBase = [
+                        'Keripik Apel', 'Keripik Pisang', 'Keripik Nangka', 'Keripik Salak',
+                        'Keripik Nanas', 'Keripik Mangga', 'Keripik Buah Mix', 'Manisan Mangga',
+                        'Manisan Pepaya', 'Manisan Pala', 'Manisan Cermai', 'Manisan Kedondong',
+                        'Selai Stroberi', 'Selai Nanas', 'Selai Mangga', 'Selai Blueberry',
+                        'Selai Jeruk', 'Selai Apel', 'Dodol Durian', 'Dodol Nangka',
+                        'Dodol Stroberi', 'Wajik Durian', 'Pie Apel', 'Pie Pisang',
+                        'Pie Nanas', 'Mochi Mangga', 'Mochi Stroberi', 'Mochi Durian',
+                        'Puding Mangga', 'Puding Stroberi', 'Puding Kelapa', 'Puding Mix Fruit',
+                        'Fruit Leather Mangga', 'Fruit Leather Stroberi', 'Fruit Leather Mix',
+                        'Kurma Cokelat', 'Kurma Almond', 'Kurma Keju', 'Granola Fruit Mix',
+                        'Trail Mix Buah', 'Yogurt Stroberi Cup', 'Yogurt Mangga Cup', 'Yogurt Mix Berry Cup',
+                        'Permen Buah Asam', 'Gummy Fruit Mix', 'Jelly Leci Cup', 'Jelly Mangga Cup',
+                        'Nata de Coco Mix', 'Sirup Markisa', 'Sirup Mangga', 'Sirup Jeruk',
+                        'Saus Stroberi', 'Saus Mangga', 'Saus Nanas', 'Bubuk Mangga Kering',
+                        'Bubuk Stroberi Kering', 'Tepung Pisang', 'Minyak Kelapa VCO', 'Cuka Apel',
+                        'Asinan Buah', 'Rujak Cingur Pack',
+                    ];
+
+                    const potongEmojis = ['🍉','🍈','🥭','🍍','🍓','🥝','🍇','🍎'];
+                    const potongColors = ['#ffebee','#f1f8e9','#fff3e0','#fffde7','#fce4ec','#e8f5e9'];
+                    const jusEmojis = ['🍊','🧃','🥤','🍹','🫐','🍋','🥝','🍑'];
+                    const jusColors = ['#fff3e0','#ede7f6','#e0f2f1','#e1f5fe','#f3e5f5','#fff8e1'];
+                    const olahanEmojis = ['🍎','🍯','🫙','🥜','🍪','🧁','🍫','🍬'];
+                    const olahanColors = ['#fbe9e7','#fffde7','#efebe9','#fce4ec','#f3e5f5','#fff8e1'];
+
+                    const units = { 'Buah Segar': 'kg', 'Buah Potong': 'pack', 'Jus & Smoothie': 'cup', 'Olahan': 'pack' };
+                    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+                    const rnd = (min, max) => Math.round((min + Math.random() * (max - min)) / 500) * 500;
+
+                    const result = [];
+                    let id = 1;
+
+                    // Buah Segar
+                    items.forEach(it => {
+                        result.push({ id: id++, name: it.name, category: 'Buah Segar', unit: 'kg', price: rnd(8000, 85000), hpp: rnd(5000, 50000), description: '', emoji: it.emoji, color: it.color, variants: [] });
+                    });
+
+                    // Buah Potong
+                    potongBase.forEach(name => {
+                        result.push({ id: id++, name, category: 'Buah Potong', unit: pick(['pack','cup','pcs']), price: rnd(8000, 45000), hpp: rnd(4000, 25000), description: '', emoji: pick(potongEmojis), color: pick(potongColors), variants: [] });
+                    });
+
+                    // Jus & Smoothie
+                    jusBase.forEach(name => {
+                        result.push({ id: id++, name, category: 'Jus & Smoothie', unit: 'cup', price: rnd(10000, 40000), hpp: rnd(5000, 22000), description: '', emoji: pick(jusEmojis), color: pick(jusColors), variants: [] });
+                    });
+
+                    // Olahan
+                    olahanBase.forEach(name => {
+                        result.push({ id: id++, name, category: 'Olahan', unit: pick(['pack','pcs','botol']), price: rnd(10000, 55000), hpp: rnd(5000, 30000), description: '', emoji: pick(olahanEmojis), color: pick(olahanColors), variants: [] });
+                    });
+
+                    // Demo: produk dengan variant
+                    const variantDemos = [
+                        {
+                            id: 9001, name: 'Strawberry Mencir', category: 'Buah Segar', unit: 'kg',
+                            price: 0, hpp: 12000, description: '', emoji: '🍓', color: '#fce4ec',
+                            variants: [
+                                { id: 'sv1', name: 'Strawberry Mencir (Super)', price: 28000 },
+                                { id: 'sv2', name: 'Strawberry Mencir (A)', price: 22000 },
+                                { id: 'sv3', name: 'Strawberry Mencir (AB)', price: 15000 },
+                                { id: 'sv4', name: 'Strawberry Mencir (B)', price: 10000 },
+                            ]
+                        },
+                        {
+                            id: 9002, name: 'Mangga Gedong', category: 'Buah Segar', unit: 'kg',
+                            price: 0, hpp: 18000, description: '', emoji: '🥭', color: '#fff8e1',
+                            variants: [
+                                { id: 'mv1', name: 'Mangga Gedong (Super)', price: 45000 },
+                                { id: 'mv2', name: 'Mangga Gedong (A)', price: 35000 },
+                                { id: 'mv3', name: 'Mangga Gedong (B)', price: 25000 },
+                                { id: 'mv4', name: 'Mangga Gedong (C)', price: 18000 },
+                            ]
+                        },
+                        {
+                            id: 9003, name: 'Apel Fuji', category: 'Buah Segar', unit: 'kg',
+                            price: 0, hpp: 25000, description: '', emoji: '🍎', color: '#ffebee',
+                            variants: [
+                                { id: 'av1', name: 'Apel Fuji (Jumbo)', price: 65000 },
+                                { id: 'av2', name: 'Apel Fuji (Regular)', price: 50000 },
+                                { id: 'av3', name: 'Apel Fuji (Small)', price: 38000 },
+                            ]
+                        },
+                        {
+                            id: 9004, name: 'Semangka Potong', category: 'Buah Potong', unit: 'pack',
+                            price: 0, hpp: 8000, description: '', emoji: '🍉', color: '#ffebee',
+                            variants: [
+                                { id: 'wp1', name: 'Semangka Potong (250g)', price: 12000 },
+                                { id: 'wp2', name: 'Semangka Potong (500g)', price: 20000 },
+                                { id: 'wp3', name: 'Semangka Potong (1kg)', price: 35000 },
+                            ]
+                        },
+                    ];
+
+                    return [...variantDemos, ...result].slice(0, 250);
+                })(),
+
+                // Pagination
+                visibleCount: 50,
+                PAGE_SIZE: 50,
+
+                get filteredProducts() {
+                    return this.products.filter(p => {
+                        if (this.selectedCategory !== 'Semua' && p.category !== p.category) return false;
+                        if (this.selectedCategory !== 'Semua' && p.category !== this.selectedCategory) return false;
+                        if (this.searchQuery) {
+                            const q = this.searchQuery.toLowerCase();
+                            const matchName = p.name.toLowerCase().includes(q);
+                            const matchCategory = p.category.toLowerCase().includes(q);
+                            const matchVariant = p.variants && p.variants.some(v => v.name.toLowerCase().includes(q));
+                            if (!matchName && !matchCategory && !matchVariant) return false;
+                        }
+                        return true;
+                    });
+                },
+
+                get visibleProducts() {
+                    return this.filteredProducts.slice(0, this.visibleCount);
+                },
+
+                get hasMore() {
+                    return this.visibleCount < this.filteredProducts.length;
+                },
+
+                loadMore() {
+                    this.visibleCount += this.PAGE_SIZE;
+                },
+
+                resetPagination() {
+                    this.visibleCount = this.PAGE_SIZE;
+                },
+
                 toggleMenu(menu) {
-                    if (this.sidebarCollapsed) {
-                        this.sidebarCollapsed = false;
+                    if (this.sidebarCollapsed) this.sidebarCollapsed = false;
+                },
+
+                toggleMobileSidebar() {
+                    if (window.self !== window.top) {
+                        window.parent.postMessage('toggleSidebar', '*');
+                    } else {
+                        this.sidebarOpen = !this.sidebarOpen;
                     }
                 },
 
-                init() {
-                    // Active group submenus start expanded
-                }
+                // Price Helpers
+                priceRangeDisplay(product) {
+                    if (!product.variants || product.variants.length === 0) return '';
+                    const prices = product.variants.map(v => v.price).filter(p => p > 0);
+                    if (prices.length === 0) return 'Rp -';
+                    const min = Math.min(...prices);
+                    const max = Math.max(...prices);
+                    if (min === max) return 'Rp ' + min.toLocaleString('id-ID');
+                    return 'Rp ' + min.toLocaleString('id-ID') + ' – ' + max.toLocaleString('id-ID');
+                },
+
+                // Variant accordion
+                toggleVariantExpand(productId) {
+                    const idx = this.expandedVariantIds.indexOf(productId);
+                    if (idx === -1) this.expandedVariantIds.push(productId);
+                    else this.expandedVariantIds.splice(idx, 1);
+                },
+                isVariantExpanded(productId) {
+                    return this.expandedVariantIds.includes(productId);
+                },
+                startEditVariantPrice(product, variant) {
+                    this.editingVariantPrice = { productId: product.id, variantId: variant.id, value: variant.price };
+                },
+                saveVariantPrice(product, variant) {
+                    if (this.editingVariantPrice.value > 0) {
+                        variant.price = this.editingVariantPrice.value;
+                    }
+                    this.editingVariantPrice = { productId: null, variantId: null, value: 0 };
+                },
+                cancelVariantPrice() {
+                    this.editingVariantPrice = { productId: null, variantId: null, value: 0 };
+                },
+                addVariantToProduct(product) {
+                    if (!product.variants) product.variants = [];
+                    product.variants.push({ id: Date.now(), name: 'Varian Baru', price: 0 });
+                    // auto-expand
+                    if (!this.isVariantExpanded(product.id)) this.expandedVariantIds.push(product.id);
+                },
+                removeVariantFromProduct(product, variantId) {
+                    product.variants = product.variants.filter(v => v.id !== variantId);
+                },
+
+                // Inline Price Edit (single price only)
+                startEditPrice(product) {
+                    this.editingPriceId = product.id;
+                    this.editingPriceValue = product.price;
+                    this.$nextTick(() => {
+                        const input = this.$refs.priceInput;
+                        if (input) input.focus();
+                    });
+                },
+                savePrice(product) {
+                    if (this.editingPriceValue > 0) {
+                        product.price = this.editingPriceValue;
+                    }
+                    this.editingPriceId = null;
+                },
+                cancelEditPrice() {
+                    this.editingPriceId = null;
+                },
+
+                // Drawer
+                openDrawer(product = null) {
+                    this.editingProduct = product;
+                    if (product) {
+                        this.form = { 
+                            name: product.name, 
+                            category: product.category, 
+                            unit: product.unit, 
+                            price: product.price, 
+                            hpp: product.hpp, 
+                            description: product.description || '',
+                            emoji: product.emoji,
+                            color: product.color,
+                            hasVariants: product.variants && product.variants.length > 0,
+                            variants: (product.variants || []).map(v => ({ ...v }))
+                        };
+                    } else {
+                        this.form = { name: '', category: '', unit: '', price: 0, hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] };
+                    }
+                    this.drawerOpen = true;
+                    if (window.self !== window.top) {
+                        window.parent.postMessage({ type: 'drawerOverlay', active: true }, '*');
+                    }
+                },
+                closeDrawer() {
+                    this.drawerOpen = false;
+                    if (window.self !== window.top) {
+                        window.parent.postMessage({ type: 'drawerOverlay', active: false }, '*');
+                    }
+                    setTimeout(() => { this.editingProduct = null; }, 300);
+                },
+                saveProduct() {
+                    const needsPrice = !this.form.hasVariants;
+                    if (!this.form.name || !this.form.category || !this.form.unit) return;
+                    if (needsPrice && !this.form.price) return;
+
+                    const emojiMap = {
+                        'Buah Segar': ['🍎','🍊','🍋','🍇','🍑','🥝','🍐'],
+                        'Buah Potong': ['🍉','🍈','🥭','🍍'],
+                        'Jus & Smoothie': ['🧃','🥤','🍹'],
+                        'Olahan': ['🫙','🍯','🥜']
+                    };
+                    const colorMap = {
+                        'Buah Segar': ['#fce4ec','#e8f5e9','#fff8e1','#f3e5f5','#e1f5fe'],
+                        'Buah Potong': ['#ffebee','#f1f8e9','#fff3e0'],
+                        'Jus & Smoothie': ['#fff3e0','#ede7f6','#e0f2f1'],
+                        'Olahan': ['#fbe9e7','#fffde7','#efebe9']
+                    };
+
+                    if (this.editingProduct) {
+                        Object.assign(this.editingProduct, {
+                            name: this.form.name,
+                            category: this.form.category,
+                            unit: this.form.unit,
+                            price: this.form.hasVariants ? 0 : this.form.price,
+                            hpp: this.form.hpp,
+                            description: this.form.description,
+                            variants: this.form.hasVariants ? this.form.variants.filter(v => v.name) : [],
+                        });
+                    } else {
+                        const emojis = emojiMap[this.form.category] || ['📦'];
+                        const colors = colorMap[this.form.category] || ['#f5f5f5'];
+                        this.products.push({
+                            id: Date.now(),
+                            name: this.form.name,
+                            category: this.form.category,
+                            unit: this.form.unit,
+                            price: this.form.hasVariants ? 0 : this.form.price,
+                            hpp: this.form.hpp,
+                            description: this.form.description,
+                            variants: this.form.hasVariants ? this.form.variants.filter(v => v.name) : [],
+                            emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                        });
+                    }
+                    this.closeDrawer();
+                },
+
+                // Delete
+                confirmDelete(product) {
+                    this.deletingProduct = product;
+                    this.deleteModalOpen = true;
+                },
+                deleteProduct() {
+                    if (this.deletingProduct) {
+                        this.products = this.products.filter(p => p.id !== this.deletingProduct.id);
+                    }
+                    this.deleteModalOpen = false;
+                    this.deletingProduct = null;
+                },
+
+                init() {}
             };
         }
     </script>
