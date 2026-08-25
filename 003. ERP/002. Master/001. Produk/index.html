@@ -1158,13 +1158,14 @@
                         </button>
                     </div>
 
-                    <!-- Main FAB Trigger Button -->
+                    <!-- Main FAB Trigger Button (Option 1: Quick Actions Grid) -->
                     <button @click="fabOpen = !fabOpen"
                         class="relative w-14 h-14 bg-[#0b595b] text-white rounded-full shadow-lg shadow-[#0b595b]/40 flex items-center justify-center transition-all duration-300 active:scale-90 z-40 hover:bg-[#084547]"
-                        :class="fabOpen ? 'rotate-90 bg-gray-800 shadow-gray-800/40' : ''"
-                        aria-label="Aksi Menu">
-                        <i class="ph-bold text-xl transition-all duration-300"
-                           :class="fabOpen ? 'ph-x text-amber-300' : 'ph-plus text-white'"></i>
+                        :class="fabOpen ? 'rotate-90 bg-gray-900 shadow-gray-900/40' : ''"
+                        title="Menu Aksi Cepat"
+                        aria-label="Menu Aksi Cepat">
+                        <i class="ph-bold text-2xl transition-all duration-300"
+                           :class="fabOpen ? 'ph-x text-amber-300' : 'ph-squares-four text-white'"></i>
                     </button>
                 </div>
 
