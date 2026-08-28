@@ -46,8 +46,8 @@
                         <template x-for="item in [
                             {id:'menu', type:'icon', i:'ph-house'}, 
                             {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
-                            {id:'filter', type:'icon', i:'ph-faders'}, 
-                            {id:'add', type:'icon', i:'ph-plus-square'}, 
+                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
+                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -60,7 +60,7 @@
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                        
                                     </div>
                                 </template>
                             </button>
@@ -78,9 +78,9 @@
                 <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
                     <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
                         <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-list'}, 
+                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
                             {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
-                            {id:'filter', type:'icon', i:'ph-funnel'}, 
+                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
                             {id:'add', type:'icon', i:'ph-plus-circle'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
@@ -95,7 +95,7 @@
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                        
                                     </div>
                                 </template>
                             </button>
@@ -113,10 +113,10 @@
                 <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
                     <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
                         <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-squares-four'}, 
+                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
                             {id:'search', type:'icon', i:'ph-scan'}, 
                             {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
-                            {id:'add', type:'icon', i:'ph-plus-square'}, 
+                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -129,7 +129,7 @@
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                        
                                     </div>
                                 </template>
                             </button>
@@ -163,7 +163,7 @@
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                        
                                     </div>
                                 </template>
                             </button>
@@ -197,7 +197,7 @@
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                        
                                     </div>
                                 </template>
                             </button>
