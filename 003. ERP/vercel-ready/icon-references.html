@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referensi Ikon Navigasi Bawah - Infruity ERP</title>
+    <title>Referensi Navbar - Active State</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,14 +16,17 @@
             box-shadow: 0 4px 24px rgba(0,0,0,0.06);
             border: 1px solid #f1f5f9;
         }
+        .glow-active {
+            filter: drop-shadow(0 4px 6px rgba(11, 89, 91, 0.4));
+        }
     </style>
 </head>
 <body class="p-6 md:p-12 text-slate-800">
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">Katalog Referensi Ikon Navbar</h1>
-            <p class="text-slate-500">Pilih kombinasi gaya navigasi bawah yang paling sesuai dengan selera Anda.</p>
+            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">Katalog Navbar (Dengan Status Aktif)</h1>
+            <p class="text-slate-500">Berikut adalah referensi gaya navigasi dengan <b>fokus pada tombol yang sedang diklik (warna hijau)</b>.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -31,142 +34,177 @@
             <!-- Option 1 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">1. Classic Outline (Bawaan)</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph (Regular)</span>
+                    <h3 class="font-bold text-lg">1. Classic Active Fill</h3>
+                    <span class="text-xs text-slate-400">Aktif berubah tebal (Fill)</span>
                 </div>
                 <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-list text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-funnel text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-plus-circle text-[28px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b]"><i class="ph-fill ph-magnifying-glass text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-faders text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-plus-square text-[26px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 2 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">2. App Style (Bentuk Baru)</h3>
-                    <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">ph (Regular)</span>
+                    <h3 class="font-bold text-lg">2. Underline Indicator</h3>
+                    <span class="text-xs text-slate-400">Garis bawah elegan</span>
                 </div>
-                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-squares-four text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-faders text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-plus-square text-[28px]"></i></button>
+                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-squares-four text-[26px]"></i>
+                    </button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] h-full flex flex-col items-center justify-center relative">
+                        <i class="ph-bold ph-magnifying-glass text-[26px]"></i>
+                        <div class="absolute bottom-1 w-5 h-1 rounded-full bg-[#0b595b]"></div>
+                    </button>
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-faders text-[26px]"></i>
+                    </button>
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-plus-square text-[26px]"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- Option 3 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-[#0b595b]">
+            <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">3. Duotone Elegant (Premium)</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph-duotone</span>
+                    <h3 class="font-bold text-lg">3. Top Dot Indicator</h3>
+                    <span class="text-xs text-slate-400">Titik kecil di atas</span>
                 </div>
                 <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-duotone ph-squares-four text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-duotone ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-duotone ph-faders text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-duotone ph-plus-circle text-[28px]"></i></button>
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-squares-four text-[26px]"></i>
+                    </button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] h-full flex flex-col items-center justify-center relative">
+                        <div class="absolute top-1 w-1.5 h-1.5 rounded-full bg-[#0b595b]"></div>
+                        <i class="ph-fill ph-magnifying-glass text-[26px]"></i>
+                    </button>
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-faders text-[26px]"></i>
+                    </button>
+                    <button class="text-gray-400 h-full flex flex-col items-center justify-center relative">
+                        <i class="ph ph-plus-square text-[26px]"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- Option 4 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">4. Light & Minimalist</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph-light</span>
+                    <h3 class="font-bold text-lg">4. Soft Background Pill</h3>
+                    <span class="text-xs text-slate-400">Latar redup saat aktif</span>
                 </div>
-                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-light ph-dots-nine text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-light ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-light ph-sliders-horizontal text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-light ph-plus text-[28px]"></i></button>
+                <div class="flex items-center justify-between w-full h-[60px] px-3 bg-white border border-gray-100 rounded-xl">
+                    <button class="text-gray-400 w-12 h-10 flex items-center justify-center rounded-xl"><i class="ph ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] bg-[#0b595b]/10 w-12 h-10 flex items-center justify-center rounded-xl"><i class="ph-bold ph-magnifying-glass text-[26px]"></i></button>
+                    <button class="text-gray-400 w-12 h-10 flex items-center justify-center rounded-xl"><i class="ph ph-faders text-[26px]"></i></button>
+                    <button class="text-gray-400 w-12 h-10 flex items-center justify-center rounded-xl"><i class="ph ph-plus-square text-[26px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 5 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">5. Bold & Chunky</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph-bold</span>
+                    <h3 class="font-bold text-lg">5. Glow Effect</h3>
+                    <span class="text-xs text-slate-400">Bersinar (Drop shadow)</span>
                 </div>
                 <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-bold ph-list-dashes text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-bold ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-bold ph-funnel text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-bold ph-plus-circle text-[28px]"></i></button>
+                    <button class="text-gray-400"><i class="ph-light ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] glow-active"><i class="ph-fill ph-magnifying-glass text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph-light ph-faders text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph-light ph-plus-square text-[26px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 6 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">6. Geometric / Abstract</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph (Regular)</span>
+                    <h3 class="font-bold text-lg">6. Floating Bubble</h3>
+                    <span class="text-xs text-slate-400">Naik ke atas saat aktif</span>
                 </div>
-                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-circles-four text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-magnifying-glass-plus text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-nut text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-plus text-[28px]"></i></button>
+                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative mt-4">
+                    <button class="text-gray-400"><i class="ph ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-white bg-[#0b595b] w-14 h-14 rounded-full flex items-center justify-center -translate-y-4 shadow-lg shadow-[#0b595b]/30">
+                        <i class="ph-bold ph-magnifying-glass text-[24px]"></i>
+                    </button>
+                    <button class="text-gray-400"><i class="ph ph-faders text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-plus-square text-[26px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 7 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">7. iOS Style (Sangat Tipis)</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph-thin</span>
+                    <h3 class="font-bold text-lg">7. Icon + Text Label</h3>
+                    <span class="text-xs text-slate-400">Teks muncul saat aktif</span>
                 </div>
-                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-thin ph-list text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-thin ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-thin ph-faders-horizontal text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-thin ph-plus-circle text-[28px]"></i></button>
+                <div class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl">
+                    <button class="text-gray-400 p-2"><i class="ph ph-squares-four text-[24px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] bg-[#0b595b]/10 px-4 py-2 flex items-center gap-2 rounded-full">
+                        <i class="ph-fill ph-magnifying-glass text-[20px]"></i>
+                        <span class="text-[13px] font-bold">Cari</span>
+                    </button>
+                    <button class="text-gray-400 p-2"><i class="ph ph-faders text-[24px]"></i></button>
+                    <button class="text-gray-400 p-2"><i class="ph ph-plus-square text-[24px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 8 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">8. Fill / Solid (Penuh)</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">ph-fill</span>
+                    <h3 class="font-bold text-lg">8. Two-Tone Contrast</h3>
+                    <span class="text-xs text-slate-400">Kontras Duotone</span>
                 </div>
                 <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-fill ph-squares-four text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-fill ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-fill ph-funnel text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph-fill ph-plus-square text-[28px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b]"><i class="ph-duotone ph-magnifying-glass text-[30px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-faders text-[26px]"></i></button>
+                    <button class="text-gray-400"><i class="ph ph-plus-square text-[26px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 9 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-orange-400">
+            <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">9. Creative / Unique</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">Mixed</span>
+                    <h3 class="font-bold text-lg">9. Bottom Line Wide</h3>
+                    <span class="text-xs text-slate-400">Garis penuhi kotak</span>
                 </div>
-                <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button class="text-gray-400 hover:text-orange-500 transition"><i class="ph-duotone ph-layout text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-orange-500 transition"><i class="ph ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-orange-500 transition"><i class="ph-light ph-funnel-simple text-[26px]"></i></button>
-                    <button class="text-white bg-orange-500 hover:bg-orange-600 rounded-xl w-10 h-10 flex items-center justify-center transition"><i class="ph-bold ph-plus text-[20px]"></i></button>
+                <div class="flex items-center justify-between w-full h-[60px] bg-white border border-gray-100 rounded-xl overflow-hidden">
+                    <button class="text-gray-400 flex-1 h-full flex justify-center items-center"><i class="ph ph-squares-four text-[24px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b] flex-1 h-full flex justify-center items-center bg-gray-50 border-b-2 border-[#0b595b]">
+                        <i class="ph-bold ph-magnifying-glass text-[24px]"></i>
+                    </button>
+                    <button class="text-gray-400 flex-1 h-full flex justify-center items-center"><i class="ph ph-faders text-[24px]"></i></button>
+                    <button class="text-gray-400 flex-1 h-full flex justify-center items-center"><i class="ph ph-plus-square text-[24px]"></i></button>
                 </div>
             </div>
 
             <!-- Option 10 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-emerald-600">
+            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-emerald-500">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">10. Highlight Floating "Add"</h3>
-                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">Custom Layout</span>
+                    <h3 class="font-bold text-lg">10. Highlight Center Button</h3>
+                    <span class="text-xs text-slate-400">Tombol Tambah Dominan</span>
                 </div>
                 <div class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-squares-four text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition"><i class="ph ph-magnifying-glass text-[26px]"></i></button>
-                    <button class="text-gray-400 hover:text-[#0b595b] transition mr-8"><i class="ph ph-faders text-[26px]"></i></button>
-                    <!-- Floating Add Button -->
-                    <button class="absolute right-4 -top-3 shadow-lg text-white bg-[#0b595b] hover:bg-[#08484a] rounded-full w-14 h-14 flex items-center justify-center transition">
-                        <i class="ph-bold ph-plus text-[24px]"></i>
+                    <button class="text-gray-400"><i class="ph ph-squares-four text-[26px]"></i></button>
+                    <!-- Active Item -->
+                    <button class="text-[#0b595b]"><i class="ph-fill ph-magnifying-glass text-[26px]"></i></button>
+                    
+                    <!-- Super Dominant Add Button -->
+                    <button class="text-white bg-[#0b595b] shadow-lg shadow-[#0b595b]/40 hover:bg-[#08484a] rounded-xl w-12 h-12 flex items-center justify-center transition ml-4">
+                        <i class="ph-bold ph-plus text-[20px]"></i>
                     </button>
                 </div>
             </div>
