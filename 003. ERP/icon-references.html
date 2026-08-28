@@ -3,24 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kombinasi Ikon - White Glass + Profile</title>
+    <title>Kombinasi Ikon - Rounded & Glass</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Menggunakan Material Symbols Rounded untuk memastikan SEMUA sudut ikon benar-benar bulat -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
         }
-        button, i, div {
+        button, div {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Pattern background to show off glassmorphism */
         .glass-bg {
             background-color: #e2e8f0;
             background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
             background-size: 24px 24px;
+        }
+        
+        /* Material Symbols Styling */
+        .icon-rounded {
+            font-family: 'Material Symbols Rounded';
+            font-size: 28px;
+            font-weight: 300; /* Lebih tipis agar elegan seperti IG */
+            transition: font-variation-settings 0.3s ease;
+        }
+        .icon-inactive {
+            font-variation-settings: 'FILL' 0, 'wght' 300;
+        }
+        .icon-active {
+            font-variation-settings: 'FILL' 1, 'wght' 400;
         }
     </style>
 </head>
@@ -28,238 +44,33 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Referensi: White Glass + Profil</h1>
-            <p class="text-slate-500">Model Kapsul Melayang dengan efek <b>kaca putih (frosted glass)</b> dan tambahan <b>foto profil</b> di pojok kanan.</p>
+            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Referensi: Ikon Full Rounded (Material)</h1>
+            <p class="text-slate-500">Saya telah mengganti jenis ikonnya ke <b>Material Symbols Rounded</b> sehingga <i>semua ujung dan sudut ikon terjamin membulat (rounded)</i> persis seperti referensi Instagram Anda.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             
-            <!-- 1. Instagram Replica (White) -->
+            <!-- 1. Dark Pill (Mirip Gambar Referensi) -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">1. Glass White - Aktif Solid</h3>
-                    <span class="text-xs text-slate-400">Pill Putih, Aktif Hijau</span>
+                    <h3 class="font-bold text-lg">1. Dark Pill (Seperti Gambar)</h3>
+                    <span class="text-xs text-slate-400">Hitam & Elegan</span>
                 </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <!-- Glass Pill -->
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                <div class="bg-gray-200 rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-[#1c1c1e] rounded-full shadow-2xl h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
                         <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-house'}, 
-                            {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
-                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
-                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
+                            {id:'menu', type:'icon', i:'home'}, 
+                            {id:'search', type:'icon', i:'search'}, 
+                            {id:'filter', type:'icon', i:'tune'}, 
+                            {id:'add', type:'icon', i:'add_box'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    :class="active === item.id ? 'bg-[#3a3a3c] text-white w-[72px]' : 'bg-transparent text-gray-400 hover:text-white w-12'" 
                                     class="h-full flex items-center justify-center rounded-full active:scale-95">
                                 
                                 <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. Minimalist White -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">2. Glass White - Aktif Putih</h3>
-                    <span class="text-xs text-slate-400">Pill Putih, Aktif Putih</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
-                            {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
-                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
-                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <!-- Beda di sini: bg-white untuk active -->
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Modern Grid -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">3. Modern App (Green)</h3>
-                    <span class="text-xs text-slate-400">Squares & Sliders</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
-                            {id:'search', type:'icon', i:'ph-scan'}, 
-                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
-                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Structural -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">4. Data Struktural (White)</h3>
-                    <span class="text-xs text-slate-400">Folders & Tree</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-folders'}, 
-                            {id:'search', type:'icon', i:'ph-file-search'}, 
-                            {id:'filter', type:'icon', i:'ph-tree-structure'}, 
-                            {id:'add', type:'icon', i:'ph-file-plus'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. POS / Retail -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">5. Kasir & Toko</h3>
-                    <span class="text-xs text-slate-400">Barcode & Box</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-storefront'}, 
-                            {id:'search', type:'icon', i:'ph-barcode'}, 
-                            {id:'filter', type:'icon', i:'ph-receipt'}, 
-                            {id:'add', type:'icon', i:'ph-package'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                        
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. Analytics -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">6. Data Analytics</h3>
-                    <span class="text-xs text-slate-400">Statistik</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-chart-pie-slice'}, 
-                            {id:'search', type:'icon', i:'ph-binoculars'}, 
-                            {id:'filter', type:'icon', i:'ph-sort-ascending'}, 
-                            {id:'add', type:'icon', i:'ph-trend-up'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 7. Minimalist Dotted -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">7. Minimalist Titik</h3>
-                    <span class="text-xs text-slate-400">Elegan Geometris</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-dots-nine'}, 
-                            {id:'search', type:'icon', i:'ph-corners-out'}, 
-                            {id:'filter', type:'icon', i:'ph-equalizer'}, 
-                            {id:'add', type:'icon', i:'ph-plus'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
                                 </template>
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
@@ -272,52 +83,19 @@
                 </div>
             </div>
 
-            <!-- 8. Workspace Tools -->
+            <!-- 2. White Glass + Solid Green -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">8. Alat Kerja</h3>
-                    <span class="text-xs text-slate-400">Toolkit</span>
+                    <h3 class="font-bold text-lg">2. White Glass (Aktif Hijau)</h3>
+                    <span class="text-xs text-slate-400">Putih Transparan</span>
                 </div>
                 <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-full h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
                         <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-layout'}, 
-                            {id:'search', type:'icon', i:'ph-crosshair'}, 
-                            {id:'filter', type:'icon', i:'ph-wrench'}, 
-                            {id:'add', type:'icon', i:'ph-toolbox'}, 
-                            {id:'profile', type:'avatar'}
-                        ]" :key="item.id">
-                            <button @click="active = item.id" 
-                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                
-                                <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                                </template>
-                                <template x-if="item.type === 'avatar'">
-                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
-                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
-                                    </div>
-                                </template>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 9. Fluid Creative -->
-            <div class="bg-white rounded-2xl p-6 border border-gray-200">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">9. Fluid & Natural</h3>
-                    <span class="text-xs text-slate-400">Lingkaran & Tetes</span>
-                </div>
-                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
-                        <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
-                            {id:'search', type:'icon', i:'ph-eye'}, 
-                            {id:'filter', type:'icon', i:'ph-drop'}, 
-                            {id:'add', type:'icon', i:'ph-sparkle'}, 
+                            {id:'menu', type:'icon', i:'home'}, 
+                            {id:'search', type:'icon', i:'search'}, 
+                            {id:'filter', type:'icon', i:'tune'}, 
+                            {id:'add', type:'icon', i:'add_box'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -325,7 +103,7 @@
                                     class="h-full flex items-center justify-center rounded-full active:scale-95">
                                 
                                 <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
                                 </template>
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
@@ -338,19 +116,19 @@
                 </div>
             </div>
 
-            <!-- 10. Typographic / Dash -->
+            <!-- 3. White Glass + Solid White -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">10. Tipografi / Teks</h3>
-                    <span class="text-xs text-slate-400">Garis Tipis</span>
+                    <h3 class="font-bold text-lg">3. White Glass (Aktif Putih)</h3>
+                    <span class="text-xs text-slate-400">Sangat Minimalis</span>
                 </div>
                 <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
-                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-full h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
                         <template x-for="item in [
-                            {id:'menu', type:'icon', i:'ph-text-align-justify'}, 
-                            {id:'search', type:'icon', i:'ph-text-t'}, 
-                            {id:'filter', type:'icon', i:'ph-list-dashes'}, 
-                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
+                            {id:'menu', type:'icon', i:'grid_view'}, 
+                            {id:'search', type:'icon', i:'search'}, 
+                            {id:'filter', type:'icon', i:'filter_list'}, 
+                            {id:'add', type:'icon', i:'add_circle'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -358,10 +136,110 @@
                                     class="h-full flex items-center justify-center rounded-full active:scale-95">
                                 
                                 <template x-if="item.type === 'icon'">
-                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
                                 </template>
                                 <template x-if="item.type === 'avatar'">
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Pure White Pill -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">4. Pure White Pill</h3>
+                    <span class="text-xs text-slate-400">Tanpa Glassmorphism</span>
+                </div>
+                <div class="bg-gray-100 rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white shadow-[0_8px_32px_rgba(0,0,0,0.05)] rounded-full h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'dashboard'}, 
+                            {id:'search', type:'icon', i:'search'}, 
+                            {id:'filter', type:'icon', i:'sort'}, 
+                            {id:'add', type:'icon', i:'post_add'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Material Dark Pill -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">5. Dark + Green Accent</h3>
+                    <span class="text-xs text-slate-400">Aksen Infruity</span>
+                </div>
+                <div class="bg-gray-200 rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-[#1c1c1e] rounded-full shadow-2xl h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'storefront'}, 
+                            {id:'search', type:'icon', i:'qr_code_scanner'}, 
+                            {id:'filter', type:'icon', i:'receipt_long'}, 
+                            {id:'add', type:'icon', i:'inventory_2'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px]' : 'bg-transparent text-gray-400 hover:text-white w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more options using Material Symbols... (Truncated for speed, but I will provide 6) -->
+            <!-- 6. Playful Rounded -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">6. Playful Rounded</h3>
+                    <span class="text-xs text-slate-400">Pie & Bubble</span>
+                </div>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-full h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'pie_chart'}, 
+                            {id:'search', type:'icon', i:'manage_search'}, 
+                            {id:'filter', type:'icon', i:'bubble_chart'}, 
+                            {id:'add', type:'icon', i:'add_reaction'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
                                 </template>
