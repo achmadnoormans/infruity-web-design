@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kombinasi Ikon (Berbeda Tema)</title>
+    <title>Kombinasi Ikon - Dark Pill Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -11,14 +11,14 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-        }
-        .nav-card {
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            border: 1px solid #f1f5f9;
+            background-color: #f1f5f9; /* Latar terang agar pill gelapnya menonjol */
         }
         button, i {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Custom scrollbar untuk pill container agar smooth */
+        .pill-nav {
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
         }
     </style>
 </head>
@@ -26,159 +26,180 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Ide Kombinasi Ikon Baru</h1>
-            <p class="text-slate-500">Berbagai tema yang sama sekali tidak mirip satu sama lain. (Klik ikon untuk melihat *feedback* aktif).</p>
+            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Referensi: Dark Floating Pill (Gaya Instagram Baru)</h1>
+            <p class="text-slate-500">Semua opsi menggunakan model "Kapsul Gelap Mengambang". Ikon yang aktif akan terisi penuh (solid) dan dibungkus latar abu-abu terang.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             
-            <!-- 1 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-slate-400">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">1. Classic ERP</h3>
-                    <span class="text-xs text-slate-400">Standar & Jelas</span>
+            <!-- 1. Instagram Replica -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">1. Instagram Clone</h3>
+                    <span class="text-xs text-slate-400">Rumah & Plus Kotak</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-list'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-funnel'}, {id:'add', i:'ph-plus-circle'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- 2 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-emerald-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">2. Modern Dashboard</h3>
-                    <span class="text-xs text-slate-400">Grid & Slider</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-squares-four'}, {id:'search', i:'ph-scan'}, {id:'filter', i:'ph-sliders-horizontal'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-house'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-faders'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
-            <!-- 3 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-blue-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">3. File Management</h3>
-                    <span class="text-xs text-slate-400">Analogi Direktori</span>
+            <!-- 2. Classic Web -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">2. Classic ERP</h3>
+                    <span class="text-xs text-slate-400">Hamburger & Corong</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-folders'}, {id:'search', i:'ph-file-search'}, {id:'filter', i:'ph-tree-structure'}, {id:'add', i:'ph-file-plus'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- 4 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-orange-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">4. Retail & POS</h3>
-                    <span class="text-xs text-slate-400">Cocok untuk Kasir</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-storefront'}, {id:'search', i:'ph-barcode'}, {id:'filter', i:'ph-receipt'}, {id:'add', i:'ph-package'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-list'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-funnel'}, {id:'add', i:'ph-plus-circle'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
-            <!-- 5 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-purple-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">5. Data & Analytics</h3>
-                    <span class="text-xs text-slate-400">Gaya Statistik</span>
+            <!-- 3. Modern App Grid -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">3. Modern App Grid</h3>
+                    <span class="text-xs text-slate-400">Kotak Empat</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-chart-pie-slice'}, {id:'search', i:'ph-binoculars'}, {id:'filter', i:'ph-sort-ascending'}, {id:'add', i:'ph-trend-up'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- 6 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-yellow-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">6. Workspace & Tools</h3>
-                    <span class="text-xs text-slate-400">Bengkel / Perkakas</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-layout'}, {id:'search', i:'ph-crosshair'}, {id:'filter', i:'ph-wrench'}, {id:'add', i:'ph-toolbox'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-squares-four'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-sliders-horizontal'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
-            <!-- 7 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-pink-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">7. Minimal Geometris</h3>
-                    <span class="text-xs text-slate-400">Titik & Garis</span>
+            <!-- 4. File Management -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">4. Data Struktural</h3>
+                    <span class="text-xs text-slate-400">Folder & File</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-dots-nine'}, {id:'search', i:'ph-corners-out'}, {id:'filter', i:'ph-equalizer'}, {id:'add', i:'ph-plus'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph-light']"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- 8 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-cyan-500">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">8. Network & Logic</h3>
-                    <span class="text-xs text-slate-400">Skema & Radar</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-graph'}, {id:'search', i:'ph-radar'}, {id:'filter', i:'ph-toggle-left'}, {id:'add', i:'ph-intersect'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-folders'}, {id:'search', i:'ph-file-search'}, {id:'filter', i:'ph-tree-structure'}, {id:'add', i:'ph-file-plus'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
-            <!-- 9 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-rose-400">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">9. Creative & Fluid</h3>
-                    <span class="text-xs text-slate-400">Mata & Percikan</span>
+            <!-- 5. Retail & Store -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">5. Retail / POS</h3>
+                    <span class="text-xs text-slate-400">Toko & Paket</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-circles-four'}, {id:'search', i:'ph-eye'}, {id:'filter', i:'ph-drop'}, {id:'add', i:'ph-sparkle'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-storefront'}, {id:'search', i:'ph-barcode'}, {id:'filter', i:'ph-receipt'}, {id:'add', i:'ph-package'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
-            <!-- 10 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-gray-800">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">10. Typographic Dash</h3>
-                    <span class="text-xs text-slate-400">Garis & Teks</span>
+            <!-- 6. Analytics -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">6. Data Analytics</h3>
+                    <span class="text-xs text-slate-400">Grafik & Sortir</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in [{id:'menu', i:'ph-text-align-justify'}, {id:'search', i:'ph-text-t'}, {id:'filter', i:'ph-list-dashes'}, {id:'add', i:'ph-plus-circle'}]" :key="item.id">
-                        <button @click="active = item.id" :class="active === item.id ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'" class="w-12 h-full flex items-center justify-center active:scale-90">
-                            <i class="text-[28px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
-                        </button>
-                    </template>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-chart-pie-slice'}, {id:'search', i:'ph-binoculars'}, {id:'filter', i:'ph-sort-ascending'}, {id:'add', i:'ph-trend-up'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Workspace -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">7. Workspace Tools</h3>
+                    <span class="text-xs text-slate-400">Panel & Alat</span>
+                </div>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-layout'}, {id:'search', i:'ph-crosshair'}, {id:'filter', i:'ph-wrench'}, {id:'add', i:'ph-toolbox'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Minimalist -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">8. Minimalist Geometry</h3>
+                    <span class="text-xs text-slate-400">Titik & Geometris</span>
+                </div>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-dots-nine'}, {id:'search', i:'ph-corners-out'}, {id:'filter', i:'ph-equalizer'}, {id:'add', i:'ph-plus'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Fluid/Creative -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">9. Fluid & Creative</h3>
+                    <span class="text-xs text-slate-400">Elemen Cair</span>
+                </div>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-circles-four'}, {id:'search', i:'ph-eye'}, {id:'filter', i:'ph-drop'}, {id:'add', i:'ph-sparkle'}]" :key="item.id">
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Dashboard Green Accent (Bonus) -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-lg">10. Dark Pill + Green Accent</h3>
+                    <span class="text-xs text-slate-400">Pill dengan warna brand</span>
+                </div>
+                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
+                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
+                        <template x-for="item in [{id:'menu', i:'ph-squares-four'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-faders'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
+                            <!-- Beda di baris ini: bg-[#0b595b] (Warna Hijau Brand) -->
+                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#0b595b] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
 
