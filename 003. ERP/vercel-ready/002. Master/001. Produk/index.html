@@ -1289,7 +1289,7 @@
                     </button>
 
                     <!-- 2. Search -->
-                    <button @click="mobileSearchOpen = !mobileSearchOpen; if (mobileSearchOpen) { filterOpen = false; $nextTick(() => document.getElementById('mobileSearchInputBottom').focus()); }"
+                    <button @click="mobileSearchOpen = !mobileSearchOpen; if (mobileSearchOpen) { filterOpen = false; closeDrawer(); $nextTick(() => document.getElementById('mobileSearchInputBottom').focus()); }"
                             :class="searchQuery.length > 0 || mobileSearchOpen ? 'text-[#0b595b]' : 'text-gray-400'"
                             class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
                             title="Pencarian">
@@ -1297,7 +1297,7 @@
                     </button>
 
                     <!-- 3. Filter -->
-                    <button @click="filterOpen = !filterOpen; if(filterOpen) mobileSearchOpen = false;"
+                    <button @click="filterOpen = !filterOpen; if(filterOpen) { mobileSearchOpen = false; closeDrawer(); }"
                             :class="filterOpen || selectedCategory !== 'Semua' ? 'text-[#0b595b]' : 'text-gray-400'"
                             class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
                             title="Filter">
@@ -2027,6 +2027,7 @@
                 },
 
                 toggleMobileSidebar() {
+                    this.closeDrawer();
                     this.mobileSearchOpen = false;
                     this.filterOpen = false;
                     if (window.self !== window.top) {
