@@ -62,7 +62,7 @@
                             {id:'menu', type:'icon', i:'home'}, 
                             {id:'search', type:'icon', i:'search'}, 
                             {id:'filter', type:'icon', i:'tune'}, 
-                            {id:'add', type:'icon', i:'add_box'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -76,6 +76,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? (item.activeSolid ? '#1c1c1e' : 'currentColor') : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
@@ -95,7 +102,7 @@
                             {id:'menu', type:'icon', i:'home'}, 
                             {id:'search', type:'icon', i:'search'}, 
                             {id:'filter', type:'icon', i:'tune'}, 
-                            {id:'add', type:'icon', i:'add_box'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -109,6 +116,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? (item.activeSolid ? '#1c1c1e' : 'currentColor') : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
@@ -128,7 +142,7 @@
                             {id:'menu', type:'icon', i:'grid_view'}, 
                             {id:'search', type:'icon', i:'search'}, 
                             {id:'filter', type:'icon', i:'filter_list'}, 
-                            {id:'add', type:'icon', i:'add_circle'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -142,6 +156,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? '#0b595b' : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
@@ -161,7 +182,7 @@
                             {id:'menu', type:'icon', i:'dashboard'}, 
                             {id:'search', type:'icon', i:'search'}, 
                             {id:'filter', type:'icon', i:'sort'}, 
-                            {id:'add', type:'icon', i:'post_add'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -175,6 +196,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? (item.activeSolid ? '#1c1c1e' : 'currentColor') : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
@@ -194,7 +222,7 @@
                             {id:'menu', type:'icon', i:'storefront'}, 
                             {id:'search', type:'icon', i:'qr_code_scanner'}, 
                             {id:'filter', type:'icon', i:'receipt_long'}, 
-                            {id:'add', type:'icon', i:'inventory_2'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -208,6 +236,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? (item.activeSolid ? '#1c1c1e' : 'currentColor') : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
@@ -228,7 +263,7 @@
                             {id:'menu', type:'icon', i:'pie_chart'}, 
                             {id:'search', type:'icon', i:'manage_search'}, 
                             {id:'filter', type:'icon', i:'bubble_chart'}, 
-                            {id:'add', type:'icon', i:'add_reaction'}, 
+                            {id:'add', type:'svg-add'}, 
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button @click="active = item.id" 
@@ -242,6 +277,13 @@
                                     <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
                                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><rect width='256' height='256' fill='%23e2e8f0'/><path d='M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z' fill='%2394a3b8'/></svg>" class="w-full h-full object-cover rounded-full" />
                                     </div>
+                                </template>
+                                <template x-if="item.type === 'svg-add'">
+                                    <svg viewBox="0 0 24 24" class="w-[28px] h-[28px]" :stroke="active === item.id ? (item.activeSolid ? '#1c1c1e' : 'currentColor') : 'currentColor'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" fill="none">
+                                        <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                                        <line x1="7" x2="17" y1="12" y2="12"></line>
+                                        <line x1="12" x2="12" y1="7" y2="17"></line>
+                                    </svg>
                                 </template>
                             </button>
                         </template>
