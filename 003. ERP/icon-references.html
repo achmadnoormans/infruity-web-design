@@ -44,17 +44,19 @@
             Alpine.data('slidingNav', (initialActive = 'menu') => ({
                 active: initialActive,
                 pillLeft: 0,
-                pillWidth: 72,
+                pillWidth: 0,
                 updatePill(el) {
-                    // Karena absolute di dalam div padding 8px, kita ambil offset relative ke padding
-                    this.pillLeft = el.offsetLeft;
-                    this.pillWidth = el.offsetWidth;
+                    this.$nextTick(() => {
+                        this.pillLeft = el.offsetLeft;
+                        this.pillWidth = el.offsetWidth;
+                    });
                 },
                 init() {
-                    this.$nextTick(() => {
+                    // Beri sedikit delay agar flexbox render sempurna sebelum mengukur
+                    setTimeout(() => {
                         const el = this.$el.querySelector('[data-id="' + this.active + '"]');
                         if(el) this.updatePill(el);
-                    });
+                    }, 50);
                 }
             }));
         });
@@ -91,9 +93,8 @@
                             {id:'profile', type:'avatar'}
                         ]" :key="item.id">
                             <button :data-id="item.id" @click="active = item.id; updatePill($event.currentTarget)" 
-                                    :class="active === item.id ? 'text-white w-[72px]' : 'bg-transparent text-gray-400 hover:text-white w-12'" 
-                                    class="h-full flex items-center justify-center rounded-full active:scale-95 relative z-10"
-                                    style="transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                    :class="active === item.id ? 'text-white' : 'bg-transparent text-gray-400 hover:text-white'" 
+                                    class="w-[60px] h-full flex items-center justify-center rounded-full active:scale-95 relative z-10">
                                 
                                 <template x-if="item.type === 'icon'">
                                     <span class="icon-rounded" :class="active === item.id ? 'icon-active' : 'icon-inactive'" x-text="item.i"></span>
