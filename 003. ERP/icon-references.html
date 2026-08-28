@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kombinasi Ikon - Dark Pill Style</title>
+    <title>Kombinasi Ikon - White Glass + Profile</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -11,14 +11,16 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f1f5f9; /* Latar terang agar pill gelapnya menonjol */
+            background-color: #f8fafc;
         }
-        button, i {
+        button, i, div {
             transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Custom scrollbar untuk pill container agar smooth */
-        .pill-nav {
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        /* Pattern background to show off glassmorphism */
+        .glass-bg {
+            background-color: #e2e8f0;
+            background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+            background-size: 24px 24px;
         }
     </style>
 </head>
@@ -26,91 +28,178 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Referensi: Dark Floating Pill (Gaya Instagram Baru)</h1>
-            <p class="text-slate-500">Semua opsi menggunakan model "Kapsul Gelap Mengambang". Ikon yang aktif akan terisi penuh (solid) dan dibungkus latar abu-abu terang.</p>
+            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Referensi: White Glass + Profil</h1>
+            <p class="text-slate-500">Model Kapsul Melayang dengan efek <b>kaca putih (frosted glass)</b> dan tambahan <b>foto profil</b> di pojok kanan.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             
-            <!-- 1. Instagram Replica -->
+            <!-- 1. Instagram Replica (White) -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">1. Instagram Clone</h3>
-                    <span class="text-xs text-slate-400">Rumah & Plus Kotak</span>
+                    <h3 class="font-bold text-lg">1. Glass White - Aktif Solid</h3>
+                    <span class="text-xs text-slate-400">Pill Putih, Aktif Hijau</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-house'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-faders'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <!-- Glass Pill -->
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-house'}, 
+                            {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
+                            {id:'filter', type:'icon', i:'ph-faders'}, 
+                            {id:'add', type:'icon', i:'ph-plus-square'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=US&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 2. Classic Web -->
+            <!-- 2. Minimalist White -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">2. Classic ERP</h3>
-                    <span class="text-xs text-slate-400">Hamburger & Corong</span>
+                    <h3 class="font-bold text-lg">2. Glass White - Aktif Putih</h3>
+                    <span class="text-xs text-slate-400">Pill Putih, Aktif Putih</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-list'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-funnel'}, {id:'add', i:'ph-plus-circle'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-list'}, 
+                            {id:'search', type:'icon', i:'ph-magnifying-glass'}, 
+                            {id:'filter', type:'icon', i:'ph-funnel'}, 
+                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <!-- Beda di sini: bg-white untuk active -->
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=AD&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. Modern App Grid -->
+            <!-- 3. Modern Grid -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">3. Modern App Grid</h3>
-                    <span class="text-xs text-slate-400">Kotak Empat</span>
+                    <h3 class="font-bold text-lg">3. Modern App (Green)</h3>
+                    <span class="text-xs text-slate-400">Squares & Sliders</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-squares-four'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-sliders-horizontal'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-squares-four'}, 
+                            {id:'search', type:'icon', i:'ph-scan'}, 
+                            {id:'filter', type:'icon', i:'ph-sliders-horizontal'}, 
+                            {id:'add', type:'icon', i:'ph-plus-square'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=MK&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. File Management -->
+            <!-- 4. Structural -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">4. Data Struktural</h3>
-                    <span class="text-xs text-slate-400">Folder & File</span>
+                    <h3 class="font-bold text-lg">4. Data Struktural (White)</h3>
+                    <span class="text-xs text-slate-400">Folders & Tree</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-folders'}, {id:'search', i:'ph-file-search'}, {id:'filter', i:'ph-tree-structure'}, {id:'add', i:'ph-file-plus'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-folders'}, 
+                            {id:'search', type:'icon', i:'ph-file-search'}, 
+                            {id:'filter', type:'icon', i:'ph-tree-structure'}, 
+                            {id:'add', type:'icon', i:'ph-file-plus'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=PR&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 5. Retail & Store -->
+            <!-- 5. POS / Retail -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">5. Retail / POS</h3>
-                    <span class="text-xs text-slate-400">Toko & Paket</span>
+                    <h3 class="font-bold text-lg">5. Kasir & Toko</h3>
+                    <span class="text-xs text-slate-400">Barcode & Box</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-storefront'}, {id:'search', i:'ph-barcode'}, {id:'filter', i:'ph-receipt'}, {id:'add', i:'ph-package'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-storefront'}, 
+                            {id:'search', type:'icon', i:'ph-barcode'}, 
+                            {id:'filter', type:'icon', i:'ph-receipt'}, 
+                            {id:'add', type:'icon', i:'ph-package'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=TK&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
@@ -121,82 +210,161 @@
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-bold text-lg">6. Data Analytics</h3>
-                    <span class="text-xs text-slate-400">Grafik & Sortir</span>
+                    <span class="text-xs text-slate-400">Statistik</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-chart-pie-slice'}, {id:'search', i:'ph-binoculars'}, {id:'filter', i:'ph-sort-ascending'}, {id:'add', i:'ph-trend-up'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-chart-pie-slice'}, 
+                            {id:'search', type:'icon', i:'ph-binoculars'}, 
+                            {id:'filter', type:'icon', i:'ph-sort-ascending'}, 
+                            {id:'add', type:'icon', i:'ph-trend-up'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=DA&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 7. Workspace -->
+            <!-- 7. Minimalist Dotted -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">7. Workspace Tools</h3>
-                    <span class="text-xs text-slate-400">Panel & Alat</span>
+                    <h3 class="font-bold text-lg">7. Minimalist Titik</h3>
+                    <span class="text-xs text-slate-400">Elegan Geometris</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-layout'}, {id:'search', i:'ph-crosshair'}, {id:'filter', i:'ph-wrench'}, {id:'add', i:'ph-toolbox'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-dots-nine'}, 
+                            {id:'search', type:'icon', i:'ph-corners-out'}, 
+                            {id:'filter', type:'icon', i:'ph-equalizer'}, 
+                            {id:'add', type:'icon', i:'ph-plus'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=ID&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 8. Minimalist -->
+            <!-- 8. Workspace Tools -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">8. Minimalist Geometry</h3>
-                    <span class="text-xs text-slate-400">Titik & Geometris</span>
+                    <h3 class="font-bold text-lg">8. Alat Kerja</h3>
+                    <span class="text-xs text-slate-400">Toolkit</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-dots-nine'}, {id:'search', i:'ph-corners-out'}, {id:'filter', i:'ph-equalizer'}, {id:'add', i:'ph-plus'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-layout'}, 
+                            {id:'search', type:'icon', i:'ph-crosshair'}, 
+                            {id:'filter', type:'icon', i:'ph-wrench'}, 
+                            {id:'add', type:'icon', i:'ph-toolbox'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=WR&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 9. Fluid/Creative -->
+            <!-- 9. Fluid Creative -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">9. Fluid & Creative</h3>
-                    <span class="text-xs text-slate-400">Elemen Cair</span>
+                    <h3 class="font-bold text-lg">9. Fluid & Natural</h3>
+                    <span class="text-xs text-slate-400">Lingkaran & Tetes</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-circles-four'}, {id:'search', i:'ph-eye'}, {id:'filter', i:'ph-drop'}, {id:'add', i:'ph-sparkle'}]" :key="item.id">
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#3a3a3c] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-circles-four'}, 
+                            {id:'search', type:'icon', i:'ph-eye'}, 
+                            {id:'filter', type:'icon', i:'ph-drop'}, 
+                            {id:'add', type:'icon', i:'ph-sparkle'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-[#0b595b] text-white w-[72px] shadow-md' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-white' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=FL&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
                 </div>
             </div>
 
-            <!-- 10. Dashboard Green Accent (Bonus) -->
+            <!-- 10. Typographic / Dash -->
             <div class="bg-white rounded-2xl p-6 border border-gray-200">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-lg">10. Dark Pill + Green Accent</h3>
-                    <span class="text-xs text-slate-400">Pill dengan warna brand</span>
+                    <h3 class="font-bold text-lg">10. Tipografi / Teks</h3>
+                    <span class="text-xs text-slate-400">Garis Tipis</span>
                 </div>
-                <div class="bg-gray-100 rounded-3xl py-8 px-2 flex justify-center relative">
-                    <div x-data="{ active: 'menu' }" class="pill-nav bg-[#1c1c1e] rounded-[30px] h-[60px] p-2 flex items-center justify-between w-full max-w-[320px]">
-                        <template x-for="item in [{id:'menu', i:'ph-squares-four'}, {id:'search', i:'ph-magnifying-glass'}, {id:'filter', i:'ph-faders'}, {id:'add', i:'ph-plus-square'}]" :key="item.id">
-                            <!-- Beda di baris ini: bg-[#0b595b] (Warna Hijau Brand) -->
-                            <button @click="active = item.id" :class="active === item.id ? 'bg-[#0b595b] text-white w-20' : 'bg-transparent text-gray-400 hover:text-white w-12'" class="h-full flex items-center justify-center rounded-full active:scale-95">
-                                <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-fill' : 'ph']"></i>
+                <div class="glass-bg rounded-3xl py-10 px-2 flex justify-center relative overflow-hidden">
+                    <div x-data="{ active: 'menu' }" class="bg-white/60 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08)] rounded-[30px] h-[64px] p-2 flex items-center justify-between w-full max-w-[360px] relative z-10">
+                        <template x-for="item in [
+                            {id:'menu', type:'icon', i:'ph-text-align-justify'}, 
+                            {id:'search', type:'icon', i:'ph-text-t'}, 
+                            {id:'filter', type:'icon', i:'ph-list-dashes'}, 
+                            {id:'add', type:'icon', i:'ph-plus-circle'}, 
+                            {id:'profile', type:'avatar'}
+                        ]" :key="item.id">
+                            <button @click="active = item.id" 
+                                    :class="active === item.id ? 'bg-white text-[#0b595b] w-[72px] shadow-sm' : 'bg-transparent text-gray-500 hover:text-[#0b595b] w-12'" 
+                                    class="h-full flex items-center justify-center rounded-full active:scale-95">
+                                
+                                <template x-if="item.type === 'icon'">
+                                    <i class="text-[26px]" :class="[item.i, active === item.id ? 'ph-bold' : 'ph']"></i>
+                                </template>
+                                <template x-if="item.type === 'avatar'">
+                                    <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="active === item.id ? 'border-[#0b595b]' : 'border-transparent'">
+                                        <img src="https://ui-avatars.com/api/?name=TX&background=e2e8f0&color=0b595b" class="w-full h-full object-cover rounded-full" />
+                                    </div>
+                                </template>
                             </button>
                         </template>
                     </div>
