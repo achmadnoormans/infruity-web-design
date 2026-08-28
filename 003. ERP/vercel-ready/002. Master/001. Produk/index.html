@@ -1285,7 +1285,7 @@
                     <button @click="toggleMobileSidebar()"
                             class="relative z-10 flex items-center justify-center w-14 h-full text-gray-400 hover:text-[#0b595b] active:scale-90 transition-all duration-200"
                             title="Menu Navigasi">
-                        <i class="ph ph-list text-[26px]"></i>
+                        <i class="ph ph-squares-four text-[26px]"></i>
                     </button>
 
                     <!-- 2. Search -->
@@ -1302,7 +1302,7 @@
                             class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
                             title="Filter">
                         <div class="relative">
-                            <i class="text-[26px]" :class="filterOpen || selectedCategory !== 'Semua' ? 'ph-fill ph-funnel' : 'ph ph-funnel'"></i>
+                            <i class="text-[26px]" :class="filterOpen || selectedCategory !== 'Semua' ? 'ph-fill ph-faders' : 'ph ph-faders'"></i>
 
                         </div>
                     </button>
@@ -1312,7 +1312,7 @@
                             :class="drawerOpen ? 'text-[#0b595b]' : 'text-gray-400'"
                             class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
                             title="Tambah Produk">
-                        <i class="text-[28px]" :class="drawerOpen ? 'ph-fill ph-plus-circle' : 'ph ph-plus-circle'"></i>
+                        <i class="text-[28px]" :class="drawerOpen ? 'ph-fill ph-plus-square' : 'ph ph-plus-square'"></i>
                     </button>
                 </div>
             </div>
