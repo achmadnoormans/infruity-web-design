@@ -465,8 +465,8 @@
                     class="flex items-center logo-link transition-transform duration-200 h-9"
                     :title="sidebarCollapsed ? 'Perbesar Sidebar' : 'Infruity ERP'"
                     :class="sidebarCollapsed ? 'hover:scale-110' : ''">
-                    <img :src="theme === 'light' ? '../../001. Landing Page/000. Logo/Infruity Logo - 6.png' : '../../001. Landing Page/000. Logo/Logo Putih 1.png'" alt="Infruity Logo" class="h-9 logo-full ">
-                    <img :src="theme === 'light' ? '../../001. Landing Page/000. Logo/Infruity Logo - 7.png' : '../../001. Landing Page/000. Logo/Logo IN Putih.png'" alt="Infruity Icon" class="h-8 logo-mini hidden ">
+                    <img :src="theme === 'light' ? '../assets/logo/Infruity Logo - 6.png' : '../assets/logo/Logo Putih 1.png'" alt="Infruity Logo" class="h-9 logo-full ">
+                    <img :src="theme === 'light' ? '../assets/logo/Infruity Logo - 7.png' : '../assets/logo/Logo IN Putih.png'" alt="Infruity Icon" class="h-8 logo-mini hidden ">
                 </a>
                 <div class="flex items-center gap-2 toggle-container">
                     <button @click="sidebarCollapsed = !sidebarCollapsed"
@@ -2321,7 +2321,7 @@
                         <div class="absolute -top-16 -left-16 w-[250px] h-[250px] bg-white/25 rounded-full blur-[70px] pointer-events-none z-0 mix-blend-overlay"></div>
 
                         <!-- Non-scrollable 1-page Content -->
-                        <div class="flex-1 overflow-hidden hide-scrollbar pb-32 px-5 flex flex-col relative z-10">
+                        <div class="flex-1 overflow-hidden hide-scrollbar pb-[104px] px-5 flex flex-col relative z-10">
 
                             <!-- BALANCE -->
                             <div class="mt-8 px-1 relative z-10 flex flex-col items-center text-center">
@@ -2356,7 +2356,7 @@
                             </div>
 
                             <!-- BAR CHART -->
-                            <div class="mt-auto mb-0 px-1 relative z-10 pt-10">
+                            <div class="mt-auto mb-0 px-1 relative z-10 pt-7">
                                 <div id="mob-bars-container" class="flex items-end justify-between h-[160px] relative px-3 w-full">
                                     <!-- Bar: Min -->
                                     <div class="chart-item flex flex-col items-center justify-end gap-2.5 z-10 h-full group">
@@ -2432,7 +2432,7 @@
                             </div>
 
                             <!-- TOP PRODUCTS CARD -->
-                            <div class="mt-6 mb-[60px] bg-white rounded-[20px] p-3 px-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+                            <div class="mt-[33px] mb-4 bg-white rounded-[20px] p-3 px-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
                                 <div class="flex justify-between items-center mb-3">
                                     <h4 id="mob-product-list-title" class="text-[13px] font-bold text-[#0a3d2e] tracking-tight">Produk Pendapatan Tertinggi</h4>
                                     <button id="mob-product-list-toggle" class="w-7 h-7 shrink-0 rounded-full bg-[rgb(var(--brand-rgb)/0.3)] flex items-center justify-center text-[#06261c] cursor-pointer active:scale-90 transition-all duration-300">
