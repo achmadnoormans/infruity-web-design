@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referensi Navbar - Interaktif</title>
+    <title>Referensi Navbar - Dynamic Label Kombinasi Ikon</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -17,15 +17,17 @@
             box-shadow: 0 4px 24px rgba(0,0,0,0.06);
             border: 1px solid #f1f5f9;
         }
-        .glow-active {
-            filter: drop-shadow(0 4px 6px rgba(11, 89, 91, 0.4));
-        }
-        
-        /* Utility for smooth transitions */
-        button, i, div {
+        button, i, span, div {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 300ms;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
@@ -33,8 +35,8 @@
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
-            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">Katalog Navbar Interaktif</h1>
-            <p class="text-slate-500">Silakan <b>klik ikon mana saja</b> pada masing-masing kotak untuk merasakan animasinya!</p>
+            <h1 class="text-3xl font-bold text-[#0b595b] mb-3">10 Kombinasi Ikon (Dynamic Label)</h1>
+            <p class="text-slate-500">Gaya interaktif yang sama (teks muncul saat diklik), namun dengan <b>10 set ikon yang sama sekali berbeda</b> (tema berbeda).</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -42,140 +44,8 @@
             <!-- Option 1 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">1. Classic Active Fill</h3>
-                    <span class="text-xs text-slate-400">Tebal saat diklik</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl">
-                    <button @click="active = 'menu'" :class="active === 'menu' ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'"><i class="text-[26px]" :class="active === 'menu' ? 'ph-fill ph-squares-four' : 'ph ph-squares-four'"></i></button>
-                    <button @click="active = 'search'" :class="active === 'search' ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'"><i class="text-[26px]" :class="active === 'search' ? 'ph-fill ph-magnifying-glass' : 'ph ph-magnifying-glass'"></i></button>
-                    <button @click="active = 'filter'" :class="active === 'filter' ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'"><i class="text-[26px]" :class="active === 'filter' ? 'ph-fill ph-faders' : 'ph ph-faders'"></i></button>
-                    <button @click="active = 'add'" :class="active === 'add' ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'"><i class="text-[26px]" :class="active === 'add' ? 'ph-fill ph-plus-square' : 'ph ph-plus-square'"></i></button>
-                </div>
-            </div>
-
-            <!-- Option 2 -->
-            <div class="bg-white rounded-2xl p-6 nav-card">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">2. Underline Indicator</h3>
-                    <span class="text-xs text-slate-400">Garis bawah mengikuti</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'" 
-                                class="h-full flex flex-col items-center justify-center relative w-12">
-                            <i class="text-[26px]" 
-                               :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-bold' : 'ph'
-                               ]"></i>
-                            <div class="absolute bottom-1 w-5 h-1 rounded-full bg-[#0b595b]" 
-                                 :class="active === item ? 'opacity-100 scale-100' : 'opacity-0 scale-50'"></div>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Option 3 -->
-            <div class="bg-white rounded-2xl p-6 nav-card">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">3. Top Dot Indicator</h3>
-                    <span class="text-xs text-slate-400">Titik kecil di atas</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'" 
-                                class="h-full flex flex-col items-center justify-center relative w-12">
-                            <div class="absolute top-1.5 w-1.5 h-1.5 rounded-full bg-[#0b595b]" 
-                                 :class="active === item ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'"></div>
-                            <i class="text-[26px]" 
-                               :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-fill' : 'ph'
-                               ]"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Option 4 -->
-            <div class="bg-white rounded-2xl p-6 nav-card">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">4. Soft Background Pill</h3>
-                    <span class="text-xs text-slate-400">Latar redup memeluk</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-3 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b] bg-[#0b595b]/10' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 active:scale-90'" 
-                                class="w-12 h-10 flex items-center justify-center rounded-xl">
-                            <i class="text-[26px]" 
-                               :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-bold' : 'ph'
-                               ]"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Option 5 -->
-            <div class="bg-white rounded-2xl p-6 nav-card">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">5. Glow Effect</h3>
-                    <span class="text-xs text-slate-400">Efek bersinar eksklusif</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b] glow-active' : 'text-gray-400 hover:text-gray-600 active:scale-90'" 
-                                class="w-12 h-full flex items-center justify-center">
-                            <i class="text-[26px]" 
-                               :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-fill' : 'ph-light'
-                               ]"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Option 6 -->
-            <div class="bg-white rounded-2xl p-6 nav-card overflow-hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">6. Floating Bubble</h3>
-                    <span class="text-xs text-slate-400">Pop up menyenangkan</span>
-                </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative mt-4">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-white bg-[#0b595b] w-14 h-14 rounded-full shadow-lg shadow-[#0b595b]/30 -translate-y-4' : 'text-gray-400 w-12 h-12 bg-transparent hover:text-gray-600 active:scale-90 translate-y-0'" 
-                                class="flex items-center justify-center">
-                            <i :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-bold text-[24px]' : 'ph text-[26px]'
-                               ]"></i>
-                        </button>
-                    </template>
-                </div>
-            </div>
-
-            <!-- Option 7 -->
-            <div class="bg-white rounded-2xl p-6 nav-card">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">7. Dynamic Label</h3>
-                    <span class="text-xs text-slate-400">Teks lebar memanjang</span>
+                    <h3 class="font-bold text-lg">1. Modern App Grid</h3>
+                    <span class="text-xs text-slate-400">Standard ERP</span>
                 </div>
                 <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
                     <template x-for="item in [{id: 'menu', label: 'Menu', icon: 'ph-squares-four'}, {id: 'search', label: 'Cari', icon: 'ph-magnifying-glass'}, {id: 'filter', label: 'Filter', icon: 'ph-faders'}, {id: 'add', label: 'Tambah', icon: 'ph-plus-square'}]" :key="item.id">
@@ -191,23 +61,141 @@
                 </div>
             </div>
 
+            <!-- Option 2 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">2. Classic Web (Original)</h3>
+                    <span class="text-xs text-slate-400">Familiar UI</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Menu', icon: 'ph-list'}, {id: 'search', label: 'Cari', icon: 'ph-magnifying-glass'}, {id: 'filter', label: 'Filter', icon: 'ph-funnel'}, {id: 'add', label: 'Tambah', icon: 'ph-plus-circle'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">3. Retail & Inventory</h3>
+                    <span class="text-xs text-slate-400">Fokus Produk</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Toko', icon: 'ph-storefront'}, {id: 'search', label: 'Scan', icon: 'ph-barcode'}, {id: 'filter', label: 'Kategori', icon: 'ph-tag'}, {id: 'add', label: 'Barang', icon: 'ph-package'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Option 4 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">4. Data & Analytics</h3>
+                    <span class="text-xs text-slate-400">Professional</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Panel', icon: 'ph-layout'}, {id: 'search', label: 'Cari', icon: 'ph-binoculars'}, {id: 'filter', label: 'Urutkan', icon: 'ph-sort-ascending'}, {id: 'add', label: 'Data Baru', icon: 'ph-file-plus'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Option 5 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">5. Minimal & Dotted</h3>
+                    <span class="text-xs text-slate-400">Clean Design</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Menu', icon: 'ph-dots-nine'}, {id: 'search', label: 'Scan', icon: 'ph-scan'}, {id: 'filter', label: 'Setel', icon: 'ph-sliders-horizontal'}, {id: 'add', label: 'Buat', icon: 'ph-plus'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-bold text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Option 6 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">6. Organic & Circles</h3>
+                    <span class="text-xs text-slate-400">Lembut & Estetik</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Menu', icon: 'ph-circles-four'}, {id: 'search', label: 'Pantau', icon: 'ph-eye'}, {id: 'filter', label: 'Saring', icon: 'ph-drop'}, {id: 'add', label: 'Tambah', icon: 'ph-sparkle'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Option 7 -->
+            <div class="bg-white rounded-2xl p-6 nav-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-lg">7. Structural & Files</h3>
+                    <span class="text-xs text-slate-400">Manajemen Direktori</span>
+                </div>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Struktur', icon: 'ph-tree-structure'}, {id: 'search', label: 'Telusuri', icon: 'ph-file-search'}, {id: 'filter', label: 'Grup', icon: 'ph-folders'}, {id: 'add', label: 'Tumpuk', icon: 'ph-stack-plus'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
             <!-- Option 8 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">8. Two-Tone Contrast</h3>
-                    <span class="text-xs text-slate-400">Duotone mencolok</span>
+                    <h3 class="font-bold text-lg">8. Heavy & Bold Dash</h3>
+                    <span class="text-xs text-slate-400">Tegas & Kokoh</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'" 
-                                class="w-12 h-full flex items-center justify-center">
-                            <i :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-duotone text-[30px]' : 'ph text-[26px]'
-                               ]"></i>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'List', icon: 'ph-list-dashes'}, {id: 'search', label: 'Lanjut', icon: 'ph-magnifying-glass-plus'}, {id: 'filter', label: 'Filter', icon: 'ph-funnel-simple'}, {id: 'add', label: 'Input', icon: 'ph-caret-circle-up'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
                         </button>
                     </template>
                 </div>
@@ -216,60 +204,44 @@
             <!-- Option 9 -->
             <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">9. Bottom Line Wide</h3>
-                    <span class="text-xs text-slate-400">Garis memenuhi kotak</span>
+                    <h3 class="font-bold text-lg">9. Hardware & Tools</h3>
+                    <span class="text-xs text-slate-400">Utility Vibe</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] bg-white border border-gray-100 rounded-xl overflow-hidden">
-                    <template x-for="item in ['menu', 'search', 'filter', 'add']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b] bg-gray-50 border-[#0b595b]' : 'text-gray-400 border-transparent hover:bg-gray-50 active:bg-gray-100'" 
-                                class="flex-1 h-full flex justify-center items-center border-b-[3px]">
-                            <i class="text-[24px]" :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 
-                                 item === 'filter' ? 'ph-faders' : 'ph-plus-square',
-                                 active === item ? 'ph-bold' : 'ph'
-                               ]"></i>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Grid', icon: 'ph-grid-four'}, {id: 'search', label: 'Sorot', icon: 'ph-flashlight'}, {id: 'filter', label: 'Setting', icon: 'ph-wrench'}, {id: 'add', label: 'Tools', icon: 'ph-toolbox'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
                         </button>
                     </template>
                 </div>
             </div>
 
             <!-- Option 10 -->
-            <div class="bg-white rounded-2xl p-6 nav-card border-l-4 border-l-[#0b595b]">
+            <div class="bg-white rounded-2xl p-6 nav-card">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-lg">10. Add Button Dominant</h3>
-                    <span class="text-xs text-slate-400">Fokus pada Tambah (Static)</span>
+                    <h3 class="font-bold text-lg">10. Abstract & Math</h3>
+                    <span class="text-xs text-slate-400">Teknikal & Logis</span>
                 </div>
-                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-6 bg-white border border-gray-100 rounded-xl relative">
-                    <template x-for="item in ['menu', 'search', 'filter']" :key="item">
-                        <button @click="active = item" 
-                                :class="active === item ? 'text-[#0b595b]' : 'text-gray-400 hover:text-gray-600 active:scale-90'" 
-                                class="w-12 h-full flex items-center justify-center">
-                            <i class="text-[26px]" :class="[
-                                 item === 'menu' ? 'ph-squares-four' : 
-                                 item === 'search' ? 'ph-magnifying-glass' : 'ph-faders',
-                                 active === item ? 'ph-fill' : 'ph'
-                               ]"></i>
+                <div x-data="{ active: 'search' }" class="flex items-center justify-between w-full h-[60px] px-4 bg-white border border-gray-100 rounded-xl overflow-x-auto overflow-y-hidden gap-1 scrollbar-hide">
+                    <template x-for="item in [{id: 'menu', label: 'Modul', icon: 'ph-intersect'}, {id: 'search', label: 'Pilih', icon: 'ph-selection-all'}, {id: 'filter', label: 'Setara', icon: 'ph-equalizer'}, {id: 'add', label: 'Hitung', icon: 'ph-math-operations'}]" :key="item.id">
+                        <button @click="active = item.id" 
+                                :class="active === item.id ? 'text-[#0b595b] bg-[#0b595b]/10 px-4' : 'text-gray-400 hover:text-gray-600 px-3'" 
+                                class="h-10 flex items-center justify-center gap-2 rounded-full whitespace-nowrap active:scale-95 shrink-0">
+                            <i :class="[item.icon, active === item.id ? 'ph-fill text-[20px]' : 'ph text-[24px]']"></i>
+                            <span class="text-[13px] font-bold overflow-hidden" 
+                                  :class="active === item.id ? 'w-auto ml-1 opacity-100' : 'w-0 ml-0 opacity-0'"
+                                  x-text="item.label"></span>
                         </button>
                     </template>
-                    <!-- Super Dominant Add Button (Always looks active/primary) -->
-                    <button class="text-white bg-[#0b595b] shadow-lg shadow-[#0b595b]/40 hover:bg-[#08484a] rounded-xl w-12 h-12 flex items-center justify-center transition active:scale-90 ml-4">
-                        <i class="ph-bold ph-plus text-[20px]"></i>
-                    </button>
                 </div>
             </div>
 
         </div>
     </div>
-    <style>
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-    </style>
 </body>
 </html>
