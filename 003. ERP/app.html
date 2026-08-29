@@ -254,11 +254,12 @@
                                 :class="activePage === '002. Master/001. Produk/index.html' ? 'active' : ''">
                                 <span>Produk</span>
                             </a>
-                            <a href="#" @click.prevent="navigateTo('002. Master/002. Kategori/index.html', 'master')"
+                            <a href="#" @click.prevent="navigateTo('#', 'master')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '002. Master/002. Kategori/index.html' ? 'active' : ''">
-                                <span>Kategori</span>
+                                :class="activePage === '#' ? 'active' : ''">
+                                <span>Resep Produk</span>
                             </a>
+
                             <a href="#" @click.prevent="navigateTo('002. Master/003. Satuan Produk/index.html', 'master')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
                                 :class="activePage === '002. Master/003. Satuan Produk/index.html' ? 'active' : ''">
@@ -578,7 +579,7 @@
 
                 <div class="flex items-center w-full transition-all duration-300" :class="sidebarCollapsed ? 'justify-center gap-0' : 'gap-3'">
                     <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/20 overflow-hidden relative group cursor-pointer">
-                        <i class="ph ph-user text-xl text-white"></i>
+                        <img src="https://api.dicebear.com/9.x/glass/svg?seed=Finance" alt="Profile" class="w-full h-full object-cover">
                     </div>
                     <div class="flex flex-col flex-1 toggle-container overflow-hidden">
                         <span class="text-sm font-semibold text-white whitespace-nowrap">Dimas Pratama</span>

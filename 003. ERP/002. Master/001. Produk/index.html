@@ -13,6 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -58,18 +59,34 @@
             display: none !important;
         }
 
+        /* Material Symbols Styling for Nav */
+        .icon-rounded {
+            font-family: 'Material Symbols Rounded';
+            font-size: 28px;
+            font-weight: 300;
+        }
+        .icon-inactive {
+            font-variation-settings: 'FILL' 0, 'wght' 300;
+        }
+        .icon-active {
+            font-variation-settings: 'FILL' 1, 'wght' 400;
+        }
+
+        /* ================================ */
+        /* CUSTOM SCROLLBARS                */
+        /* ================================ */
         /* Custom Thin Scrollbar for Sidebar */
         .sidebar-scroll::-webkit-scrollbar { width: 2px; }
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
         .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
-        .sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.2) transparent; }
 
-        /* Minimalist Dropdown Scrollbar */
-        .minimal-scrollbar::-webkit-scrollbar { width: 3px; }
+        /* Minimalist Dropdown Scrollbar (Auto-Hide effect) */
+        .minimal-scrollbar::-webkit-scrollbar { width: 4px; }
         .minimal-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .minimal-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 3px; }
-        .minimal-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+        .minimal-scrollbar::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; }
+        .minimal-scrollbar.is-scrolling::-webkit-scrollbar-thumb { background: #d1d5db; }
+        .minimal-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
         /* General Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -78,10 +95,16 @@
         ::-webkit-scrollbar-thumb:hover { background: #999; }
 
         /* Dark Sidebar */
-        .dark-sidebar { background-color: #0b595b; }
         .dark-sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
         .dark-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); }
+
+        .sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.2) transparent; }
+        .dark-sidebar { background-color: #0b595b; }
         .glass-header { background: rgba(247, 247, 247, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+        /* Hide Scrollbar Utility */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Sidebar Navigation */
         .sidebar-link {
@@ -193,7 +216,7 @@
 <body class="font-sans bg-[#e5e9f3] text-gray-800 antialiased h-screen overflow-hidden">
     <script>if(window.self!==window.top){document.body.classList.add("in-iframe");}</script>
 
-    <div x-data="erpApp()" class="flex h-screen w-full">
+    <div x-data="erpApp()" x-init="$watch('filterOpen', val => { if (!val) openDropdown = null })" class="flex h-screen w-full">
 
         <!-- MOBILE SIDEBAR OVERLAY -->
         <div x-show="sidebarOpen" x-transition:enter="transition-opacity duration-300"
@@ -270,11 +293,12 @@
                                 <i class="ph ph-shopping-cart sidebar-icon text-lg w-5 text-center text-white/35"></i>
                                 <span>Produk</span>
                             </a>
-                            <a href="../../002. Master/002. Kategori/index.html"
+                            <a href="#"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
-                                <i class="ph ph-tag sidebar-icon text-lg w-5 text-center text-white/35"></i>
-                                <span>Kategori</span>
+                                <i class="ph ph-receipt sidebar-icon text-lg w-5 text-center text-white/35"></i>
+                                <span>Resep Produk</span>
                             </a>
+
                             <a href="../../002. Master/003. Satuan Produk/index.html"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 ">
                                 <i class="ph ph-list-dashes sidebar-icon text-lg w-5 text-center text-white/35"></i>
@@ -640,7 +664,7 @@
         <!-- ================================ -->
         <!-- MAIN CONTENT AREA                -->
         <!-- ================================ -->
-        <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 flex flex-col overflow-hidden h-full lg:h-auto relative">
 
             <!-- Floating Header -->
             <header
@@ -686,9 +710,9 @@
                                  <template x-for="branch in allBranches" :key="branch">
                                      <button @click="selectedBranch = branch; branchOpen = false"
                                              class="w-full text-left px-3 py-2.5 text-sm rounded-xl hover:bg-gray-50 transition flex items-center justify-between mb-1"
-                                             :class="selectedBranch === branch ? 'text-[#0b595b] font-bold bg-[#d1f36e]/20' : 'text-gray-600 font-medium'">
+                                             :class="selectedBranch === branch ? 'text-[#0b595b] font-bold' : 'text-gray-600 font-medium'">
                                          <span class="truncate pr-2 text-[13px]" x-text="branch"></span>
-                                         <i x-show="selectedBranch === branch" class="ph-bold ph-check text-[#0b595b] text-sm shrink-0"></i>
+                                         <i x-show="selectedBranch === branch" class="ph-fill ph-circle text-[#0b595b] text-[8px] shrink-0"></i>
                                      </button>
                                  </template>
                              </div>
@@ -744,7 +768,7 @@
             <!-- ================================ -->
             <!-- SCROLLABLE CONTENT AREA          -->
             <!-- ================================ -->
-            <main class="flex-1 overflow-y-auto overscroll-none px-0 lg:px-8 py-0 lg:py-6 flex flex-col">
+            <main class="flex-1 overflow-y-auto overscroll-none px-0 lg:px-8 py-0 lg:py-6 flex flex-col scrollbar-hide">
 
                 <div class="animate-fade-in-up w-full flex-1 flex flex-col min-h-0">
 
@@ -755,7 +779,10 @@
                         <div class="hidden sm:flex p-4 border-b border-gray-100 flex-row gap-3 items-center bg-white relative z-10 transition-all duration-300">
                             <!-- Search -->
                             <div class="flex-1 relative">
-                                <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
                                 <input x-model="searchQuery" type="text" placeholder="Cari produk atau varian..."
                                     class="w-full bg-gray-50/50 border border-gray-100 rounded-full pl-10 pr-10 h-11 text-[13px] outline-none focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
                                 <!-- Clear button -->
@@ -782,7 +809,7 @@
                                     </div>
                                     <div class="overflow-hidden transition-all duration-500 ease-out hidden sm:flex items-center"
                                          :class="expanded ? 'max-w-[280px] opacity-100 pr-4' : 'max-w-0 opacity-0 pr-0'">
-                                        <span class="text-[13px] font-medium text-gray-700 whitespace-nowrap pl-2" x-text="selectedCategory"></span>
+                                        <span class="text-[13px] font-medium text-gray-700 whitespace-nowrap pl-2" x-text="selectedType.length === 0 || selectedType.includes('Semua') ? 'Semua' : (selectedType.length === 1 ? selectedType[0] : selectedType.length + ' Tipe')"></span>
                                         <i class="ph-bold ph-caret-down text-[10px] ml-2 transition-transform duration-200 text-gray-400" :class="filterOpen ? 'rotate-180' : ''"></i>
                                     </div>
                                 </button>
@@ -801,16 +828,19 @@
                                     x-transition:leave="transition ease-in duration-75"
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute right-0 top-14 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 py-2">
+                                    x-data="{ scrollTimer: null, isScrolling: false }"
+                                    @scroll="isScrolling = true; clearTimeout(scrollTimer); scrollTimer = setTimeout(() => isScrolling = false, 600)"
+                                    :class="isScrolling ? 'is-scrolling' : ''"
+                                    class="absolute right-0 top-14 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 py-2 minimal-scrollbar">
                                     <div class="px-4 py-2.5 border-b border-gray-50">
-                                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</p>
+                                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe Produk</p>
                                     </div>
-                                    <template x-for="cat in allCategories" :key="cat">
-                                        <button @click="selectedCategory = cat; filterOpen = false; expanded = false"
+                                    <template x-for="t in allTypes" :key="t">
+                                        <button @click="if (t === 'Semua') { selectedType = []; } else { if (selectedType.includes('Semua')) selectedType = []; if (selectedType.includes(t)) { selectedType = selectedType.filter(c => c !== t); } else { selectedType.push(t); } }"
                                             class="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 transition flex items-center justify-between"
-                                            :class="selectedCategory === cat ? 'text-emerald-700 font-semibold bg-emerald-50/50' : 'text-gray-600'">
-                                            <span x-text="cat"></span>
-                                            <i x-show="selectedCategory === cat" class="ph-bold ph-check text-emerald-600 text-sm shrink-0"></i>
+                                            :class="(selectedType.includes(t) || (t === 'Semua' && (selectedType.length === 0 || selectedType.includes('Semua')))) ? 'text-emerald-700 font-semibold bg-emerald-50/50' : 'text-gray-600'">
+                                            <span x-text="t"></span>
+                                            <i x-show="selectedType.includes(t) || (t === 'Semua' && (selectedType.length === 0 || selectedType.includes('Semua')))" class="ph-fill ph-circle text-emerald-500 text-[8px] shrink-0"></i>
                                         </button>
                                     </template>
                                 </div>
@@ -840,14 +870,14 @@
                         </div>
 
                         <!-- Product List -->
-                        <div class="flex-1 overflow-y-auto min-h-0 relative">
+                        <div class="flex-1 overflow-y-auto min-h-0 relative pb-24 sm:pb-0 scrollbar-hide">
                             <!-- Search overlay blocker (mobile) -->
                             <div x-show="mobileSearchOpen" x-cloak
                                  @click="mobileSearchOpen = false; searchQuery = ''"
                                  class="sm:hidden absolute inset-0 z-20 bg-transparent cursor-default"></div>
 
                             <!-- Desktop List View -->
-                            <div class="hidden lg:block divide-y divide-gray-50" x-effect="searchQuery; selectedCategory; resetPagination()">
+                            <div class="hidden lg:block divide-y divide-gray-50" x-effect="searchQuery; selectedType; resetPagination()">
                                 <template x-for="(product, index) in visibleProducts" :key="product.id">
                                     <!-- wrapper: single root for x-for -->
                                     <div class="border-b border-gray-100 last:border-none">
@@ -866,7 +896,7 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="text-sm font-semibold text-gray-800 truncate" x-text="product.name"></div>
                                                 <div class="flex items-center gap-1.5 mt-0.5">
-                                                    <span class="text-[11px] text-gray-400" x-text="product.category"></span>
+                                                    <span class="text-[11px] text-gray-400" x-text="product.type"></span>
                                                 </div>
                                             </div>
 
@@ -888,7 +918,7 @@
                                                 <div x-show="editingPriceId === product.id" x-cloak class="flex items-center gap-1.5">
                                                     <div class="relative">
                                                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">Rp</span>
-                                                        <input x-ref="priceInput" type="number" x-model.number="editingPriceValue"
+                                                        <input :id="'inlinePriceInput_' + product.id" type="number" x-model.number="editingPriceValue"
                                                             @keydown.enter="savePrice(product)"
                                                             @keydown.escape="cancelEditPrice()"
                                                             class="w-28 h-9 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-3 text-sm text-right font-semibold outline-none bg-white">
@@ -958,11 +988,11 @@
                                                                      x-cloak class="flex items-center gap-1.5">
                                                                     <div class="relative">
                                                                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">Rp</span>
-                                                                        <input type="number" x-model.number="editingVariantPrice.value"
+                                                                        <input :id="'inlineVariantPriceInput_' + variant.id"
+                                                                            type="number" x-model.number="editingVariantPrice.value"
                                                                             @keydown.enter="saveVariantPrice(product, variant)"
                                                                             @keydown.escape="cancelVariantPrice()"
-                                                                            class="w-28 h-8 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-2 text-sm text-right font-semibold outline-none bg-white"
-                                                                            x-init="$el.focus()">
+                                                                            class="w-28 h-8 border border-emerald-500 ring-1 ring-emerald-500 rounded-lg pl-9 pr-2 text-sm text-right font-semibold outline-none bg-white">
                                                                     </div>
                                                                     <button @click="saveVariantPrice(product, variant)" class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
                                                                         <i class="ph-bold ph-check text-[10px]"></i>
@@ -985,7 +1015,10 @@
                                 <!-- Empty State -->
                                 <div x-show="filteredProducts.length === 0" class="py-16 text-center">
                                     <div class="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                        <i class="ph ph-magnifying-glass text-2xl text-gray-400"></i>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-gray-400">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
                                     </div>
                                     <p class="text-sm text-gray-500 font-medium">Produk tidak ditemukan</p>
                                     <p class="text-xs text-gray-400 mt-1">Coba ubah kata kunci pencarian atau filter</p>
@@ -1019,7 +1052,7 @@
                                             <div class="flex-1 min-w-0">
                                                 <div class="text-sm font-semibold text-gray-900 truncate" x-text="product.name"></div>
                                                 <div class="text-xs text-gray-400 mt-0.5">
-                                                    <span x-text="product.category"></span>
+                                                    <span x-text="product.type"></span>
                                                 </div>
                                             </div>
 
@@ -1129,7 +1162,10 @@
                                 <!-- Empty State (Mobile) -->
                                 <div x-show="filteredProducts.length === 0" class="py-12 text-center">
                                     <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                                        <i class="ph ph-magnifying-glass text-xl text-gray-400"></i>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] text-gray-400">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
                                     </div>
                                     <p class="text-sm text-gray-500 font-medium">Produk tidak ditemukan</p>
                                     <p class="text-xs text-gray-400 mt-1">Coba ubah pencarian atau filter</p>
@@ -1154,7 +1190,7 @@
             <!-- ================================ -->
             <!-- MOBILE FILTER BOTTOM SHEET       -->
             <!-- ================================ -->
-            <div x-show="filterOpen" class="sm:hidden fixed top-0 left-0 right-0 bottom-[calc(60px+env(safe-area-inset-bottom))] sm:bottom-0 z-[100] overflow-hidden flex flex-col justify-end" x-cloak>
+            <div x-show="filterOpen" class="sm:hidden fixed top-0 left-0 right-0 bottom-0 z-[100] overflow-hidden flex flex-col justify-end" x-cloak>
                 <!-- Backdrop -->
                 <div class="absolute inset-0 bg-black/70" @click="filterOpen = false"
                      x-show="filterOpen"
@@ -1189,70 +1225,101 @@
                     </div>
 
                     <!-- Content -->
-                    <div class="flex-1 overflow-y-auto p-4">
+                    <div class="flex-1 overflow-y-auto p-4 scrollbar-hide">
                         <!-- Cabang -->
                         <div class="mb-6 px-2">
                             <div class="flex justify-between items-center mb-1.5">
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Cabang</label>
-                                <button x-show="allBranches.length > 1" @click="selectedBranch = allBranches[0]" class="text-[9px] text-red-500 hover:text-red-600 font-semibold cursor-pointer transition-colors">Reset</button>
                             </div>
-                            <div x-data="{
-                                    open: false,
-                                    dropY: 0, dropX: 0, dropW: 0,
-                                    toggle(btn) {
-                                        if (!this.open) {
-                                            const r = btn.getBoundingClientRect();
-                                            this.dropY = r.bottom + 6;
-                                            this.dropX = r.left;
-                                            this.dropW = r.width;
-                                        }
-                                        this.open = !this.open;
-                                    }
-                                }" class="relative w-full" @click.outside="open = false">
-                                <!-- Trigger — sama persis dengan Laporan -->
-                                <button @click="toggle($el)"
-                                    class="w-full bg-white border text-gray-700 text-xs rounded-lg flex justify-between items-center p-2 outline-none transition-colors shadow-sm"
-                                    :class="open ? 'border-emerald-500' : 'border-gray-200 hover:border-emerald-400'">
-                                    <span x-text="selectedBranch" class="font-medium text-left truncate pr-2"></span>
-                                    <i class="ph-bold ph-caret-down text-gray-400 transition-transform duration-200 shrink-0" :class="open ? 'rotate-180' : ''"></i>
-                                </button>
-                                <!-- Fixed Floating Popup — style sama dengan Laporan -->
-                                <div x-show="open" x-cloak
-                                    x-transition:enter="transition ease-out duration-100"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-transition:leave="transition ease-in duration-75"
-                                    x-transition:leave-start="opacity-100 scale-100"
-                                    x-transition:leave-end="opacity-0 scale-95"
-                                    :style="`position:fixed; top:${dropY}px; left:${dropX}px; width:${dropW}px; z-index:9999;`"
-                                    class="bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-48 overflow-y-auto overscroll-none">
-                                    <template x-for="branch in allBranches" :key="branch">
-                                        <div @click="selectedBranch = branch; open = false"
-                                            class="px-3 py-2 text-[11px] cursor-pointer transition-colors flex justify-between items-center group"
-                                            :class="selectedBranch === branch ? 'bg-gray-50 text-emerald-600 font-semibold' : 'text-gray-600 hover:bg-gray-50'">
-                                            <span x-text="branch"></span>
-                                            <i class="ph-fill ph-circle text-[8px] text-emerald-500" x-show="selectedBranch === branch"></i>
+                            <div class="bg-white border border-gray-200 rounded-lg flex flex-col overflow-hidden shadow-sm">
+                                <!-- Search Box -->
+                                <div class="relative border-b border-gray-100 shrink-0">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                    <input type="text" x-model="branchSearchQuery" placeholder="Cari cabang..." 
+                                           class="w-full bg-transparent pl-8 pr-3 py-3 text-xs outline-none focus:bg-gray-50 transition-colors">
+                                </div>
+                                
+                                <!-- List -->
+                                <div class="relative w-full h-[220px]" 
+                                     x-data="{ 
+                                         isScrolling: false, 
+                                         scrollTimeout: null, 
+                                         scrollPos: 0, 
+                                         thumbHeight: 20,
+                                         updateScroll() {
+                                             const el = $refs.scrollArea;
+                                             if(!el) return;
+                                             if(el.scrollHeight <= el.clientHeight) {
+                                                 this.isScrolling = false;
+                                                 return;
+                                             }
+                                             const ratio = el.clientHeight / el.scrollHeight;
+                                             this.thumbHeight = Math.max(ratio * el.clientHeight, 20);
+                                             this.scrollPos = (el.scrollTop / el.scrollHeight) * el.clientHeight;
+                                             
+                                             this.isScrolling = true;
+                                             clearTimeout(this.scrollTimeout);
+                                             this.scrollTimeout = setTimeout(() => { this.isScrolling = false; }, 800);
+                                         }
+                                     }" 
+                                     x-init="$watch('branchSearchQuery', () => { $nextTick(() => updateScroll()) })">
+                                     
+                                    <div x-ref="scrollArea" @scroll="updateScroll()" class="h-full overflow-y-auto overscroll-none bg-gray-50/30 scrollbar-hide">
+                                        <template x-for="branch in allBranches.filter(b => b.toLowerCase().includes(branchSearchQuery.toLowerCase()))" :key="branch">
+                                            <label class="flex items-center gap-3 px-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors last:border-b-0">
+                                                <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                    <input type="radio" name="cabangFilter" :value="branch" x-model="tempSelectedBranch" class="peer appearance-none w-4 h-4 border-2 border-gray-300 rounded-full checked:border-emerald-500 transition-colors cursor-pointer">
+                                                    <div class="absolute w-2 h-2 bg-emerald-500 rounded-full scale-0 peer-checked:scale-100 transition-transform duration-200"></div>
+                                                </div>
+                                                <span class="text-xs text-gray-700" :class="tempSelectedBranch === branch ? 'font-bold text-gray-900' : 'font-medium'" x-text="branch"></span>
+                                            </label>
+                                        </template>
+                                        <div x-show="allBranches.filter(b => b.toLowerCase().includes(branchSearchQuery.toLowerCase())).length === 0" class="text-center py-4 text-xs text-gray-400">
+                                            Cabang tidak ditemukan
                                         </div>
-                                    </template>
+                                    </div>
+                                    
+                                    <!-- Custom Smooth Scrollbar Thumb -->
+                                    <div class="absolute top-0 right-0.5 w-1 h-full pointer-events-none py-1">
+                                        <div class="w-full bg-gray-300 rounded-full transition-opacity duration-300 ease-in-out"
+                                             :style="`height: ${thumbHeight}px; transform: translateY(${scrollPos}px);`"
+                                             :class="isScrolling ? 'opacity-100' : 'opacity-0'">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
 
-                        <!-- Kategori -->
-                        <div class="px-2">
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Kategori</p>
-                            <div class="space-y-1">
-                                <template x-for="cat in allCategories" :key="cat">
-                                    <button @click="selectedCategory = cat; filterOpen = false"
-                                        class="w-full text-left px-4 py-3 text-[14px] rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-between"
-                                        :class="selectedCategory === cat ? 'bg-gray-50 text-emerald-600 font-semibold' : 'text-gray-600 font-medium'">
-                                        <span x-text="cat"></span>
-                                        <i x-show="selectedCategory === cat" class="ph-fill ph-circle text-[8px] text-emerald-500 shrink-0"></i>
+                        <!-- Tipe Produk -->
+                        <div class="mb-0 px-2">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe Produk</label>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <template x-for="t in allTypes" :key="t">
+                                    <button @click="if (t === 'Semua') { tempSelectedType = []; } else { if (tempSelectedType.includes('Semua')) tempSelectedType = []; if (tempSelectedType.includes(t)) { tempSelectedType = tempSelectedType.filter(c => c !== t); } else { tempSelectedType.push(t); } }"
+                                        class="px-3 py-1.5 rounded-full border text-xs font-medium transition-colors"
+                                        :class="(tempSelectedType.includes(t) || (t === 'Semua' && (tempSelectedType.length === 0 || tempSelectedType.includes('Semua')))) ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-white border-gray-200 text-gray-600 hover:border-emerald-300'">
+                                        <span x-text="t"></span>
                                     </button>
                                 </template>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="shrink-0 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-gray-100 bg-white flex items-center gap-2">
+
+                        <button @click="filterOpen = false" class="flex-1 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button @click="selectedType = [...tempSelectedType]; selectedBranch = tempSelectedBranch; filterOpen = false" class="flex-1 h-11 rounded-xl bg-[#0b595b] hover:bg-[#0a4e50] text-white text-sm font-semibold transition-colors shadow-sm">
+                            Terapkan
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1260,18 +1327,21 @@
             <!-- ================================ -->
             <!-- MOBILE SEARCH BAR                -->
             <!-- ================================ -->
-            <div class="sm:hidden fixed left-4 right-4 z-[29] px-4 py-3 bg-white/20 backdrop-blur-2xl rounded-2xl border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.5)] origin-bottom"
-                 style="bottom: calc(72px + env(safe-area-inset-bottom))"
+            <div class="sm:hidden absolute left-0 right-0 px-4 flex justify-center z-[29] opacity-0 pointer-events-none"
+                 style="bottom: calc(96px + env(safe-area-inset-bottom))"
                  :class="mobileSearchOpen
-                     ? 'opacity-100 scale-100 pointer-events-auto transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]'
-                     : 'opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-in'">
-                <div class="relative w-full h-11">
-                    <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-600/80"></i>
-                    <input type="text" x-model="searchQuery" id="mobileSearchInputBottom" placeholder="Cari produk atau varian..."
-                           class="w-full bg-white/70 border border-gray-100 rounded-full pl-10 pr-10 h-full text-[13px] text-gray-800 placeholder-gray-400 outline-none focus:bg-white/90 focus:border-[#0b595b]/40 transition-all">
+                     ? 'opacity-100 pointer-events-auto'
+                     : 'opacity-0 pointer-events-none'">
+                <div class="relative w-full max-w-[360px] h-12 bg-white/40 backdrop-blur-xl border border-white/60 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.1)] flex items-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] absolute left-4 top-1/2 -translate-y-1/2 text-[#0b595b]/70">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" x-model="searchQuery" id="mobileSearchInputBottom" placeholder="Cari produk..."
+                           class="w-full bg-transparent pl-11 pr-10 h-full text-[13.5px] font-medium text-gray-800 placeholder-gray-500 outline-none rounded-full">
                     <button x-show="searchQuery" @click="searchQuery = ''; document.getElementById('mobileSearchInputBottom').focus()" x-cloak
-                            class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors">
-                        <i class="ph-bold ph-x text-[10px] text-gray-500"></i>
+                            class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full hover:bg-black/5 flex items-center justify-center transition-colors">
+                        <i class="ph-bold ph-x text-xs text-gray-500"></i>
                     </button>
                 </div>
             </div>
@@ -1279,40 +1349,56 @@
             <!-- ================================ -->
             <!-- UNIFIED BOTTOM NAVIGATION BAR    -->
             <!-- ================================ -->
-            <div class="w-full shrink-0 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] z-30 sm:hidden pb-[env(safe-area-inset-bottom)] relative">
-                <div class="relative flex items-center justify-between w-full h-[60px] px-6 max-w-md mx-auto">
-                    <!-- 1. Menu Side Bar -->
-                    <button @click="toggleMobileSidebar()"
-                            class="relative z-10 flex items-center justify-center w-14 h-full text-gray-400 hover:text-[#0b595b] active:scale-90 transition-all duration-200"
-                            title="Menu Navigasi">
-                        <i class="ph ph-squares-four text-[26px]"></i>
+            <div class="w-full absolute bottom-0 left-0 right-0 z-30 sm:hidden pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 px-4 flex justify-center pointer-events-none" x-data="{ profileOpen: false }">
+                <div class="pointer-events-auto bg-white/10 backdrop-blur-md backdrop-saturate-150 border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.1)] rounded-full h-[64px] p-2 flex items-center justify-between w-full max-w-[360px]">
+                    
+                    <!-- 1. Menu / Home -->
+                    <button @click="toggleMobileSidebar(); profileOpen = false"
+                            :class="sidebarOpen ? 'text-[#0b595b] w-12' : 'text-gray-500 hover:text-[#0b595b] w-12'" 
+                            style="transition: color 300ms ease;"
+                            class="h-full bg-transparent flex items-center justify-center rounded-full active:scale-95">
+                        <span class="icon-rounded" :class="sidebarOpen ? 'icon-active' : 'icon-inactive'">home</span>
                     </button>
 
                     <!-- 2. Search -->
-                    <button @click="mobileSearchOpen = !mobileSearchOpen; if (mobileSearchOpen) { filterOpen = false; closeDrawer(); $nextTick(() => document.getElementById('mobileSearchInputBottom').focus()); }"
-                            :class="searchQuery.length > 0 || mobileSearchOpen ? 'text-[#0b595b]' : 'text-gray-400'"
-                            class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
-                            title="Pencarian">
-                        <i class="text-[26px]" :class="searchQuery.length > 0 || mobileSearchOpen ? 'ph-bold ph-magnifying-glass' : 'ph ph-magnifying-glass'"></i>
+                    <button @click="mobileSearchOpen = !mobileSearchOpen; if (mobileSearchOpen) { filterOpen = false; closeDrawer(); profileOpen = false; $nextTick(() => document.getElementById('mobileSearchInputBottom').focus()); }"
+                            :class="mobileSearchOpen || searchQuery.length > 0 ? 'text-[#0b595b] w-12' : 'text-gray-500 hover:text-[#0b595b] w-12'" 
+                            style="transition: color 300ms ease;"
+                            class="h-full bg-transparent flex items-center justify-center rounded-full active:scale-95">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" :stroke-width="mobileSearchOpen || searchQuery.length > 0 ? '2.5' : '1.8'" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 transition-all">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                     </button>
 
                     <!-- 3. Filter -->
-                    <button @click="filterOpen = !filterOpen; if(filterOpen) { mobileSearchOpen = false; closeDrawer(); }"
-                            :class="filterOpen || selectedCategory !== 'Semua' ? 'text-[#0b595b]' : 'text-gray-400'"
-                            class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
-                            title="Filter">
-                        <div class="relative">
-                            <i class="text-[26px]" :class="filterOpen || selectedCategory !== 'Semua' ? 'ph-fill ph-faders' : 'ph ph-faders'"></i>
-
-                        </div>
+                    <button @click="filterOpen = !filterOpen; if(filterOpen) { mobileSearchOpen = false; closeDrawer(); profileOpen = false; tempSelectedType = [...selectedType]; tempSelectedBranch = selectedBranch; branchSearchQuery = ''; }"
+                            :class="filterOpen || ((selectedType.length > 0 && !selectedType.includes('Semua')) || selectedBranch !== 'Gresik / Driyorejo / Petiken - 001') ? 'text-[#0b595b] w-12' : 'text-gray-500 hover:text-[#0b595b] w-12'" 
+                            style="transition: color 300ms ease;"
+                            class="h-full bg-transparent flex items-center justify-center rounded-full active:scale-95">
+                        <span class="icon-rounded" :class="filterOpen || ((selectedType.length > 0 && !selectedType.includes('Semua')) || selectedBranch !== 'Gresik / Driyorejo / Petiken - 001') ? 'icon-active' : 'icon-inactive'">tune</span>
                     </button>
 
                     <!-- 4. Tambah Produk -->
-                    <button @click="openDrawer()"
-                            :class="drawerOpen ? 'text-[#0b595b]' : 'text-gray-400'"
-                            class="relative z-10 flex items-center justify-center w-14 h-full hover:text-[#0b595b] active:scale-90 transition-all duration-200"
-                            title="Tambah Produk">
-                        <i class="text-[28px]" :class="drawerOpen ? 'ph-fill ph-plus-square' : 'ph ph-plus-square'"></i>
+                    <button @click="openDrawer(); profileOpen = false"
+                            :class="drawerOpen ? 'text-[#0b595b] w-12' : 'text-gray-500 hover:text-[#0b595b] w-12'" 
+                            style="transition: color 300ms ease;"
+                            class="h-full bg-transparent flex items-center justify-center rounded-full active:scale-95">
+                        <svg viewBox="0 0 24 24" class="w-[28px] h-[28px] transition-all" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" :stroke-width="drawerOpen ? '2.2' : '1.3'" fill="none">
+                            <path d="M2 12v3.45c0 2.849.698 4.005 1.606 4.944.94.909 2.098 1.608 4.946 1.608h6.896c2.848 0 4.006-.7 4.946-1.608C21.302 19.455 22 18.299 22 15.45V8.552c0-2.849-.698-4.006-1.606-4.945C19.454 2.7 18.296 2 15.448 2H8.552c-2.848 0-4.006.699-4.946 1.607C2.698 4.547 2 5.703 2 8.552Z"></path>
+                            <line x1="7" x2="17" y1="12" y2="12"></line>
+                            <line x1="12" x2="12" y1="7" y2="17"></line>
+                        </svg>
+                    </button>
+
+                    <!-- 5. Profile -->
+                    <button @click="profileOpen = !profileOpen; if(profileOpen) { mobileSearchOpen = false; filterOpen = false; closeDrawer(); }"
+                            :class="profileOpen ? 'text-gray-800 w-12' : 'text-gray-500 hover:text-gray-800 w-12'" 
+                            style="transition: color 300ms ease;"
+                            class="h-full bg-transparent flex items-center justify-center rounded-full active:scale-95">
+                        <div class="relative w-8 h-8 rounded-full border-[2.5px] transition-colors" :class="profileOpen ? 'border-gray-300' : 'border-transparent'">
+                            <img src="https://api.dicebear.com/9.x/glass/svg?seed=Finance" class="w-full h-full object-cover rounded-full" />
+                        </div>
                     </button>
                 </div>
             </div>
@@ -1324,7 +1410,7 @@
     <!-- ================================ -->
     <!-- DRAWER: Tambah / Edit Produk     -->
     <!-- ================================ -->
-    <div x-show="drawerOpen" class="fixed top-0 left-0 right-0 bottom-[calc(60px+env(safe-area-inset-bottom))] sm:bottom-0 z-[100] overflow-hidden flex flex-col justify-end lg:flex-row lg:justify-end" x-cloak>
+    <div x-show="drawerOpen" class="fixed top-0 left-0 right-0 bottom-0 z-[100] overflow-hidden flex flex-col justify-end lg:flex-row lg:justify-end" x-cloak>
         <!-- Backdrop -->
         <div x-show="drawerOpen"
              x-transition:enter="transition-opacity ease-out duration-300"
@@ -1382,17 +1468,17 @@
                             class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
                     </div>
 
-                    <!-- Kategori -->
+                    <!-- Tipe Produk -->
                     <div>
-                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Kategori <span class="text-red-400">*</span></label>
-                        <select x-model="form.category"
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">Tipe Produk <span class="text-red-400">*</span></label>
+                        <select x-model="form.type"
                             class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all appearance-none"
                             style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22><path fill=%22%239ca3af%22 d=%22M2.5 4.5l3.5 3.5 3.5-3.5%22/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;">
-                            <option value="">Pilih kategori</option>
-                            <option>Buah Segar</option>
-                            <option>Buah Potong</option>
-                            <option>Jus & Smoothie</option>
-                            <option>Olahan</option>
+                            <option value="">Pilih tipe produk</option>
+                            <option>Bahan Baku</option>
+                            <option>Produk Olahan</option>
+                            <option>Kemasan</option>
+                            <option>Jasa / Layanan</option>
                         </select>
                     </div>
 
@@ -1428,7 +1514,7 @@
                     <!-- Harga Jual per Cabang (only when no variants) -->
                     <div x-show="!form.hasVariants" class="flex flex-col gap-3">
                         <div class="flex items-center justify-between">
-                            <label class="text-xs font-semibold text-gray-600">Daftar Harga Jual <span class="text-red-400">*</span></label>
+                            <label class="text-xs font-semibold text-gray-600">Harga Jual <span class="text-red-400">*</span></label>
                             <button @click="form.priceRules.push({ id: Date.now(), price: 0, branches: [] })"
                                 class="flex items-center gap-1 text-xs text-emerald-700 font-semibold hover:underline">
                                 <i class="ph ph-plus-circle"></i> Tambah Harga
@@ -1458,28 +1544,62 @@
                                     </button>
                                 </div>
                                 
-                                <!-- Branch Selector (Trigger for modal/dropdown) -->
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[11px] text-gray-500 font-medium shrink-0">Cabang:</span>
-                                    <button @click="openBranchPicker(rule, form.priceRules)"
-                                            class="flex-1 min-w-0 h-8 px-2 flex items-center justify-between bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs text-left transition-colors">
-                                        <span class="truncate text-gray-700 font-medium" 
-                                              x-text="rule.branches.includes('all') ? 'Semua Cabang' : (rule.branches.length > 0 ? rule.branches.length + ' Cabang Dipilih' : 'Pilih Cabang...')">
-                                        </span>
-                                        <i class="ph-bold ph-caret-down text-gray-400 shrink-0"></i>
-                                    </button>
-                                </div>
-                                
-                                <!-- Selected Branches List (Pills) -->
-                                <div x-show="!rule.branches.includes('all') && rule.branches.length > 0" class="flex flex-wrap gap-1.5 mt-1">
-                                    <template x-for="b in rule.branches" :key="b">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-semibold rounded-md border border-emerald-100">
-                                            <span x-text="b.split(' - ')[0]" class="truncate max-w-[120px]"></span>
-                                            <button @click="rule.branches = rule.branches.filter(cb => cb !== b); if(rule.branches.length===0) rule.branches=['all']" class="hover:text-emerald-900 shrink-0">
-                                                <i class="ph-bold ph-x"></i>
-                                            </button>
-                                        </span>
-                                    </template>
+                                <!-- Branch Selector Accordion -->
+                                <div x-data="{ pickerOpen: false, pickerSearch: '' }" class="flex flex-col gap-1 mt-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[11px] text-gray-500 font-medium shrink-0">Cabang:</span>
+                                        <button @click="pickerOpen = !pickerOpen"
+                                                class="flex-1 min-w-0 h-8 px-2 flex items-center justify-between bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs text-left transition-colors">
+                                            <span class="truncate text-gray-700 font-medium" 
+                                                  x-text="rule.branches.includes('all') ? 'Semua Cabang' : (rule.branches.length > 0 ? rule.branches.length + ' Cabang Dipilih' : 'Pilih Cabang...')">
+                                            </span>
+                                            <i class="ph-bold ph-caret-down text-gray-400 shrink-0 transition-transform" :class="pickerOpen ? 'rotate-180' : ''"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Inline Picker -->
+                                    <div x-show="pickerOpen" x-transition class="flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm mt-1">
+                                        <div class="relative border-b border-gray-100">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                            <input type="text" x-model="pickerSearch" placeholder="Cari cabang..." 
+                                                   class="w-full bg-transparent pl-7 pr-2 py-2 text-[11px] outline-none focus:bg-gray-50 transition-colors">
+                                        </div>
+                                        <div class="max-h-[140px] overflow-y-auto overscroll-none scrollbar-hide p-1 flex flex-col gap-0.5">
+                                            <label x-show="pickerSearch === ''" class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+                                                <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                    <input type="checkbox" :checked="rule.branches.includes('all')"
+                                                           @change="if($event.target.checked) rule.branches = ['all']; else rule.branches = [];"
+                                                           :disabled="form.priceRules.some(r => r.id !== rule.id && r.branches.includes('all'))"
+                                                           class="peer appearance-none w-4 h-4 border-[1.5px] border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors cursor-pointer">
+                                                    <i class="ph-bold ph-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                                                </div>
+                                                <span class="text-[11px] font-bold text-gray-800 flex-1">Pilih Semua</span>
+                                            </label>
+                                            <template x-for="b in allBranches.filter(b => b.toLowerCase().includes(pickerSearch.toLowerCase()))" :key="b">
+                                                <label class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+                                                    <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                        <input type="checkbox" 
+                                                               :checked="rule.branches.includes(b)"
+                                                               :disabled="form.priceRules.some(r => r.id !== rule.id && (r.branches.includes(b) || r.branches.includes('all')))"
+                                                               @change="
+                                                                   let idx = rule.branches.indexOf('all'); if(idx > -1) rule.branches.splice(idx, 1);
+                                                                   if($event.target.checked) rule.branches.push(b);
+                                                                   else rule.branches = rule.branches.filter(cb => cb !== b);
+                                                               "
+                                                               class="peer appearance-none w-4 h-4 border-[1.5px] border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors cursor-pointer">
+                                                        <i class="ph-bold ph-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                                                    </div>
+                                                    <div class="flex flex-col flex-1 min-w-0">
+                                                        <span class="text-[11px] text-gray-700 font-medium truncate" x-text="b.split(' - ')[0]"></span>
+                                                        <span class="text-[9px] text-gray-400 truncate" x-text="b"></span>
+                                                    </div>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -1538,14 +1658,60 @@
                                                     <i class="ph-bold ph-trash text-xs"></i>
                                                 </button>
                                             </div>
-                                            <div class="flex items-center gap-1.5 mt-0.5">
-                                                <button @click="openBranchPicker(rule, v.priceRules)"
-                                                        class="flex-1 min-w-0 h-7 px-2 flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-[10px] text-left transition-colors">
-                                                    <span class="truncate text-gray-600 font-medium" 
-                                                          x-text="rule.branches.includes('all') ? 'Semua Cabang' : (rule.branches.length > 0 ? rule.branches.length + ' Cabang' : 'Pilih Cabang...')">
-                                                    </span>
-                                                    <i class="ph-bold ph-caret-down text-gray-400 shrink-0"></i>
-                                                </button>
+                                            <!-- Branch Selector Accordion -->
+                                            <div x-data="{ pickerOpen: false, pickerSearch: '' }" class="flex flex-col gap-1 mt-0.5">
+                                                <div class="flex items-center gap-1.5">
+                                                    <button @click="pickerOpen = !pickerOpen"
+                                                            class="flex-1 min-w-0 h-7 px-2 flex items-center justify-between bg-white hover:bg-gray-50 border border-gray-200 rounded-md text-[10px] text-left transition-colors">
+                                                        <span class="truncate text-gray-600 font-medium" 
+                                                              x-text="rule.branches.includes('all') ? 'Semua Cabang' : (rule.branches.length > 0 ? rule.branches.length + ' Cabang Dipilih' : 'Pilih Cabang...')">
+                                                        </span>
+                                                        <i class="ph-bold ph-caret-down text-gray-400 shrink-0 transition-transform" :class="pickerOpen ? 'rotate-180' : ''"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Inline Picker -->
+                                                <div x-show="pickerOpen" x-transition class="flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm mt-1">
+                                                    <div class="relative border-b border-gray-100">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
+                                                            <circle cx="11" cy="11" r="8"></circle>
+                                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                                        </svg>
+                                                        <input type="text" x-model="pickerSearch" placeholder="Cari cabang..." 
+                                                               class="w-full bg-transparent pl-7 pr-2 py-1.5 text-[10px] outline-none focus:bg-gray-50 transition-colors">
+                                                    </div>
+                                                    <div class="max-h-[140px] overflow-y-auto overscroll-none scrollbar-hide p-1 flex flex-col gap-0.5">
+                                                        <label x-show="pickerSearch === ''" class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+                                                            <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                                <input type="checkbox" :checked="rule.branches.includes('all')"
+                                                                       @change="if($event.target.checked) rule.branches = ['all']; else rule.branches = [];"
+                                                                       :disabled="v.priceRules.some(r => r.id !== rule.id && r.branches.includes('all'))"
+                                                                       class="peer appearance-none w-4 h-4 border-[1.5px] border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors cursor-pointer">
+                                                                <i class="ph-bold ph-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                                                            </div>
+                                                            <span class="text-[10px] font-bold text-gray-800 flex-1">Pilih Semua</span>
+                                                        </label>
+                                                        <template x-for="b in allBranches.filter(b => b.toLowerCase().includes(pickerSearch.toLowerCase()))" :key="b">
+                                                            <label class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-gray-50 cursor-pointer transition-colors">
+                                                                <div class="relative flex items-center justify-center w-4 h-4 shrink-0">
+                                                                    <input type="checkbox" 
+                                                                           :checked="rule.branches.includes(b)"
+                                                                           :disabled="v.priceRules.some(r => r.id !== rule.id && (r.branches.includes(b) || r.branches.includes('all')))"
+                                                                           @change="
+                                                                               let idx = rule.branches.indexOf('all'); if(idx > -1) rule.branches.splice(idx, 1);
+                                                                               if($event.target.checked) rule.branches.push(b);
+                                                                               else rule.branches = rule.branches.filter(cb => cb !== b);
+                                                                           "
+                                                                           class="peer appearance-none w-4 h-4 border-[1.5px] border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors cursor-pointer">
+                                                                    <i class="ph-bold ph-check absolute text-white text-[10px] opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                                                                </div>
+                                                                <div class="flex flex-col flex-1 min-w-0">
+                                                                    <span class="text-[10px] text-gray-700 font-medium truncate" x-text="b.split(' - ')[0]"></span>
+                                                                </div>
+                                                            </label>
+                                                        </template>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
@@ -1554,21 +1720,7 @@
                         </template>
                     </div>
 
-                    <!-- HPP -->
-                    <div x-data="{
-                        get displayHpp() { return form.hpp ? form.hpp.toLocaleString('id-ID') : '' },
-                        set displayHpp(val) {
-                            let clean = val.replace(/\D/g, '');
-                            form.hpp = clean ? parseInt(clean) : 0;
-                        }
-                    }">
-                        <label class="text-xs font-semibold text-gray-600 mb-1.5 block">HPP (Harga Pokok)</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">Rp</span>
-                            <input x-model="displayHpp" type="text" placeholder="0"
-                                class="w-full h-11 bg-white border border-gray-200 rounded-xl pl-10 pr-4 text-sm text-right font-semibold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
-                        </div>
-                    </div>
+
 
                     <!-- Deskripsi -->
                     <div>
@@ -1580,7 +1732,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="shrink-0 px-5 py-4 border-t border-gray-100 bg-white flex items-center gap-3">
+            <div class="shrink-0 px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] border-t border-gray-100 bg-white flex items-center gap-3">
                 <button @click="closeDrawer()" class="flex-1 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
                     Batal
                 </button>
@@ -1589,69 +1741,6 @@
                 </button>
             </div>
         </div>
-        <!-- Branch Picker Modal (Overlays the Drawer) -->
-        <div x-show="branchPickerOpen" class="absolute inset-0 z-50 flex items-end justify-center sm:items-center" x-cloak>
-            <div x-show="branchPickerOpen" 
-                 x-transition.opacity.duration.300ms
-                 @click="saveBranchPicker()"
-                 class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-                 
-            <div x-show="branchPickerOpen"
-                 x-transition:enter="transition ease-out duration-300 transform"
-                 x-transition:enter-start="translate-y-full sm:translate-y-4 sm:scale-95 opacity-0"
-                 x-transition:enter-end="translate-y-0 sm:translate-y-0 sm:scale-100 opacity-100"
-                 x-transition:leave="transition ease-in duration-200 transform"
-                 x-transition:leave-start="translate-y-0 sm:translate-y-0 sm:scale-100 opacity-100"
-                 x-transition:leave-end="translate-y-full sm:translate-y-4 sm:scale-95 opacity-0"
-                 class="w-full sm:w-[90%] md:max-w-sm bg-white sm:rounded-2xl rounded-t-2xl shadow-2xl relative z-10 flex flex-col max-h-[80vh]">
-                 
-                <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
-                    <h3 class="text-sm font-bold text-gray-900">Pilih Cabang</h3>
-                    <button @click="saveBranchPicker()" class="text-emerald-600 font-semibold text-sm hover:text-emerald-700">Selesai</button>
-                </div>
-                
-                <div class="flex-1 overflow-y-auto p-2" style="-webkit-overflow-scrolling: touch;">
-                    <!-- Semua Cabang Option -->
-                    <label class="flex items-center gap-3 p-3 rounded-xl transition-colors"
-                           :class="isBranchDisabled('all') ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-gray-50 cursor-pointer'">
-                        <div class="relative flex items-center justify-center w-5 h-5">
-                            <input type="checkbox" 
-                                   :disabled="isBranchDisabled('all')"
-                                   :checked="tempSelectedBranches.includes('all')"
-                                   @change="toggleBranchSelection('all')"
-                                   class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors">
-                            <i class="ph-bold ph-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                        </div>
-                        <div class="flex-1 text-sm font-semibold text-gray-800">
-                            Semua Cabang
-                            <span x-show="isBranchDisabled('all')" class="text-[10px] text-red-400 font-normal ml-1">(Sudah digunakan)</span>
-                        </div>
-                    </label>
-                    <div class="h-px bg-gray-100 mx-3 my-1"></div>
-                    
-                    <!-- Specific Branches -->
-                    <template x-for="b in allBranches" :key="b">
-                        <label class="flex items-center gap-3 p-3 rounded-xl transition-colors"
-                               :class="isBranchDisabled(b) ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-gray-50 cursor-pointer'">
-                            <div class="relative flex items-center justify-center w-5 h-5">
-                                <input type="checkbox" 
-                                       :disabled="isBranchDisabled(b)"
-                                       :checked="tempSelectedBranches.includes(b)"
-                                       @change="toggleBranchSelection(b)"
-                                       class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded focus:ring-0 checked:bg-emerald-500 checked:border-emerald-500 disabled:bg-gray-200 disabled:border-gray-200 transition-colors">
-                                <i class="ph-bold ph-check absolute text-white text-xs opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
-                            </div>
-                            <div class="flex-1 text-sm font-medium text-gray-700">
-                                <span x-text="b.split(' - ')[0]"></span>
-                                <span x-show="isBranchDisabled(b)" class="text-[10px] text-red-400 font-normal ml-1">(Sudah digunakan)</span>
-                                <div class="text-[10px] text-gray-400" x-text="b"></div>
-                            </div>
-                        </label>
-                    </template>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- ================================ -->
     <!-- MODAL: Konfirmasi Hapus          -->
@@ -1711,8 +1800,15 @@
                 mobileSearchOpen: false,
                 searchQuery: '',
                 filterOpen: false,
-                selectedCategory: 'Semua',
-                allCategories: ['Semua', 'Buah Segar', 'Buah Potong', 'Jus & Smoothie', 'Olahan'],
+                selectedType: [],
+                tempSelectedType: [],
+                allTypes: [
+                    'Semua', 
+                    'Bahan Baku', 
+                    'Produk Olahan',
+                    'Kemasan',
+                    'Jasa / Layanan'
+                ],
                 
                 allBranches: [
                     'Gresik / Driyorejo / Petiken - 001',
@@ -1720,9 +1816,42 @@
                     'Gresik / Gresik / Sidokumpul - 002',
                     'Gresik / Kebomas / Randuagung - 001',
                     'Gresik / Manyar / Yosowilangun - 001',
-                    'Gresik / Menganti / Pelemwatu - 001'
+                    'Gresik / Menganti / Pelemwatu - 001',
+                    'Malang / Blimbing / Purwantoro - 001',
+                    'Malang / Klojen / Bareng - 001',
+                    'Malang / Lowokwaru / Ketawanggede - 001',
+                    'Malang / Sukun / Bandulan - 001',
+                    'Sidoarjo / Buduran / Siwalanpanji - 001',
+                    'Sidoarjo / Gedangan / Keboansikep - 001',
+                    'Sidoarjo / Sidoarjo / Lemahputro - 001',
+                    'Sidoarjo / Taman / Sepanjang - 001',
+                    'Sidoarjo / Waru / Pepelegi - 001',
+                    'Surabaya / Genteng / Embong Kaliasin - 001',
+                    'Surabaya / Gubeng / Airlangga - 001',
+                    'Surabaya / Tambaksari / Pacar Keling - 001',
+                    'Surabaya / Tegalsari / Keputran - 001',
+                    'Surabaya / Wonokromo / Darmo - 001'
                 ],
                 selectedBranch: 'Gresik / Driyorejo / Petiken - 001',
+                tempSelectedBranch: 'Gresik / Driyorejo / Petiken - 001',
+                branchSearchQuery: '',
+
+                // Mobile Filter Dropdown State
+                openDropdown: null,
+                dropY: 0, 
+                dropX: 0, 
+                dropW: 0,
+                toggleDropdown(name, btn) {
+                    if (this.openDropdown !== name) {
+                        const r = btn.getBoundingClientRect();
+                        this.dropY = r.bottom + 6;
+                        this.dropX = r.left;
+                        this.dropW = r.width;
+                        this.openDropdown = name;
+                    } else {
+                        this.openDropdown = null;
+                    }
+                },
 
                 // Price Popup (Floating)
                 editingPriceId: null,
@@ -1734,7 +1863,7 @@
                 // Drawer (Add/Edit)
                 drawerOpen: false,
                 editingProduct: null,
-                form: { name: '', category: '', unit: '', price: 0, priceRules: [{ id: 1, price: 0, branches: ['all'] }], hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] },
+                form: { name: '', type: '', unit: '', price: 0, priceRules: [{ id: 1, price: 0, branches: ['all'] }], hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] },
                 
                 // Branch Picker for Pricing
                 branchPickerOpen: false,
@@ -1904,28 +2033,28 @@
 
                     // Buah Segar
                     items.forEach(it => {
-                        result.push({ id: id++, name: it.name, category: 'Buah Segar', unit: 'kg', price: rnd(8000, 85000), hpp: rnd(5000, 50000), description: '', emoji: it.emoji, color: it.color, variants: [] });
+                        result.push({ id: id++, name: it.name, type: 'Bahan Baku', unit: 'kg', price: rnd(8000, 85000), hpp: rnd(5000, 50000), description: '', emoji: it.emoji, color: it.color, variants: [] });
                     });
 
                     // Buah Potong
                     potongBase.forEach(name => {
-                        result.push({ id: id++, name, category: 'Buah Potong', unit: pick(['pack','cup','pcs']), price: rnd(8000, 45000), hpp: rnd(4000, 25000), description: '', emoji: pick(potongEmojis), color: pick(potongColors), variants: [] });
+                        result.push({ id: id++, name, type: 'Produk Olahan', unit: pick(['pack','cup','pcs']), price: rnd(8000, 45000), hpp: rnd(4000, 25000), description: '', emoji: pick(potongEmojis), color: pick(potongColors), variants: [] });
                     });
 
                     // Jus & Smoothie
                     jusBase.forEach(name => {
-                        result.push({ id: id++, name, category: 'Jus & Smoothie', unit: 'cup', price: rnd(10000, 40000), hpp: rnd(5000, 22000), description: '', emoji: pick(jusEmojis), color: pick(jusColors), variants: [] });
+                        result.push({ id: id++, name, type: 'Produk Olahan', unit: 'cup', price: rnd(10000, 40000), hpp: rnd(5000, 22000), description: '', emoji: pick(jusEmojis), color: pick(jusColors), variants: [] });
                     });
 
                     // Olahan
                     olahanBase.forEach(name => {
-                        result.push({ id: id++, name, category: 'Olahan', unit: pick(['pack','pcs','botol']), price: rnd(10000, 55000), hpp: rnd(5000, 30000), description: '', emoji: pick(olahanEmojis), color: pick(olahanColors), variants: [] });
+                        result.push({ id: id++, name, type: 'Produk Olahan', unit: pick(['pack','pcs','botol']), price: rnd(10000, 55000), hpp: rnd(5000, 30000), description: '', emoji: pick(olahanEmojis), color: pick(olahanColors), variants: [] });
                     });
 
                     // Demo: produk dengan variant
                     const variantDemos = [
                         {
-                            id: 9001, name: 'Strawberry Mencir', category: 'Buah Segar', unit: 'kg',
+                            id: 9001, name: 'Strawberry Mencir', type: 'Bahan Baku', unit: 'kg',
                             price: 0, hpp: 12000, description: '', emoji: '🍓', color: '#fce4ec',
                             variants: [
                                 { id: 'sv1', name: 'Strawberry Mencir (Super)', price: 28000 },
@@ -1935,7 +2064,7 @@
                             ]
                         },
                         {
-                            id: 9002, name: 'Mangga Gedong', category: 'Buah Segar', unit: 'kg',
+                            id: 9002, name: 'Mangga Gedong', type: 'Bahan Baku', unit: 'kg',
                             price: 0, hpp: 18000, description: '', emoji: '🥭', color: '#fff8e1',
                             variants: [
                                 { id: 'mv1', name: 'Mangga Gedong (Super)', price: 45000 },
@@ -1945,7 +2074,7 @@
                             ]
                         },
                         {
-                            id: 9003, name: 'Apel Fuji', category: 'Buah Segar', unit: 'kg',
+                            id: 9003, name: 'Apel Fuji', type: 'Bahan Baku', unit: 'kg',
                             price: 0, hpp: 25000, description: '', emoji: '🍎', color: '#ffebee',
                             variants: [
                                 { id: 'av1', name: 'Apel Fuji (Jumbo)', price: 65000 },
@@ -1954,7 +2083,7 @@
                             ]
                         },
                         {
-                            id: 9004, name: 'Semangka Potong', category: 'Buah Potong', unit: 'pack',
+                            id: 9004, name: 'Semangka Potong', type: 'Produk Olahan', unit: 'pack',
                             price: 0, hpp: 8000, description: '', emoji: '🍉', color: '#ffebee',
                             variants: [
                                 { id: 'wp1', name: 'Semangka Potong (250g)', price: 12000 },
@@ -1963,7 +2092,7 @@
                             ]
                         },
                         {
-                            id: 9005, name: 'Pisang Sunpride', category: 'Buah Segar', unit: 'sisir',
+                            id: 9005, name: 'Pisang Sunpride', type: 'Bahan Baku', unit: 'sisir',
                             price: 0, hpp: 15000, description: '', emoji: '🍌', color: '#fffde7',
                             variants: [
                                 { id: 'pv1', name: 'Pisang Sunpride (Sisir Besar)', price: 30000 },
@@ -1988,19 +2117,19 @@
                 })(),
 
                 // Pagination
-                visibleCount: 50,
-                PAGE_SIZE: 50,
+                visibleCount: 200,
+                PAGE_SIZE: 200,
 
                 get filteredProducts() {
                     return this.products.filter(p => {
-                        if (this.selectedCategory !== 'Semua' && p.category !== this.selectedCategory) return false;
-                        if (p.branch !== this.selectedBranch) return false;
+                        if (this.selectedType.length > 0 && !this.selectedType.includes('Semua') && !this.selectedType.includes(p.type)) return false;
+                        if (this.selectedBranch !== p.branch) return false;
                         if (this.searchQuery) {
                             const q = this.searchQuery.toLowerCase();
                             const matchName = p.name.toLowerCase().includes(q);
-                            const matchCategory = p.category.toLowerCase().includes(q);
+                            const matchType = p.type.toLowerCase().includes(q);
                             const matchVariant = p.variants && p.variants.some(v => v.name.toLowerCase().includes(q));
-                            if (!matchName && !matchCategory && !matchVariant) return false;
+                            if (!matchName && !matchType && !matchVariant) return false;
                         }
                         return true;
                     });
@@ -2111,7 +2240,7 @@
                     if (product) {
                         this.form = { 
                             name: product.name, 
-                            category: product.category, 
+                            type: product.type, 
                             unit: product.unit, 
                             price: product.price, 
                             priceRules: product.priceRules || [{ id: Date.now(), price: product.price || 0, branches: ['all'] }],
@@ -2126,7 +2255,7 @@
                             }))
                         };
                     } else {
-                        this.form = { name: '', category: '', unit: '', price: 0, priceRules: [{ id: Date.now(), price: 0, branches: ['all'] }], hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] };
+                        this.form = { name: '', type: '', unit: '', price: 0, priceRules: [{ id: Date.now(), price: 0, branches: ['all'] }], hpp: 0, description: '', emoji: '', color: '', hasVariants: false, variants: [] };
                     }
                     this.drawerOpen = true;
                     if (window.self !== window.top) {
@@ -2189,7 +2318,7 @@
                 },
                 saveProduct() {
                     const needsPrice = !this.form.hasVariants;
-                    if (!this.form.name || !this.form.category || !this.form.unit) return;
+                    if (!this.form.name || !this.form.type || !this.form.unit) return;
                     if (needsPrice && !this.form.price) return;
 
                     const emojiMap = {
@@ -2208,7 +2337,7 @@
                     if (this.editingProduct) {
                         Object.assign(this.editingProduct, {
                             name: this.form.name,
-                            category: this.form.category,
+                            type: this.form.type,
                             unit: this.form.unit,
                             price: this.form.hasVariants ? 0 : (this.form.priceRules[0]?.price || 0),
                             priceRules: this.form.hasVariants ? [] : JSON.parse(JSON.stringify(this.form.priceRules)),
@@ -2221,12 +2350,12 @@
                             })) : [],
                         });
                     } else {
-                        const emojis = emojiMap[this.form.category] || ['📦'];
-                        const colors = colorMap[this.form.category] || ['#f5f5f5'];
+                        const emojis = emojiMap[this.form.type] || ['📦'];
+                        const colors = colorMap[this.form.type] || ['#f5f5f5'];
                         this.products.push({
                             id: Date.now(),
                             name: this.form.name,
-                            category: this.form.category,
+                            type: this.form.type,
                             unit: this.form.unit,
                             price: this.form.hasVariants ? 0 : (this.form.priceRules[0]?.price || 0),
                             priceRules: this.form.hasVariants ? [] : JSON.parse(JSON.stringify(this.form.priceRules)),
