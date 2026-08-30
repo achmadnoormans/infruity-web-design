@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" style="height: 100%;">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
@@ -435,13 +435,13 @@
             </style>
 </head>
 
-<body class="font-sans bg-[#e5e9f3] text-gray-800 antialiased overflow-hidden" style="height: 100%; max-height: 100%;">
+<body class="font-sans bg-[#e5e9f3] text-gray-800 antialiased h-screen overflow-hidden">
     <script>if(window.self!==window.top){document.body.classList.add("in-iframe");}</script>
 
     <!-- ============================== -->
     <!-- ALPINE.JS ROOT APPLICATION     -->
     <!-- ============================== -->
-    <div x-data="erpApp()" class="flex w-full" style="height: 100%; max-height: 100%;">
+    <div x-data="erpApp()" class="flex h-screen w-full">
 
         <!-- ================================ -->
         <!-- MOBILE SIDEBAR OVERLAY           -->
@@ -2307,7 +2307,7 @@
                     <!-- ============================================= -->
                     <div id="mobile-dashboard-wrap"
                          class="mobile-dashboard-wrap md:hidden flex flex-col relative text-white overflow-hidden"
-                         style="height: 100%; min-height: 0; background-color: #ebf2ef;">
+                         style="height: 100dvh; max-height: 100dvh; background-color: #ebf2ef;">
 
 
                         <!-- Dynamic Background Layers -->
