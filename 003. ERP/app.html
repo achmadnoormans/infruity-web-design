@@ -280,6 +280,11 @@
                                 :class="activePage === '002. Master/006. Cabang/index.html' ? 'active' : ''">
                                 <span>Cabang</span>
                             </a>
+                            <a href="#" @click.prevent="navigateTo('002. Master/011. Akun Pengguna/index.html', 'master')"
+                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
+                                :class="activePage === '002. Master/011. Akun Pengguna/index.html' ? 'active' : ''">
+                                <span>Akun Pengguna</span>
+                            </a>
                             <a href="#" @click.prevent="navigateTo('002. Master/007. Jabatan/index.html', 'master')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
                                 :class="activePage === '002. Master/007. Jabatan/index.html' ? 'active' : ''">
@@ -527,11 +532,7 @@
                                 :class="activePage === '009. Pengaturan/001. Nota dan Cetak/index.html' ? 'active' : ''">
                                 <span>Nota & Cetak</span>
                             </a>
-                            <a href="#" @click.prevent="navigateTo('009. Pengaturan/002. Akun Pengguna/index.html', 'pengaturan')"
-                                class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
-                                :class="activePage === '009. Pengaturan/002. Akun Pengguna/index.html' ? 'active' : ''">
-                                <span>Akun Pengguna</span>
-                            </a>
+
                             <a href="#" @click.prevent="navigateTo('009. Pengaturan/003. Target/index.html', 'pengaturan')"
                                 class="submenu-link relative flex items-center gap-3 pl-12 pr-4 py-2.5 rounded-lg text-sm text-white/45 cursor-pointer"
                                 :class="activePage === '009. Pengaturan/003. Target/index.html' ? 'active' : ''">
@@ -544,7 +545,7 @@
             </nav>
 
             <!-- User Profile Section -->
-            <div class="px-4 pb-6 pt-4 border-t border-white/10 shrink-0 transition-all duration-300 flex items-center relative"
+            <div class="px-4 pb-6 pt-4 border-t border-white/10 shrink-0 transition-all duration-300 hidden sm:flex items-center relative"
                  :class="sidebarCollapsed ? 'justify-center' : 'justify-between'" x-data="{ settingsOpen: false }">
                  
                 <!-- Settings Dropdown Menu -->
